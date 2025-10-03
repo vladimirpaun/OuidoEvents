@@ -53,18 +53,34 @@
         .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
         .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
 
+        /* NOU: Stiluri pentru bara de căutare (preluate din index.html) */
+        .main-search-section { text-align: center; padding: 60px 0; background: var(--white-color); }
+        .main-search-section h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 15px; }
+        .main-search-section p { font-size: 1.1rem; margin-bottom: 40px; color: var(--gray-color); max-width: 700px; margin-left: auto; margin-right: auto; }
+
+        .search-box { display: flex; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 8px 25px var(--shadow-color); overflow: hidden; height: 80px; border: 1px solid var(--border-color); max-width: 1100px; margin: 0 auto; }
+        .search-group { flex: 1; position: relative; height: 100%; border-right: 1px solid var(--border-color); padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
+        .search-group:hover, .search-group:focus-within { background-color: #fcfdff; }
+        .event-type-group { flex: 1.2; } .location-group { flex: 1.2; } .date-group { flex: 1; } .guests-group { flex: 0.8; border-right: none; }
+        .search-group label { font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 6px; }
+        .search-group input, .search-group select { width: 100%; border: none; outline: none; font-size: 16px; color: var(--gray-color); font-family: 'Be Vietnam Pro', sans-serif; background: transparent; padding: 0; margin: 0; }
+        .search-box .search-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 18px; width: 180px; height: 100%; transition: all 0.3s ease; }
+        .search-box .search-button:hover { opacity: 0.9; }
+
         /* Stilizare specifică pentru pagina de locații */
-        .locations-container { display: flex; padding: 40px 0; }
-        .filters { width: 280px; margin-right: 30px; padding: 20px; background-color: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 2px 10px var(--shadow-color); align-self: flex-start; }
-        .filters h3 { margin-bottom: 15px; font-size: 1.2rem; }
-        .filter-group { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
-        .filter-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .filter-group label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 1rem; }
-        .filter-group input[type="checkbox"] { margin-right: 5px; }
-        .filter-group ul { list-style: none; padding: 0; }
-        .filter-group li { margin-bottom: 8px; display: flex; align-items: center; }
-        .filter-group li label { font-size: 0.9rem; font-weight: 400; margin-bottom: 0; }
-        #price-value, #capacity-input { font-weight: 600; }
+        .locations-container { display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 40px 0; align-items: flex-start; }
+        .filters { width: 100%; }
+        .filter-group { margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--white-color); overflow: hidden; }
+        .filter-group summary { padding: 15px; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .filter-group summary::-webkit-details-marker { display: none; }
+        .filter-group-content { padding: 0 15px 15px; }
+        .filter-group-content label { display: block; margin-bottom: 10px; font-weight: 400; font-size: 0.95rem; }
+        .filter-group-content ul { list-style: none; padding: 0; }
+        .filter-group-content li { margin-bottom: 8px; display: flex; align-items: center; }
+        .filter-group-content li label { font-size: 0.9rem; font-weight: 400; margin-bottom: 0; }
+        .filter-group-content input[type="checkbox"] { margin-right: 8px; }
+        .filter-group-content input[type="radio"] { margin-right: 8px; }
+        #price-value { font-weight: 600; }
 
         .main-content { flex: 1; }
         .sort-bar { display: flex; justify-content: flex-end; margin-bottom: 20px; align-items: center; }
@@ -138,14 +154,21 @@
         .view-details-btn:hover { background-color: var(--secondary-color); }
 
         footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
-        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; }
+        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; } /* ... restul stilurilor ... */
         .footer-about p { color: #bbb; }
         .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
         .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
         .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
 
+        @media (max-width: 992px) {
+            .search-box { height: auto; flex-direction: column; }
+            .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
+            .guests-group { border-bottom: none; }
+            .search-box .search-button { width: 100%; padding: 18px; border-radius: 0 0 var(--border-radius) var(--border-radius); }
+        }
+
         @media (max-width: 768px) {
-            .locations-container { flex-direction: column; }
+            .locations-container { grid-template-columns: 1fr; }
             .filters { width: 100%; margin-right: 0; margin-bottom: 20px; }
         }
     </style>
@@ -175,41 +198,58 @@
     </header>
 
     <main>
+        <section class="main-search-section">
+            <div class="container">
+                <div class="search-box">
+                    <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
+                    <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
+                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="date" id="event-date"></div>
+                    <div class="search-group guests-group"><label for="guests">Invitați</label><input type="number" id="guests" placeholder="Număr" min="10"></div>
+                    <button class="search-button">Caută</button>
+                </div>
+            </div>
+        </section>
+
         <div class="container locations-container">
             <aside class="filters">
-                <h3>Filtrează după:</h3>
-                <div class="filter-group">
-                    <label for="price-slider">Buget (Preț/persoană)</label>
-                    <input type="range" id="price-slider" min="50" max="300" value="300" style="width: 100%;">
-                    <span>Până la: <span id="price-value">300</span>€</span>
-                </div>
-                <div class="filter-group">
-                    <label for="capacity-input">Capacitate Invitați</label>
-                    <input type="number" id="capacity-input" placeholder="Ex: 150" min="0" style="width: 100%; padding: 8px;">
-                </div>
-                <div class="filter-group">
-                    <label>Rating</label>
-                    <ul>
-                        <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9"> Peste 9</label></li>
-                        <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8"> Peste 8</label></li>
-                        <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all"> Toate</label></li>
-                    </ul>
-                </div>
-                <div class="filter-group">
-                    <label>Facilități</label>
-                    <ul id="facilities-filter">
-                        <li><input type="checkbox" value="Parcare"><label>Parcare</label></li>
-                        <li><input type="checkbox" value="Piscină"><label>Piscină</label></li>
-                        <li><input type="checkbox" value="Cazare"><label>Cazare</label></li>
-                        <li><input type="checkbox" value="Vedere la Lac"><label>Vedere la Lac</label></li>
-                        <li><input type="checkbox" value="Vedere la Munte"><label>Vedere la Munte</label></li>
-                        <li><input type="checkbox" value="Ceremonii în aer liber"><label>Ceremonii în aer liber</label></li>
-                        <li><input type="checkbox" value="Sistem de sunet și lumini profesional"><label>Sistem sunet/lumini</label></li>
-                        <li><input type="checkbox" value="Wi-Fi gratuit"><label>Wi-Fi gratuit</label></li>
-                        <li><input type="checkbox" value="Event planner"><label>Event planner</label></li>
-                        <li><input type="checkbox" value="Kids Corner"><label>Kids Corner</label></li>
-                    </ul>
-                </div>
+                <details class="filter-group" open>
+                    <summary>Buget (Preț/persoană)</summary>
+                    <div class="filter-group-content">
+                        <input type="range" id="price-slider" min="50" max="300" value="300" style="width: 100%;">
+                        <label>Până la: <span id="price-value">300</span>€</label>
+                    </div>
+                </details>
+                <details class="filter-group" open>
+                    <summary>Capacitate Invitați</summary>
+                    <div class="filter-group-content">
+                        <input type="number" id="capacity-input" placeholder="Ex: 150" min="0" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    </div>
+                </details>
+                <details class="filter-group" open>
+                    <summary>Rating</summary>
+                    <div class="filter-group-content">
+                        <ul>
+                            <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9">Wonderful: 9+</label></li>
+                            <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8">Very Good: 8+</label></li>
+                            <li><input type="radio" name="rating" value="7" id="rating-7"><label for="rating-7">Good: 7+</label></li>
+                            <li><input type="radio" name="rating" value="6" id="rating-6"><label for="rating-6">Pleasant: 6+</label></li>
+                            <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all">Toate</label></li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="filter-group" open>
+                    <summary>Facilități</summary>
+                    <div class="filter-group-content">
+                        <ul id="facilities-filter">
+                            <li><input type="checkbox" value="Parcare" id="f-parcare"><label for="f-parcare">Parcare</label></li>
+                            <li><input type="checkbox" value="Piscină" id="f-piscina"><label for="f-piscina">Piscină</label></li>
+                            <li><input type="checkbox" value="Cazare" id="f-cazare"><label for="f-cazare">Cazare</label></li>
+                            <li><input type="checkbox" value="Vedere la Lac" id="f-lac"><label for="f-lac">Vedere la Lac</label></li>
+                            <li><input type="checkbox" value="Ceremonii în aer liber" id="f-aer-liber"><label for="f-aer-liber">Ceremonii în aer liber</label></li>
+                            <li><input type="checkbox" value="Kids Corner" id="f-kids"><label for="f-kids">Kids Corner</label></li>
+                        </ul>
+                    </div>
+                </details>
             </aside>
 
             <div class="main-content">
@@ -247,7 +287,9 @@
             { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, capacity_min: 100, capacity_max: 250, tags: ['Lac', 'Natură'], facilities: ['Parcare', 'Vedere la Lac', 'Ceremonii în aer liber', 'Event planner'], rating: 9.6, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsYWtlJTIwcmVzb3J0fGVufDB8fHx8MTY1ODQyNjIyOA&ixlib=rb-1.2.1&q=80&w=400' },
             { id: 8, name: 'Mountain Peak', city: 'Sinaia', price: 100, capacity_min: 60, capacity_max: 180, tags: ['Munte', 'Panoramic'], facilities: ['Parcare', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.2, imageUrl: 'https://images.unsplash.com/photo-1559538739-998a8116a533?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxtb3VudGFpbiUyMGNoYWxldHxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
             { id: 9, name: 'Urban Loft', city: 'Timișoara', price: 75, capacity_min: 30, capacity_max: 80, tags: ['Industrial', 'Modern'], facilities: ['Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Kids Corner'], rating: 8.2, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 10, name: 'Grădina cu Lavandă', city: 'Sibiu', price: 90, capacity_min: 50, capacity_max: 150, tags: ['Grădină', 'Romantic'], facilities: ['Parcare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 9.0, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' }
+            { id: 10, name: 'Grădina cu Lavandă', city: 'Sibiu', price: 90, capacity_min: 50, capacity_max: 150, tags: ['Grădină', 'Romantic'], facilities: ['Parcare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 9.0, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 11, name: 'Delta Paradise', city: 'Tulcea', price: 70, capacity_min: 40, capacity_max: 100, tags: ['Natură', 'Delta'], facilities: ['Parcare', 'Cazare', 'Vedere la Lac'], rating: 7.8, imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6164a83639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsdXh1cnklMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 12, name: 'Centrul de Conferințe Oradea', city: 'Oradea', price: 65, capacity_min: 20, capacity_max: 500, tags: ['Business', 'Modern'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 6.9, imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxhdWRpdG9yaXVtfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' }
         ];
 
         const locationsListContainer = document.getElementById('locations-list');
