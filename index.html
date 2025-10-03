@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ouidoEvents - Locația perfectă pentru evenimentul tău</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #4364F7;
+            --header-bg: #ffffff;
+            --dark-color: #1a202c;
+            --gray-color: #555;
+            --light-gray-color: #f0f2f5;
+            --bg-color: #f8f9fa;
+            --white-color: #ffffff;
+            --border-color: #e5eaf1;
+            --shadow-color: rgba(0, 82, 212, 0.1);
+            --border-radius: 12px;
+        }
+
+        header[data-gradient="classic"] { --header-bg: #ffffff; }
+        header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
+        header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
+        header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
+        header[data-gradient="deep"] { --header-bg: linear-gradient(to right, #4364F7, #0052D4); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { font-family: 'Be Vietnam Pro', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        
+        header[data-gradient="deep"] .nav-links a,
+        header[data-gradient="deep"] .gradient-switcher label { color: var(--white-color); opacity: 0.9; }
+        
+        .nav-links a:hover { color: var(--primary-color); }
+        header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
+
+        .gradient-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
+        .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
+        .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+        
+        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
+        
+        .main-search-section { text-align: center; padding: 80px 0 60px; background: var(--white-color); }
+        .main-search-section h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 15px; }
+        .main-search-section p { font-size: 1.1rem; margin-bottom: 40px; color: var(--gray-color); max-width: 700px; margin-left: auto; margin-right: auto; }
+
+        .search-box { display: flex; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 8px 25px var(--shadow-color); overflow: hidden; height: 80px; border: 1px solid var(--border-color); max-width: 1100px; margin: 0 auto; }
+        .search-group { flex: 1; position: relative; height: 100%; border-right: 1px solid var(--border-color); padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
+        .search-group:hover, .search-group:focus-within { background-color: #fcfdff; }
+        .event-type-group { flex: 1.2; } .location-group { flex: 1.2; } .date-group { flex: 1; } .guests-group { flex: 0.8; border-right: none; }
+        .search-group label { font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 6px; }
+        .search-group input, .search-group select { width: 100%; border: none; outline: none; font-size: 16px; color: var(--gray-color); font-family: 'Be Vietnam Pro', sans-serif; background: transparent; padding: 0; margin: 0; }
+        .search-box .search-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 18px; width: 180px; height: 100%; transition: all 0.3s ease; }
+        .search-box .search-button:hover { opacity: 0.9; }
+        
+        .results-section { padding: 60px 0; background-color: var(--bg-color); }
+        #search-results { display: none; }
+        .results-section h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 40px; text-align: center; }
+
+        .results-grid { display: grid; gap: 30px; }
+        #top-locations .results-grid { grid-template-columns: repeat(4, 1fr); }
+        #search-results .results-grid { grid-template-columns: repeat(3, 1fr); }
+
+        .result-card { background: var(--white-color); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); transition: all 0.3s ease; border: 1px solid var(--border-color); }
+        .result-card:hover { transform: translateY(-8px); box-shadow: 0 8px 25px var(--shadow-color); }
+
+        .result-image { height: 220px; background: url('/api/placeholder/400/300') center/cover no-repeat; }
+        .result-details { padding: 20px; }
+        .result-tags { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tag { background-color: var(--light-gray-color); color: var(--gray-color); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .result-name { font-weight: 600; font-size: 1.2rem; margin-bottom: 5px; color: var(--dark-color); }
+        .result-location { color: var(--gray-color); font-size: 0.95rem; margin-bottom: 10px; }
+
+        /* NOU: Sectiunea pentru meta-informatii (capacitate, etc.) */
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .result-meta svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--gray-color);
+            opacity: 0.8;
+        }
+        
+        /* MODIFICAT: Bara de actiune de jos */
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .result-price {
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .result-price strong {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .view-details-btn {
+            background-color: var(--primary-color); color: var(--white-color); text-decoration: none;
+            padding: 8px 16px; border-radius: 50px; font-weight: 500; font-size: 14px;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* Previne trecerea textului pe randul 2 */
+        }
+        .view-details-btn:hover { background-color: var(--secondary-color); }
+        
+        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
+        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; }
+        .footer-about p { color: #bbb; }
+        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
+        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
+        
+        @media (max-width: 1200px) {
+            #top-locations .results-grid, #search-results .results-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 992px) {
+            .search-box { height: auto; flex-direction: column; }
+            .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
+            .guests-group { border-bottom: none; }
+            .search-box .search-button { width: 100%; padding: 18px; border-radius: 0 0 var(--border-radius) var(--border-radius); }
+        }
+        @media (max-width: 768px) {
+            .nav-links, .cta-button { display: none; }
+            .main-search-section h1 { font-size: 2.2rem; }
+            #top-locations .results-grid, #search-results .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header data-gradient="classic">
+        <div class="container header-container">
+            <a href="#" class="logo">ouidoEvents</a>
+            <nav class="nav-links">
+                <a href="#search-results">Locații</a> <a href="#">Blog</a> <a href="#">Despre noi</a> <a href="#">Contact</a>
+                <div class="gradient-switcher">
+                    <label for="gradient-selector">Stil Meniu:</label>
+                    <select id="gradient-selector">
+                        <option value="classic">Clasic</option> <option value="sky">Cer Senin</option>
+                        <option value="ocean">Ocean</option> <option value="twilight">Amurg</option>
+                        <option value="deep">Albastru Intens</option>
+                    </select>
+                </div>
+            </nav>
+            <a href="#" class="cta-button">Adaugă locația ta</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="main-search-section">
+            <div class="container">
+                <h1>Găsește locația perfectă</h1>
+                <p>Pentru nunți, botezuri, evenimente corporate și private. Caută, compară și rezervă spațiul ideal pentru momentele tale speciale.</p>
+                <div class="search-box">
+                    <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
+                    <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
+                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="date" id="event-date"></div>
+                    <div class="search-group guests-group"><label for="guests">Invitați</label><input type="number" id="guests" placeholder="Număr" min="10"></div>
+                    <button class="search-button">Caută</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="top-locations" class="results-section">
+            <div class="container">
+                <h2>Locații de Top Recomandate</h2>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-image"></div>
+                        <div class="result-details">
+                            <div class="result-tags"><span class="tag">Exclusivist</span><span class="tag">Panoramic</span></div>
+                            <h3 class="result-name">The Grand Ballroom</h3>
+                            <p class="result-location">București, România</p>
+                            <div class="result-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>150 - 400 invitați</span>
+                            </div>
+                            <div class="result-info">
+                                <span class="result-price">de la <strong>120€</strong>/pers</span>
+                                <a href="#" class="view-details-btn">Vezi detalii</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-image"></div>
+                        <div class="result-details">
+                            <div class="result-tags"><span class="tag">Natură</span><span class="tag">Piscină</span></div>
+                            <h3 class="result-name">Forest Retreat & Spa</h3>
+                            <p class="result-location">Brașov, România</p>
+                             <div class="result-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>80 - 200 invitați</span>
+                            </div>
+                            <div class="result-info">
+                                <span class="result-price">de la <strong>95€</strong>/pers</span>
+                                <a href="#" class="view-details-btn">Vezi detalii</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-image"></div>
+                        <div class="result-details">
+                            <div class="result-tags"><span class="tag">Modern</span><span class="tag">Rooftop</span></div>
+                            <h3 class="result-name">Cluj SkyView</h3>
+                            <p class="result-location">Cluj-Napoca, România</p>
+                             <div class="result-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>50 - 150 invitați</span>
+                            </div>
+                            <div class="result-info">
+                                <span class="result-price">de la <strong>110€</strong>/pers</span>
+                                <a href="#" class="view-details-btn">Vezi detalii</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-image"></div>
+                        <div class="result-details">
+                            <div class="result-tags"><span class="tag">Istoric</span><span class="tag">Elegant</span></div>
+                            <h3 class="result-name">Palatul Noblesse</h3>
+                            <p class="result-location">Iași, România</p>
+                             <div class="result-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>100 - 250 invitați</span>
+                            </div>
+                            <div class="result-info">
+                                <span class="result-price">de la <strong>105€</strong>/pers</span>
+                                <a href="#" class="view-details-btn">Vezi detalii</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="search-results" class="results-section">
+            <div class="container">
+                <h2>Rezultate pentru căutarea ta</h2>
+                <div class="results-grid">
+                    </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
+                <div class="footer-links-container"><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="#">Locații</a></li><li><a href="#">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
+                <div class="footer-links-container"><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
+                <div class="footer-contact"><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
+            </div>
+            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchButton = document.querySelector('.search-button');
+            const topLocationsSection = document.getElementById('top-locations');
+            const searchResultsSection = document.getElementById('search-results');
+            const gradientSelector = document.getElementById('gradient-selector');
+            const header = document.querySelector('header');
+            
+            searchButton.addEventListener('click', function(event) {
+                event.preventDefault(); 
+                const location = document.getElementById('location').value.trim();
+                if (location === '') {
+                    alert('Te rugăm să introduci o locație pentru a căuta.');
+                    return;
+                }
+                topLocationsSection.style.display = 'none';
+                searchResultsSection.style.display = 'block';
+                // Aici ar trebui sa populezi dinamic sectiunea de rezultate
+                searchResultsSection.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            gradientSelector.addEventListener('change', function() {
+                header.setAttribute('data-gradient', this.value);
+            });
+        });
+    </script>
+</body>
+</html>
