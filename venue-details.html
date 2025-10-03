@@ -6,6 +6,7 @@
     <title>ouidoEvents - Detalii Locație</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Copiază stilurile CSS din index.html AICI */
@@ -50,31 +51,41 @@
         .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
         .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
 
+        /* NOU: Meniu mobil (Hamburger) */
+        .mobile-menu-button { display: none; cursor: pointer; background: none; border: none; padding: 5px; }
+        .mobile-menu-button .icon-bar { display: block; width: 25px; height: 3px; background-color: var(--dark-color); margin: 5px 0; transition: all 0.3s; }
+        header[data-gradient="deep"] .mobile-menu-button .icon-bar { background-color: var(--white-color); }
+
+        .mobile-nav-overlay { display: none; position: fixed; top: 74px; /* Inaltimea header-ului */ left: 0; width: 100%; height: calc(100% - 74px); background: var(--white-color); z-index: 999; padding: 30px; flex-direction: column; gap: 25px; }
+        .mobile-nav-overlay.active { display: flex; }
+        .mobile-nav-overlay .nav-links { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .mobile-nav-overlay .nav-links a { font-size: 1.2rem; }
+        .mobile-nav-overlay .header-actions { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 20px; }
+        .mobile-nav-overlay .header-actions .cta-button,
+        .mobile-nav-overlay .header-actions .secondary-cta-button { text-align: center; width: 100%; padding: 12px; }
+        .mobile-nav-overlay .gradient-switcher { margin-left: 0; margin-top: auto; }
+
+        /* Stiluri pentru butonul X de inchidere */
+        .mobile-menu-button.open .icon-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .mobile-menu-button.open .icon-bar:nth-child(2) { opacity: 0; }
+        .mobile-menu-button.open .icon-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        .header-actions { display: flex; align-items: center; gap: 15px; }
         .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
         .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
+        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
 
-        /* Stiluri pentru bara de căutare compactă (re-introduse pentru această pagină) */
-        .compact-search-section {
-            padding: 25px 0;
-            background-color: var(--light-gray-color);
-        }
-        .compact-search-box {
-            display: grid;
-            grid-template-columns: 1.2fr 1.2fr 1fr 0.8fr auto;
-            gap: 1px;
-            background: var(--border-color);
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 15px var(--shadow-color);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        .compact-search-box > * { background: var(--white-color); padding: 12px 15px; }
-        .compact-search-box input, .compact-search-box select { width: 100%; border: none; outline: none; font-size: 15px; color: var(--gray-color); font-family: 'Be Vietnam Pro', sans-serif; background: transparent; }
-        .compact-search-box label { font-size: 13px; font-weight: 600; color: var(--dark-color); margin-bottom: 4px; display: block; }
-        .compact-search-box .search-button { background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease; display: flex; align-items: center; justify-content: center; }
-        .compact-search-box .search-button:hover { background-color: var(--secondary-color); }
+        /* Stiluri pentru bara de căutare (preluate din index.html) */
+        .main-search-section { padding: 25px 0; background-color: var(--light-gray-color); }
+        .search-box { display: flex; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 8px 25px var(--shadow-color); overflow: hidden; height: 80px; border: 1px solid var(--border-color); max-width: 1100px; margin: 0 auto; }
+        .search-group { flex: 1; position: relative; height: 100%; border-right: 1px solid var(--border-color); padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
+        .search-group:hover, .search-group:focus-within { background-color: #fcfdff; }
+        .event-type-group { flex: 1.2; } .location-group { flex: 1.2; } .date-group { flex: 1; } .guests-group { flex: 0.8; border-right: none; }
+        .search-group label { font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 6px; }
+        .search-group input, .search-group select { width: 100%; border: none; outline: none; font-size: 16px; color: var(--gray-color); font-family: 'Be Vietnam Pro', sans-serif; background: transparent; padding: 0; margin: 0; }
+        .search-box .search-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 18px; width: 180px; height: 100%; transition: all 0.3s ease; }
+        .search-box .search-button:hover { opacity: 0.9; }
 
         /* Hero Section */
         .hero-section {
@@ -95,10 +106,43 @@
             margin: 0 5px;
         }
         .venue-name {
+            display: flex;
+            align-items: center;
+            gap: 20px;
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             margin-bottom: 10px;
             color: var(--dark-color);
+        }
+        /* NOU: Buton Favorite */
+        .favorite-btn {
+            background: var(--light-gray-color);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .favorite-btn:hover {
+            background: var(--border-color);
+            transform: scale(1.1);
+        }
+        .favorite-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--dark-color);
+            stroke-width: 2;
+            fill: none;
+            transition: all 0.2s ease;
+        }
+        .favorite-btn.is-favorite svg {
+            fill: #ff4d4d;
+            stroke: #ff4d4d;
         }
         .venue-address {
             color: var(--gray-color);
@@ -199,13 +243,13 @@
             color: var(--dark-color);
         }
         .left-column h3 {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             margin-top: 30px;
             margin-bottom: 15px;
             color: var(--dark-color);
         }
         .about-section p {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--gray-color);
             line-height: 1.7;
             margin-bottom: 20px;
@@ -213,7 +257,7 @@
 
         .details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -221,7 +265,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: var(--gray-color);
             background-color: var(--light-gray-color);
             padding: 10px 15px;
@@ -245,8 +289,8 @@
         .facilities-list li {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
+            gap: 10px;
+            font-size: 0.9rem;
             color: var(--gray-color);
         }
         .facilities-list li svg {
@@ -255,12 +299,45 @@
             fill: var(--secondary-color);
         }
 
+        /* NOU: Stil pentru lista de tipuri de evenimente */
+        .event-types-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .event-types-list li { background-color: var(--light-gray-color); padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; color: var(--gray-color); }
+
+        /* NOU: Sectiune Contact */
+        .contact-section {
+            margin-top: 30px;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .contact-item svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+        .contact-item-info span { display: block; font-size: 0.85rem; color: var(--gray-color); }
+        .contact-item-info strong { display: block; font-size: 0.95rem; color: var(--dark-color); font-weight: 500; }
+
         /* Availability Widget */
         .availability-widget {
             text-align: center;
         }
         .availability-widget h3 {
             margin-bottom: 25px;
+            font-size: 1.4rem;
         }
         .calendar-placeholder {
             background-color: var(--light-gray-color);
@@ -330,20 +407,48 @@
             cursor: pointer;
         }
 
+        /* NOU: Stiluri pentru calendarul modern (Flatpickr) */
+        .flatpickr-calendar {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            width: auto;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .flatpickr-day:hover {
+            background: var(--light-gray-color);
+            border-color: var(--light-gray-color);
+        }
+        .flatpickr-day.today { border-color: var(--secondary-color); }
+        .flatpickr-day.today:hover { border-color: var(--secondary-color); background: var(--secondary-color); color: var(--white-color); }
+        .flatpickr-months .flatpickr-month, .flatpickr-weekdays, .numInputWrapper, .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: var(--dark-color);
+            fill: var(--dark-color);
+        }
+
+        /* Footer (identic cu index.html) */
+        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
+        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; }
+        .footer-about p { color: #bbb; }
+        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
+        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
+
         /* Responsive adjustments */
         @media (max-width: 992px) {
-            .compact-search-box {
-                grid-template-columns: 1fr; /* Stack search inputs */
-                height: auto;
-            }
-            .compact-search-box > * {
-                border-bottom: 1px solid var(--border-color);
-            }
-            .compact-search-box .search-button {
-                border-radius: 0 0 var(--border-radius) var(--border-radius);
-                height: auto;
-                padding: 15px;
-            }
+            .nav-links, .header-actions { display: none; }
+            .mobile-menu-button { display: block; }
+
+            .search-box { height: auto; flex-direction: column; }
+            .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
+            .guests-group { border-bottom: none; }
+            .search-box .search-button { width: 100%; padding: 18px; border-radius: 0 0 var(--border-radius) var(--border-radius); }
 
             .venue-main-content {
                 grid-template-columns: 1fr; /* Stack columns */
@@ -364,6 +469,9 @@
             .details-grid {
                 grid-template-columns: 1fr;
             }
+            .event-types-list {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
             .facilities-list {
                 grid-template-columns: 1fr;
             }
@@ -378,7 +486,7 @@
                 <a href="locations.html">Locații</a>
                 <a href="#">Blog</a>
                 <a href="#">Despre noi</a>
-                <a href="#">Contact</a>
+                <a href="contact.html">Contact</a>
                 <div class="gradient-switcher">
                     <label for="gradient-selector">Stil Meniu:</label>
                     <select id="gradient-selector">
@@ -390,30 +498,34 @@
                     </select>
                 </div>
             </nav>
-            <a href="#" class="cta-button">Adaugă locația ta</a>
+            <div class="header-actions">
+                <a href="login.html" class="secondary-cta-button">Conectare</a>
+                <a href="login.html" class="cta-button">Adaugă locația ta</a>
+            </div>
+            <button class="mobile-menu-button">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="mobile-nav-overlay">
+            <nav class="nav-links">
+                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
+            </nav>
+            <div class="header-actions">
+                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
+            </div>
         </div>
     </header>
 
     <main>
-        <section class="compact-search-section">
+        <section class="main-search-section">
             <div class="container">
-                <div class="compact-search-box">
-                    <div class="search-group event-type-group">
-                        <label for="event-type">Tip eveniment</label>
-                        <select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Corporate</option><option value="privat">Privată</option></select>
-                    </div>
-                    <div class="search-group location-group">
-                        <label for="location">Locația</label>
-                        <input type="text" id="location" placeholder="Oraș sau județ">
-                    </div>
-                    <div class="search-group date-group">
-                        <label for="event-date">Data</label>
-                        <input type="date" id="event-date">
-                    </div>
-                    <div class="search-group guests-group">
-                        <label for="guests">Invitați</label>
-                        <input type="number" id="guests" placeholder="Număr" min="10">
-                    </div>
+                <div class="search-box">
+                    <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
+                    <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
+                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="text" id="event-date" placeholder="dd/mm/yyyy"></div>
+                    <div class="search-group guests-group"><label for="guests">Invitați</label><input type="number" id="guests" placeholder="Număr" min="10"></div>
                     <button class="search-button">Caută</button>
                 </div>
             </div>
@@ -426,7 +538,10 @@
                     <a href="locations.html">Locații</a> <span>&gt;</span>
                     <span>The Grand Ballroom</span>
                 </nav>
-                <h1 class="venue-name">The Grand Ballroom</h1>
+                <div class="venue-name">
+                    <h1>The Grand Ballroom</h1>
+                    <button class="favorite-btn" data-id="1" title="Adaugă la favorite"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+                </div>
                 <p class="venue-address">București, România</p>
                 <div class="venue-tags">
                     <span class="tag">Exclusivist</span>
@@ -462,16 +577,11 @@
                 </section>
 
                 <section class="details-facilities-section">
-                    <h2>Detalii și Facilități</h2>
                     <h3>Detalii Eveniment</h3>
                     <div class="details-grid">
                         <div class="detail-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                             Capacitate: <strong>150 - 400 invitați</strong>
-                        </div>
-                        <div class="detail-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-                            Tipuri evenimente: <strong>Nuntă, Corporate, Gală</strong>
                         </div>
                         <div class="detail-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
@@ -482,6 +592,15 @@
                             Locație: <strong>București, Centru</strong>
                         </div>
                     </div>
+
+                    <h3>Tipuri de evenimente acceptate</h3>
+                    <ul class="event-types-list">
+                        <li>Nuntă</li>
+                        <li>Botez</li>
+                        <li>Eveniment Corporate</li>
+                        <li>Petrecere Privată</li>
+                        <li>Conferință</li>
+                    </ul>
 
                     <h3>Facilități Incluse</h3>
                     <ul class="facilities-list">
@@ -511,16 +630,43 @@
                         </li>
                     </ul>
                 </section>
+
+                <section class="contact-section">
+                    <h3>Contact</h3>
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Telefon</span>
+                                <strong>+40 722 111 222</strong>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Email</span>
+                                <strong>alexandra.venue@ouido.com</strong>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Program recomandat</span>
+                                <strong>Luni - Vineri, 09:00 - 18:00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <div class="right-column">
                 <div class="availability-widget">
-                    <h3>Verifică disponibilitatea</h3>
+                    <h3>Disponibilitate și pre-rezervare</h3>
                     <div class="calendar-placeholder">
                         Calendar interactiv aici (ex: Flatpickr)
                     </div>
                     <p class="price-display">Preț de la <strong>120€</strong>/pers</p>
-                    <button class="cta-button">Solicită disponibilitatea</button>
+                    <a href="login.html" class="cta-button">Confirmă disponibilitatea</a>
                 </div>
             </div>
         </div>
@@ -530,9 +676,9 @@
         <div class="container">
             <div class="footer-container">
                 <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
-                <div class="footer-links-container"><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="#">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
-                <div class="footer-links-container"><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
-                <div class="footer-contact"><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
+                <div><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="login.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
+                <div><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
+                <div><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
             </div>
             <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
         </div>
@@ -543,6 +689,8 @@
         <span class="close-lightbox">&times;</span>
         <img class="lightbox-content" id="lightbox-image" src="" alt="Imagine mărită">
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -606,6 +754,72 @@
 
             // Placeholder for calendar functionality (if a library like Flatpickr is used later)
             // For now, it's just a static div.
+
+            // Search button logic
+            const searchButton = document.querySelector('.search-button');
+            if (searchButton) {
+                searchButton.addEventListener('click', function() {
+                    window.location.href = 'locations.html';
+                });
+            }
+
+            // NOU: Logica pentru butonul de favorite
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
+            const favButton = document.querySelector('.hero-section .favorite-btn');
+
+            if (favButton) {
+                const locationId = parseInt(favButton.dataset.id);
+
+                // Setează starea inițială a butonului
+                if (favoriteIds.includes(locationId)) {
+                    favButton.classList.add('is-favorite');
+                }
+
+                favButton.addEventListener('click', function() {
+                    if (!isLoggedIn) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    this.classList.toggle('is-favorite');
+
+                    if (favoriteIds.includes(locationId)) {
+                        // Remove from favorites
+                        favoriteIds = favoriteIds.filter(id => id !== locationId);
+                    } else {
+                        // Add to favorites
+                        favoriteIds.push(locationId);
+                    }
+                    localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+                });
+            }
+
+            // NOU: Logica pentru meniul mobil
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+            const desktopNav = document.querySelector('.header-container .nav-links');
+            const desktopActions = document.querySelector('.header-container .header-actions');
+
+            // Cloneaza elementele pentru a le folosi in meniul mobil
+            mobileNavOverlay.querySelector('.nav-links').innerHTML = desktopNav.innerHTML;
+            mobileNavOverlay.querySelector('.header-actions').innerHTML = desktopActions.innerHTML;
+
+            mobileMenuButton.addEventListener('click', function() {
+                this.classList.toggle('open');
+                mobileNavOverlay.classList.toggle('active');
+            });
+
+            // Pentru a testa funcționalitatea de logat, poți rula în consolă:
+            // localStorage.setItem('isLoggedIn', 'true');
+            // Pentru a te deloga:
+            // localStorage.removeItem('isLoggedIn');
+
+            // NOU: Inițializare calendar modern
+            flatpickr("#event-date", {
+                dateFormat: "d/m/Y",
+                monthSelectorType: 'dropdown'
+            });
         });
     </script>
 </body>

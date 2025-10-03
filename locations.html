@@ -6,6 +6,7 @@
     <title>ouidoEvents - Toate Locațiile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Copiază stilurile CSS din index.html AICI */
@@ -50,8 +51,11 @@
         .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
         .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
 
+        .header-actions { display: flex; align-items: center; gap: 15px; }
         .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
         .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
+        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
 
         /* NOU: Stiluri pentru bara de căutare (preluate din index.html) */
         .main-search-section { text-align: center; padding: 60px 0; background: var(--white-color); }
@@ -91,6 +95,40 @@
 
         .result-card { display: flex; background: var(--white-color); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); transition: all 0.3s ease; border: 1px solid var(--border-color); }
         .result-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px var(--shadow-color); }
+
+        /* NOU: Buton Favorite */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(2px);
+        }
+        .favorite-btn:hover {
+            background: var(--white-color);
+            transform: scale(1.1);
+        }
+        .favorite-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--dark-color);
+            stroke-width: 2;
+            fill: none;
+            transition: all 0.2s ease;
+        }
+        .favorite-btn.is-favorite svg {
+            fill: #ff4d4d;
+            stroke: #ff4d4d;
+        }
 
         .result-image { height: 220px; background: url('/api/placeholder/400/300') center/cover no-repeat; }
         .result-details { padding: 20px; }
@@ -154,6 +192,38 @@
         .view-details-btn:hover { background-color: var(--secondary-color); }
 
         footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
+        
+        /* NOU: Stiluri pentru calendarul modern (Flatpickr) */
+        .flatpickr-calendar {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            width: auto;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .flatpickr-day:hover {
+            background: var(--light-gray-color);
+            border-color: var(--light-gray-color);
+        }
+        .flatpickr-day.today { border-color: var(--secondary-color); }
+        .flatpickr-day.today:hover { border-color: var(--secondary-color); background: var(--secondary-color); color: var(--white-color); }
+        .flatpickr-months .flatpickr-month, .flatpickr-weekdays, .numInputWrapper, .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: var(--dark-color);
+            fill: var(--dark-color);
+        }
+
+        /* Adaugă aici stilurile pentru meniul mobil din pasul 1 */
+        .mobile-menu-button { display: none; /* ... etc */ }
+        .mobile-nav-overlay { display: none; /* ... etc */ }
+        /* ... restul stilurilor pentru mobil ... */
+
+
         .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; } /* ... restul stilurilor ... */
         .footer-about p { color: #bbb; }
         .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
@@ -161,27 +231,32 @@
         .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
 
         @media (max-width: 992px) {
+            .nav-links, .header-actions { display: none; }
+            .mobile-menu-button { display: block; }
+
             .search-box { height: auto; flex-direction: column; }
             .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
             .guests-group { border-bottom: none; }
             .search-box .search-button { width: 100%; padding: 18px; border-radius: 0 0 var(--border-radius) var(--border-radius); }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 820px) { /* Ajustat pentru a preveni suprapunerea cardurilor */
             .locations-container { grid-template-columns: 1fr; }
             .filters { width: 100%; margin-right: 0; margin-bottom: 20px; }
+            .result-card { flex-direction: column; }
+            .result-image { width: 100%; height: 200px; }
         }
     </style>
 </head>
 <body>
     <header data-gradient="classic">
         <div class="container header-container">
-            <a href="#" class="logo">OuidoEvents</a>
+            <a href="index.html" class="logo">OuidoEvents</a>
             <nav class="nav-links">
                 <a href="locations.html">Locații</a>
                 <a href="#">Blog</a>
                 <a href="#">Despre noi</a>
-                <a href="#">Contact</a>
+                <a href="contact.html">Contact</a>
                 <div class="gradient-switcher">
                     <label for="gradient-selector">Stil Meniu:</label>
                     <select id="gradient-selector">
@@ -193,7 +268,23 @@
                     </select>
                 </div>
             </nav>
-            <a href="#" class="cta-button">Adaugă locația ta</a>
+            <div class="header-actions">
+                <a href="login.html" class="secondary-cta-button">Conectare</a>
+                <a href="login.html" class="cta-button">Adaugă locația ta</a>
+            </div>
+            <button class="mobile-menu-button">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="mobile-nav-overlay">
+            <nav class="nav-links">
+                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
+            </nav>
+            <div class="header-actions">
+                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
+            </div>
         </div>
     </header>
 
@@ -203,7 +294,7 @@
                 <div class="search-box">
                     <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
                     <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
-                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="date" id="event-date"></div>
+                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="text" id="event-date" placeholder="dd/mm/yyyy"></div>
                     <div class="search-group guests-group"><label for="guests">Invitați</label><input type="number" id="guests" placeholder="Număr" min="10"></div>
                     <button class="search-button">Caută</button>
                 </div>
@@ -271,8 +362,18 @@
     </main>
 
     <footer>
-        <!-- Footer content remains the same -->
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
+                <div class="footer-links-container"><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="login.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
+                <div class="footer-links-container"><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
+                <div class="footer-contact"><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
+            </div>
+            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
+        </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -299,6 +400,31 @@
         const facilitiesCheckboxes = document.querySelectorAll('#facilities-filter input[type="checkbox"]');
         const ratingRadios = document.querySelectorAll('input[name="rating"]');
         const sortOptions = document.getElementById('sort-options');
+        const searchButton = document.querySelector('.search-button');
+        const gradientSelector = document.getElementById('gradient-selector');
+        const header = document.querySelector('header');
+
+        // Simulare stare login & favorite
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Vom presupune ca userul e logat daca aceasta valoare e 'true'
+        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
+
+        // Logica pentru meniul mobil (identica cu index.html)
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+        const desktopNav = document.querySelector('.header-container .nav-links');
+        const desktopActions = document.querySelector('.header-container .header-actions');
+        mobileNavOverlay.querySelector('.nav-links').innerHTML = desktopNav.innerHTML;
+        mobileNavOverlay.querySelector('.header-actions').innerHTML = desktopActions.innerHTML;
+        mobileMenuButton.addEventListener('click', function() {
+            this.classList.toggle('open');
+            mobileNavOverlay.classList.toggle('active');
+        });
+
+
+        searchButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            applyFiltersAndSort();
+        });
 
         // 4. Funcția principală de randare
         function renderLocations(locationsArray) {
@@ -310,8 +436,12 @@
 
             locationsArray.forEach(loc => {
                 const ratingText = loc.rating >= 9.5 ? 'Excepțional' : loc.rating >= 9 ? 'Superb' : loc.rating >= 8.5 ? 'Foarte bine' : 'Bine';
+                const isFavorite = favoriteIds.includes(loc.id);
                 const cardHTML = `
                     <div class="result-card">
+                        <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${loc.id}" title="Adaugă la favorite">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </button>
                         <div class="result-image" style="background-image: url('${loc.imageUrl}')"></div>
                         <div class="result-details">
                             <h3 class="result-name">${loc.name}</h3>
@@ -327,12 +457,39 @@
                             </div>
                             <div class="result-info">
                                 <span class="result-price">de la <strong>${loc.price}€</strong>/pers</span>
-                                <a href="venue-details.html" class="view-details-btn">Vezi disponibilitatea</a>
+                                <a href="venue-details.html?id=${loc.id}" class="view-details-btn">Vezi disponibilitatea</a>
                             </div>
                         </div>
                     </div>
                 `;
                 locationsListContainer.innerHTML += cardHTML;
+            });
+
+            // Adaugă event listeners pentru noile butoane de favorite
+            addFavoriteButtonListeners();
+        }
+
+        function addFavoriteButtonListeners() {
+            const favButtons = document.querySelectorAll('.favorite-btn');
+            favButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isLoggedIn) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    const locationId = parseInt(this.dataset.id);
+                    this.classList.toggle('is-favorite');
+
+                    if (favoriteIds.includes(locationId)) {
+                        // Remove from favorites
+                        favoriteIds = favoriteIds.filter(id => id !== locationId);
+                    } else {
+                        // Add to favorites
+                        favoriteIds.push(locationId);
+                    }
+                    localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+                });
             });
         }
 
@@ -383,8 +540,18 @@
         ratingRadios.forEach(radio => radio.addEventListener('change', applyFiltersAndSort));
         sortOptions.addEventListener('change', applyFiltersAndSort);
 
+        gradientSelector.addEventListener('change', function() {
+            header.setAttribute('data-gradient', this.value);
+        });
+
         // Randare inițială
         renderLocations(locations);
+
+        // NOU: Inițializare calendar modern
+        flatpickr("#event-date", {
+            dateFormat: "d/m/Y",
+            monthSelectorType: 'dropdown'
+        });
     });
     </script>
 </body>
