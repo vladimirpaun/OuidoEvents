@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ouidoEvents - Detalii Locație</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Copiază stilurile CSS din index.html AICI */
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #4364F7;
+            --header-bg: #ffffff;
+            --dark-color: #1a202c;
+            --gray-color: #555;
+            --light-gray-color: #f0f2f5;
+            --bg-color: #f8f9fa;
+            --white-color: #ffffff;
+            --border-color: #e5eaf1;
+            --shadow-color: rgba(0, 82, 212, 0.1);
+            --border-radius: 12px;
+        }
+
+        header[data-gradient="classic"] { --header-bg: #ffffff; }
+        header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
+        header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
+        header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
+        header[data-gradient="deep"] { --header-bg: linear-gradient(to right, #4364F7, #0052D4); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: 'Be Vietnam Pro', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+
+        header[data-gradient="deep"] .nav-links a,
+        header[data-gradient="deep"] .gradient-switcher label { color: var(--white-color); opacity: 0.9; }
+
+        .nav-links a:hover { color: var(--primary-color); }
+        header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
+
+        .gradient-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
+        .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
+        .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+
+        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
+
+        /* Stiluri pentru bara de căutare compactă (re-introduse pentru această pagină) */
+        .compact-search-section {
+            padding: 25px 0;
+            background-color: var(--light-gray-color);
+        }
+        .compact-search-box {
+            display: grid;
+            grid-template-columns: 1.2fr 1.2fr 1fr 0.8fr auto;
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .compact-search-box > * { background: var(--white-color); padding: 12px 15px; }
+        .compact-search-box input, .compact-search-box select { width: 100%; border: none; outline: none; font-size: 15px; color: var(--gray-color); font-family: 'Be Vietnam Pro', sans-serif; background: transparent; }
+        .compact-search-box label { font-size: 13px; font-weight: 600; color: var(--dark-color); margin-bottom: 4px; display: block; }
+        .compact-search-box .search-button { background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 16px; transition: background-color 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .compact-search-box .search-button:hover { background-color: var(--secondary-color); }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 30px 0;
+            background-color: var(--white-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .breadcrumbs {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 15px;
+        }
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .breadcrumbs span {
+            margin: 0 5px;
+        }
+        .venue-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        .venue-address {
+            color: var(--gray-color);
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        .venue-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .tag { /* Re-using existing tag style */
+            background-color: var(--light-gray-color);
+            color: var(--gray-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .venue-description {
+            font-size: 1rem;
+            color: var(--gray-color);
+            line-height: 1.7;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            padding: 40px 0;
+            background-color: var(--bg-color);
+        }
+        .main-image-container {
+            width: 100%;
+            height: 500px; /* Fixed height for main image */
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            cursor: pointer;
+        }
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .main-image-container img:hover {
+            transform: scale(1.02);
+        }
+        .thumbnail-gallery {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .thumbnail-gallery img {
+            width: 100px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .thumbnail-gallery img:hover,
+        .thumbnail-gallery img.active {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Layout */
+        .venue-main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Two columns */
+            gap: 40px;
+            padding: 40px 0;
+            align-items: flex-start;
+        }
+        .left-column {
+            background-color: var(--white-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+        .right-column {
+            position: sticky;
+            top: 100px; /* Adjust based on header height */
+            background-color: var(--white-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .left-column h2, .right-column h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        .left-column h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        .about-section p {
+            font-size: 1rem;
+            color: var(--gray-color);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: var(--gray-color);
+            background-color: var(--light-gray-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        .detail-item strong {
+            color: var(--dark-color);
+        }
+        .detail-item svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary-color);
+        }
+
+        .facilities-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .facilities-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: var(--gray-color);
+        }
+        .facilities-list li svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--secondary-color);
+        }
+
+        /* Availability Widget */
+        .availability-widget {
+            text-align: center;
+        }
+        .availability-widget h3 {
+            margin-bottom: 25px;
+        }
+        .calendar-placeholder {
+            background-color: var(--light-gray-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            min-height: 250px; /* Placeholder height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-color);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+        .price-display {
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+        }
+        .price-display strong {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .availability-widget .cta-button {
+            width: 100%;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+        }
+
+        /* Lightbox/Modal */
+        .lightbox {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 2000; /* Higher than header */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .close-lightbox:hover,
+        .close-lightbox:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .compact-search-box {
+                grid-template-columns: 1fr; /* Stack search inputs */
+                height: auto;
+            }
+            .compact-search-box > * {
+                border-bottom: 1px solid var(--border-color);
+            }
+            .compact-search-box .search-button {
+                border-radius: 0 0 var(--border-radius) var(--border-radius);
+                height: auto;
+                padding: 15px;
+            }
+
+            .venue-main-content {
+                grid-template-columns: 1fr; /* Stack columns */
+            }
+            .right-column {
+                position: static; /* Remove sticky on mobile */
+                top: auto;
+            }
+            .main-image-container {
+                height: 300px; /* Smaller main image on mobile */
+            }
+            .venue-name {
+                font-size: 2rem;
+            }
+            .left-column h2, .right-column h3 {
+                font-size: 1.5rem;
+            }
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            .facilities-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header data-gradient="classic">
+        <div class="container header-container">
+            <a href="index.html" class="logo">OuidoEvents</a>
+            <nav class="nav-links">
+                <a href="locations.html">Locații</a>
+                <a href="#">Blog</a>
+                <a href="#">Despre noi</a>
+                <a href="#">Contact</a>
+                <div class="gradient-switcher">
+                    <label for="gradient-selector">Stil Meniu:</label>
+                    <select id="gradient-selector">
+                        <option value="classic">Clasic</option>
+                        <option value="sky">Cer Senin</option>
+                        <option value="ocean">Ocean</option>
+                        <option value="twilight">Amurg</option>
+                        <option value="deep">Albastru Intens</option>
+                    </select>
+                </div>
+            </nav>
+            <a href="#" class="cta-button">Adaugă locația ta</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="compact-search-section">
+            <div class="container">
+                <div class="compact-search-box">
+                    <div class="search-group event-type-group">
+                        <label for="event-type">Tip eveniment</label>
+                        <select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Corporate</option><option value="privat">Privată</option></select>
+                    </div>
+                    <div class="search-group location-group">
+                        <label for="location">Locația</label>
+                        <input type="text" id="location" placeholder="Oraș sau județ">
+                    </div>
+                    <div class="search-group date-group">
+                        <label for="event-date">Data</label>
+                        <input type="date" id="event-date">
+                    </div>
+                    <div class="search-group guests-group">
+                        <label for="guests">Invitați</label>
+                        <input type="number" id="guests" placeholder="Număr" min="10">
+                    </div>
+                    <button class="search-button">Caută</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero-section">
+            <div class="container">
+                <nav class="breadcrumbs">
+                    <a href="index.html">Acasă</a> <span>&gt;</span>
+                    <a href="locations.html">Locații</a> <span>&gt;</span>
+                    <span>The Grand Ballroom</span>
+                </nav>
+                <h1 class="venue-name">The Grand Ballroom</h1>
+                <p class="venue-address">București, România</p>
+                <div class="venue-tags">
+                    <span class="tag">Exclusivist</span>
+                    <span class="tag">Panoramic</span>
+                    <span class="tag">Capacitate Mare</span>
+                    <span class="tag">Recomandat</span>
+                </div>
+                <p class="venue-description">The Grand Ballroom este o locație de lux situată în inima Bucureștiului, perfectă pentru evenimente grandioase. Cu o arhitectură impresionantă și servicii impecabile, oferim o experiență de neuitat pentru nunți, gale și conferințe.</p>
+            </div>
+        </section>
+
+        <section class="gallery-section">
+            <div class="container">
+                <div class="main-image-container">
+                    <img id="main-venue-image" src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=1200" alt="Imagine principală The Grand Ballroom">
+                </div>
+                <div class="thumbnail-gallery">
+                    <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400" alt="Miniatură 1">
+                    <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fHJlc29ydCUyMHN3aW1taW5nJTIwcG9vbHxlbnwwfHx8fDE2NTg0MjYwMTA&ixlib=rb-1.2.1&q=80&w=400" alt="Miniatură 2">
+                    <img src="https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxyb29mdG9wJTIwYmFyfGVufDB8fHx8MTY1ODQyNjA1Mw&ixlib=rb-1.2.1&q=80&w=400" alt="Miniatură 3">
+                    <img src="https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400" alt="Miniatură 4">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE2NTg0MjYxNDQ&ixlib=rb-1.2.1&q=80&w=400" alt="Miniatură 5">
+                </div>
+            </div>
+        </section>
+
+        <div class="container venue-main-content">
+            <div class="left-column">
+                <section class="about-section">
+                    <h2>Despre această locație</h2>
+                    <p>The Grand Ballroom este o locație de evenimente de prestigiu, renumită pentru eleganța sa atemporală și serviciile excepționale. Situată central, oferă acces facil și o ambianță sofisticată, ideală pentru evenimente de anvergură. Spațiul generos și designul interior rafinat pot fi adaptate pentru a se potrivi oricărui concept, de la nunți de vis la conferințe internaționale și petreceri corporate exclusiviste.</p>
+                    <p>Echipa noastră dedicată de event planneri vă stă la dispoziție pentru a asigura că fiecare detaliu este perfect, de la meniul personalizat, la aranjamentele florale și sistemele de sunet și lumini de ultimă generație. Ne mândrim cu crearea unor experiențe memorabile, transformând viziunea dumneavoastră în realitate.</p>
+                </section>
+
+                <section class="details-facilities-section">
+                    <h2>Detalii și Facilități</h2>
+                    <h3>Detalii Eveniment</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                            Capacitate: <strong>150 - 400 invitați</strong>
+                        </div>
+                        <div class="detail-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                            Tipuri evenimente: <strong>Nuntă, Corporate, Gală</strong>
+                        </div>
+                        <div class="detail-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            Rating: <strong>9.4 (Superb)</strong>
+                        </div>
+                        <div class="detail-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                            Locație: <strong>București, Centru</strong>
+                        </div>
+                    </div>
+
+                    <h3>Facilități Incluse</h3>
+                    <ul class="facilities-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            Parcare privată
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            Wi-Fi gratuit de mare viteză
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            Sistem de sunet și lumini profesional
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            Event planner dedicat
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            Servicii de catering personalizate
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            Vestiar și toalete moderne
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="right-column">
+                <div class="availability-widget">
+                    <h3>Verifică disponibilitatea</h3>
+                    <div class="calendar-placeholder">
+                        Calendar interactiv aici (ex: Flatpickr)
+                    </div>
+                    <p class="price-display">Preț de la <strong>120€</strong>/pers</p>
+                    <button class="cta-button">Solicită disponibilitatea</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
+                <div class="footer-links-container"><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="#">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
+                <div class="footer-links-container"><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
+                <div class="footer-contact"><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
+            </div>
+            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox/Modal HTML -->
+    <div id="lightbox" class="lightbox">
+        <span class="close-lightbox">&times;</span>
+        <img class="lightbox-content" id="lightbox-image" src="" alt="Imagine mărită">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gradient switcher logic (copied from existing pages)
+            const gradientSelector = document.getElementById('gradient-selector');
+            const header = document.querySelector('header');
+            if (gradientSelector && header) {
+                gradientSelector.addEventListener('change', function() {
+                    header.setAttribute('data-gradient', this.value);
+                });
+            }
+
+            // Photo Gallery Logic
+            const mainImage = document.getElementById('main-venue-image');
+            const thumbnails = document.querySelectorAll('.thumbnail-gallery img');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const closeLightbox = document.querySelector('.close-lightbox');
+
+            if (mainImage && thumbnails.length > 0 && lightbox && lightboxImage && closeLightbox) {
+                thumbnails.forEach(thumbnail => {
+                    thumbnail.addEventListener('click', function() {
+                        // Remove active class from all thumbnails
+                        thumbnails.forEach(t => t.classList.remove('active'));
+                        // Add active class to clicked thumbnail
+                        this.classList.add('active');
+                        // Change main image source
+                        mainImage.src = this.src.replace('w=400', 'w=1200'); // Use higher res for main image if available
+                        mainImage.alt = this.alt;
+                    });
+                });
+
+                // Set the first thumbnail as active initially
+                thumbnails[0].classList.add('active');
+
+                // Lightbox functionality
+                mainImage.addEventListener('click', function() {
+                    lightbox.style.display = 'flex';
+                    lightboxImage.src = this.src;
+                    lightboxImage.alt = this.alt;
+                });
+
+                closeLightbox.addEventListener('click', function() {
+                    lightbox.style.display = 'none';
+                });
+
+                // Close lightbox when clicking outside the image
+                lightbox.addEventListener('click', function(e) {
+                    if (e.target === lightbox) {
+                        lightbox.style.display = 'none';
+                    }
+                });
+
+                // Close lightbox with Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+                        lightbox.style.display = 'none';
+                    }
+                });
+            }
+
+            // Placeholder for calendar functionality (if a library like Flatpickr is used later)
+            // For now, it's just a static div.
+        });
+    </script>
+</body>
+</html>
