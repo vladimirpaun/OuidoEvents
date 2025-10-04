@@ -1770,13 +1770,11 @@
       width: 260px;
       background-color: var(--white-color);
       border-right: 1px solid var(--border-color);
-      padding: 20px;
+      padding: calc(var(--header-height) + 16px) 20px 30px;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      height: calc(100vh - var(--header-height));
-      position: sticky;
-      top: var(--header-height);
+      height: 100%;
       overflow-y: auto;
     }
 
@@ -1838,9 +1836,10 @@
 
     body[data-page="owner-crm"] .crm-main {
       flex: 1;
-      padding: 0 40px 40px;
+      padding: calc(var(--header-height) + 24px) 40px 40px;
       background-color: var(--bg-color);
       min-height: calc(100vh - var(--header-height));
+      scroll-padding-top: calc(var(--header-height) + 24px);
       position: relative;
       z-index: 1;
     }
@@ -3148,7 +3147,7 @@
     const NAV_LINKS = [
       { href: 'index.html', label: 'Acasă', page: 'home' },
       { href: 'locations.html', label: 'Locații', page: 'locations' },
-      { href: '#', label: 'Blog', page: 'blog' },
+      { href: 'blog.html', label: 'Blog', page: 'blog' },
       { href: '#', label: 'Despre noi', page: 'about' },
       { href: 'contact.html', label: 'Contact', page: 'contact' }
     ];
@@ -4780,6 +4779,9 @@
           break;
         case 'owner-crm':
           initOwnerCrmPage();
+          break;
+        case 'blog':
+          // initBlogPage();
           break;
         default:
           break;

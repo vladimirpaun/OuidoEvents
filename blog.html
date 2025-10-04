@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ouidoEvents - Toate Locațiile</title>
+  <title>ouidoEvents - Blog & Articole</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -525,7 +525,8 @@
     .testimonial-card,
     .result-card,
     .venue-card,
-    .contact-card {
+    .contact-card,
+    .blog-post-card {
       background: var(--white-color);
       border-radius: var(--border-radius);
       border: 1px solid var(--border-color);
@@ -672,7 +673,8 @@
     .result-card:hover,
     .feature-item:hover,
     .step-item:hover,
-    .venue-card:hover {
+    .venue-card:hover,
+    .blog-post-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 25px var(--shadow-color);
     }
@@ -2756,146 +2758,169 @@
     body[data-page="venue-details"] .contact-section-locked .locked-content p { font-size: 1.1rem; font-weight: 500; color: var(--dark-color); margin-bottom: 25px; }
     body[data-page="venue-details"] .contact-section-locked .locked-content .cta-button { background-color: var(--primary-color); color: var(--white-color); }
     body[data-page="venue-details"] .contact-section-locked .locked-content .cta-button:hover { background-color: var(--dark-color); }
+
+    /* Blog Page Styles */
+    body[data-page="blog"] .blog-hero-section {
+      background-color: var(--white-color);
+      padding-bottom: 40px;
+    }
+
+    body[data-page="blog"] .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    body[data-page="blog"] .blog-post-card {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    body[data-page="blog"] .blog-post-card .result-image {
+      height: 240px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    body[data-page="blog"] .blog-post-card .result-details {
+      padding: 25px;
+    }
+
+    body[data-page="blog"] .post-category {
+      color: var(--primary-color);
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    body[data-page="blog"] .post-title {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    body[data-page="blog"] .post-excerpt {
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    body[data-page="blog"] .post-meta {
+      font-size: 0.85rem;
+      color: var(--muted-color);
+      border-top: 1px solid var(--border-color);
+      padding-top: 15px;
+      margin-top: auto;
+    }
+
+    body[data-page="blog"] .featured-post-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    body[data-page="blog"] .featured-post-card .result-image {
+      height: 100%;
+      min-height: 400px;
+    }
+
+    body[data-page="blog"] .featured-post-card .result-details {
+      padding: 40px;
+    }
+
+    body[data-page="blog"] .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+
+    @media (max-width: 992px) {
+      body[data-page="blog"] .featured-post-card {
+        grid-template-columns: 1fr;
+      }
+      body[data-page="blog"] .featured-post-card .result-image {
+        height: 300px;
+      }
+      body[data-page="blog"] .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      body[data-page="blog"] .blog-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
-<body data-page="locations">
+<body data-page="blog">
   <main>
-      <section class="main-search-section">
+      <section class="blog-hero-section section-padding">
         <div class="container">
-        
-
-          <div class="search-box">
-            <div class="search-group event-type-group">
-              <label for="event-type">Tipul evenimentului</label>
-              <select id="event-type">
-                <option value="nunta">Nuntă</option>
-                <option value="botez">Botez</option>
-                <option value="corporate">Eveniment Corporate</option>
-                <option value="privat">Petrecere Privată</option>
-                <option value="conferinta">Conferință</option>
-              </select>
-            </div>
-            <div class="search-group location-group">
-              <label for="location">Locația</label>
-              <input type="text" id="location" placeholder="Oraș sau județ">
-            </div>
-            <div class="search-group date-group">
-              <label for="event-date">Data evenimentului</label>
-              <input type="text" id="event-date" class="date-picker" placeholder="dd/mm/yyyy" readonly>
-            </div>
-            <div class="search-group guests-group">
-              <label for="guests">Invitați</label>
-              <select id="guests">
-                <option value="any">Oricâți</option>
-                <option value="0-50">Sub 50</option>
-                <option value="50-100">50 - 100</option>
-                <option value="100-150">100 - 150</option>
-                <option value="150-200">150 - 200</option>
-                <option value="200-300">200 - 300</option>
-                <option value="300+">Peste 300</option>
-              </select>
-            </div>
-            <button class="search-button" type="button">Caută</button>
-          </div>
+          <h1 class="section-title">Blog & Articole</h1>
+          <p class="section-subtitle">Inspirație, sfaturi și tendințe pentru organizarea evenimentului perfect.</p>
         </div>
       </section>
 
-      <div class="container locations-container">
-        <aside class="filters">
-          <details class="filter-group" open>
-            <summary>Buget (Preț/persoană)</summary>
-            <div class="filter-group-content">
-              <input type="range" id="price-slider" min="50" max="300" value="300">
-              <label for="price-slider">Până la: <span id="price-value">300</span>€</label>
+      <section class="section-padding" style="padding-top: 0;">
+        <div class="container blog-layout">
+          <!-- Featured Post -->
+          <article class="blog-post-card featured-post-card">
+            <div class="result-image" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80');"></div>
+            <div class="result-details">
+              <p class="post-category">Planificare Nuntă</p>
+              <h2 class="post-title">Ghid complet pentru alegerea locației de nuntă perfecte în 2025</h2>
+              <p class="post-excerpt">Alegerea locației este una dintre cele mai importante decizii în planificarea nunții. De la stil și capacitate, la buget și facilități, acest ghid te va ajuta să navighezi prin toate opțiunile și să faci cea mai bună alegere pentru ziua cea mare.</p>
+              <div class="post-meta">
+                <span>De Echipa OuidoEvents • 15 August 2024</span>
+              </div>
+              <a href="#" class="cta-button" style="margin-top: 20px; align-self: flex-start;">Citește mai mult</a>
             </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Capacitate Invitați</summary>
-            <div class="filter-group-content">
-              <ul id="capacity-filter-list">
-                  <li><input type="radio" name="capacity" value="any" id="cap-any" checked><label for="cap-any">Oricâți</label></li>
-                  <li><input type="radio" name="capacity" value="0-50" id="cap-0-50"><label for="cap-0-50">Sub 50</label></li>
-                  <li><input type="radio" name="capacity" value="50-100" id="cap-50-100"><label for="cap-50-100">50 - 100</label></li>
-                  <li><input type="radio" name="capacity" value="100-150" id="cap-100-150"><label for="cap-100-150">100 - 150</label></li>
-                  <li><input type="radio" name="capacity" value="150-200" id="cap-150-200"><label for="cap-150-200">150 - 200</label></li>
-                  <li><input type="radio" name="capacity" value="200-300" id="cap-200-300"><label for="cap-200-300">200 - 300</label></li>
-                  <li><input type="radio" name="capacity" value="300+" id="cap-300-plus"><label for="cap-300-plus">Peste 300</label></li>
-              </ul>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Rating</summary>
-            <div class="filter-group-content">
-              <ul>
-                <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9">Wonderful: 9+</label></li>
-                <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8">Very Good: 8+</label></li>
-                <li><input type="radio" name="rating" value="7" id="rating-7"><label for="rating-7">Good: 7+</label></li>
-                <li><input type="radio" name="rating" value="6" id="rating-6"><label for="rating-6">Pleasant: 6+</label></li>
-                <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all">Toate</label></li>
-              </ul>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Facilități</summary>
-            <div class="filter-group-content">
-              <ul id="facilities-filter" class="facilities-filter-list">
-                <li><input type="checkbox" id="f-terasa" value="Terasă / Grădină"><label for="f-terasa">Terasă / Grădină</label></li>
-                <li><input type="checkbox" id="f-catering" value="Servicii de catering personalizate"><label for="f-catering">Catering personalizat</label></li>
-                <li><input type="checkbox" id="f-bar" value="Bar (serviciu complet)"><label for="f-bar">Bar (serviciu complet)</label></li>
-                <li><input type="checkbox" id="f-decor" value="Decor (servicii de amenajare)"><label for="f-decor">Decor (servicii de amenajare)</label></li>
-                <li><input type="checkbox" id="f-parcare" value="Parcare privată"><label for="f-parcare">Parcare privată</label></li>
-                <li><input type="checkbox" id="f-cazare" value="Cazare invitati"><label for="f-cazare">Cazare invitati</label></li>
-                <li><input type="checkbox" id="f-camera-miri" value="Cameră miri"><label for="f-camera-miri">Cameră miri</label></li>
-                <li><input type="checkbox" id="f-piscina" value="Piscina"><label for="f-piscina">Piscina</label></li>
-                <li><input type="checkbox" id="f-vedere-lac" value="Vedere lac"><label for="f-vedere-lac">Vedere lac</label></li>
-                <li><input type="checkbox" id="f-vedere-munte" value="Vedere munte"><label for="f-vedere-munte">Vedere munte</label></li>
-                <li><input type="checkbox" id="f-ponton" value="Ponton"><label for="f-ponton">Ponton</label></li>
-                <li><input type="checkbox" id="f-planner" value="Event planner dedicat"><label for="f-planner">Event planner dedicat</label></li>
-                <li><input type="checkbox" id="f-wifi" value="Wi-Fi gratuit de mare viteză"><label for="f-wifi">Wi-Fi gratuit</label></li>
-                <li><input type="checkbox" id="f-sunet" value="Sistem de sunet și lumini profesional"><label for="f-sunet">Sistem sunet/lumini</label></li>
-                <li><input type="checkbox" id="f-aer-liber" value="Ceremonie in aer liber"><label for="f-aer-liber">Ceremonie in aer liber</label></li>
-                <li><input type="checkbox" id="f-kids" value="Kids corner"><label for="f-kids">Kids corner</label></li>
-                <li><input type="checkbox" id="f-lounge" value="Spațiu lounge"><label for="f-lounge">Spațiu lounge</label></li>
-              </ul>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Stil locație</summary>
-            <div class="filter-group-content">
-              <ul id="style-filter" class="facilities-filter-list">
-                <li><input type="checkbox" id="s-elegant" value="Elegant"><label for="s-elegant">Elegant</label></li>
-                <li><input type="checkbox" id="s-modern" value="Modern"><label for="s-modern">Modern</label></li>
-                <li><input type="checkbox" id="s-minimalist" value="Minimalist"><label for="s-minimalist">Minimalist</label></li>
-                <li><input type="checkbox" id="s-clasic" value="Clasic"><label for="s-clasic">Clasic</label></li>
-                <li><input type="checkbox" id="s-boho" value="Boho-Chic"><label for="s-boho">Boho-Chic</label></li>
-                <li><input type="checkbox" id="s-glamour" value="Glamour"><label for="s-glamour">Glamour</label></li>
-                <li><input type="checkbox" id="s-rustic" value="Rustic"><label for="s-rustic">Rustic</label></li>
-                <li><input type="checkbox" id="s-natura" value="Natură"><label for="s-natura">Natură</label></li>
-                <li><input type="checkbox" id="s-central" value="Central"><label for="s-central">Central</label></li>
-                <li><input type="checkbox" id="s-panoramic" value="Panoramic"><label for="s-panoramic">Panoramic</label></li>
-                <li><input type="checkbox" id="s-istoric" value="Istoric"><label for="s-istoric">Istoric</label></li>
-                <li><input type="checkbox" id="s-exclusivist" value="Exclusivist"><label for="s-exclusivist">Exclusivist</label></li>
-              </ul>
-            </div>
-          </details>
-        </aside>
+          </article>
 
-        <div class="main-content">
-          <div class="sort-bar">
-            <label for="sort-options">Sortează după:</label>
-            <select id="sort-options">
-              <option value="recommended">Recomandate</option>
-              <option value="price_asc">Preț (crescător)</option>
-              <option value="price_desc">Preț (descrescător)</option>
-              <option value="rating_desc">Rating (descrescător)</option>
-              <option value="capacity_desc">Capacitate (descrescător)</option>
-            </select>
+          <!-- Blog Grid -->
+          <div class="blog-grid">
+            <article class="blog-post-card">
+              <div class="result-image" style="background-image: url('https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="result-details">
+                <p class="post-category">Evenimente Corporate</p>
+                <h3 class="post-title">5 Idei inovatoare pentru următorul tău eveniment corporate</h3>
+                <p class="post-excerpt">Impresionează-ți partenerii și angajații cu un eveniment corporate memorabil. Descoperă idei creative, de la workshop-uri interactive la petreceri tematice.</p>
+                <div class="post-meta">
+                  <span>De Ana Popa • 10 August 2024</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="blog-post-card">
+              <div class="result-image" style="background-image: url('https://images.unsplash.com/photo-1519167758481-83f550bb49b6?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="result-details">
+                <p class="post-category">Tendințe</p>
+                <h3 class="post-title">Top tendințe în decorul de nuntă pentru 2025</h3>
+                <p class="post-excerpt">De la culori îndrăznețe la aranjamente florale sustenabile, află care sunt cele mai noi tendințe în materie de decor pentru a avea o nuntă modernă și stilată.</p>
+                <div class="post-meta">
+                  <span>De Maria Ionescu • 5 August 2024</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="blog-post-card">
+              <div class="result-image" style="background-image: url('https://images.unsplash.com/photo-1604265489234-687555756a2f?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="result-details">
+                <p class="post-category">Sfaturi & Trucuri</p>
+                <h3 class="post-title">Cum să gestionezi bugetul pentru un botez fără stres</h3>
+                <p class="post-excerpt">Organizarea unui botez poate fi costisitoare, dar cu o planificare atentă poți avea un eveniment superb fără a depăși bugetul. Iată câteva sfaturi practice.</p>
+                <div class="post-meta">
+                  <span>De Echipa OuidoEvents • 1 August 2024</span>
+                </div>
+              </div>
+            </article>
           </div>
-          <section class="locations-list" id="locations-list">
-            <!-- Rezultatele generate dinamic -->
-          </section>
         </div>
-      </div>
+      </section>
     </main>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
@@ -4509,6 +4534,10 @@
       initializePages();
     }
 
+    function initBlogPage() {
+      // Future logic for the blog page can be added here
+    }
+
     function getPageKey() {
       return document.body?.dataset.page || 'home';
     }
@@ -4537,7 +4566,7 @@
           initOwnerCrmPage();
           break;
         case 'blog':
-          // initBlogPage();
+          initBlogPage();
           break;
         default:
           break;
