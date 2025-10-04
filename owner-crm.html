@@ -1731,6 +1731,7 @@
 
     /* Owner CRM Page Styles */
     body[data-page="owner-crm"] {
+      --crm-sidebar-width: 280px;
       --crm-booked-color: #0052d4;
       --crm-prebooked-color: #28a745;
       --crm-request-color: #ffc107;
@@ -1755,119 +1756,212 @@
 
     body[data-page="owner-crm"] main.crm-shell {
       flex: 1;
-      display: flex;
-      min-height: 0;
+      display: block;
+      min-height: calc(100vh - var(--header-height));
       width: 100%;
+      padding-left: var(--crm-sidebar-width);
+      background: var(--bg-color);
     }
 
     body[data-page="owner-crm"] .crm-app {
-      display: flex;
-      flex: 1;
+      position: relative;
       min-height: calc(100vh - var(--header-height));
     }
 
     body[data-page="owner-crm"] .crm-sidebar {
-      width: 260px;
+      position: fixed;
+      top: var(--header-height);
+      bottom: 0;
+      left: 0;
+      width: var(--crm-sidebar-width);
+      padding: 32px 24px;
       background-color: var(--white-color);
       border-right: 1px solid var(--border-color);
-      padding: 20px;
+      box-shadow: 12px 0 32px rgba(67, 100, 247, 0.08);
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
-      height: calc(100vh - var(--header-height));
-      position: sticky;
-      top: var(--header-height);
+      gap: 24px;
       overflow-y: auto;
     }
 
     body[data-page="owner-crm"] .crm-sidebar-header {
-      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     body[data-page="owner-crm"] .crm-sidebar-logo {
       font-weight: 700;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       text-decoration: none;
       color: var(--primary-color);
-      display: inline-block;
+      letter-spacing: -0.3px;
     }
 
     body[data-page="owner-crm"] .crm-sidebar-nav {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      flex-grow: 1;
+      flex: 1 1 auto;
     }
 
     body[data-page="owner-crm"] .crm-nav-link {
       display: flex;
       align-items: center;
-      gap: 15px;
-      padding: 12px 15px;
-      border-radius: 8px;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
       text-decoration: none;
       color: var(--gray-color);
       font-weight: 500;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link:hover {
-      background-color: var(--light-gray-color);
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link.is-active {
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      color: var(--white-color);
-      box-shadow: 0 4px 10px var(--shadow-color);
+      transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid transparent;
     }
 
     body[data-page="owner-crm"] .crm-nav-link svg {
       width: 20px;
       height: 20px;
-      stroke-width: 2;
+      stroke-width: 1.8;
+      transition: transform 0.25s ease;
+    }
+
+    body[data-page="owner-crm"] .crm-nav-link:hover {
+      background-color: rgba(67, 100, 247, 0.08);
+    }
+
+    body[data-page="owner-crm"] .crm-nav-link:hover svg {
+      transform: translateX(2px);
+    }
+
+    body[data-page="owner-crm"] .crm-nav-link.is-active {
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+      color: var(--white-color);
+      box-shadow: 0 10px 24px rgba(0, 82, 212, 0.2);
     }
 
     body[data-page="owner-crm"] .crm-nav-link.is-active svg {
       stroke: var(--white-color);
+      transform: translateX(2px);
     }
 
     body[data-page="owner-crm"] .crm-sidebar-footer {
+      margin-top: auto;
       padding-top: 20px;
       border-top: 1px solid var(--border-color);
     }
 
     body[data-page="owner-crm"] .crm-main {
-      flex: 1;
-      padding: 0 40px 40px;
-      background-color: var(--bg-color);
+      margin-left: auto;
+      margin-right: auto;
+      width: min(1200px, calc(100% - 80px));
+      padding: 48px clamp(24px, 5vw, 60px) 72px;
       min-height: calc(100vh - var(--header-height));
-      position: relative;
-      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
     }
 
     body[data-page="owner-crm"] .crm-page {
       display: none;
+      flex-direction: column;
+      gap: 24px;
+      scroll-margin-top: calc(var(--header-height) + 24px);
     }
 
     body[data-page="owner-crm"] .crm-page.is-active {
-      display: block;
+      display: flex;
     }
 
     body[data-page="owner-crm"] .crm-page-header {
-      margin-bottom: 30px;
+      margin-bottom: 8px;
       position: relative;
-      z-index: -1;
+      z-index: 1;
     }
 
     body[data-page="owner-crm"] .crm-page-title {
-      font-size: 2.25rem;
+      font-size: clamp(2rem, 2.4vw, 2.35rem);
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     body[data-page="owner-crm"] .crm-page-subtitle {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--gray-color);
+      max-width: 720px;
+    }
+
+    @media (max-width: 1200px) {
+      body[data-page="owner-crm"] .crm-main {
+        width: min(1100px, calc(100% - 48px));
+      }
+    }
+
+    @media (max-width: 1024px) {
+      body[data-page="owner-crm"] main.crm-shell {
+        padding-left: 0;
+      }
+
+      body[data-page="owner-crm"] .crm-sidebar {
+        position: static;
+        width: 100%;
+        max-height: none;
+        box-shadow: none;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        flex-direction: column;
+      }
+
+      body[data-page="owner-crm"] .crm-sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      body[data-page="owner-crm"] .crm-nav-link {
+        padding: 10px 14px;
+      }
+
+      body[data-page="owner-crm"] .crm-main {
+        width: 100%;
+        padding: 36px 28px 60px;
+      }
+
+      body[data-page="owner-crm"] .crm-venue-card {
+        flex-direction: column;
+      }
+
+      body[data-page="owner-crm"] .crm-venue-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      body[data-page="owner-crm"] .crm-venue-actions .cta-button,
+      body[data-page="owner-crm"] .crm-venue-actions .secondary-cta-button,
+      body[data-page="owner-crm"] .crm-venue-actions .crm-ghost-button {
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body[data-page="owner-crm"] .crm-sidebar {
+        padding: 24px 20px;
+      }
+
+      body[data-page="owner-crm"] .crm-sidebar-nav {
+        overflow-x: auto;
+        padding-bottom: 6px;
+        gap: 10px;
+      }
+
+      body[data-page="owner-crm"] .crm-nav-link {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+
+      body[data-page="owner-crm"] .crm-main {
+        padding: 32px 20px 52px;
+        gap: 28px;
+      }
     }
 
     body[data-page="owner-crm"] .crm-card {
@@ -1876,7 +1970,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
       border: 1px solid var(--border-color);
       padding: 25px;
-      margin-bottom: 25px;
     }
 
     body[data-page="owner-crm"] .crm-page-filter {
@@ -2643,44 +2736,6 @@
     @media (max-width: 1200px) {
       body[data-page="owner-crm"] .crm-dashboard-grid {
         grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="owner-crm"] .crm-sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-        top: var(--header-height);
-        height: calc(100vh - var(--header-height));
-      }
-
-      body[data-page="owner-crm"] .crm-sidebar.is-open {
-        transform: translateX(0);
-      }
-
-      body[data-page="owner-crm"] .crm-main {
-        padding: 20px;
-      }
-
-      body[data-page="owner-crm"] .crm-page-title {
-        font-size: 2rem;
-      }
-
-      body[data-page="owner-crm"] .crm-venue-card {
-        flex-direction: column;
-      }
-
-      body[data-page="owner-crm"] .crm-venue-actions {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      body[data-page="owner-crm"] .crm-venue-actions .cta-button,
-      body[data-page="owner-crm"] .crm-venue-actions .secondary-cta-button,
-      body[data-page="owner-crm"] .crm-venue-actions .crm-ghost-button {
-        flex: 1 1 auto;
       }
     }
 
@@ -3981,6 +4036,23 @@
         }
       }
 
+      function scrollCrmContentToTop() {
+        const mainContainer = document.querySelector('.crm-main');
+        if (!mainContainer) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        const headerHeightVar = getComputedStyle(document.documentElement).getPropertyValue('--header-height');
+        const headerHeight = Number.parseInt(headerHeightVar, 10) || 0;
+        const targetTop = mainContainer.getBoundingClientRect().top + window.pageYOffset - headerHeight - 24;
+
+        window.scrollTo({
+          top: targetTop > 0 ? targetTop : 0,
+          behavior: 'smooth'
+        });
+      }
+
       function showPage(pageId, { updateHash = true } = {}) {
         crmPages.forEach(page => {
           if (page.dataset.pageSection === pageId) {
@@ -4005,6 +4077,8 @@
         if (pageId === 'availability') {
           updateAvailabilityPage();
         }
+
+        scrollCrmContentToTop();
       }
 
       function populateVenueSelector(selectorId, { includeAllOption = false } = {}) {
