@@ -28,7 +28,7 @@
           </div>
           <div class="search-group date-group">
             <label for="event-date">Data evenimentului</label>
-            <input type="text" id="event-date" placeholder="dd/mm/yyyy" readonly>
+            <input type="text" id="event-date" class="date-picker" placeholder="dd/mm/yyyy" readonly>
           </div>
           <div class="search-group guests-group">
             <label for="guests">Invitați</label>
@@ -55,9 +55,9 @@
         <p class="venue-address">București, România</p>
         <div class="venue-tags">
           <span class="tag">Exclusivist</span>
+          <span class="tag">Elegant</span>
           <span class="tag">Panoramic</span>
-          <span class="tag">Capacitate Mare</span>
-          <span class="tag">Recomandat</span>
+          <span class="tag">Central</span>
         </div>
         <p class="venue-description">The Grand Ballroom este o locație de lux situată în inima Bucureștiului, perfectă pentru evenimente grandioase. Cu o arhitectură impresionantă și servicii impecabile, oferim o experiență de neuitat pentru nunți, gale și conferințe.</p>
       </div>
@@ -88,6 +88,7 @@
 
         <section class="about-section">
           <style>
+            .venue-main-content { align-items: flex-start; margin-top: 30px; }
             .gallery-section { margin-bottom: 40px; }
             .gallery-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: repeat(2, 180px); gap: 8px; margin-bottom: 8px; }
             .gallery-item { position: relative; overflow: hidden; border-radius: var(--border-radius); cursor: pointer; }
@@ -102,6 +103,7 @@
             .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; font-size: 2rem; cursor: pointer; padding: 10px 15px; z-index: 1001; user-select: none; }
             .lightbox-nav.prev { left: 20px; } .lightbox-nav.next { right: 20px; }
             @media (max-width: 768px) {
+              .venue-main-content { flex-direction: column; }
               .gallery-grid, .thumbnail-grid { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
               .gallery-grid { grid-template-rows: repeat(3, 200px); }
               .thumbnail-grid { grid-template-columns: repeat(2, 1fr); }
@@ -109,6 +111,14 @@
               .gallery-item { height: 250px; }
               .thumbnail-grid .gallery-item { height: 150px; }
             }
+            .details-facilities-section h3 { margin-top: 30px; }
+            .widget-note { font-size: 0.85rem; color: var(--gray-color); text-align: center; margin-top: 15px; }
+            .contact-section-locked .locked-content { background-color: var(--light-gray-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 40px 20px; text-align: center; margin-top: 15px; }
+            .contact-section-locked .locked-content svg { width: 48px; height: 48px; fill: var(--primary-color); margin-bottom: 15px; opacity: 0.8; }
+            .contact-section-locked .locked-content p { font-size: 1.1rem; font-weight: 500; color: var(--dark-color); margin-bottom: 25px; }
+            .contact-section-locked .locked-content .cta-button { background-color: var(--primary-color); color: var(--white-color); }
+            .contact-section-locked .locked-content .cta-button:hover { background-color: var(--dark-color); }
+
           </style>
           <h2>Despre această locație</h2>
           <p>The Grand Ballroom este o locație de evenimente de prestigiu, renumită pentru eleganța sa atemporală și serviciile excepționale. Situată central, oferă acces facil și o ambianță sofisticată, ideală pentru evenimente de anvergură. Spațiul generos și designul interior rafinat pot fi adaptate pentru a se potrivi oricărui concept, de la nunți de vis la conferințe internaționale și petreceri corporate exclusiviste.</p>
@@ -132,6 +142,26 @@
             </div>
           </div>
 
+          <h3>Stiluri și Teme</h3>
+          <ul class="facilities-list" style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 8px 20px;
+            ">
+            <li>Elegant</li>
+            <li>Modern</li>
+            <li>Minimalist</li>
+            <li>Clasic</li>
+            <li>Boho-Chic</li>
+            <li>Glamour</li>
+            <li>Rustic</li>
+            <li>Natură</li>
+            <li>Central</li>
+            <li>Panoramic</li>
+            <li>Istoric</li>
+            <li>Exclusivist</li>
+          </ul>
+
           <h3>Tipuri de evenimente acceptate</h3>
           <ul class="event-types-list">
             <li>Nuntă</li>
@@ -142,46 +172,36 @@
           </ul>
 
           <h3>Facilități disponibile</h3>
-          <ul class="facilities-list">
+          <ul class="facilities-list" style="
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 8px 20px;
+            ">
+            <li>Terasă / Grădină</li>
+            <li>Servicii de catering personalizate</li>
+            <li>Bar (serviciu complet)</li>
+            <li>Decor (servicii de amenajare)</li>
             <li>Parcare privată</li>
-            <li>Wi-Fi gratuit</li>
-            <li>Sistem audio și lumini profesional</li>
+            <li>Cazare invitati</li>
+            <li>Cameră miri</li>
+            <li>Piscina</li>
+            <li>Vedere lac</li>
+            <li>Ponton</li>
             <li>Event planner dedicat</li>
-            <li>Decor personalizat</li>
-            <li>Servicii de catering premium</li>
+            <li>Wi-Fi gratuit de mare viteză</li>
+            <li>Sistem de sunet și lumini profesional</li>
+            <li>Ceremonie in aer liber</li>
+            <li>Kids corner</li>
+            <li>Spațiu lounge</li>
           </ul>
         </section>
 
-        <section class="contact-section">
+        <section class="contact-section-locked">
           <h3>Contact locație</h3>
-          <div class="contact-grid">
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              </div>
-              <div class="contact-item-info">
-                <span>Email</span>
-                <strong>events@grandballroom.ro</strong>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              </div>
-              <div class="contact-item-info">
-                <span>Telefon</span>
-                <strong>+40 712 345 678</strong>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-              </div>
-              <div class="contact-item-info">
-                <span>Program recomandat</span>
-                <strong>Luni - Vineri, 09:00 - 18:00</strong>
-              </div>
-            </div>
+          <div class="locked-content">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            <p>Pentru a vizualiza detaliile de contact, te rugăm să te autentifici.</p>
+            <a href="login.html" class="cta-button">Autentificare</a>
           </div>
         </section>
       </div>
@@ -192,6 +212,7 @@
           <div class="calendar-placeholder">Calendar interactiv aici (ex: Flatpickr)</div>
           <p class="price-display">Preț de la <strong>120€</strong>/pers</p>
           <a href="login.html" class="cta-button">Confirmă disponibilitatea</a>
+          <p class="widget-note">După confirmarea disponibilității, proprietarul va putea aproba pre-rezervarea ta.</p>
         </div>
       </div>
     </div>
@@ -259,6 +280,12 @@
           showImage(newIndex);
         });
       }
+
+      document.addEventListener('keydown', (e) => {
+        if (lightbox.style.display !== 'flex') return;
+        if (e.key === 'ArrowLeft') prevBtn.click();
+        if (e.key === 'ArrowRight') nextBtn.click();
+      });
     });
   </script>
 </body>

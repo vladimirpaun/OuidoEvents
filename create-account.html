@@ -12,8 +12,13 @@
       <div class="account-form-container">
         <h1>Creează un cont nou</h1>
         <p>Pentru a solicita disponibilitatea și a gestiona rezervările.</p>
+        <style>
+          .form-group-left { text-align: left; }
+          .form-group-row { display: flex; gap: 15px; }
+          .form-group-row > .form-group { flex: 1; }
+        </style>
         <form>
-          <div class="form-group account-type-group">
+          <div class="form-group account-type-group form-group-left">
             <label>Tipul contului</label>
             <div class="radio-options">
               <label class="radio-option" for="type-client">
@@ -26,15 +31,21 @@
               </label>
             </div>
           </div>
-          <div class="form-group">
-            <label for="full-name">Nume și Prenume</label>
-            <input type="text" id="full-name" required>
+          <div class="form-group-row">
+            <div class="form-group form-group-left">
+              <label for="last-name">Nume</label>
+              <input type="text" id="last-name" placeholder="ex: Popescu" required>
+            </div>
+            <div class="form-group form-group-left">
+              <label for="first-name">Prenume</label>
+              <input type="text" id="first-name" placeholder="ex: Ion" required>
+            </div>
           </div>
-          <div class="form-group">
+          <div class="form-group form-group-left">
             <label for="email">Adresă de email</label>
             <input type="email" id="email" required>
           </div>
-          <div class="form-group">
+          <div class="form-group form-group-left">
             <label for="password">Parolă</label>
             <input type="password" id="password" required>
           </div>

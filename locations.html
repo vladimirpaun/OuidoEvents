@@ -11,6 +11,22 @@
   <main>
     <section class="main-search-section">
       <div class="container">
+        <style>
+          .search-group.location-group { position: relative; }
+          .autocomplete-items {
+            position: absolute;
+            border: 1px solid var(--border-color);
+            z-index: 99;
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            max-height: 250px;
+            overflow-y: auto;
+          }
+          .autocomplete-items div { padding: 12px 15px; cursor: pointer; transition: background-color 0.2s ease; }
+          .autocomplete-items div:hover { background-color: var(--light-gray-color); }
+          .autocomplete-items strong { color: var(--primary-color); font-weight: 600; }
+        </style>
         <div class="search-box">
           <div class="search-group event-type-group">
             <label for="event-type">Tipul evenimentului</label>
@@ -28,11 +44,19 @@
           </div>
           <div class="search-group date-group">
             <label for="event-date">Data evenimentului</label>
-            <input type="text" id="event-date" placeholder="dd/mm/yyyy" readonly>
+            <input type="text" id="event-date" class="date-picker" placeholder="dd/mm/yyyy" readonly>
           </div>
           <div class="search-group guests-group">
             <label for="guests">Invitați</label>
-            <input type="number" id="guests" placeholder="Număr" min="10">
+            <select id="guests">
+              <option value="any">Oricâți</option>
+              <option value="0-50">Sub 50</option>
+              <option value="50-100">50 - 100</option>
+              <option value="100-150">100 - 150</option>
+              <option value="150-200">150 - 200</option>
+              <option value="200-300">200 - 300</option>
+              <option value="300+">Peste 300</option>
+            </select>
           </div>
           <button class="search-button" type="button">Caută</button>
         </div>
@@ -51,7 +75,15 @@
         <details class="filter-group" open>
           <summary>Capacitate Invitați</summary>
           <div class="filter-group-content">
-            <input type="number" id="capacity-input" placeholder="Ex: 150" min="0">
+            <ul id="capacity-filter-list">
+                <li><input type="radio" name="capacity" value="any" id="cap-any" checked><label for="cap-any">Oricâți</label></li>
+                <li><input type="radio" name="capacity" value="0-50" id="cap-0-50"><label for="cap-0-50">Sub 50</label></li>
+                <li><input type="radio" name="capacity" value="50-100" id="cap-50-100"><label for="cap-50-100">50 - 100</label></li>
+                <li><input type="radio" name="capacity" value="100-150" id="cap-100-150"><label for="cap-100-150">100 - 150</label></li>
+                <li><input type="radio" name="capacity" value="150-200" id="cap-150-200"><label for="cap-150-200">150 - 200</label></li>
+                <li><input type="radio" name="capacity" value="200-300" id="cap-200-300"><label for="cap-200-300">200 - 300</label></li>
+                <li><input type="radio" name="capacity" value="300+" id="cap-300-plus"><label for="cap-300-plus">Peste 300</label></li>
+            </ul>
           </div>
         </details>
         <details class="filter-group" open>
@@ -69,13 +101,43 @@
         <details class="filter-group" open>
           <summary>Facilități</summary>
           <div class="filter-group-content">
-            <ul id="facilities-filter">
-              <li><input type="checkbox" value="Parcare" id="f-parcare"><label for="f-parcare">Parcare</label></li>
-              <li><input type="checkbox" value="Piscină" id="f-piscina"><label for="f-piscina">Piscină</label></li>
-              <li><input type="checkbox" value="Cazare" id="f-cazare"><label for="f-cazare">Cazare</label></li>
-              <li><input type="checkbox" value="Vedere la Lac" id="f-lac"><label for="f-lac">Vedere la Lac</label></li>
-              <li><input type="checkbox" value="Ceremonii în aer liber" id="f-aer-liber"><label for="f-aer-liber">Ceremonii în aer liber</label></li>
-              <li><input type="checkbox" value="Kids Corner" id="f-kids"><label for="f-kids">Kids Corner</label></li>
+            <ul id="facilities-filter" class="facilities-filter-list">
+              <li><input type="checkbox" id="f-terasa" value="Terasă / Grădină"><label for="f-terasa">Terasă / Grădină</label></li>
+              <li><input type="checkbox" id="f-catering" value="Servicii de catering personalizate"><label for="f-catering">Catering personalizat</label></li>
+              <li><input type="checkbox" id="f-bar" value="Bar (serviciu complet)"><label for="f-bar">Bar (serviciu complet)</label></li>
+              <li><input type="checkbox" id="f-decor" value="Decor (servicii de amenajare)"><label for="f-decor">Decor (servicii de amenajare)</label></li>
+              <li><input type="checkbox" id="f-parcare" value="Parcare privată"><label for="f-parcare">Parcare privată</label></li>
+              <li><input type="checkbox" id="f-cazare" value="Cazare invitati"><label for="f-cazare">Cazare invitati</label></li>
+              <li><input type="checkbox" id="f-camera-miri" value="Cameră miri"><label for="f-camera-miri">Cameră miri</label></li>
+              <li><input type="checkbox" id="f-piscina" value="Piscina"><label for="f-piscina">Piscina</label></li>
+              <li><input type="checkbox" id="f-vedere-lac" value="Vedere lac"><label for="f-vedere-lac">Vedere lac</label></li>
+              <li><input type="checkbox" id="f-vedere-munte" value="Vedere munte"><label for="f-vedere-munte">Vedere munte</label></li>
+              <li><input type="checkbox" id="f-ponton" value="Ponton"><label for="f-ponton">Ponton</label></li>
+              <li><input type="checkbox" id="f-planner" value="Event planner dedicat"><label for="f-planner">Event planner dedicat</label></li>
+              <li><input type="checkbox" id="f-wifi" value="Wi-Fi gratuit de mare viteză"><label for="f-wifi">Wi-Fi gratuit</label></li>
+              <li><input type="checkbox" id="f-sunet" value="Sistem de sunet și lumini profesional"><label for="f-sunet">Sistem sunet/lumini</label></li>
+              <li><input type="checkbox" id="f-aer-liber" value="Ceremonie in aer liber"><label for="f-aer-liber">Ceremonie in aer liber</label></li>
+              <li><input type="checkbox" id="f-kids" value="Kids corner"><label for="f-kids">Kids corner</label></li>
+              <li><input type="checkbox" id="f-lounge" value="Spațiu lounge"><label for="f-lounge">Spațiu lounge</label></li>
+            </ul>
+          </div>
+        </details>
+        <details class="filter-group" open>
+          <summary>Stil locație</summary>
+          <div class="filter-group-content">
+            <ul id="style-filter" class="facilities-filter-list">
+              <li><input type="checkbox" id="s-elegant" value="Elegant"><label for="s-elegant">Elegant</label></li>
+              <li><input type="checkbox" id="s-modern" value="Modern"><label for="s-modern">Modern</label></li>
+              <li><input type="checkbox" id="s-minimalist" value="Minimalist"><label for="s-minimalist">Minimalist</label></li>
+              <li><input type="checkbox" id="s-clasic" value="Clasic"><label for="s-clasic">Clasic</label></li>
+              <li><input type="checkbox" id="s-boho" value="Boho-Chic"><label for="s-boho">Boho-Chic</label></li>
+              <li><input type="checkbox" id="s-glamour" value="Glamour"><label for="s-glamour">Glamour</label></li>
+              <li><input type="checkbox" id="s-rustic" value="Rustic"><label for="s-rustic">Rustic</label></li>
+              <li><input type="checkbox" id="s-natura" value="Natură"><label for="s-natura">Natură</label></li>
+              <li><input type="checkbox" id="s-central" value="Central"><label for="s-central">Central</label></li>
+              <li><input type="checkbox" id="s-panoramic" value="Panoramic"><label for="s-panoramic">Panoramic</label></li>
+              <li><input type="checkbox" id="s-istoric" value="Istoric"><label for="s-istoric">Istoric</label></li>
+              <li><input type="checkbox" id="s-exclusivist" value="Exclusivist"><label for="s-exclusivist">Exclusivist</label></li>
             </ul>
           </div>
         </details>

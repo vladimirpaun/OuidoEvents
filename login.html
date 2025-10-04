@@ -12,14 +12,23 @@
       <div class="account-form-container">
         <h1>Conectare în cont</h1>
         <p>Introdu datele pentru a accesa contul tău.</p>
+        <style>
+          .form-group-left { text-align: left; }
+          .form-extra-options { text-align: right; font-size: 0.9rem; margin: -10px 0 20px; }
+          .form-extra-options a { color: var(--primary-color); text-decoration: none; }
+          .form-extra-options a:hover { text-decoration: underline; }
+        </style>
         <form>
-          <div class="form-group">
+          <div class="form-group form-group-left">
             <label for="email">Adresă de email</label>
             <input type="email" id="email" required>
           </div>
-          <div class="form-group">
+          <div class="form-group form-group-left">
             <label for="password">Parolă</label>
             <input type="password" id="password" required>
+          </div>
+          <div class="form-extra-options">
+            <a href="#">Ai uitat parola?</a>
           </div>
           <button type="submit" class="cta-button">Conectare</button>
         </form>

@@ -1,4 +1,7 @@
 import { initLayout } from './components/layout.js';
+import { initDatePickers } from './components/datePicker.js';
+import { initAutocomplete } from './components/autocomplete.js';
+import { initSearch } from './components/search.js';
 
 function getPageKey() {
   return document.body.dataset.page || 'home';
@@ -25,4 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initLayout({ pageKey });
 
   initializePageModule(pageKey);
+  
+  initDatePickers();
+  initAutocomplete('location');
+  initSearch();
 });
