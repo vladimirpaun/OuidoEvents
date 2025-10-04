@@ -228,9 +228,10 @@
       border-bottom: 1px solid rgba(67, 100, 247, 0.12);
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 1001;
       transition: background var(--transition-base);
       backdrop-filter: blur(10px);
+      background: var(--white-color);
     }
 
     .header-container {
@@ -1839,6 +1840,8 @@
       background-color: var(--bg-color);
       min-height: calc(100vh - var(--header-height));
       scroll-padding-top: calc(var(--header-height) + 24px);
+      position: relative;
+      z-index: 1;
     }
 
     body[data-page="owner-crm"] .crm-page {
@@ -1851,6 +1854,8 @@
 
     body[data-page="owner-crm"] .crm-page-header {
       margin-bottom: 30px;
+      position: relative;
+      z-index: -1;
     }
 
     body[data-page="owner-crm"] .crm-page-title {
