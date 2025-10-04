@@ -20,6 +20,7 @@
 @import "pages/_contact.css";
 @import "pages/_auth.css";
 @import "pages/_venue-details.css";
+@import "pages/_owner-crm.css";
 
 /* Global Footer Text Color */
 footer, footer .footer-title, footer p, footer li, footer a {

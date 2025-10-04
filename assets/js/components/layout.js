@@ -24,6 +24,7 @@ function buildHeader({ activeNavKey }) {
       </nav>
       <div class="header-actions" data-actions="desktop">
         <div class="user-links-placeholder" data-user-links></div>
+        <a href="owner-crm.html" class="header-od-button" aria-label="Deschide CRM proprietar">OD</a>
         <a href="login.html" class="secondary-cta-button">Conectare</a>
         <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
       </div>

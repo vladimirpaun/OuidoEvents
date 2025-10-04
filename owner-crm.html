@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ouidoEvents · CRM proprietari</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="owner-crm">
+  <div class="crm-app">
+    <aside class="crm-sidebar" aria-label="Navigare CRM">
+      <div class="crm-sidebar-header">
+        <a href="index.html" class="crm-sidebar-logo">ouidoEvents CRM</a>
+      </div>
+      <nav class="crm-sidebar-nav">
+        <a href="#dashboard" class="crm-nav-link is-active" data-crm-nav data-page-target="dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#calendar" class="crm-nav-link" data-crm-nav data-page-target="calendar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>Calendar</span>
+        </a>
+        <a href="#bookings" class="crm-nav-link" data-crm-nav data-page-target="bookings">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Solicitări eveniment</span>
+        </a>
+        <a href="#visits" class="crm-nav-link" data-crm-nav data-page-target="visits">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M16 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path><path d="M16 18h.01"></path></svg>
+          <span>Vizite</span>
+        </a>
+        <a href="#venues" class="crm-nav-link" data-crm-nav data-page-target="venues">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span>Locațiile mele</span>
+        </a>
+        <a href="#availability" class="crm-nav-link" data-crm-nav data-page-target="availability">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Disponibilitate</span>
+        </a>
+        <a href="#settings" class="crm-nav-link" data-crm-nav data-page-target="settings">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Setări</span>
+        </a>
+      </nav>
+      <div class="crm-sidebar-footer">
+        <a href="login.html" class="crm-nav-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Deconectare</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="crm-main">
+      <section class="crm-page is-active" id="dashboard" data-page-section="dashboard">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Panou general</h1>
+          <p class="crm-page-subtitle">Monitorizează performanța locațiilor tale într-un singur loc.</p>
+        </header>
+
+        <div class="crm-stats-grid">
+          <div class="crm-stat-card" data-variant="venues">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div>
+              <div class="crm-stat-value" id="total-venues-stat">0</div>
+              <div class="crm-stat-label">Locații listate</div>
+            </div>
+          </div>
+          <div class="crm-stat-card" data-variant="bookings">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div>
+              <div class="crm-stat-value" id="active-venues-stat">0</div>
+              <div class="crm-stat-label">Locații active</div>
+            </div>
+          </div>
+          <div class="crm-stat-card" data-variant="requests">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>
+            </div>
+            <div>
+              <div class="crm-stat-value" id="event-requests-stat">0</div>
+              <div class="crm-stat-label">Solicitări eveniment</div>
+            </div>
+          </div>
+          <div class="crm-stat-card" data-variant="visits">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </div>
+            <div>
+              <div class="crm-stat-value" id="visit-requests-stat">0</div>
+              <div class="crm-stat-label">Cereri de vizită</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="crm-dashboard-grid">
+          <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Activitate recentă</h2>
+            </div>
+            <div class="crm-notification-list">
+              <article class="crm-notification">
+                <div class="crm-notification-icon" style="background-color: var(--crm-visit-request-bg); color: var(--crm-visit-request-color);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </div>
+                <div>
+                  <p><strong>Cerere nouă de vizită</strong> pentru <strong>The Grand Ballroom</strong> din partea Mariei Stan.</p>
+                  <p class="crm-notification-timestamp">Acum 5 minute</p>
+                </div>
+              </article>
+              <article class="crm-notification">
+                <div class="crm-notification-icon" style="background-color: var(--crm-request-bg); color: var(--crm-request-color);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>
+                </div>
+                <div>
+                  <p><strong>Solicitare de eveniment</strong> pentru <strong>Lakeside Manor</strong> din partea lui Andrei Popescu.</p>
+                  <p class="crm-notification-timestamp">Acum 15 minute</p>
+                </div>
+              </article>
+              <article class="crm-notification">
+                <div class="crm-notification-icon" style="background-color: var(--crm-prebooked-bg); color: var(--crm-prebooked-color);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div>
+                  <p><strong>Pre-rezervare confirmată</strong> pentru "Corporate Gala" la <strong>The Grand Ballroom</strong>.</p>
+                  <p class="crm-notification-timestamp">Acum 2 ore</p>
+                </div>
+              </article>
+            </div>
+          </section>
+          <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Evenimente viitoare</h2>
+            </div>
+            <p>Următoarele evenimente confirmate vor fi afișate aici pentru o planificare rapidă.</p>
+          </section>
+        </div>
+      </section>
+
+      <section class="crm-page" id="calendar" data-page-section="calendar">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Calendar general</h1>
+          <p class="crm-page-subtitle">Vizualizează toate evenimentele și blocajele dintr-o privire.</p>
+        </header>
+        <div class="crm-page-filter">
+          <label for="calendar-venue-filter">Filtrează după locație:</label>
+          <select id="calendar-venue-filter"></select>
+        </div>
+        <div class="crm-calendar-container">
+          <section class="crm-card crm-calendar">
+            <div id="calendar-grid-container"></div>
+          </section>
+          <aside class="crm-card crm-calendar-legend" aria-label="Legendă calendar">
+            <h2 class="crm-card-title">Legendă</h2>
+            <ul>
+              <li><span class="crm-legend-color" style="background-color: var(--crm-booked-bg);"></span> Confirmat</li>
+              <li><span class="crm-legend-color" style="background-color: var(--crm-prebooked-bg);"></span> Pre-rezervat</li>
+              <li><span class="crm-legend-color" style="background-color: var(--crm-request-bg);"></span> Solicitare</li>
+              <li><span class="crm-legend-color" style="background-color: var(--crm-visit-request-bg);"></span> Vizită</li>
+              <li><span class="crm-legend-color" style="background-color: var(--crm-unavailable-bg);"></span> Indisponibil</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="crm-page" id="bookings" data-page-section="bookings">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Solicitări eveniment</h1>
+          <p class="crm-page-subtitle">Revizuiește toate cererile primite și actualizează starea acestora.</p>
+        </header>
+        <div class="crm-page-filter">
+          <label for="bookings-venue-filter">Filtrează după locație:</label>
+          <select id="bookings-venue-filter"></select>
+        </div>
+        <section class="crm-card">
+          <div class="crm-table-container">
+            <table class="crm-data-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Locație</th>
+                  <th>Tip eveniment</th>
+                  <th>Dată</th>
+                  <th>Invitați</th>
+                  <th>Email</th>
+                  <th>Telefon</th>
+                  <th>Stare</th>
+                  <th>Acțiuni</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="crm-page" id="visits" data-page-section="visits">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Cereri de vizită</h1>
+          <p class="crm-page-subtitle">Gestionează cererile de vizionare pentru fiecare locație.</p>
+        </header>
+        <div class="crm-page-filter">
+          <label for="visits-venue-filter">Filtrează după locație:</label>
+          <select id="visits-venue-filter"></select>
+        </div>
+        <section class="crm-card">
+          <div class="crm-table-container">
+            <table class="crm-data-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Locație</th>
+                  <th>Dată</th>
+                  <th>Oră</th>
+                  <th>Email</th>
+                  <th>Telefon</th>
+                  <th>Stare</th>
+                  <th>Acțiuni</th>
+                </tr>
+              </thead>
+              <tbody id="visits-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="crm-page" id="venues" data-page-section="venues">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Locațiile mele</h1>
+          <p class="crm-page-subtitle">Actualizează detaliile spațiilor listate și adaugă locații noi.</p>
+        </header>
+        <div class="crm-card crm-venue-status">
+          <div class="crm-venue-status-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </div>
+          <div>
+            <h3>Propune o locație nouă</h3>
+            <p>Completează formularul dedicat pentru a crește vizibilitatea portofoliului tău.</p>
+          </div>
+          <a href="create-account.html" class="cta-button">Adaugă locație</a>
+        </div>
+        <div id="venues-list"></div>
+      </section>
+
+      <section class="crm-page" id="availability" data-page-section="availability">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title" id="availability-page-title">Disponibilitate locație</h1>
+          <div class="crm-page-filter">
+            <label for="availability-venue-selector">Selectează locația:</label>
+            <select id="availability-venue-selector"></select>
+          </div>
+        </header>
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Blochează date pentru evenimente</h2>
+          </div>
+          <p>Selectează zilele în care locația nu poate găzdui evenimente (ex. renovări, evenimente private).</p>
+          <div id="availability-calendar-container"></div>
+        </section>
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Program standard pentru vizite</h2>
+          </div>
+          <p>Definește intervalele orare pentru fiecare zi în care pot avea loc vizite.</p>
+          <div class="crm-availability-scheduler"></div>
+        </section>
+      </section>
+
+      <section class="crm-page" id="settings" data-page-section="settings">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Setări cont</h1>
+          <p class="crm-page-subtitle">Actualizează informațiile personale și datele companiei tale.</p>
+        </header>
+
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Preferințe generale</h2>
+          </div>
+          <div class="crm-toggle-switch-group">
+            <label for="auto-confirm">Confirmare automată a disponibilității</label>
+            <label class="crm-switch">
+              <input type="checkbox" id="auto-confirm">
+              <span class="crm-slider"></span>
+            </label>
+          </div>
+        </section>
+
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Profil proprietar</h2>
+          </div>
+          <form>
+            <div class="crm-form-grid-2">
+              <div class="crm-form-group">
+                <label for="owner-name">Prenume</label>
+                <input type="text" id="owner-name" value="Alexandru">
+              </div>
+              <div class="crm-form-group">
+                <label for="owner-surname">Nume</label>
+                <input type="text" id="owner-surname" value="Popa">
+              </div>
+              <div class="crm-form-group">
+                <label for="owner-age">Vârstă</label>
+                <input type="number" id="owner-age" value="34">
+              </div>
+              <div class="crm-form-group">
+                <label for="owner-phone">Telefon</label>
+                <input type="tel" id="owner-phone" value="+40 712 345 678">
+              </div>
+            </div>
+            <div class="crm-form-group">
+              <label for="owner-email">Email</label>
+              <input type="email" id="owner-email" value="alex.popa@grandballroom.ro" readonly>
+            </div>
+            <div class="crm-form-grid-2">
+              <div class="crm-form-group">
+                <label for="owner-role">Rol</label>
+                <select id="owner-role">
+                  <option value="owner" selected>Proprietar</option>
+                  <option value="sales">Reprezentant vânzări</option>
+                  <option value="manager">Manager</option>
+                </select>
+              </div>
+              <div class="crm-form-group">
+                <label for="owner-gender">Gen (opțional)</label>
+                <select id="owner-gender">
+                  <option value="unspecified" selected>Prefer să nu spun</option>
+                  <option value="female">Feminin</option>
+                  <option value="male">Masculin</option>
+                  <option value="other">Altul</option>
+                </select>
+              </div>
+            </div>
+            <div class="crm-card-footer">
+              <button type="submit" class="cta-button">Salvează profilul</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Date companie</h2>
+          </div>
+          <form>
+            <div class="crm-form-group">
+              <label for="company-name">Denumire companie</label>
+              <input type="text" id="company-name" value="The Grand Ballroom SRL">
+            </div>
+            <div class="crm-form-group">
+              <label for="company-cui">CUI</label>
+              <input type="text" id="company-cui" value="RO12345678">
+            </div>
+            <div class="crm-form-group">
+              <label for="company-address">Adresă</label>
+              <input type="text" id="company-address" value="Str. Principală, nr. 1, București">
+            </div>
+            <div class="crm-card-footer">
+              <button type="submit" class="cta-button">Salvează datele</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/pages/ownerCrmPage.js" type="module"></script>
+</body>
+</html>

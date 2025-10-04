@@ -1,0 +1,949 @@
+/* Owner CRM Page Styles */
+body[data-page="owner-crm"] {
+  --crm-booked-color: #0052d4;
+  --crm-prebooked-color: #28a745;
+  --crm-request-color: #ffc107;
+  --crm-visit-request-color: #6f42c1;
+  --crm-unavailable-color: #6c757d;
+  --crm-booked-bg: rgba(0, 82, 212, 0.1);
+  --crm-prebooked-bg: rgba(40, 167, 69, 0.1);
+  --crm-request-bg: rgba(255, 193, 7, 0.15);
+  --crm-visit-request-bg: rgba(111, 66, 193, 0.1);
+  --crm-unavailable-bg: rgba(108, 117, 125, 0.1);
+
+  color: var(--dark-color);
+  background-color: var(--light-gray-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-page="owner-crm"] * {
+  box-sizing: border-box;
+}
+
+body[data-page="owner-crm"] main.crm-shell {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  width: 100%;
+}
+
+body[data-page="owner-crm"] .crm-app {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - var(--header-height));
+}
+
+body[data-page="owner-crm"] .crm-sidebar {
+  width: 260px;
+  background-color: var(--white-color);
+  border-right: 1px solid var(--border-color);
+  padding: calc(var(--header-height) + 16px) 20px 30px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+body[data-page="owner-crm"] .crm-sidebar-header {
+  margin-bottom: 40px;
+}
+
+body[data-page="owner-crm"] .crm-sidebar-logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: var(--primary-color);
+  display: inline-block;
+}
+
+body[data-page="owner-crm"] .crm-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+body[data-page="owner-crm"] .crm-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--gray-color);
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body[data-page="owner-crm"] .crm-nav-link:hover {
+  background-color: var(--light-gray-color);
+}
+
+body[data-page="owner-crm"] .crm-nav-link.is-active {
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  color: var(--white-color);
+  box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+body[data-page="owner-crm"] .crm-nav-link svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+body[data-page="owner-crm"] .crm-nav-link.is-active svg {
+  stroke: var(--white-color);
+}
+
+body[data-page="owner-crm"] .crm-sidebar-footer {
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+body[data-page="owner-crm"] .crm-main {
+  flex: 1;
+  padding: calc(var(--header-height) + 24px) 40px 40px;
+  background-color: var(--bg-color);
+  min-height: calc(100vh - var(--header-height));
+  scroll-padding-top: calc(var(--header-height) + 24px);
+}
+
+body[data-page="owner-crm"] .crm-page {
+  display: none;
+}
+
+body[data-page="owner-crm"] .crm-page.is-active {
+  display: block;
+}
+
+body[data-page="owner-crm"] .crm-page-header {
+  margin-bottom: 30px;
+}
+
+body[data-page="owner-crm"] .crm-page-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+body[data-page="owner-crm"] .crm-page-subtitle {
+  font-size: 1.1rem;
+  color: var(--gray-color);
+}
+
+body[data-page="owner-crm"] .crm-card {
+  background: var(--white-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+body[data-page="owner-crm"] .crm-page-filter {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body[data-page="owner-crm"] .crm-page-filter label {
+  font-weight: 600;
+}
+
+body[data-page="owner-crm"] .crm-page-filter select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--white-color);
+  font-size: 1rem;
+}
+
+/* Dashboard */
+body[data-page="owner-crm"] .crm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+body[data-page="owner-crm"] .crm-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  background-color: var(--white-color);
+  border: 1px solid var(--border-color);
+}
+
+body[data-page="owner-crm"] .crm-stat-icon {
+  padding: 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body[data-page="owner-crm"] .crm-stat-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+body[data-page="owner-crm"] .crm-stat-card .crm-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+body[data-page="owner-crm"] .crm-stat-card .crm-stat-label {
+  color: var(--gray-color);
+  font-size: 0.9rem;
+}
+
+body[data-page="owner-crm"] .crm-stat-card[data-variant="requests"] .crm-stat-icon {
+  background-color: var(--crm-request-bg);
+  color: var(--crm-request-color);
+}
+
+body[data-page="owner-crm"] .crm-stat-card[data-variant="visits"] .crm-stat-icon {
+  background-color: var(--crm-visit-request-bg);
+  color: var(--crm-visit-request-color);
+}
+
+body[data-page="owner-crm"] .crm-stat-card[data-variant="bookings"] .crm-stat-icon {
+  background-color: var(--crm-prebooked-bg);
+  color: var(--crm-prebooked-color);
+}
+
+body[data-page="owner-crm"] .crm-stat-card[data-variant="venues"] .crm-stat-icon {
+  background-color: var(--crm-booked-bg);
+  color: var(--primary-color);
+}
+
+body[data-page="owner-crm"] .crm-stat-card[data-variant="visits-total"] .crm-stat-icon {
+  background-color: rgba(0, 82, 212, 0.12);
+  color: var(--primary-color);
+}
+
+body[data-page="owner-crm"] .crm-stat-card[data-variant="visits-month"] .crm-stat-icon {
+  background-color: rgba(67, 100, 247, 0.12);
+  color: var(--secondary-color);
+}
+
+body[data-page="owner-crm"] .crm-dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 25px;
+}
+
+body[data-page="owner-crm"] .crm-dashboard-grid--charts {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top: 15px;
+}
+
+body[data-page="owner-crm"] .crm-chart {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body[data-page="owner-crm"] .crm-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+body[data-page="owner-crm"] .crm-occupancy-chart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+body[data-page="owner-crm"] .crm-donut-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+body[data-page="owner-crm"] .crm-donut {
+  --occupied-deg: 0deg;
+  --occupied-color: var(--primary-color);
+  --available-color: rgba(0, 82, 212, 0.08);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: conic-gradient(var(--occupied-color) var(--occupied-deg), var(--available-color) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: var(--dark-color);
+  font-weight: 700;
+}
+
+body[data-page="owner-crm"] .crm-donut::after {
+  content: attr(data-percentage) '%';
+  font-size: 1.1rem;
+}
+
+body[data-page="owner-crm"] .crm-donut-label {
+  font-size: 0.9rem;
+  color: var(--gray-color);
+  text-align: center;
+}
+
+body[data-page="owner-crm"] .crm-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+body[data-page="owner-crm"] .crm-card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+body[data-page="owner-crm"] .crm-notification-list {
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-page="owner-crm"] .crm-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+body[data-page="owner-crm"] .crm-notification:last-child {
+  border-bottom: none;
+}
+
+body[data-page="owner-crm"] .crm-notification-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+body[data-page="owner-crm"] .crm-notification-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+body[data-page="owner-crm"] .crm-notification-timestamp {
+  font-size: 0.85rem;
+  color: var(--gray-color);
+  margin-top: 4px;
+}
+
+body[data-page="owner-crm"] .crm-calendar {
+  flex-grow: 1;
+  width: 100%;
+}
+
+body[data-page="owner-crm"] .crm-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+body[data-page="owner-crm"] .crm-calendar-header h2 {
+  font-size: 1.5rem;
+}
+
+body[data-page="owner-crm"] .crm-calendar-nav-button {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+body[data-page="owner-crm"] .crm-calendar-nav-button:hover {
+  background-color: var(--light-gray-color);
+}
+
+body[data-page="owner-crm"] .crm-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(140px, auto);
+}
+
+body[data-page="owner-crm"] .crm-calendar-day-name {
+  text-align: center;
+  font-weight: 600;
+  color: var(--gray-color);
+  padding: 10px 0;
+}
+
+body[data-page="owner-crm"] .crm-calendar-date {
+  border: 1px solid var(--border-color);
+  min-height: 140px;
+  padding: 8px;
+  font-weight: 500;
+  background-color: var(--white-color);
+  transition: background-color 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body[data-page="owner-crm"] .crm-calendar-date[data-outside="true"] {
+  background-color: #fcfcfc;
+  color: #ccc;
+}
+
+body[data-page="owner-crm"] .crm-calendar-date .crm-day-number {
+  margin-bottom: 5px;
+}
+
+body[data-page="owner-crm"] .crm-calendar-event {
+  font-size: 0.8rem;
+  padding: 4px 6px;
+  border-radius: 4px;
+  color: var(--dark-color);
+  display: block;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+body[data-page="owner-crm"] .crm-calendar-event + .crm-calendar-event {
+  margin-top: 4px;
+}
+
+body[data-page="owner-crm"] .crm-calendar-event[data-variant="booked"] {
+  background-color: var(--crm-booked-bg);
+  border-left: 3px solid var(--crm-booked-color);
+}
+
+body[data-page="owner-crm"] .crm-calendar-event[data-variant="prebooked"] {
+  background-color: var(--crm-prebooked-bg);
+  border-left: 3px solid var(--crm-prebooked-color);
+}
+
+body[data-page="owner-crm"] .crm-calendar-event[data-variant="request"] {
+  background-color: var(--crm-request-bg);
+  border-left: 3px solid var(--crm-request-color);
+}
+
+body[data-page="owner-crm"] .crm-calendar-event[data-variant="visit"] {
+  background-color: var(--crm-visit-request-bg);
+  border-left: 3px solid var(--crm-visit-request-color);
+}
+
+body[data-page="owner-crm"] .crm-calendar-event[data-variant="unavailable"] {
+  background-color: var(--crm-unavailable-bg);
+  border-left: 3px solid var(--crm-unavailable-color);
+  color: var(--crm-unavailable-color);
+  text-decoration: line-through;
+}
+
+body[data-page="owner-crm"] .crm-calendar-date.is-unavailable {
+  background-color: var(--crm-unavailable-bg);
+  color: var(--crm-unavailable-color);
+  text-decoration: line-through;
+}
+
+body[data-page="owner-crm"] .crm-availability-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background-color: var(--light-gray-color);
+  color: var(--dark-color);
+  font-weight: 600;
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span[data-variant="booked"] {
+  color: var(--crm-booked-color);
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span[data-variant="prebooked"] {
+  color: var(--crm-prebooked-color);
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span[data-variant="request"] {
+  color: var(--crm-request-color);
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span[data-variant="visit"] {
+  color: var(--crm-visit-request-color);
+}
+
+body[data-page="owner-crm"] .crm-availability-legend span[data-variant="unavailable"] {
+  color: var(--crm-unavailable-color);
+}
+
+/* Tables */
+body[data-page="owner-crm"] .crm-table-container {
+  overflow-x: auto;
+}
+
+body[data-page="owner-crm"] .crm-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+body[data-page="owner-crm"] .crm-data-table th,
+body[data-page="owner-crm"] .crm-data-table td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+body[data-page="owner-crm"] .crm-data-table th {
+  font-weight: 600;
+  color: var(--gray-color);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+body[data-page="owner-crm"] .crm-data-table td {
+  font-weight: 500;
+}
+
+body[data-page="owner-crm"] .crm-data-table .crm-empty-row td {
+  text-align: center;
+  color: var(--gray-color);
+}
+
+body[data-page="owner-crm"] .crm-status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+body[data-page="owner-crm"] .crm-status-badge[data-status="confirmed"],
+body[data-page="owner-crm"] .crm-status-badge[data-status="published"] {
+  background-color: var(--crm-booked-bg);
+  color: var(--crm-booked-color);
+}
+
+body[data-page="owner-crm"] .crm-status-badge[data-status="pending"] {
+  background-color: var(--crm-request-bg);
+  color: #856404;
+}
+
+body[data-page="owner-crm"] .crm-status-badge[data-status="visit-pending"] {
+  background-color: var(--crm-visit-request-bg);
+  color: var(--crm-visit-request-color);
+}
+
+body[data-page="owner-crm"] .crm-status-badge[data-status="pre-booked"] {
+  background-color: var(--crm-prebooked-bg);
+  color: var(--crm-prebooked-color);
+}
+
+body[data-page="owner-crm"] .crm-status-badge[data-status="declined"] {
+  background-color: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+body[data-page="owner-crm"] .crm-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body[data-page="owner-crm"] .crm-action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+body[data-page="owner-crm"] .crm-action-button:hover {
+  background-color: var(--light-gray-color);
+}
+
+body[data-page="owner-crm"] .crm-action-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+body[data-page="owner-crm"] .crm-action-button[data-action="confirm"] svg {
+  stroke: var(--crm-prebooked-color);
+}
+
+body[data-page="owner-crm"] .crm-action-button[data-action="decline"] svg {
+  stroke: #dc3545;
+}
+
+/* Venues */
+body[data-page="owner-crm"] .crm-venue-status {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 25px;
+}
+
+body[data-page="owner-crm"] .crm-venue-status-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--crm-request-bg);
+  color: var(--crm-request-color);
+}
+
+body[data-page="owner-crm"] #venues-list {
+  display: grid;
+  gap: 20px;
+}
+
+body[data-page="owner-crm"] .crm-venue-card {
+  display: flex;
+  gap: 20px;
+}
+
+body[data-page="owner-crm"] .crm-venue-card .result-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+body[data-page="owner-crm"] .crm-venue-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+body[data-page="owner-crm"] .crm-venue-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+body[data-page="owner-crm"] .crm-venue-actions .cta-button,
+body[data-page="owner-crm"] .crm-venue-actions .secondary-cta-button,
+body[data-page="owner-crm"] .crm-venue-actions .crm-ghost-button {
+  min-width: 0;
+}
+
+body[data-page="owner-crm"] .crm-venue-card .crm-status-badge {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+}
+
+body[data-page="owner-crm"] .crm-ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px dashed var(--border-color);
+  background-color: transparent;
+  color: var(--muted-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-base), border-color var(--transition-base), background-color var(--transition-base);
+}
+
+body[data-page="owner-crm"] .crm-ghost-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: rgba(0, 82, 212, 0.08);
+}
+
+/* Availability */
+body[data-page="owner-crm"] .crm-availability-scheduler {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+body[data-page="owner-crm"] .crm-scheduler-placeholder {
+  padding: 24px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: #fafbff;
+  color: var(--gray-color);
+  text-align: center;
+}
+
+body[data-page="owner-crm"] .crm-day-schedule {
+  background-color: #fafbff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 15px;
+}
+
+body[data-page="owner-crm"] .crm-day-schedule h4 {
+  margin-bottom: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+body[data-page="owner-crm"] .crm-time-slots {
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+body[data-page="owner-crm"] .crm-time-slot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--white-color);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+body[data-page="owner-crm"] .crm-remove-slot-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #dc3545;
+  font-weight: 700;
+}
+
+body[data-page="owner-crm"] .crm-add-slot-form {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+body[data-page="owner-crm"] .crm-add-slot-form input[type="time"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+body[data-page="owner-crm"] .crm-add-slot-btn {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: 6px;
+  padding: 0 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body[data-page="owner-crm"] .crm-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 32, 44, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 999;
+}
+
+body[data-page="owner-crm"] .crm-dialog-overlay.is-hidden {
+  display: none;
+}
+
+body[data-page="owner-crm"] .crm-dialog {
+  background: var(--white-color);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 45px rgba(15, 35, 95, 0.18);
+}
+
+body[data-page="owner-crm"] .crm-dialog h2 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+
+body[data-page="owner-crm"] .crm-dialog p {
+  color: var(--gray-color);
+  margin-bottom: 24px;
+}
+
+body[data-page="owner-crm"] .crm-dialog .cta-button {
+  width: 100%;
+}
+
+/* Settings */
+body[data-page="owner-crm"] .crm-form-group {
+  margin-bottom: 20px;
+}
+
+body[data-page="owner-crm"] .crm-form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+body[data-page="owner-crm"] .crm-form-group input,
+body[data-page="owner-crm"] .crm-form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--white-color);
+}
+
+body[data-page="owner-crm"] .crm-form-group input:focus,
+body[data-page="owner-crm"] .crm-form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--shadow-color);
+}
+
+body[data-page="owner-crm"] .crm-card-footer {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  text-align: right;
+}
+
+body[data-page="owner-crm"] .crm-form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+body[data-page="owner-crm"] .crm-toggle-switch-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+body[data-page="owner-crm"] .crm-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+
+body[data-page="owner-crm"] .crm-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+body[data-page="owner-crm"] .crm-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 28px;
+}
+
+body[data-page="owner-crm"] .crm-slider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--white-color);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+body[data-page="owner-crm"] .crm-switch input:checked + .crm-slider {
+  background-color: var(--primary-color);
+}
+
+body[data-page="owner-crm"] .crm-switch input:checked + .crm-slider::before {
+  transform: translateX(22px);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  body[data-page="owner-crm"] .crm-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  body[data-page="owner-crm"] .crm-sidebar {
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+  }
+
+  body[data-page="owner-crm"] .crm-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  body[data-page="owner-crm"] .crm-main {
+    padding: 20px;
+  }
+
+  body[data-page="owner-crm"] .crm-page-title {
+    font-size: 2rem;
+  }
+
+  body[data-page="owner-crm"] .crm-venue-card {
+    flex-direction: column;
+  }
+
+  body[data-page="owner-crm"] .crm-venue-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  body[data-page="owner-crm"] .crm-venue-actions .cta-button,
+  body[data-page="owner-crm"] .crm-venue-actions .secondary-cta-button,
+  body[data-page="owner-crm"] .crm-venue-actions .crm-ghost-button {
+    flex: 1 1 auto;
+  }
+}
