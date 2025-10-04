@@ -1,5 +1,5 @@
 const locations = [
-  "București", "Cluj-Napoca", "Timișoara", "Iași", "Constanța", "Craiova", "Brașov", "Galați", "Ploiești", "Oradea", "Brăila", "Arad", "Pitești", "Sibiu", "Bacău", "Târgu Mureș", "Baia Mare", "Buzău", "Botoșani", "Satu Mare", "Râmnicu Vâlcea", "Suceava", "Piatra Neamț", "Drobeta-Turnu Severin", "Focșani", "Târgu Jiu", "Tulcea", "Târgoviște", "Reșița", "Slatina", "Hunedoara", "Vaslui", "Bârlad", "Roman", "Giurgiu", "Alba Iulia", "Zalău", "Sfântu Gheorghe", "Turda", "Mediaș", "Slobozia", "Călărași", "Alexandria", "Miercurea Ciuc", "Deva", "Lugoj", "Mangalia", "Sinaia", "Predeal", "Bușteni", "Mamaia",
+  "București", "Cluj-Napoca", "Timișoara", "Iași", "Constanța", "Craiova", "Brașov", "Galați", "Ploiești", "Oradea", "Brăila", "Arad", "Pitești", "Sibiu", "Bacău", "Târgu Mureș", "Baia Mare", "Buzău", "Botoșani", "Satu Mare", "Râmnicu Vâlcea", "Suceava", "Piatra Neamț", "Drobeta-Turnu Severin", "Focșani", "Târgu Jiu", "Tulcea", "Târgoviște", "Reșița", "Slatina", "Hunedoara", "Vaslui", "Bârlad", "Roman", "Giurgiu", "Alba Iulia", "Zalău", "Sfântu Gheorghe", "Turda", "Mediaș", "Sighișoara", "Slobozia", "Călărași", "Alexandria", "Miercurea Ciuc", "Deva", "Lugoj", "Mangalia", "Sinaia", "Predeal", "Bușteni", "Mamaia",
   "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
 ];
 // Remove duplicates
@@ -18,7 +18,7 @@ export function initAutocomplete(inputId) {
   input.addEventListener('input', function() {
     const value = this.value;
     closeAllLists();
-    if (!value || value.length < 3) {
+    if (!value) {
       return false;
     }
 
@@ -29,7 +29,7 @@ export function initAutocomplete(inputId) {
     document.body.appendChild(suggestionsWrapper);
     const rect = this.getBoundingClientRect();
     suggestionsWrapper.style.left = rect.left + 'px';
-    suggestionsWrapper.style.top = rect.bottom + 5 + 'px';
+    suggestionsWrapper.style.top = rect.bottom + 'px';
     suggestionsWrapper.style.width = rect.width + 'px';
     
     const normalizedValue = normalizeString(value).toUpperCase();
