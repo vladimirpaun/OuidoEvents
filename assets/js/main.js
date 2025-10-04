@@ -1,7 +1,5 @@
 import { initLayout } from './components/layout.js';
 
-const PAGES_WITH_STYLE_MENU = new Set(['home', 'locations', 'venue-details']);
-
 function getPageKey() {
   return document.body.dataset.page || 'home';
 }
@@ -24,10 +22,7 @@ function initializePageModule(pageKey) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const pageKey = getPageKey();
-  initLayout({
-    pageKey,
-    includeStyleMenu: PAGES_WITH_STYLE_MENU.has(pageKey)
-  });
+  initLayout({ pageKey });
 
   initializePageModule(pageKey);
 });

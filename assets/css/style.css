@@ -12,6 +12,7 @@
 @import "components/_cards.css";
 @import "components/_forms.css";
 @import "components/_badges.css";
+@import "components/_search.css";
 
 @import "pages/_home.css";
 @import "pages/_locations.css";

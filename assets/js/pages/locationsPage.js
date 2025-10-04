@@ -76,7 +76,7 @@ export function initLocationsPage() {
           </div>
           <div class="result-info">
             <span class="result-price">de la <strong>${location.price}€</strong>/pers</span>
-            <a href="venue-details.html?id=${location.id}" class="view-details-btn">Vezi disponibilitatea</a>
+            <a href="venue-details.html?id=${location.id}" class="view-details-btn" title="Vezi detalii locație">Detalii</a>
           </div>
         </div>
       `;

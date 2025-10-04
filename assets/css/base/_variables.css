@@ -2,7 +2,7 @@
   --primary-color: #0052d4;
   --secondary-color: #4364f7;
   --accent-color: #5ddcff;
-  --header-bg: #ffffff;
+  --header-bg: linear-gradient(to right, #f8fbff, #eef5ff);
   --dark-color: #1a202c;
   --gray-color: #555555;
   --muted-color: #7a7f87;
@@ -14,24 +14,4 @@
   --border-radius: 12px;
   --transition-base: 0.3s ease;
   --header-height: 74px;
-}
-
-header[data-gradient="classic"] {
-  --header-bg: #ffffff;
-}
-
-header[data-gradient="sky"] {
-  --header-bg: linear-gradient(to right, #f8fbff, #eef5ff);
-}
-
-header[data-gradient="ocean"] {
-  --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff);
-}
-
-header[data-gradient="twilight"] {
-  --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7);
-}
-
-header[data-gradient="deep"] {
-  --header-bg: linear-gradient(to right, #4364f7, #0052d4);
 }

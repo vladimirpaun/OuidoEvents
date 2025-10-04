@@ -6,16 +6,6 @@ const NAV_LINKS = [
   { href: 'contact.html', label: 'Contact', page: 'contact' }
 ];
 
-const GRADIENT_OPTIONS = [
-  { value: 'classic', label: 'Clasic' },
-  { value: 'sky', label: 'Sky' },
-  { value: 'ocean', label: 'Ocean' },
-  { value: 'twilight', label: 'Twilight' },
-  { value: 'deep', label: 'Deep' }
-];
-
-const GRADIENT_STORAGE_KEY = 'ouidoEvents:headerGradient';
-
 function createNavLinksMarkup(activePage) {
   return NAV_LINKS.map(({ href, label, page }) => {
     const isActive = activePage === page;
@@ -23,22 +13,8 @@ function createNavLinksMarkup(activePage) {
   }).join('');
 }
 
-function createGradientSwitcherMarkup() {
-  const options = GRADIENT_OPTIONS.map(option => `<option value="${option.value}">${option.label}</option>`).join('');
-  return `
-    <div class="gradient-switcher">
-      <label>Stil meniu</label>
-      <select data-gradient-select>
-        ${options}
-      </select>
-    </div>
-  `;
-}
-
-function buildHeader({ includeStyleMenu, activeNavKey }) {
+function buildHeader({ activeNavKey }) {
   const header = document.createElement('header');
-  const storedGradient = localStorage.getItem(GRADIENT_STORAGE_KEY) || 'classic';
-  header.dataset.gradient = storedGradient;
 
   header.innerHTML = `
     <div class="container header-container">
@@ -46,7 +22,6 @@ function buildHeader({ includeStyleMenu, activeNavKey }) {
       <nav class="nav-links" data-nav="desktop">
         ${createNavLinksMarkup(activeNavKey)}
       </nav>
-      ${includeStyleMenu ? createGradientSwitcherMarkup() : ''}
       <div class="header-actions" data-actions="desktop">
         <div class="user-links-placeholder" data-user-links></div>
         <a href="login.html" class="secondary-cta-button">Conectare</a>
@@ -61,7 +36,6 @@ function buildHeader({ includeStyleMenu, activeNavKey }) {
     <div class="mobile-nav-overlay" id="mobile-nav">
       <nav class="nav-links" data-nav="mobile"></nav>
       <div class="header-actions" data-actions="mobile"></div>
-      ${includeStyleMenu ? createGradientSwitcherMarkup() : ''}
     </div>
   `;
 
@@ -76,21 +50,6 @@ function buildHeader({ includeStyleMenu, activeNavKey }) {
   if (mobileActions && desktopActions) {
     mobileActions.innerHTML = desktopActions.innerHTML;
   }
-
-  const gradientSelectors = header.querySelectorAll('[data-gradient-select]');
-  gradientSelectors.forEach(select => {
-    select.value = storedGradient;
-    select.addEventListener('change', event => {
-      const selectedValue = event.target.value;
-      header.dataset.gradient = selectedValue;
-      localStorage.setItem(GRADIENT_STORAGE_KEY, selectedValue);
-      gradientSelectors.forEach(otherSelect => {
-        if (otherSelect !== event.target) {
-          otherSelect.value = selectedValue;
-        }
-      });
-    });
-  });
 
   const mobileMenuButton = header.querySelector('.mobile-menu-button');
   const mobileOverlay = header.querySelector('.mobile-nav-overlay');
@@ -153,14 +112,14 @@ function resolveActiveNavKey(pageKey) {
   return pageKey;
 }
 
-export function initLayout({ pageKey = 'home', includeStyleMenu = false } = {}) {
+export function initLayout({ pageKey = 'home' } = {}) {
   const main = document.querySelector('main');
   if (!main) {
     return;
   }
 
   const activeNavKey = resolveActiveNavKey(pageKey);
-  const header = buildHeader({ includeStyleMenu, activeNavKey });
+  const header = buildHeader({ activeNavKey });
   main.parentElement.insertBefore(header, main);
 
   const footer = buildFooter();

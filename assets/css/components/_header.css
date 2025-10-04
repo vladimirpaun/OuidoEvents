@@ -1,7 +1,7 @@
 header {
   padding: 15px 0;
   background: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(67, 100, 247, 0.12);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -60,37 +60,6 @@ header {
   color: var(--primary-color);
 }
 
-header[data-gradient="deep"] .nav-links a,
-header[data-gradient="deep"] .gradient-switcher label {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-header[data-gradient="deep"] .nav-links a.active {
-  color: var(--white-color);
-}
-
-.gradient-switcher {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 20px;
-}
-
-.gradient-switcher label {
-  font-size: 0.875rem;
-  color: var(--gray-color);
-  font-weight: 500;
-}
-
-.gradient-switcher select {
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
 .header-actions {
   display: flex;
   align-items: center;
@@ -117,10 +86,6 @@ header[data-gradient="deep"] .nav-links a.active {
   background-color: var(--dark-color);
   margin: 5px 0;
   transition: all 0.3s ease;
-}
-
-header[data-gradient="deep"] .mobile-menu-button .icon-bar {
-  background-color: var(--white-color);
 }
 
 .mobile-menu-button.open .icon-bar:nth-child(1) {
@@ -178,14 +143,8 @@ header[data-gradient="deep"] .mobile-menu-button .icon-bar {
   text-align: center;
 }
 
-.mobile-nav-overlay .gradient-switcher {
-  margin-left: 0;
-  margin-top: auto;
-}
-
 @media (max-width: 992px) {
   .nav-links,
-  .gradient-switcher,
   .header-actions {
     display: none;
   }
