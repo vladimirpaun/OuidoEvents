@@ -113,7 +113,7 @@ function resolveActiveNavKey(pageKey) {
   return pageKey;
 }
 
-export function initLayout({ pageKey = 'home' } = {}) {
+export function initLayout({ pageKey = 'home', withFooter = true } = {}) {
   const main = document.querySelector('main');
   if (!main) {
     return;
@@ -123,11 +123,13 @@ export function initLayout({ pageKey = 'home' } = {}) {
   const header = buildHeader({ activeNavKey });
   main.parentElement.insertBefore(header, main);
 
-  const footer = buildFooter();
-  if (main.nextElementSibling) {
-    main.parentElement.insertBefore(footer, main.nextElementSibling);
-  } else {
-    main.parentElement.appendChild(footer);
+  if (withFooter) {
+    const footer = buildFooter();
+    if (main.nextElementSibling) {
+      main.parentElement.insertBefore(footer, main.nextElementSibling);
+    } else {
+      main.parentElement.appendChild(footer);
+    }
   }
 
   synchronizeActiveLinks(header, activeNavKey);

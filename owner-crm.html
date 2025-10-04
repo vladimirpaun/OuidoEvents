@@ -4,13 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ouidoEvents · CRM proprietari</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body data-page="owner-crm">
-  <div class="crm-app">
+  <main class="crm-shell">
+    <div class="crm-app">
     <aside class="crm-sidebar" aria-label="Navigare CRM">
       <div class="crm-sidebar-header">
         <a href="index.html" class="crm-sidebar-logo">ouidoEvents CRM</a>
@@ -19,10 +17,6 @@
         <a href="#dashboard" class="crm-nav-link is-active" data-crm-nav data-page-target="dashboard">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           <span>Dashboard</span>
-        </a>
-        <a href="#calendar" class="crm-nav-link" data-crm-nav data-page-target="calendar">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          <span>Calendar</span>
         </a>
         <a href="#bookings" class="crm-nav-link" data-crm-nav data-page-target="bookings">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -53,7 +47,7 @@
       </div>
     </aside>
 
-    <main class="crm-main">
+    <section class="crm-main" aria-label="Conținut CRM">
       <section class="crm-page is-active" id="dashboard" data-page-section="dashboard">
         <header class="crm-page-header">
           <h1 class="crm-page-title">Panou general</h1>
@@ -61,42 +55,60 @@
         </header>
 
         <div class="crm-stats-grid">
-          <div class="crm-stat-card" data-variant="venues">
+          <article class="crm-stat-card" data-variant="venues">
             <div class="crm-stat-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
             </div>
             <div>
-              <div class="crm-stat-value" id="total-venues-stat">0</div>
-              <div class="crm-stat-label">Locații listate</div>
+              <p class="crm-stat-value" id="total-venues-stat">0</p>
+              <p class="crm-stat-label">Locații listate</p>
             </div>
-          </div>
-          <div class="crm-stat-card" data-variant="bookings">
+          </article>
+          <article class="crm-stat-card" data-variant="bookings">
             <div class="crm-stat-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div>
-              <div class="crm-stat-value" id="active-venues-stat">0</div>
-              <div class="crm-stat-label">Locații active</div>
+              <p class="crm-stat-value" id="active-venues-stat">0</p>
+              <p class="crm-stat-label">Locații active</p>
             </div>
-          </div>
-          <div class="crm-stat-card" data-variant="requests">
+          </article>
+          <article class="crm-stat-card" data-variant="requests">
             <div class="crm-stat-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>
             </div>
             <div>
-              <div class="crm-stat-value" id="event-requests-stat">0</div>
-              <div class="crm-stat-label">Solicitări eveniment</div>
+              <p class="crm-stat-value" id="event-requests-stat">0</p>
+              <p class="crm-stat-label">Solicitări eveniment în așteptare</p>
             </div>
-          </div>
-          <div class="crm-stat-card" data-variant="visits">
+          </article>
+          <article class="crm-stat-card" data-variant="visits">
             <div class="crm-stat-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
             </div>
             <div>
-              <div class="crm-stat-value" id="visit-requests-stat">0</div>
-              <div class="crm-stat-label">Cereri de vizită</div>
+              <p class="crm-stat-value" id="visit-requests-stat">0</p>
+              <p class="crm-stat-label">Vizite în așteptare</p>
             </div>
-          </div>
+          </article>
+          <article class="crm-stat-card" data-variant="visits-total">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 5 17 10"></polyline></svg>
+            </div>
+            <div>
+              <p class="crm-stat-value" id="total-visits-stat">0</p>
+              <p class="crm-stat-label">Număr total vizite</p>
+            </div>
+          </article>
+          <article class="crm-stat-card" data-variant="visits-month">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18"></path><path d="M8 8h13"></path><path d="M8 12h13"></path><path d="M8 16h13"></path><path d="M3 8h.01"></path><path d="M3 12h.01"></path><path d="M3 16h.01"></path></svg>
+            </div>
+            <div>
+              <p class="crm-stat-value" id="monthly-visits-stat">0</p>
+              <p class="crm-stat-label">Vizite din luna curentă</p>
+            </div>
+          </article>
         </div>
 
         <div class="crm-dashboard-grid">
@@ -141,31 +153,19 @@
             <p>Următoarele evenimente confirmate vor fi afișate aici pentru o planificare rapidă.</p>
           </section>
         </div>
-      </section>
-
-      <section class="crm-page" id="calendar" data-page-section="calendar">
-        <header class="crm-page-header">
-          <h1 class="crm-page-title">Calendar general</h1>
-          <p class="crm-page-subtitle">Vizualizează toate evenimentele și blocajele dintr-o privire.</p>
-        </header>
-        <div class="crm-page-filter">
-          <label for="calendar-venue-filter">Filtrează după locație:</label>
-          <select id="calendar-venue-filter"></select>
-        </div>
-        <div class="crm-calendar-container">
-          <section class="crm-card crm-calendar">
-            <div id="calendar-grid-container"></div>
+        <div class="crm-dashboard-grid crm-dashboard-grid--charts">
+          <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Evoluție vizite pe ultimele 12 luni</h2>
+            </div>
+            <div class="crm-chart" id="visits-trend-chart" role="img" aria-label="Grafic evoluție vizite"></div>
           </section>
-          <aside class="crm-card crm-calendar-legend" aria-label="Legendă calendar">
-            <h2 class="crm-card-title">Legendă</h2>
-            <ul>
-              <li><span class="crm-legend-color" style="background-color: var(--crm-booked-bg);"></span> Confirmat</li>
-              <li><span class="crm-legend-color" style="background-color: var(--crm-prebooked-bg);"></span> Pre-rezervat</li>
-              <li><span class="crm-legend-color" style="background-color: var(--crm-request-bg);"></span> Solicitare</li>
-              <li><span class="crm-legend-color" style="background-color: var(--crm-visit-request-bg);"></span> Vizită</li>
-              <li><span class="crm-legend-color" style="background-color: var(--crm-unavailable-bg);"></span> Indisponibil</li>
-            </ul>
-          </aside>
+          <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Rata de ocupare următoarele 3 luni</h2>
+            </div>
+            <div class="crm-chart" id="occupancy-pie-chart" role="img" aria-label="Pie chart rata de ocupare"></div>
+          </section>
         </div>
       </section>
 
@@ -261,7 +261,14 @@
             <h2 class="crm-card-title">Blochează date pentru evenimente</h2>
           </div>
           <p>Selectează zilele în care locația nu poate găzdui evenimente (ex. renovări, evenimente private).</p>
-          <div id="availability-calendar-container"></div>
+          <div class="crm-availability-legend" aria-label="Legendă disponibilitate">
+            <span data-variant="booked">Confirmat</span>
+            <span data-variant="prebooked">Pre-rezervat</span>
+            <span data-variant="request">Solicitare</span>
+            <span data-variant="visit">Vizită</span>
+            <span data-variant="unavailable">Indisponibil</span>
+          </div>
+          <div id="availability-calendar-container" class="crm-calendar"></div>
         </section>
         <section class="crm-card">
           <div class="crm-card-header">
@@ -366,7 +373,16 @@
           </form>
         </section>
       </section>
-    </main>
+    </section>
+    </div>
+  </main>
+
+  <div class="crm-dialog-overlay is-hidden" id="availability-dialog" role="alertdialog" aria-modal="true" aria-labelledby="availability-dialog-title">
+    <div class="crm-dialog">
+      <h2 id="availability-dialog-title">Selectează o locație</h2>
+      <p>Vizualizarea "Toate locațiile" este destinată consultării. Alege o locație pentru a actualiza disponibilitatea.</p>
+      <button type="button" class="cta-button" data-dialog-close>Am înțeles</button>
+    </div>
   </div>
 
   <script src="assets/js/pages/ownerCrmPage.js" type="module"></script>
