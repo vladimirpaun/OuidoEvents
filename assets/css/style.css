@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@import "base/_variables.css";
+@import "base/_reset.css";
+@import "base/_typography.css";
+
+@import "layout/_layout.css";
+
+@import "components/_buttons.css";
+@import "components/_header.css";
+@import "components/_footer.css";
+@import "components/_cards.css";
+@import "components/_forms.css";
+@import "components/_badges.css";
+
+@import "pages/_home.css";
+@import "pages/_locations.css";
+@import "pages/_contact.css";
+@import "pages/_auth.css";
+@import "pages/_venue-details.css";

@@ -1,0 +1,93 @@
+body[data-page="login"] .account-section,
+body[data-page="create-account"] .account-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+}
+
+body[data-page="login"] .account-form-container,
+body[data-page="create-account"] .account-form-container {
+  background-color: var(--white-color);
+  padding: 40px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+body[data-page="login"] .account-form-container h1,
+body[data-page="create-account"] .account-form-container h1 {
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+}
+
+body[data-page="login"] .account-form-container p,
+body[data-page="create-account"] .account-form-container p {
+  color: var(--gray-color);
+  margin-bottom: 30px;
+}
+
+body[data-page="login"] .account-form-container .cta-button,
+body[data-page="create-account"] .account-form-container .cta-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  margin-top: 10px;
+}
+
+body[data-page="login"] .register-link,
+body[data-page="create-account"] .register-link {
+  margin-top: 25px;
+  font-size: 0.95rem;
+}
+
+body[data-page="login"] .register-link a,
+body[data-page="create-account"] .register-link a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 576px) {
+  body[data-page="login"] .account-form-container,
+  body[data-page="create-account"] .account-form-container {
+    padding: 30px 20px;
+  }
+}
+body[data-page="create-account"] .radio-options {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+body[data-page="create-account"] .radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-color);
+  padding: 12px 15px;
+  border-radius: 8px;
+  flex: 1;
+  cursor: pointer;
+  transition: border-color var(--transition-base);
+}
+
+body[data-page="create-account"] .radio-option:hover {
+  border-color: var(--secondary-color);
+}
+
+body[data-page="create-account"] .radio-option input {
+  width: auto;
+}
+
+body[data-page="create-account"] .radio-option span {
+  font-weight: 500;
+}
+
+@media (max-width: 576px) {
+  body[data-page="create-account"] .radio-options {
+    flex-direction: column;
+  }
+}

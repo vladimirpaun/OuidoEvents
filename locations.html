@@ -1,556 +1,105 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ouidoEvents - Toate Locațiile</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <style>
-        /* Copiază stilurile CSS din index.html AICI */
-        :root {
-            --primary-color: #0052D4;
-            --secondary-color: #4364F7;
-            --header-bg: #ffffff;
-            --dark-color: #1a202c;
-            --gray-color: #555;
-            --light-gray-color: #f0f2f5;
-            --bg-color: #f8f9fa;
-            --white-color: #ffffff;
-            --border-color: #e5eaf1;
-            --shadow-color: rgba(0, 82, 212, 0.1);
-            --border-radius: 12px;
-        }
-
-        header[data-gradient="classic"] { --header-bg: #ffffff; }
-        header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
-        header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
-        header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
-        header[data-gradient="deep"] { --header-bg: linear-gradient(to right, #4364F7, #0052D4); }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
-        .nav-links { display: flex; align-items: center; gap: 30px; }
-        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-
-        header[data-gradient="deep"] .nav-links a,
-        header[data-gradient="deep"] .gradient-switcher label { color: var(--white-color); opacity: 0.9; }
-
-        .nav-links a:hover { color: var(--primary-color); }
-        header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
-
-        .gradient-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
-        .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
-        .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
-
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
-        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
-        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
-
-        /* NOU: Stiluri pentru bara de căutare (preluate din index.html) */
-        .main-search-section { text-align: left; padding: 60px 0; background: var(--white-color); }
-        .main-search-section h1 { font-size: 2.5rem; margin-bottom: 15px; font-weight: 700; }
-        .main-search-section p { font-size: 1.1rem; margin-bottom: 40px; color: var(--gray-color); max-width: 700px; }
-
-        .search-box { display: flex; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 8px 25px var(--shadow-color); overflow: hidden; height: 80px; border: 1px solid var(--border-color); max-width: 1100px; margin: 0 auto; }
-        .search-group { flex: 1; position: relative; height: 100%; border-right: 1px solid var(--border-color); padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
-        .search-group:hover, .search-group:focus-within { background-color: #fcfdff; }
-        .event-type-group { flex: 1.2; } .location-group { flex: 1.2; } .date-group { flex: 1; } .guests-group { flex: 0.8; border-right: none; }
-        .search-group label { font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 6px; text-align: left; }
-        .search-group input, .search-group select { width: 100%; border: none; outline: none; font-size: 16px; color: var(--gray-color); font-family: inherit; background: transparent; padding: 0; margin: 0; }
-        .search-box .search-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 18px; width: 180px; height: 100%; transition: all 0.3s ease; }
-        .search-box .search-button:hover { opacity: 0.9; }
-
-        /* Stilizare specifică pentru pagina de locații */
-        .locations-container { display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 40px 0; align-items: flex-start; }
-        .filters { width: 100%; }
-        .filter-group { margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--white-color); overflow: hidden; }
-        .filter-group summary { padding: 15px; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        .filter-group summary::-webkit-details-marker { display: none; }
-        .filter-group-content { padding: 0 15px 15px; }
-        .filter-group-content label { display: block; margin-bottom: 10px; font-weight: 400; font-size: 0.95rem; }
-        .filter-group-content ul { list-style: none; padding: 0; }
-        .filter-group-content li { margin-bottom: 8px; display: flex; align-items: center; }
-        .filter-group-content li label { font-size: 0.9rem; font-weight: 400; margin-bottom: 0; }
-        .filter-group-content input[type="checkbox"] { margin-right: 8px; }
-        .filter-group-content input[type="radio"] { margin-right: 8px; }
-        #price-value { font-weight: 600; }
-
-        .main-content { flex: 1; }
-        .sort-bar { display: flex; justify-content: flex-end; margin-bottom: 20px; align-items: center; }
-        .sort-bar label { margin-right: 10px; font-weight: 500; }
-        .sort-bar select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); }
-
-        .locations-list { display: flex; flex-direction: column; gap: 20px; }
-
-        .result-card { display: flex; background: var(--white-color); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); transition: all 0.3s ease; border: 1px solid var(--border-color); }
-        .result-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px var(--shadow-color); }
-
-        /* NOU: Buton Favorite */
-        .favorite-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.8);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(2px);
-        }
-        .favorite-btn:hover {
-            background: var(--white-color);
-            transform: scale(1.1);
-        }
-        .favorite-btn svg {
-            width: 22px;
-            height: 22px;
-            stroke: var(--dark-color);
-            stroke-width: 2;
-            fill: none;
-            transition: all 0.2s ease;
-        }
-        .favorite-btn.is-favorite svg {
-            fill: #ff4d4d;
-            stroke: #ff4d4d;
-        }
-
-        .result-image { height: 220px; background: url('/api/placeholder/400/300') center/cover no-repeat; }
-        .result-details { padding: 20px; }
-        .result-tags { display: flex; gap: 8px; margin-bottom: 12px; }
-        .tag { background-color: var(--light-gray-color); color: var(--gray-color); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-        .result-name { font-weight: 600; font-size: 1.2rem; margin-bottom: 5px; color: var(--dark-color); }
-        .result-location { color: var(--gray-color); font-size: 0.95rem; margin-bottom: 10px; }
-
-        .result-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .rating-badge { background-color: var(--primary-color); color: white; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 0.9rem; }
-        .rating-text { font-weight: 600; }
-        .rating-reviews { color: var(--gray-color); font-size: 0.9rem; }
-
-        .result-card { display: flex; gap: 20px; }
-        .result-image { width: 250px; height: auto; flex-shrink: 0; }
-        .result-details { flex: 1; display: flex; flex-direction: column; }
-        /* NOU: Sectiunea pentru meta-informatii (capacitate, etc.) */
-        .result-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--gray-color);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-
-        .result-meta svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--gray-color);
-            opacity: 0.8;
-        }
-
-        /* MODIFICAT: Bara de actiune de jos */
-        .result-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto; /* Impinge in jos */
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-        }
-
-        .result-price {
-            font-size: 0.9rem;
-            color: var(--dark-color);
-            font-weight: 500;
-        }
-
-        .result-price strong {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .view-details-btn {
-            background-color: var(--primary-color); color: var(--white-color); text-decoration: none;
-            padding: 8px 16px; border-radius: 50px; font-weight: 500; font-size: 14px;
-            transition: background-color 0.3s ease;
-            white-space: nowrap; /* Previne trecerea textului pe randul 2 */
-        }
-        .view-details-btn:hover { background-color: var(--secondary-color); }
-
-        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
-        
-        /* NOU: Stiluri pentru calendarul modern (Flatpickr) */
-        .flatpickr-calendar {
-            background: var(--white-color);
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 25px var(--shadow-color);
-            border: 1px solid var(--border-color);
-            width: auto;
-        }
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
-        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        .flatpickr-day:hover {
-            background: var(--light-gray-color);
-            border-color: var(--light-gray-color);
-        }
-        .flatpickr-day.today { border-color: var(--secondary-color); }
-        .flatpickr-day.today:hover { border-color: var(--secondary-color); background: var(--secondary-color); color: var(--white-color); }
-        .flatpickr-months .flatpickr-month, .flatpickr-weekdays, .numInputWrapper, .flatpickr-current-month .flatpickr-monthDropdown-months {
-            color: var(--dark-color);
-            fill: var(--dark-color);
-        }
-
-        /* Adaugă aici stilurile pentru meniul mobil din pasul 1 */
-        .mobile-menu-button { display: none; /* ... etc */ }
-        .mobile-nav-overlay { display: none; /* ... etc */ }
-        /* ... restul stilurilor pentru mobil ... */
-
-
-        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; } /* ... restul stilurilor ... */
-        .footer-about p { color: #bbb; }
-        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
-        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
-        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
-
-        @media (max-width: 992px) {
-            .nav-links, .header-actions { display: none; }
-            .mobile-menu-button { display: block; }
-
-            .search-box { height: auto; flex-direction: column; }
-            .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
-            .guests-group { border-bottom: none; }
-            .search-box .search-button { width: 100%; padding: 18px; border-radius: 0 0 var(--border-radius) var(--border-radius); }
-        }
-
-        @media (max-width: 820px) { /* Ajustat pentru a preveni suprapunerea cardurilor */
-            .locations-container { grid-template-columns: 1fr; }
-            .filters { width: 100%; margin-right: 0; margin-bottom: 20px; }
-            .result-card { flex-direction: column; }
-            .result-image { width: 100%; height: 200px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ouidoEvents - Toate Locațiile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
-    <header data-gradient="classic">
-        <div class="container header-container">
-            <a href="index.html" class="logo">OuidoEvents</a>
-            <nav class="nav-links">
-                <a href="locations.html">Locații</a>
-                <a href="#">Blog</a>
-                <a href="#">Despre noi</a>
-                <a href="contact.html">Contact</a>
-                <div class="gradient-switcher">
-                    <label for="gradient-selector">Stil Meniu:</label>
-                    <select id="gradient-selector">
-                        <option value="classic">Clasic</option>
-                        <option value="sky">Cer Senin</option>
-                        <option value="ocean">Ocean</option>
-                        <option value="twilight">Amurg</option>
-                        <option value="deep">Albastru Intens</option>
-                    </select>
-                </div>
-            </nav>
-            <div class="header-actions">
-                <a href="login.html" class="secondary-cta-button">Conectare</a>
-                <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
-            </div>
-            <button class="mobile-menu-button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+<body data-page="locations">
+  <main>
+    <section class="main-search-section">
+      <div class="container">
+        <div class="search-box">
+          <div class="search-group event-type-group">
+            <label for="event-type">Tipul evenimentului</label>
+            <select id="event-type">
+              <option value="nunta">Nuntă</option>
+              <option value="botez">Botez</option>
+              <option value="corporate">Eveniment Corporate</option>
+              <option value="privat">Petrecere Privată</option>
+              <option value="conferinta">Conferință</option>
+            </select>
+          </div>
+          <div class="search-group location-group">
+            <label for="location">Locația</label>
+            <input type="text" id="location" placeholder="Oraș sau județ">
+          </div>
+          <div class="search-group date-group">
+            <label for="event-date">Data evenimentului</label>
+            <input type="text" id="event-date" placeholder="dd/mm/yyyy" readonly>
+          </div>
+          <div class="search-group guests-group">
+            <label for="guests">Invitați</label>
+            <input type="number" id="guests" placeholder="Număr" min="10">
+          </div>
+          <button class="search-button" type="button">Caută</button>
         </div>
-        <div class="mobile-nav-overlay">
-            <nav class="nav-links">
-                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
-            </nav>
-            <div class="header-actions">
-                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
-            </div>
-        </div>
-    </header>
+      </div>
+    </section>
 
-    <main>
-        <section class="main-search-section">
-            <div class="container">
-                <div class="search-box">
-                    <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
-                    <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
-                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="text" id="event-date" placeholder="dd/mm/yyyy"></div>
-                    <div class="search-group guests-group"><label for="guests">Invitați</label><input type="number" id="guests" placeholder="Număr" min="10"></div>
-                    <button class="search-button">Caută</button>
-                </div>
-            </div>
+    <div class="container locations-container">
+      <aside class="filters">
+        <details class="filter-group" open>
+          <summary>Buget (Preț/persoană)</summary>
+          <div class="filter-group-content">
+            <input type="range" id="price-slider" min="50" max="300" value="300">
+            <label for="price-slider">Până la: <span id="price-value">300</span>€</label>
+          </div>
+        </details>
+        <details class="filter-group" open>
+          <summary>Capacitate Invitați</summary>
+          <div class="filter-group-content">
+            <input type="number" id="capacity-input" placeholder="Ex: 150" min="0">
+          </div>
+        </details>
+        <details class="filter-group" open>
+          <summary>Rating</summary>
+          <div class="filter-group-content">
+            <ul>
+              <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9">Wonderful: 9+</label></li>
+              <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8">Very Good: 8+</label></li>
+              <li><input type="radio" name="rating" value="7" id="rating-7"><label for="rating-7">Good: 7+</label></li>
+              <li><input type="radio" name="rating" value="6" id="rating-6"><label for="rating-6">Pleasant: 6+</label></li>
+              <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all">Toate</label></li>
+            </ul>
+          </div>
+        </details>
+        <details class="filter-group" open>
+          <summary>Facilități</summary>
+          <div class="filter-group-content">
+            <ul id="facilities-filter">
+              <li><input type="checkbox" value="Parcare" id="f-parcare"><label for="f-parcare">Parcare</label></li>
+              <li><input type="checkbox" value="Piscină" id="f-piscina"><label for="f-piscina">Piscină</label></li>
+              <li><input type="checkbox" value="Cazare" id="f-cazare"><label for="f-cazare">Cazare</label></li>
+              <li><input type="checkbox" value="Vedere la Lac" id="f-lac"><label for="f-lac">Vedere la Lac</label></li>
+              <li><input type="checkbox" value="Ceremonii în aer liber" id="f-aer-liber"><label for="f-aer-liber">Ceremonii în aer liber</label></li>
+              <li><input type="checkbox" value="Kids Corner" id="f-kids"><label for="f-kids">Kids Corner</label></li>
+            </ul>
+          </div>
+        </details>
+      </aside>
+
+      <div class="main-content">
+        <div class="sort-bar">
+          <label for="sort-options">Sortează după:</label>
+          <select id="sort-options">
+            <option value="recommended">Recomandate</option>
+            <option value="price_asc">Preț (crescător)</option>
+            <option value="price_desc">Preț (descrescător)</option>
+            <option value="rating_desc">Rating (descrescător)</option>
+            <option value="capacity_desc">Capacitate (descrescător)</option>
+          </select>
+        </div>
+        <section class="locations-list" id="locations-list">
+          <!-- Rezultatele generate dinamic -->
         </section>
+      </div>
+    </div>
+  </main>
 
-        <div class="container locations-container">
-            <aside class="filters">
-                <details class="filter-group" open>
-                    <summary>Buget (Preț/persoană)</summary>
-                    <div class="filter-group-content">
-                        <input type="range" id="price-slider" min="50" max="300" value="300" style="width: 100%;">
-                        <label>Până la: <span id="price-value">300</span>€</label>
-                    </div>
-                </details>
-                <details class="filter-group" open>
-                    <summary>Capacitate Invitați</summary>
-                    <div class="filter-group-content">
-                        <input type="number" id="capacity-input" placeholder="Ex: 150" min="0" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
-                    </div>
-                </details>
-                <details class="filter-group" open>
-                    <summary>Rating</summary>
-                    <div class="filter-group-content">
-                        <ul>
-                            <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9">Wonderful: 9+</label></li>
-                            <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8">Very Good: 8+</label></li>
-                            <li><input type="radio" name="rating" value="7" id="rating-7"><label for="rating-7">Good: 7+</label></li>
-                            <li><input type="radio" name="rating" value="6" id="rating-6"><label for="rating-6">Pleasant: 6+</label></li>
-                            <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all">Toate</label></li>
-                        </ul>
-                    </div>
-                </details>
-                <details class="filter-group" open>
-                    <summary>Facilități</summary>
-                    <div class="filter-group-content">
-                        <ul id="facilities-filter">
-                            <li><input type="checkbox" value="Parcare" id="f-parcare"><label for="f-parcare">Parcare</label></li>
-                            <li><input type="checkbox" value="Piscină" id="f-piscina"><label for="f-piscina">Piscină</label></li>
-                            <li><input type="checkbox" value="Cazare" id="f-cazare"><label for="f-cazare">Cazare</label></li>
-                            <li><input type="checkbox" value="Vedere la Lac" id="f-lac"><label for="f-lac">Vedere la Lac</label></li>
-                            <li><input type="checkbox" value="Ceremonii în aer liber" id="f-aer-liber"><label for="f-aer-liber">Ceremonii în aer liber</label></li>
-                            <li><input type="checkbox" value="Kids Corner" id="f-kids"><label for="f-kids">Kids Corner</label></li>
-                        </ul>
-                    </div>
-                </details>
-            </aside>
-
-            <div class="main-content">
-                <div class="sort-bar">
-                    <label for="sort-options">Sortează după:</label>
-                    <select id="sort-options">
-                        <option value="recommended">Recomandate</option>
-                        <option value="price_asc">Preț (crescător)</option>
-                        <option value="price_desc">Preț (descrescător)</option>
-                        <option value="rating_desc">Rating (descrescător)</option>
-                        <option value="capacity_desc">Capacitate (descrescător)</option>
-                    </select>
-                </div>
-                <section class="locations-list" id="locations-list">
-                    <!-- Rezultatele vor fi generate dinamic aici de JavaScript -->
-                </section>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-container">
-                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
-                <div><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="create-account.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
-                <div><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
-                <div><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
-            </div>
-            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Structura de Date
-        const locations = [
-            { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, capacity_min: 150, capacity_max: 400, tags: ['Exclusivist', 'Panoramic'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Event planner'], rating: 9.4, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, capacity_min: 80, capacity_max: 200, tags: ['Natură', 'Piscină'], facilities: ['Parcare', 'Piscină', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.8, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fHJlc29ydCUyMHN3aW1taW5nJTIwcG9vbHxlbnwwfHx8fDE2NTg0MjYwMTA&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, capacity_min: 50, capacity_max: 150, tags: ['Modern', 'Rooftop'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 9.1, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxyb29mdG9wJTIwYmFyfGVufDB8fHx8MTY1ODQyNjA1Mw&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 4, name: 'Palatul Noblesse', city: 'Iași', price: 105, capacity_min: 100, capacity_max: 250, tags: ['Istoric', 'Elegant'], facilities: ['Parcare', 'Event planner', 'Wi-Fi gratuit'], rating: 8.9, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 5, name: 'Laguna Albastră', city: 'Constanța', price: 130, capacity_min: 100, capacity_max: 300, tags: ['Plajă', 'Vedere la mare'], facilities: ['Parcare', 'Piscină', 'Ceremonii în aer liber', 'Vedere la Lac'], rating: 9.5, imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE2NTg0MjYxNDQ&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 6, name: 'Conacul din Vii', city: 'Prahova', price: 85, capacity_min: 40, capacity_max: 120, tags: ['Rustic', 'Tradițional'], facilities: ['Parcare', 'Cazare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 8.5, imageUrl: 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxydXN0aWMlMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYxODU&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, capacity_min: 100, capacity_max: 250, tags: ['Lac', 'Natură'], facilities: ['Parcare', 'Vedere la Lac', 'Ceremonii în aer liber', 'Event planner'], rating: 9.6, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsYWtlJTIwcmVzb3J0fGVufDB8fHx8MTY1ODQyNjIyOA&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 8, name: 'Mountain Peak', city: 'Sinaia', price: 100, capacity_min: 60, capacity_max: 180, tags: ['Munte', 'Panoramic'], facilities: ['Parcare', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.2, imageUrl: 'https://images.unsplash.com/photo-1559538739-998a8116a533?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxtb3VudGFpbiUyMGNoYWxldHxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 9, name: 'Urban Loft', city: 'Timișoara', price: 75, capacity_min: 30, capacity_max: 80, tags: ['Industrial', 'Modern'], facilities: ['Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Kids Corner'], rating: 8.2, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 10, name: 'Grădina cu Lavandă', city: 'Sibiu', price: 90, capacity_min: 50, capacity_max: 150, tags: ['Grădină', 'Romantic'], facilities: ['Parcare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 9.0, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 11, name: 'Delta Paradise', city: 'Tulcea', price: 70, capacity_min: 40, capacity_max: 100, tags: ['Natură', 'Delta'], facilities: ['Parcare', 'Cazare', 'Vedere la Lac'], rating: 7.8, imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6164a83639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsdXh1cnklMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
-            { id: 12, name: 'Centrul de Conferințe Oradea', city: 'Oradea', price: 65, capacity_min: 20, capacity_max: 500, tags: ['Business', 'Modern'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 6.9, imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxhdWRpdG9yaXVtfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' }
-        ];
-
-        const locationsListContainer = document.getElementById('locations-list');
-        const priceSlider = document.getElementById('price-slider');
-        const priceValue = document.getElementById('price-value');
-        const capacityInput = document.getElementById('capacity-input');
-        const facilitiesCheckboxes = document.querySelectorAll('#facilities-filter input[type="checkbox"]');
-        const ratingRadios = document.querySelectorAll('input[name="rating"]');
-        const sortOptions = document.getElementById('sort-options');
-        const searchButton = document.querySelector('.search-button');
-        const gradientSelector = document.getElementById('gradient-selector');
-        const header = document.querySelector('header');
-
-        // Simulare stare login & favorite
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Vom presupune ca userul e logat daca aceasta valoare e 'true'
-        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
-
-        // Logica pentru meniul mobil (identica cu index.html)
-        const mobileMenuButton = document.querySelector('.mobile-menu-button');
-        const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-        const desktopNav = document.querySelector('.header-container .nav-links');
-        const desktopActions = document.querySelector('.header-container .header-actions');
-        mobileNavOverlay.querySelector('.nav-links').innerHTML = desktopNav.innerHTML;
-        mobileNavOverlay.querySelector('.header-actions').innerHTML = desktopActions.innerHTML;
-        mobileMenuButton.addEventListener('click', function() {
-            this.classList.toggle('open');
-            mobileNavOverlay.classList.toggle('active');
-        });
-
-
-        searchButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            applyFiltersAndSort();
-        });
-
-        // 4. Funcția principală de randare
-        function renderLocations(locationsArray) {
-            locationsListContainer.innerHTML = ''; // Golește containerul
-            if (locationsArray.length === 0) {
-                locationsListContainer.innerHTML = '<p>Nicio locație nu corespunde filtrelor selectate.</p>';
-                return;
-            }
-
-            locationsArray.forEach(loc => {
-                const ratingText = loc.rating >= 9.5 ? 'Excepțional' : loc.rating >= 9 ? 'Superb' : loc.rating >= 8.5 ? 'Foarte bine' : 'Bine';
-                const isFavorite = favoriteIds.includes(loc.id);
-                const cardHTML = `
-                    <div class="result-card">
-                        <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${loc.id}" title="Adaugă la favorite">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                        <div class="result-image" style="background-image: url('${loc.imageUrl}')"></div>
-                        <div class="result-details">
-                            <h3 class="result-name">${loc.name}</h3>
-                            <p class="result-location">${loc.city}, România</p>
-                            <div class="result-rating">
-                                <span class="rating-badge">${loc.rating}</span>
-                                <span class="rating-text">${ratingText}</span>
-                                <span class="rating-reviews">• ${Math.floor(loc.rating * 25)} recenzii</span>
-                            </div>
-                            <div class="result-meta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                                <span>${loc.capacity_min} - ${loc.capacity_max} invitați</span>
-                            </div>
-                            <div class="result-info">
-                                <span class="result-price">de la <strong>${loc.price}€</strong>/pers</span>
-                                <a href="venue-details.html?id=${loc.id}" class="view-details-btn">Vezi disponibilitatea</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                locationsListContainer.innerHTML += cardHTML;
-            });
-
-            // Adaugă event listeners pentru noile butoane de favorite
-            addFavoriteButtonListeners();
-        }
-
-        function addFavoriteButtonListeners() {
-            const favButtons = document.querySelectorAll('.favorite-btn');
-            favButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!isLoggedIn) {
-                        window.location.href = 'login.html';
-                        return;
-                    }
-
-                    const locationId = parseInt(this.dataset.id);
-                    this.classList.toggle('is-favorite');
-
-                    if (favoriteIds.includes(locationId)) {
-                        // Remove from favorites
-                        favoriteIds = favoriteIds.filter(id => id !== locationId);
-                    } else {
-                        // Add to favorites
-                        favoriteIds.push(locationId);
-                    }
-                    localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
-                });
-            });
-        }
-
-        // 5. Logica de Filtrare și Sortare
-        function applyFiltersAndSort() {
-            // Filtrare
-            const maxPrice = parseInt(priceSlider.value);
-            const requiredCapacity = parseInt(capacityInput.value) || 0;
-            const selectedFacilities = Array.from(facilitiesCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-            const minRating = parseFloat(document.querySelector('input[name="rating"]:checked').value);
-
-            let filteredLocations = locations.filter(loc => {
-                const priceMatch = loc.price <= maxPrice;
-                const capacityMatch = requiredCapacity === 0 || (requiredCapacity >= loc.capacity_min && requiredCapacity <= loc.capacity_max);
-                const facilitiesMatch = selectedFacilities.every(facility => loc.facilities.includes(facility));
-                const ratingMatch = loc.rating >= minRating;
-                return priceMatch && capacityMatch && facilitiesMatch && ratingMatch;
-            });
-
-            // Sortare
-            const sortValue = sortOptions.value;
-            switch (sortValue) {
-                case 'price_asc':
-                    filteredLocations.sort((a, b) => a.price - b.price);
-                    break;
-                case 'price_desc':
-                    filteredLocations.sort((a, b) => b.price - a.price);
-                    break;
-                case 'rating_desc':
-                    filteredLocations.sort((a, b) => b.rating - a.rating);
-                    break;
-                case 'capacity_desc':
-                    filteredLocations.sort((a, b) => b.capacity_max - a.capacity_max);
-                    break;
-                // 'recommended' nu sortează suplimentar, păstrează ordinea implicită
-            }
-
-            renderLocations(filteredLocations);
-        }
-
-        // Adaugă Event Listeners
-        priceSlider.addEventListener('input', () => {
-            priceValue.textContent = priceSlider.value;
-        });
-        priceSlider.addEventListener('change', applyFiltersAndSort);
-        capacityInput.addEventListener('input', applyFiltersAndSort);
-        facilitiesCheckboxes.forEach(cb => cb.addEventListener('change', applyFiltersAndSort));
-        ratingRadios.forEach(radio => radio.addEventListener('change', applyFiltersAndSort));
-        sortOptions.addEventListener('change', applyFiltersAndSort);
-
-        gradientSelector.addEventListener('change', function() {
-            header.setAttribute('data-gradient', this.value);
-        });
-
-        // Randare inițială
-        renderLocations(locations);
-
-        // NOU: Inițializare calendar modern
-        flatpickr("#event-date", {
-            dateFormat: "d/m/Y",
-            monthSelectorType: 'dropdown'
-        });
-    });
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+  <script type="module" src="assets/js/main.js"></script>
 </body>
 </html>

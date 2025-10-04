@@ -1,193 +1,50 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ouidoEvents - Contact</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <style>
-        :root {
-            --primary-color: #0052D4;
-            --secondary-color: #4364F7;
-            --header-bg: #ffffff;
-            --dark-color: #1a202c;
-            --gray-color: #555;
-            --light-gray-color: #f0f2f5;
-            --bg-color: #f8f9fa;
-            --white-color: #ffffff;
-            --border-color: #e5eaf1;
-            --shadow-color: rgba(0, 82, 212, 0.1);
-            --border-radius: 12px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
-        .nav-links { display: flex; align-items: center; gap: 30px; }
-        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-        .nav-links a:hover { color: var(--primary-color); }
-
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
-        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
-        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
-
-        /* Stiluri pentru pagina de contact */
-        .contact-section-container {
-            padding: 80px 0;
-        }
-        .contact-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            background-color: var(--white-color);
-            padding: 50px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 25px var(--shadow-color);
-        }
-        .contact-info h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-        .contact-info p {
-            color: var(--gray-color);
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-        }
-        .contact-details-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .contact-details-item svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--primary-color);
-        }
-        .contact-details-item span {
-            font-size: 1rem;
-            color: var(--dark-color);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.3s ease;
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        .contact-form .cta-button {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
-        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; }
-        .footer-about p { color: #bbb; }
-        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
-        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
-        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
-
-        @media (max-width: 992px) {
-            .contact-wrapper { grid-template-columns: 1fr; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ouidoEvents - Contact</title>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
-    <header data-gradient="classic">
-        <div class="container header-container">
-            <a href="index.html" class="logo">OuidoEvents</a>
-            <nav class="nav-links">
-                <a href="locations.html">Locații</a>
-                <a href="#">Blog</a>
-                <a href="#">Despre noi</a>
-                <a href="contact.html">Contact</a>
-            </nav>
-            <div class="header-actions">
-                <a href="login.html" class="secondary-cta-button">Conectare</a>
-                <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
+<body data-page="contact">
+  <main>
+    <div class="container contact-section-container">
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <h1>Contactează-ne</h1>
+          <p>Ai o întrebare sau o sugestie? Scrie-ne și îți vom răspunde în cel mai scurt timp.</p>
+          <div class="contact-details">
+            <div class="contact-details-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <span>contact@ouidoevents.com</span>
             </div>
+            <div class="contact-details-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              <span>+40 712 345 678</span>
+            </div>
+          </div>
         </div>
-    </header>
+        <div class="contact-form">
+          <form>
+            <div class="form-group">
+              <label for="name">Nume</label>
+              <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+              <label for="message">Mesajul tău</label>
+              <textarea id="message" required></textarea>
+            </div>
+            <button type="submit" class="cta-button">Trimite mesajul</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
 
-    <main>
-        <div class="container contact-section-container">
-            <div class="contact-wrapper">
-                <div class="contact-info">
-                    <h1>Contactează-ne</h1>
-                    <p>Ai o întrebare sau o sugestie? Scrie-ne și îți vom răspunde în cel mai scurt timp.</p>
-                    <div class="contact-details">
-                        <div class="contact-details-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                            <span>contact@ouidoevents.com</span>
-                        </div>
-                        <div class="contact-details-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                            <span>+40 712 345 678</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="contact-form">
-                    <form>
-                        <div class="form-group">
-                            <label for="name">Nume</label>
-                            <input type="text" id="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Mesajul tău</label>
-                            <textarea id="message" required></textarea>
-                        </div>
-                        <button type="submit" class="cta-button">Trimite mesajul</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-container">
-                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
-                <div><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="create-account.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
-                <div><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
-                <div><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
-            </div>
-            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
-        </div>
-    </footer>
+  <script type="module" src="assets/js/main.js"></script>
 </body>
 </html>
