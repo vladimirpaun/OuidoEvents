@@ -172,6 +172,12 @@
         }
         body[data-page="venue-details"] .gallery-section {
             margin-bottom: 40px;
+            grid-column: 1;
+            grid-row: 1;
+            background-color: var(--white-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px var(--shadow-color);
         }
         body[data-page="venue-details"] .gallery-grid {
             display: grid;
@@ -262,7 +268,8 @@
         /* Main Content Layout */
         .venue-main-content {
             display: grid;
-            grid-template-columns: 2fr 1fr; /* Two columns */
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Two columns */
+            grid-auto-rows: min-content;
             gap: 40px;
             padding: 40px 0;
             align-items: flex-start;
@@ -272,6 +279,8 @@
             padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: 0 2px 10px var(--shadow-color);
+            grid-column: 1;
+            grid-row: 2;
         }
         .right-column {
             position: sticky;
@@ -280,6 +289,8 @@
             padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: 0 2px 10px var(--shadow-color);
+            grid-column: 2;
+            grid-row: 1 / span 2;
         }
 
         .left-column h2, .right-column h3 {
@@ -355,8 +366,15 @@
         .event-types-list li { background-color: var(--light-gray-color); padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; color: var(--gray-color); }
 
         /* NOU: Sectiune Contact */
-        .contact-section {
+        body[data-page="venue-details"] .contact-section {
             margin-top: 30px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-base);
+        }
+        body[data-page="venue-details"] .contact-section.is-visible {
+            opacity: 1;
+            pointer-events: auto;
         }
         .contact-grid {
             display: grid;
@@ -524,6 +542,12 @@
                 position: static; /* Remove sticky on mobile */
                 top: auto;
             }
+            body[data-page="venue-details"] .gallery-section,
+            .left-column,
+            .right-column {
+                grid-column: 1;
+                grid-row: auto;
+            }
             .venue-name {
                 font-size: 2rem;
             }
@@ -647,28 +671,28 @@
         </section>
 
         <div class="container venue-main-content">
-            <div class="left-column">
-                <section class="gallery-section">
-                    <div class="gallery-grid">
-                        <div class="gallery-item main-image"><img src="https://nuntapeplaja.ro/wp-content/uploads/2022/01/1-Cum-poti-face-o-nunta-la-castel-1-1024x682.jpg.webp" alt="Sală de nuntă elegantă"></div>
-                        <div class="gallery-item"><img src="https://castelmimi.md/wp-content/uploads/2025/01/Rezumat-4.jpg" alt="Ceremonie de nuntă în aer liber"></div>
-                        <div class="gallery-item"><img src="https://castelmimi.md/wp-content/uploads/2023/07/IMG_2207-scaled-1.webp" alt="Mese aranjate pentru nuntă"></div>
+            <section class="gallery-section">
+                <div class="gallery-grid">
+                    <div class="gallery-item main-image"><img src="https://nuntapeplaja.ro/wp-content/uploads/2022/01/1-Cum-poti-face-o-nunta-la-castel-1-1024x682.jpg.webp" alt="Sală de nuntă elegantă"></div>
+                    <div class="gallery-item"><img src="https://castelmimi.md/wp-content/uploads/2025/01/Rezumat-4.jpg" alt="Ceremonie de nuntă în aer liber"></div>
+                    <div class="gallery-item"><img src="https://castelmimi.md/wp-content/uploads/2023/07/IMG_2207-scaled-1.webp" alt="Mese aranjate pentru nuntă"></div>
+                </div>
+                <div class="thumbnail-grid">
+                    <div class="gallery-item"><img src="https://honeypot0.s3.amazonaws.com/1743249766722-gallery-Locatii%20nunta%20bucuresti.jpg" alt="Detaliu aranjament masă nuntă"></div>
+                    <div class="gallery-item"><img src="https://www.treehouse.ro/image-thumbnail-800x600-upl/photos/locatii_17_15438.jpg" alt="Aranjament floral"></div>
+                    <div class="gallery-item"><img src="https://vanillaevents.ro/wp-content/uploads/2023/08/Nunta-La-Foret-12-1.jpg" alt="Sală de bal goală, pregătită pentru eveniment"></div>
+                    <div class="gallery-item"><img src="https://www.mogosoaialakeview.ro/images/evenimente/nunta/nunta-interior.jpg" alt="Mese rotunde la o recepție de nuntă"></div>
+                    <div class="gallery-item last-image">
+                        <img src="https://lh5.googleusercontent.com/xs1ERpSe0B9YGjmakWrLx4VoBTuOdCM5PdBmHADECdkufvjDkR_rhxJvvMsbi_CzzuLz2Vluti4v62_t68fk3UmKbc564WlPQ6cRep8m7iX_Fze-GHrQIGgVwdDm9w7hYnjR11QX=s0" alt="Loc de ceremonie nuntă pe plajă">
+                        <button class="show-all-photos-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"></path></svg>
+                            Vezi toate fotografiile
+                        </button>
                     </div>
-                    <div class="thumbnail-grid">
-                        <div class="gallery-item"><img src="https://honeypot0.s3.amazonaws.com/1743249766722-gallery-Locatii%20nunta%20bucuresti.jpg" alt="Detaliu aranjament masă nuntă"></div>
-                        <div class="gallery-item"><img src="https://www.treehouse.ro/image-thumbnail-800x600-upl/photos/locatii_17_15438.jpg" alt="Aranjament floral"></div>
-                        <div class="gallery-item"><img src="https://vanillaevents.ro/wp-content/uploads/2023/08/Nunta-La-Foret-12-1.jpg" alt="Sală de bal goală, pregătită pentru eveniment"></div>
-                        <div class="gallery-item"><img src="https://www.mogosoaialakeview.ro/images/evenimente/nunta/nunta-interior.jpg" alt="Mese rotunde la o recepție de nuntă"></div>
-                        <div class="gallery-item last-image">
-                            <img src="https://lh5.googleusercontent.com/xs1ERpSe0B9YGjmakWrLx4VoBTuOdCM5PdBmHADECdkufvjDkR_rhxJvvMsbi_CzzuLz2Vluti4v62_t68fk3UmKbc564WlPQ6cRep8m7iX_Fze-GHrQIGgVwdDm9w7hYnjR11QX=s0" alt="Loc de ceremonie nuntă pe plajă">
-                            <button class="show-all-photos-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"></path></svg>
-                                Vezi toate fotografiile
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                </div>
+            </section>
 
+            <div class="left-column">
                 <section class="about-section">
                     <h2>Despre această locație</h2>
                     <p>The Grand Ballroom este o locație de evenimente de prestigiu, renumită pentru eleganța sa atemporală și serviciile excepționale. Situată central, oferă acces facil și o ambianță sofisticată, ideală pentru evenimente de anvergură. Spațiul generos și designul interior rafinat pot fi adaptate pentru a se potrivi oricărui concept, de la nunți de vis la conferințe internaționale și petreceri corporate exclusiviste.</p>
@@ -698,18 +722,18 @@
                         grid-template-columns: repeat(3, 1fr);
                         gap: 8px 20px;
                     ">
-                        <li>Elegant</li>
-                        <li>Modern</li>
-                        <li>Minimalist</li>
-                        <li>Clasic</li>
-                        <li>Boho-Chic</li>
-                        <li>Glamour</li>
-                        <li>Rustic</li>
-                        <li>Natură</li>
-                        <li>Central</li>
-                        <li>Panoramic</li>
-                        <li>Istoric</li>
-                        <li>Exclusivist</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Elegant</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Modern</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Minimalist</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Clasic</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Boho-Chic</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Glamour</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Rustic</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Natură</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Central</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Panoramic</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Istoric</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Exclusivist</span></li>
                     </ul>
 
                     <h3>Tipuri de evenimente acceptate</h3>
@@ -727,22 +751,22 @@
                         grid-template-columns: repeat(2, 1fr);
                         gap: 8px 20px;
                     ">
-                        <li>Terasă / Grădină</li>
-                        <li>Servicii de catering personalizate</li>
-                        <li>Bar (serviciu complet)</li>
-                        <li>Decor (servicii de amenajare)</li>
-                        <li>Parcare privată</li>
-                        <li>Cazare invitati</li>
-                        <li>Cameră miri</li>
-                        <li>Piscina</li>
-                        <li>Vedere lac</li>
-                        <li>Ponton</li>
-                        <li>Event planner dedicat</li>
-                        <li>Wi-Fi gratuit de mare viteză</li>
-                        <li>Sistem de sunet și lumini profesional</li>
-                        <li>Ceremonie in aer liber</li>
-                        <li>Kids corner</li>
-                        <li>Spațiu lounge</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Terasă / Grădină</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Servicii de catering personalizate</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Bar (serviciu complet)</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Decor (servicii de amenajare)</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Parcare privată</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Cazare invitati</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Cameră miri</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Piscina</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Vedere lac</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Ponton</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Event planner dedicat</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Wi-Fi gratuit de mare viteză</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Sistem de sunet și lumini profesional</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Ceremonie in aer liber</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Kids corner</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg><span>Spațiu lounge</span></li>
                     </ul>
                 </section>
 
@@ -752,6 +776,33 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path></svg>
                         <p>Pentru a vizualiza detaliile de contact, te rugăm să te autentifici.</p>
                         <a href="login.html" class="cta-button">Autentificare</a>
+                    </div>
+                </section>
+
+                <section class="contact-section" hidden>
+                    <h3>Contact</h3>
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Telefon</span>
+                                <strong>+40 722 111 222</strong>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Email</span>
+                                <strong>alexandra.venue@ouido.com</strong>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Program recomandat</span>
+                                <strong>Luni - Vineri, 09:00 - 18:00</strong>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -906,6 +957,26 @@
                 this.classList.toggle('open');
                 mobileNavOverlay.classList.toggle('active');
             });
+
+            // Simulare autentificare: afișează secțiunea de contact după 2 secunde
+            const lockedContactSection = document.querySelector('.contact-section-locked');
+            const contactSection = document.querySelector('.contact-section');
+
+            if (lockedContactSection && contactSection) {
+                const revealContactSection = () => {
+                    lockedContactSection.setAttribute('hidden', '');
+                    contactSection.removeAttribute('hidden');
+
+                    const applyVisibleState = () => contactSection.classList.add('is-visible');
+                    if (typeof window.requestAnimationFrame === 'function') {
+                        window.requestAnimationFrame(applyVisibleState);
+                    } else {
+                        applyVisibleState();
+                    }
+                };
+
+                setTimeout(revealContactSection, 2000);
+            }
 
             // Pentru a testa funcționalitatea de logat, poți rula în consolă:
             // localStorage.setItem('isLoggedIn', 'true');
