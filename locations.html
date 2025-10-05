@@ -1,2789 +1,288 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ouidoEvents - Toate Locațiile</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <style>
-    :root {
-      --primary-color: #0052d4;
-      --secondary-color: #4364f7;
-      --accent-color: #5ddcff;
-      --header-bg: linear-gradient(to right, #f8fbff, #eef5ff);
-      --dark-color: #1a202c;
-      --gray-color: #555555;
-      --muted-color: #7a7f87;
-      --light-gray-color: #f0f2f5;
-      --bg-color: #f8f9fa;
-      --white-color: #ffffff;
-      --border-color: #e5eaf1;
-      --shadow-color: rgba(0, 82, 212, 0.1);
-      --border-radius: 12px;
-      --transition-base: 0.3s ease;
-      --header-height: 74px;
-    }
-
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      font-size: 16px;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-height: 100vh;
-      background-color: var(--bg-color);
-    }
-
-    a {
-      color: inherit;
-    }
-
-    img {
-      max-width: 100%;
-      display: block;
-    }
-
-    ul {
-      list-style: none;
-    }
-
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      color: var(--dark-color);
-      line-height: 1.6;
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-      font-weight: 700;
-      color: var(--dark-color);
-    }
-
-    p {
-      color: var(--gray-color);
-    }
-
-    .section-title {
-      font-size: 2rem;
-      margin-bottom: 0.75rem;
-      text-align: center;
-      font-weight: 700;
-    }
-
-    .section-subtitle {
-      font-size: 0.95rem;
-      margin-bottom: 2.5rem;
-      color: var(--gray-color);
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-    }
-
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .section-padding {
-      padding: 80px 0;
-    }
-
-    .section-light {
-      background-color: var(--white-color);
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-    }
-
-    .grid-steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
-      text-align: center;
-    }
-
-    .flex-between {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .flex-center {
-      display: flex;
-      align-items: center;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width: 992px) {
-      .grid-3,
-      .grid-steps {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .grid-3,
-      .grid-steps {
-        grid-template-columns: 1fr;
-      }
-
-      .section-padding {
-        padding: 60px 0;
-      }
-    }
-
-
-    .cta-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      color: var(--white-color);
-      padding: 10px 25px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      border: none;
-      transition: all var(--transition-base);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px var(--shadow-color);
-    }
-
-    .secondary-cta-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      color: var(--primary-color);
-      border: 2px solid var(--primary-color);
-      padding: 8px 25px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all var(--transition-base);
-      cursor: pointer;
-    }
-
-    .secondary-cta-button:hover {
-      background-color: var(--primary-color);
-      color: var(--white-color);
-    }
-
-    .view-details-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--primary-color);
-      color: var(--white-color);
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: background-color var(--transition-base);
-      white-space: nowrap;
-      min-width: 90px;
-    }
-
-    .view-details-btn:hover {
-      background-color: var(--secondary-color);
-    }
-
-
-    header {
-      padding: 15px 0;
-      background: var(--header-bg);
-      border-bottom: 1px solid rgba(67, 100, 247, 0.12);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      transition: background var(--transition-base);
-      backdrop-filter: blur(10px);
-    }
-
-    .header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .logo {
-      font-weight: 700;
-      font-size: 1.75rem;
-      text-decoration: none;
-      color: var(--primary-color);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .nav-links a {
-      color: var(--gray-color);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color var(--transition-base);
-      position: relative;
-      padding: 4px 0;
-    }
-
-    .nav-links a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -6px;
-      width: 100%;
-      height: 2px;
-      background: var(--primary-color);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform var(--transition-base);
-    }
-
-    .nav-links a:hover::after,
-    .nav-links a.active::after {
-      transform: scaleX(1);
-    }
-
-    .nav-links a.active {
-      color: var(--primary-color);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .header-od-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      color: var(--white-color);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-decoration: none;
-      box-shadow: 0 6px 18px var(--shadow-color);
-      transition: transform var(--transition-base), box-shadow var(--transition-base);
-    }
-
-    .header-od-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px var(--shadow-color);
-    }
-
-    .user-links-placeholder {
-      min-width: 120px;
-      min-height: 24px;
-    }
-
-    .mobile-menu-button {
-      display: none;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 5px;
-    }
-
-    .mobile-menu-button .icon-bar {
-      display: block;
-      width: 25px;
-      height: 3px;
-      background-color: var(--dark-color);
-      margin: 5px 0;
-      transition: all 0.3s ease;
-    }
-
-    .mobile-menu-button.open .icon-bar:nth-child(1) {
-      transform: translateY(8px) rotate(45deg);
-    }
-
-    .mobile-menu-button.open .icon-bar:nth-child(2) {
-      opacity: 0;
-    }
-
-    .mobile-menu-button.open .icon-bar:nth-child(3) {
-      transform: translateY(-8px) rotate(-45deg);
-    }
-
-    .mobile-nav-overlay {
-      display: none;
-      position: fixed;
-      top: var(--header-height);
-      left: 0;
-      width: 100%;
-      height: calc(100% - var(--header-height));
-      background: var(--white-color);
-      z-index: 999;
-      padding: 30px;
-      flex-direction: column;
-      gap: 25px;
-      overflow-y: auto;
-    }
-
-    .mobile-nav-overlay.active {
-      display: flex;
-    }
-
-    .mobile-nav-overlay .nav-links {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 20px;
-    }
-
-    .mobile-nav-overlay .nav-links a {
-      font-size: 1.1rem;
-    }
-
-    .mobile-nav-overlay .header-actions {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .mobile-nav-overlay .header-actions .header-od-button {
-      width: 100%;
-      border-radius: 12px;
-      height: 48px;
-    }
-
-    .mobile-nav-overlay .header-actions .cta-button,
-    .mobile-nav-overlay .header-actions .secondary-cta-button {
-      width: 100%;
-      padding: 12px;
-      text-align: center;
-    }
-
-    @media (max-width: 992px) {
-      .nav-links,
-      .header-actions {
-        display: none;
-      }
-
-      .mobile-menu-button {
-        display: block;
-      }
-    }
-
-
-    footer {
-      padding: 60px 0 30px;
-      background-color: var(--dark-color);
-      color: var(--white-color);
-    }
-
-    .footer-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 40px;
-      margin-bottom: 50px;
-    }
-
-    .footer-about p {
-      color: #bbbbbb;
-    }
-
-    .footer-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-
-    .footer-links {
-      list-style: none;
-    }
-
-    .footer-links li {
-      margin-bottom: 10px;
-    }
-
-    .footer-links a {
-      color: #bbbbbb;
-      text-decoration: none;
-      transition: color var(--transition-base);
-    }
-
-    .footer-links a:hover {
-      color: var(--secondary-color);
-    }
-
-    .footer-cta {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .copyright {
-      text-align: center;
-      padding-top: 30px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      color: #999999;
-      font-size: 0.9rem;
-    }
-
-
-    form {
-      width: 100%;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-      color: var(--dark-color);
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: inherit;
-      transition: border-color var(--transition-base), box-shadow var(--transition-base);
-      background-color: var(--white-color);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(67, 100, 247, 0.15);
-    }
-
-    .input-inline {
-      display: flex;
-      gap: 15px;
-    }
-
-    .input-inline .form-group {
-      flex: 1;
-    }
-
-    @media (max-width: 768px) {
-      .input-inline {
-        flex-direction: column;
-      }
-    }
-
-
-    .feature-item,
-    .step-item,
-    .testimonial-card,
-    .result-card,
-    .venue-card,
-    .contact-card {
-      background: var(--white-color);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      transition: transform var(--transition-base), box-shadow var(--transition-base);
-    }
-
-    .feature-item,
-    .step-item,
-    .testimonial-card {
-      padding: 30px;
-      text-align: center;
-    }
-
-    .feature-item h3,
-    .step-item h3 {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-    }
-
-    .feature-item p,
-    .step-item p {
-      font-size: 0.95rem;
-    }
-
-    .testimonial-slider-wrapper {
-      position: relative;
-      max-width: 100%;
-      margin: 0 auto;
-      overflow: hidden;
-    }
-
-    .testimonial-slider {
-      display: flex;
-      gap: 30px;
-      transition: transform 0.5s ease-in-out;
-    }
-
-    .testimonial-card {
-      padding: 40px;
-      flex: 0 0 calc((100% - 60px) / 3);
-      box-sizing: border-box;
-    }
-
-    .testimonial-quote {
-      font-size: 1.1rem;
-      font-style: italic;
-      line-height: 1.6;
-      margin-bottom: 25px;
-      color: var(--dark-color);
-      min-height: 120px;
-    }
-
-    .testimonial-author {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .testimonial-author span {
-      display: block;
-      font-weight: 400;
-      color: var(--gray-color);
-      font-size: 0.85rem;
-      margin-top: 5px;
-    }
-
-    .slider-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: var(--white-color);
-      border: none;
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    }
-
-    .slider-nav svg {
-      width: 24px;
-      height: 24px;
-      stroke: var(--dark-color);
-    }
-
-    .slider-nav.prev {
-      left: 10px;
-    }
-
-    .slider-nav.next {
-      right: 10px;
-    }
-
-    .slider-nav:hover {
-      transform: translateY(-50%) scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-    }
-
-    .slider-nav:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      transform: translateY(-50%);
-    }
-
-    .result-card {
-      display: flex;
-      gap: 20px;
-      align-items: stretch;
-      overflow: hidden;
-      position: relative;
-      min-height: 100%;
-      transition: transform var(--transition-base), box-shadow var(--transition-base);
-    }
-
-    @media (max-width: 768px) {
-      .result-card {
-        flex-direction: column;
-      }
-
-      .result-info {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-      }
-
-      .result-info > * {
-        width: 100%;
-        flex-shrink: 1;
-      }
-
-      .result-info .view-details-btn {
-        margin-left: 0;
-        justify-content: center;
-      }
-    }
-
-
-    .result-card:hover,
-    .feature-item:hover,
-    .step-item:hover,
-    .venue-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px var(--shadow-color);
-    }
-
-    .result-image {
-      flex: 0 0 260px;
-      min-height: 220px;
-      background: url('/api/placeholder/400/300') center/cover no-repeat;
-    }
-
-    @media (max-width: 768px) {
-      .result-image {
-        width: 100%;
-        flex: none;
-        height: 220px;
-      }
-    }
-
-    .result-details {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    .result-details h3 {
-      margin: 0 0 10px;
-    }
-
-    .result-name {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--dark-color);
-    }
-
-    .result-location {
-      color: var(--gray-color);
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-    }
-
-    .result-rating {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      color: var(--gray-color);
-    }
-
-    .result-tags {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .result-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: nowrap;
-      margin-top: auto;
-      border-top: 1px solid var(--border-color);
-      padding-top: 15px;
-    }
-
-    .result-info > * {
-      flex-shrink: 0;
-    }
-
-    .result-info .view-details-btn {
-      margin-left: auto;
-    }
-
-    .result-price {
-      font-size: 0.95rem;
-      color: var(--dark-color);
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .result-price strong {
-      font-size: 1.05rem;
-    }
-
-    .favorite-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: rgba(255, 255, 255, 0.8);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      backdrop-filter: blur(2px);
-    }
-
-    .favorite-btn:hover {
-      background: var(--white-color);
-      transform: scale(1.1);
-    }
-
-    .favorite-btn svg {
-      width: 22px;
-      height: 22px;
-      stroke: var(--dark-color);
-      stroke-width: 2;
-      fill: none;
-      transition: all 0.2s ease;
-    }
-
-    .favorite-btn.is-favorite svg {
-      fill: #ff4d4d;
-      stroke: #ff4d4d;
-    }
-
-    .result-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--gray-color);
-      font-size: 0.95rem;
-      margin-bottom: 15px;
-    }
-
-    .result-meta svg {
-      width: 18px;
-      height: 18px;
-      fill: var(--gray-color);
-      opacity: 0.8;
-    }
-
-
-    .tag {
-      background-color: var(--light-gray-color);
-      color: var(--gray-color);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .rating-badge {
-      background-color: var(--primary-color);
-      color: var(--white-color);
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-
-    .rating-text {
-      font-weight: 600;
-    }
-
-    .rating-reviews {
-      color: var(--gray-color);
-      font-size: 0.9rem;
-    }
-
-
-    .search-box {
-      display: flex;
-      align-items: stretch;
-      background: var(--white-color);
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 25px var(--shadow-color);
-      overflow: hidden;
-      height: 80px;
-      border: 1px solid var(--border-color);
-      max-width: 1100px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .search-group {
-      flex: 1;
-      position: relative;
-      height: 100%;
-      border-right: 1px solid var(--border-color);
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .event-type-group {
-      flex: 1.2;
-    }
-
-    .location-group {
-      flex: 1.2;
-    }
-
-    .date-group {
-      flex: 1;
-    }
-
-    .guests-group {
-      flex: 0.8;
-    }
-
-    .search-group:last-of-type {
-      border-right: none;
-    }
-
-    .search-group:hover,
-    .search-group:focus-within {
-      background-color: #fcfdff;
-    }
-
-    .search-group label {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--dark-color);
-      margin-bottom: 6px;
-      text-align: left;
-    }
-
-    .search-group input,
-    .search-group select {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      color: var(--gray-color);
-      font-family: inherit;
-      background: transparent;
-    }
-
-    .search-button {
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      color: var(--white-color);
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1.125rem;
-      width: 180px;
-      height: 100%;
-      transition: all var(--transition-base);
-    }
-
-    .search-button:hover {
-      opacity: 0.9;
-    }
-
-    @media (max-width: 992px) {
-      .search-box {
-        flex-direction: column;
-        height: auto;
-      }
-
-      .search-group,
-      .search-button {
-        width: 100%;
-        border-right: none;
-      }
-
-      .search-button {
-        height: 60px;
-      }
-    }
-
-
-    body[data-page="home"] .main-search-section {
-      text-align: center;
-      padding: 50px 0 60px;
-      background: var(--white-color);
-    }
-
-    body[data-page="home"] .main-search-section h1 {
-      font-size: 2.4rem;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-
-    body[data-page="home"] .main-search-section p {
-      font-size: 1rem;
-      margin-bottom: 40px;
-      color: var(--gray-color);
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    body[data-page="home"] .event-type-group {
-      flex: 1.2;
-    }
-
-    body[data-page="home"] .location-group {
-      flex: 1.2;
-    }
-
-    body[data-page="home"] .date-group {
-      flex: 1;
-    }
-
-    body[data-page="home"] .guests-group {
-      flex: 0.8;
-      border-right: none;
-    }
-
-    body[data-page="home"] .how-it-works-section {
-      background-color: var(--white-color);
-    }
-
-    body[data-page="home"] .step-item .step-number {
-      font-size: 3rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      opacity: 0.2;
-      line-height: 1;
-    }
-
-    body[data-page="home"] .results-section {
-      padding: 80px 0;
-    }
-
-    body[data-page="home"] .results-section h2 {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    body[data-page="home"] .results-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 24px;
-    }
-
-    body[data-page="home"] .result-card {
-      flex-direction: column;
-      gap: 0;
-    }
-
-    body[data-page="home"] .result-image {
-      width: 100%;
-      flex: none;
-      height: 220px;
-    }
-
-    body[data-page="home"] .result-info {
-      gap: 12px;
-    }
-
-    body[data-page="home"] .result-price {
-      font-size: 0.9rem;
-    }
-
-    body[data-page="home"] .result-price strong {
-      font-size: 1rem;
-    }
-
-    body[data-page="home"] .result-info .view-details-btn {
-      padding: 8px 14px;
-      font-size: 0.82rem;
-      min-width: 88px;
-    }
-
-    @media (min-width: 1200px) {
-      body[data-page="home"] .result-image {
-        height: 240px;
-      }
-    }
-
-    @media (max-width: 1200px) {
-      body[data-page="home"] .results-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="home"] .results-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 600px) {
-      body[data-page="home"] .results-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    body[data-page="home"] .final-cta-section {
-      text-align: center;
-      background-color: var(--white-color);
-    }
-
-    body[data-page="home"] .cta-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    @media (max-width: 576px) {
-      body[data-page="home"] .cta-buttons {
-        flex-direction: column;
-      }
-    }
-    body[data-page="home"] .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-    }
-
-    body[data-page="home"] .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
-      text-align: center;
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="home"] .features-grid,
-      body[data-page="home"] .steps-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      body[data-page="home"] .features-grid,
-      body[data-page="home"] .steps-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-
-    body[data-page="locations"] .main-search-section {
-      text-align: center;
-      padding: 60px 0;
-      background: var(--white-color);
-    }
-
-    body[data-page="locations"] .main-search-section h1 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-
-    body[data-page="locations"] .main-search-section p {
-      font-size: 1.1rem;
-      margin-bottom: 40px;
-      color: var(--gray-color);
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    body[data-page="locations"] .locations-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 30px;
-      padding: 40px 0;
-      align-items: flex-start;
-    }
-
-    body[data-page="locations"] .filters {
-      width: 100%;
-    }
-
-    body[data-page="locations"] .filter-group {
-      margin-bottom: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: var(--white-color);
-      overflow: hidden;
-    }
-
-    body[data-page="locations"] .filter-group summary {
-      padding: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      list-style: none;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    body[data-page="locations"] .filter-group summary::-webkit-details-marker {
-      display: none;
-    }
-
-    body[data-page="locations"] .filter-group-content {
-      padding: 0 15px 15px;
-    }
-
-    body[data-page="locations"] .filter-group-content label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: 400;
-      font-size: 0.95rem;
-    }
-
-    body[data-page="locations"] .filter-group-content ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    body[data-page="locations"] .filter-group-content li {
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    body[data-page="locations"] .filter-group-content input[type="checkbox"],
-    body[data-page="locations"] .filter-group-content input[type="radio"] {
-      margin: 0;
-    }
-
-    body[data-page="locations"] .filter-group-content li label {
-      margin-bottom: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    body[data-page="locations"] #price-value {
-      font-weight: 600;
-    }
-
-    body[data-page="locations"] .sort-bar {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 20px;
-      align-items: center;
-      gap: 12px;
-    }
-
-    body[data-page="locations"] .sort-bar select {
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-    }
-
-    body[data-page="locations"] .locations-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="locations"] .locations-container {
-        grid-template-columns: 1fr;
-      }
-
-      body[data-page="locations"] .filters {
-        order: 2;
-      }
-    }
-
-    body[data-page="locations"] .filter-group-content input[type="range"] {
-      width: 100%;
-    }
-
-    body[data-page="locations"] .filter-group-content input[type="number"] {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-
-
-    body[data-page="contact"] .contact-section-container {
-      padding: 80px 0;
-    }
-
-    body[data-page="contact"] .contact-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 50px;
-      background-color: var(--white-color);
-      padding: 50px;
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 25px var(--shadow-color);
-    }
-
-    body[data-page="contact"] .contact-info h1 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-    }
-
-    body[data-page="contact"] .contact-info p {
-      color: var(--gray-color);
-      margin-bottom: 30px;
-      font-size: 1.1rem;
-    }
-
-    body[data-page="contact"] .contact-details-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    body[data-page="contact"] .contact-details-item svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--primary-color);
-    }
-
-    body[data-page="contact"] .contact-details-item span {
-      font-size: 1rem;
-      color: var(--dark-color);
-    }
-
-    body[data-page="contact"] .contact-form .cta-button {
-      width: 100%;
-      padding: 15px;
-      font-size: 1.1rem;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="contact"] .contact-wrapper {
-        grid-template-columns: 1fr;
-        padding: 40px 30px;
-      }
-    }
-
-    @media (max-width: 576px) {
-      body[data-page="contact"] .contact-wrapper {
-        padding: 30px 20px;
-      }
-    }
-    body[data-page="contact"] .contact-details {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-
-    body[data-page="login"] .account-section,
-    body[data-page="create-account"] .account-section {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 80px 20px;
-    }
-
-    body[data-page="login"] .account-form-container,
-    body[data-page="create-account"] .account-form-container {
-      background-color: var(--white-color);
-      padding: 40px;
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 25px var(--shadow-color);
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-    }
-
-    body[data-page="login"] .account-form-container h1,
-    body[data-page="create-account"] .account-form-container h1 {
-      font-size: 2.2rem;
-      margin-bottom: 15px;
-    }
-
-    body[data-page="login"] .account-form-container p,
-    body[data-page="create-account"] .account-form-container p {
-      color: var(--gray-color);
-      margin-bottom: 30px;
-    }
-
-    body[data-page="login"] .account-form-container .cta-button,
-    body[data-page="create-account"] .account-form-container .cta-button {
-      width: 100%;
-      padding: 15px;
-      font-size: 1.1rem;
-      margin-top: 10px;
-    }
-
-    body[data-page="login"] .register-link,
-    body[data-page="create-account"] .register-link {
-      margin-top: 25px;
-      font-size: 0.95rem;
-    }
-
-    body[data-page="login"] .register-link a,
-    body[data-page="create-account"] .register-link a {
-      color: var(--primary-color);
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    @media (max-width: 576px) {
-      body[data-page="login"] .account-form-container,
-      body[data-page="create-account"] .account-form-container {
-        padding: 30px 20px;
-      }
-    }
-    body[data-page="create-account"] .radio-options {
-      display: flex;
-      gap: 15px;
-      margin-top: 10px;
-    }
-
-    body[data-page="create-account"] .radio-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--border-color);
-      padding: 12px 15px;
-      border-radius: 8px;
-      flex: 1;
-      cursor: pointer;
-      transition: border-color var(--transition-base);
-    }
-
-    body[data-page="create-account"] .radio-option:hover {
-      border-color: var(--secondary-color);
-    }
-
-    body[data-page="create-account"] .radio-option input {
-      width: auto;
-    }
-
-    body[data-page="create-account"] .radio-option span {
-      font-weight: 500;
-    }
-
-    @media (max-width: 576px) {
-      body[data-page="create-account"] .radio-options {
-        flex-direction: column;
-      }
-    }
-
-
-    body[data-page="venue-details"] .main-search-section {
-      padding: 25px 0;
-      background-color: var(--light-gray-color);
-    }
-
-    body[data-page="venue-details"] .hero-section {
-      padding: 30px 0;
-      background-color: var(--white-color);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    body[data-page="venue-details"] .breadcrumbs {
-      font-size: 0.9rem;
-      color: var(--gray-color);
-      margin-bottom: 15px;
-    }
-
-    body[data-page="venue-details"] .breadcrumbs a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
-    body[data-page="venue-details"] .breadcrumbs span {
-      margin: 0 5px;
-    }
-
-    body[data-page="venue-details"] .venue-name {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 10px;
-      color: var(--dark-color);
-    }
-
-    body[data-page="venue-details"] .venue-name h1 {
-      font-size: 2.1rem;
-    }
-
-    body[data-page="venue-details"] .venue-address {
-      color: var(--gray-color);
-      font-size: 1rem;
-      margin-bottom: 15px;
-    }
-
-    body[data-page="venue-details"] .venue-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    body[data-page="venue-details"] .venue-description {
-      font-size: 1rem;
-      color: var(--gray-color);
-      line-height: 1.7;
-    }
-
-    body[data-page="venue-details"] .gallery-section {
-      padding: 40px 0;
-      background-color: var(--bg-color);
-    }
-
-    body[data-page="venue-details"] .main-image-container {
-      width: 100%;
-      height: 500px;
-      overflow: hidden;
-      border-radius: var(--border-radius);
-      margin-bottom: 15px;
-      box-shadow: 0 4px 15px var(--shadow-color);
-      cursor: pointer;
-    }
-
-    body[data-page="venue-details"] .main-image-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform var(--transition-base);
-    }
-
-    body[data-page="venue-details"] .main-image-container img:hover {
-      transform: scale(1.02);
-    }
-
-    body[data-page="venue-details"] .thumbnail-gallery {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    body[data-page="venue-details"] .thumbnail-gallery img {
-      width: 100px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform var(--transition-base), box-shadow var(--transition-base);
-    }
-
-    body[data-page="venue-details"] .thumbnail-gallery img:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    body[data-page="venue-details"] .venue-main-content {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 40px;
-      padding: 40px 0 80px;
-    }
-
-    body[data-page="venue-details"] .about-section,
-    body[data-page="venue-details"] .details-facilities-section,
-    body[data-page="venue-details"] .contact-section {
-      background: var(--white-color);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--border-color);
-      padding: 30px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-      margin-bottom: 30px;
-    }
-
-    body[data-page="venue-details"] .details-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    body[data-page="venue-details"] .detail-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.85rem;
-      color: var(--gray-color);
-      background-color: var(--light-gray-color);
-      padding: 10px 15px;
-      border-radius: 8px;
-    }
-
-    body[data-page="venue-details"] .detail-item strong {
-      color: var(--dark-color);
-    }
-
-    body[data-page="venue-details"] .detail-item svg {
-      width: 20px;
-      height: 20px;
-      fill: var(--primary-color);
-    }
-
-    body[data-page="venue-details"] .contact-item-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    body[data-page="venue-details"] .event-types-list {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-      margin-bottom: 30px;
-      padding: 0;
-    }
-
-    body[data-page="venue-details"] .event-types-list li {
-      background-color: var(--light-gray-color);
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: var(--gray-color);
-    }
-
-    body[data-page="venue-details"] .facilities-list {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-      padding: 0;
-      margin: 0;
-    }
-
-    body[data-page="venue-details"] .facilities-list li {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-      color: var(--gray-color);
-    }
-
-    body[data-page="venue-details"] .facilities-list li svg {
-      width: 18px;
-      height: 18px;
-      fill: var(--secondary-color);
-    }
-
-    body[data-page="venue-details"] .facilities-list li::before {
-      content: '';
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      background-color: var(--secondary-color);
-      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'/%3E%3C/svg%3E") no-repeat center / contain;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'/%3E%3C/svg%3E") no-repeat center / contain;
-    }
-
-    body[data-page="venue-details"] .contact-section {
-      margin-top: 30px;
-    }
-
-    body[data-page="venue-details"] .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 25px;
-    }
-
-    body[data-page="venue-details"] .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    body[data-page="venue-details"] .contact-item svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--primary-color);
-    }
-
-    body[data-page="venue-details"] .contact-item-info span {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--gray-color);
-    }
-
-    body[data-page="venue-details"] .contact-item-info strong {
-      display: block;
-      font-size: 0.95rem;
-      color: var(--dark-color);
-      font-weight: 500;
-    }
-
-    body[data-page="venue-details"] .availability-widget {
-      background: var(--white-color);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--border-color);
-      padding: 30px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: calc(var(--header-height) + 20px);
-    }
-
-    body[data-page="venue-details"] .calendar-placeholder {
-      height: 280px;
-      background: var(--light-gray-color);
-      border-radius: 12px;
-      margin-bottom: 25px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted-color);
-    }
-
-    body[data-page="venue-details"] .price-display {
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-      color: var(--dark-color);
-    }
-
-    body[data-page="venue-details"] .lightbox {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      padding-top: 60px;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    body[data-page="venue-details"] .lightbox-content {
-      margin: auto;
-      display: block;
-      max-width: 80%;
-      max-height: 80vh;
-    }
-
-    body[data-page="venue-details"] .close-lightbox {
-      position: absolute;
-      top: 30px;
-      right: 45px;
-      color: #ffffff;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="venue-details"] .venue-main-content {
-        grid-template-columns: 1fr;
-      }
-
-      body[data-page="venue-details"] .availability-widget {
-        position: static;
-      }
-    }
-
-    @media (max-width: 768px) {
-      body[data-page="venue-details"] .main-image-container {
-        height: 320px;
-      }
-
-      body[data-page="venue-details"] .details-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-
-    /* Owner CRM Page Styles */
-    body[data-page="owner-crm"] {
-      --crm-booked-color: #0052d4;
-      --crm-prebooked-color: #28a745;
-      --crm-request-color: #ffc107;
-      --crm-visit-request-color: #6f42c1;
-      --crm-unavailable-color: #6c757d;
-      --crm-booked-bg: rgba(0, 82, 212, 0.1);
-      --crm-prebooked-bg: rgba(40, 167, 69, 0.1);
-      --crm-request-bg: rgba(255, 193, 7, 0.15);
-      --crm-visit-request-bg: rgba(111, 66, 193, 0.1);
-      --crm-unavailable-bg: rgba(108, 117, 125, 0.1);
-
-      color: var(--dark-color);
-      background-color: var(--light-gray-color);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    body[data-page="owner-crm"] * {
-      box-sizing: border-box;
-    }
-
-    body[data-page="owner-crm"] main.crm-shell {
-      flex: 1;
-      display: flex;
-      min-height: 0;
-      width: 100%;
-    }
-
-    body[data-page="owner-crm"] .crm-app {
-      display: flex;
-      flex: 1;
-      min-height: calc(100vh - var(--header-height));
-    }
-
-    body[data-page="owner-crm"] .crm-sidebar {
-      width: 260px;
-      background-color: var(--white-color);
-      border-right: 1px solid var(--border-color);
-      padding: calc(var(--header-height) + 16px) 20px 30px;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      height: 100%;
-      overflow-y: auto;
-    }
-
-    body[data-page="owner-crm"] .crm-sidebar-header {
-      margin-bottom: 40px;
-    }
-
-    body[data-page="owner-crm"] .crm-sidebar-logo {
-      font-weight: 700;
-      font-size: 1.5rem;
-      text-decoration: none;
-      color: var(--primary-color);
-      display: inline-block;
-    }
-
-    body[data-page="owner-crm"] .crm-sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex-grow: 1;
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 12px 15px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--gray-color);
-      font-weight: 500;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link:hover {
-      background-color: var(--light-gray-color);
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link.is-active {
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      color: var(--white-color);
-      box-shadow: 0 4px 10px var(--shadow-color);
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link svg {
-      width: 20px;
-      height: 20px;
-      stroke-width: 2;
-    }
-
-    body[data-page="owner-crm"] .crm-nav-link.is-active svg {
-      stroke: var(--white-color);
-    }
-
-    body[data-page="owner-crm"] .crm-sidebar-footer {
-      padding-top: 20px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    body[data-page="owner-crm"] .crm-main {
-      flex: 1;
-      padding: calc(var(--header-height) + 24px) 40px 40px;
-      background-color: var(--bg-color);
-      min-height: calc(100vh - var(--header-height));
-      scroll-padding-top: calc(var(--header-height) + 24px);
-    }
-
-    body[data-page="owner-crm"] .crm-page {
-      display: none;
-    }
-
-    body[data-page="owner-crm"] .crm-page.is-active {
-      display: block;
-    }
-
-    body[data-page="owner-crm"] .crm-page-header {
-      margin-bottom: 30px;
-    }
-
-    body[data-page="owner-crm"] .crm-page-title {
-      font-size: 2.25rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    body[data-page="owner-crm"] .crm-page-subtitle {
-      font-size: 1.1rem;
-      color: var(--gray-color);
-    }
-
-    body[data-page="owner-crm"] .crm-card {
-      background: var(--white-color);
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-      border: 1px solid var(--border-color);
-      padding: 25px;
-      margin-bottom: 25px;
-    }
-
-    body[data-page="owner-crm"] .crm-page-filter {
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    body[data-page="owner-crm"] .crm-page-filter label {
-      font-weight: 600;
-    }
-
-    body[data-page="owner-crm"] .crm-page-filter select {
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background-color: var(--white-color);
-      font-size: 1rem;
-    }
-
-    /* Dashboard */
-    body[data-page="owner-crm"] .crm-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 25px;
-      margin-bottom: 25px;
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 20px;
-      border-radius: var(--border-radius);
-      background-color: var(--white-color);
-      border: 1px solid var(--border-color);
-    }
-
-    body[data-page="owner-crm"] .crm-stat-icon {
-      padding: 15px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    body[data-page="owner-crm"] .crm-stat-icon svg {
-      width: 28px;
-      height: 28px;
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card .crm-stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card .crm-stat-label {
-      color: var(--gray-color);
-      font-size: 0.9rem;
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card[data-variant="requests"] .crm-stat-icon {
-      background-color: var(--crm-request-bg);
-      color: var(--crm-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card[data-variant="visits"] .crm-stat-icon {
-      background-color: var(--crm-visit-request-bg);
-      color: var(--crm-visit-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card[data-variant="bookings"] .crm-stat-icon {
-      background-color: var(--crm-prebooked-bg);
-      color: var(--crm-prebooked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card[data-variant="venues"] .crm-stat-icon {
-      background-color: var(--crm-booked-bg);
-      color: var(--primary-color);
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card[data-variant="visits-total"] .crm-stat-icon {
-      background-color: rgba(0, 82, 212, 0.12);
-      color: var(--primary-color);
-    }
-
-    body[data-page="owner-crm"] .crm-stat-card[data-variant="visits-month"] .crm-stat-icon {
-      background-color: rgba(67, 100, 247, 0.12);
-      color: var(--secondary-color);
-    }
-
-    body[data-page="owner-crm"] .crm-dashboard-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 25px;
-    }
-
-    body[data-page="owner-crm"] .crm-dashboard-grid--charts {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      margin-top: 15px;
-    }
-
-    body[data-page="owner-crm"] .crm-chart {
-      min-height: 260px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    body[data-page="owner-crm"] .crm-chart svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    body[data-page="owner-crm"] .crm-occupancy-chart {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: space-between;
-    }
-
-    body[data-page="owner-crm"] .crm-donut-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      min-width: 120px;
-    }
-
-    body[data-page="owner-crm"] .crm-donut {
-      --occupied-deg: 0deg;
-      --occupied-color: var(--primary-color);
-      --available-color: rgba(0, 82, 212, 0.08);
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: conic-gradient(var(--occupied-color) var(--occupied-deg), var(--available-color) 0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      color: var(--dark-color);
-      font-weight: 700;
-    }
-
-    body[data-page="owner-crm"] .crm-donut::after {
-      content: attr(data-percentage) '%';
-      font-size: 1.1rem;
-    }
-
-    body[data-page="owner-crm"] .crm-donut-label {
-      font-size: 0.9rem;
-      color: var(--gray-color);
-      text-align: center;
-    }
-
-    body[data-page="owner-crm"] .crm-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-card-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-
-    body[data-page="owner-crm"] .crm-notification-list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    body[data-page="owner-crm"] .crm-notification {
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
-      padding: 15px 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    body[data-page="owner-crm"] .crm-notification:last-child {
-      border-bottom: none;
-    }
-
-    body[data-page="owner-crm"] .crm-notification-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    body[data-page="owner-crm"] .crm-notification-icon svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    body[data-page="owner-crm"] .crm-notification-timestamp {
-      font-size: 0.85rem;
-      color: var(--gray-color);
-      margin-top: 4px;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar {
-      flex-grow: 1;
-      width: 100%;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-header h2 {
-      font-size: 1.5rem;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-nav-button {
-      background: none;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-nav-button:hover {
-      background-color: var(--light-gray-color);
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      grid-auto-rows: minmax(140px, auto);
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-day-name {
-      text-align: center;
-      font-weight: 600;
-      color: var(--gray-color);
-      padding: 10px 0;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-date {
-      border: 1px solid var(--border-color);
-      min-height: 140px;
-      padding: 8px;
-      font-weight: 500;
-      background-color: var(--white-color);
-      transition: background-color 0.2s ease;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-date[data-outside="true"] {
-      background-color: #fcfcfc;
-      color: #ccc;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-date .crm-day-number {
-      margin-bottom: 5px;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event {
-      font-size: 0.8rem;
-      padding: 4px 6px;
-      border-radius: 4px;
-      color: var(--dark-color);
-      display: block;
-      line-height: 1.35;
-      word-break: break-word;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event + .crm-calendar-event {
-      margin-top: 4px;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event[data-variant="booked"] {
-      background-color: var(--crm-booked-bg);
-      border-left: 3px solid var(--crm-booked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event[data-variant="prebooked"] {
-      background-color: var(--crm-prebooked-bg);
-      border-left: 3px solid var(--crm-prebooked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event[data-variant="request"] {
-      background-color: var(--crm-request-bg);
-      border-left: 3px solid var(--crm-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event[data-variant="visit"] {
-      background-color: var(--crm-visit-request-bg);
-      border-left: 3px solid var(--crm-visit-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-event[data-variant="unavailable"] {
-      background-color: var(--crm-unavailable-bg);
-      border-left: 3px solid var(--crm-unavailable-color);
-      color: var(--crm-unavailable-color);
-      text-decoration: line-through;
-    }
-
-    body[data-page="owner-crm"] .crm-calendar-date.is-unavailable {
-      background-color: var(--crm-unavailable-bg);
-      color: var(--crm-unavailable-color);
-      text-decoration: line-through;
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 16px 0;
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      background-color: var(--light-gray-color);
-      color: var(--dark-color);
-      font-weight: 600;
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span::before {
-      content: '';
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: currentColor;
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span[data-variant="booked"] {
-      color: var(--crm-booked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span[data-variant="prebooked"] {
-      color: var(--crm-prebooked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span[data-variant="request"] {
-      color: var(--crm-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span[data-variant="visit"] {
-      color: var(--crm-visit-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-availability-legend span[data-variant="unavailable"] {
-      color: var(--crm-unavailable-color);
-    }
-
-    /* Tables */
-    body[data-page="owner-crm"] .crm-table-container {
-      overflow-x: auto;
-    }
-
-    body[data-page="owner-crm"] .crm-data-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    body[data-page="owner-crm"] .crm-data-table th,
-    body[data-page="owner-crm"] .crm-data-table td {
-      padding: 15px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    body[data-page="owner-crm"] .crm-data-table th {
-      font-weight: 600;
-      color: var(--gray-color);
-      font-size: 0.9rem;
-      text-transform: uppercase;
-    }
-
-    body[data-page="owner-crm"] .crm-data-table td {
-      font-weight: 500;
-    }
-
-    body[data-page="owner-crm"] .crm-data-table .crm-empty-row td {
-      text-align: center;
-      color: var(--gray-color);
-    }
-
-    body[data-page="owner-crm"] .crm-status-badge {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: capitalize;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    body[data-page="owner-crm"] .crm-status-badge[data-status="confirmed"],
-    body[data-page="owner-crm"] .crm-status-badge[data-status="published"] {
-      background-color: var(--crm-booked-bg);
-      color: var(--crm-booked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-status-badge[data-status="pending"] {
-      background-color: var(--crm-request-bg);
-      color: #856404;
-    }
-
-    body[data-page="owner-crm"] .crm-status-badge[data-status="visit-pending"] {
-      background-color: var(--crm-visit-request-bg);
-      color: var(--crm-visit-request-color);
-    }
-
-    body[data-page="owner-crm"] .crm-status-badge[data-status="pre-booked"] {
-      background-color: var(--crm-prebooked-bg);
-      color: var(--crm-prebooked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-status-badge[data-status="declined"] {
-      background-color: rgba(220, 53, 69, 0.12);
-      color: #dc3545;
-    }
-
-    body[data-page="owner-crm"] .crm-action-buttons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    body[data-page="owner-crm"] .crm-action-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-      border-radius: 50%;
-      transition: background-color 0.2s ease;
-    }
-
-    body[data-page="owner-crm"] .crm-action-button:hover {
-      background-color: var(--light-gray-color);
-    }
-
-    body[data-page="owner-crm"] .crm-action-button svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-action-button[data-action="confirm"] svg {
-      stroke: var(--crm-prebooked-color);
-    }
-
-    body[data-page="owner-crm"] .crm-action-button[data-action="decline"] svg {
-      stroke: #dc3545;
-    }
-
-    /* Venues */
-    body[data-page="owner-crm"] .crm-venue-status {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 20px;
-      border: 1px dashed var(--border-color);
-      border-radius: var(--border-radius);
-      margin-bottom: 25px;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-status-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--crm-request-bg);
-      color: var(--crm-request-color);
-    }
-
-    body[data-page="owner-crm"] #venues-list {
-      display: grid;
-      gap: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-card {
-      display: flex;
-      gap: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-card .result-details {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-actions {
-      margin-top: auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-actions .cta-button,
-    body[data-page="owner-crm"] .crm-venue-actions .secondary-cta-button,
-    body[data-page="owner-crm"] .crm-venue-actions .crm-ghost-button {
-      min-width: 0;
-    }
-
-    body[data-page="owner-crm"] .crm-venue-card .crm-status-badge {
-      font-size: 0.75rem;
-      padding: 5px 10px;
-    }
-
-    body[data-page="owner-crm"] .crm-ghost-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 20px;
-      border-radius: 50px;
-      border: 1px dashed var(--border-color);
-      background-color: transparent;
-      color: var(--muted-color);
-      font-weight: 600;
-      cursor: pointer;
-      transition: color var(--transition-base), border-color var(--transition-base), background-color var(--transition-base);
-    }
-
-    body[data-page="owner-crm"] .crm-ghost-button:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-      background-color: rgba(0, 82, 212, 0.08);
-    }
-
-    /* Availability */
-    body[data-page="owner-crm"] .crm-availability-scheduler {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-scheduler-placeholder {
-      padding: 24px;
-      border: 1px dashed var(--border-color);
-      border-radius: var(--border-radius);
-      background-color: #fafbff;
-      color: var(--gray-color);
-      text-align: center;
-    }
-
-    body[data-page="owner-crm"] .crm-day-schedule {
-      background-color: #fafbff;
-      border: 1px solid var(--border-color);
-      border-radius: var(--border-radius);
-      padding: 15px;
-    }
-
-    body[data-page="owner-crm"] .crm-day-schedule h4 {
-      margin-bottom: 15px;
-      font-weight: 600;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
-    }
-
-    body[data-page="owner-crm"] .crm-time-slots {
-      min-height: 50px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    body[data-page="owner-crm"] .crm-time-slot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: var(--white-color);
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      font-size: 0.9rem;
-    }
-
-    body[data-page="owner-crm"] .crm-remove-slot-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #dc3545;
-      font-weight: 700;
-    }
-
-    body[data-page="owner-crm"] .crm-add-slot-form {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
-
-    body[data-page="owner-crm"] .crm-add-slot-form input[type="time"] {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-family: inherit;
-    }
-
-    body[data-page="owner-crm"] .crm-add-slot-btn {
-      background-color: var(--primary-color);
-      color: var(--white-color);
-      border: none;
-      border-radius: 6px;
-      padding: 0 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    body[data-page="owner-crm"] .crm-dialog-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(26, 32, 44, 0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      z-index: 999;
-    }
-
-    body[data-page="owner-crm"] .crm-dialog-overlay.is-hidden {
-      display: none;
-    }
-
-    body[data-page="owner-crm"] .crm-dialog {
-      background: var(--white-color);
-      border-radius: var(--border-radius);
-      padding: 32px;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 20px 45px rgba(15, 35, 95, 0.18);
-    }
-
-    body[data-page="owner-crm"] .crm-dialog h2 {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
-    }
-
-    body[data-page="owner-crm"] .crm-dialog p {
-      color: var(--gray-color);
-      margin-bottom: 24px;
-    }
-
-    body[data-page="owner-crm"] .crm-dialog .cta-button {
-      width: 100%;
-    }
-
-    /* Settings */
-    body[data-page="owner-crm"] .crm-form-group {
-      margin-bottom: 20px;
-    }
-
-    body[data-page="owner-crm"] .crm-form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    body[data-page="owner-crm"] .crm-form-group input,
-    body[data-page="owner-crm"] .crm-form-group select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: inherit;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      background-color: var(--white-color);
-    }
-
-    body[data-page="owner-crm"] .crm-form-group input:focus,
-    body[data-page="owner-crm"] .crm-form-group select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px var(--shadow-color);
-    }
-
-    body[data-page="owner-crm"] .crm-card-footer {
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-color);
-      text-align: right;
-    }
-
-    body[data-page="owner-crm"] .crm-form-grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-    }
-
-    body[data-page="owner-crm"] .crm-toggle-switch-group {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-    }
-
-    body[data-page="owner-crm"] .crm-switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 28px;
-    }
-
-    body[data-page="owner-crm"] .crm-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    body[data-page="owner-crm"] .crm-slider {
-      position: absolute;
-      cursor: pointer;
-      inset: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 28px;
-    }
-
-    body[data-page="owner-crm"] .crm-slider::before {
-      content: '';
-      position: absolute;
-      height: 20px;
-      width: 20px;
-      left: 4px;
-      bottom: 4px;
-      background-color: var(--white-color);
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-
-    body[data-page="owner-crm"] .crm-switch input:checked + .crm-slider {
-      background-color: var(--primary-color);
-    }
-
-    body[data-page="owner-crm"] .crm-switch input:checked + .crm-slider::before {
-      transform: translateX(22px);
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      body[data-page="owner-crm"] .crm-dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 992px) {
-      body[data-page="owner-crm"] .crm-sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-        top: var(--header-height);
-        height: calc(100vh - var(--header-height));
-      }
-
-      body[data-page="owner-crm"] .crm-sidebar.is-open {
-        transform: translateX(0);
-      }
-
-      body[data-page="owner-crm"] .crm-main {
-        padding: 20px;
-      }
-
-      body[data-page="owner-crm"] .crm-page-title {
-        font-size: 2rem;
-      }
-
-      body[data-page="owner-crm"] .crm-venue-card {
-        flex-direction: column;
-      }
-
-      body[data-page="owner-crm"] .crm-venue-actions {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      body[data-page="owner-crm"] .crm-venue-actions .cta-button,
-      body[data-page="owner-crm"] .crm-venue-actions .secondary-cta-button,
-      body[data-page="owner-crm"] .crm-venue-actions .crm-ghost-button {
-        flex: 1 1 auto;
-      }
-    }
-
-
-    .search-group.location-group { position: relative; }
-    .autocomplete-items {
-      position: absolute;
-      border: 1px solid var(--border-color);
-      z-index: 99;
-      top: calc(100% + 5px);
-      left: 0;
-          background-color: var(--white-color);
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 15px var(--shadow-color);
-      max-height: 250px;
-      overflow-y: auto;
-    }
-    .autocomplete-items div {
-      padding: 12px 15px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    .autocomplete-items div:hover { background-color: var(--light-gray-color); }
-    .autocomplete-items strong { color: var(--primary-color); font-weight: 600; }
-
-    .form-group-left { text-align: left; }
-    .form-extra-options {
-      text-align: right;
-      font-size: 0.9rem;
-      margin: -10px 0 20px;
-    }
-    .form-extra-options a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-    .form-extra-options a:hover { text-decoration: underline; }
-    .form-group-row {
-      display: flex;
-      gap: 15px;
-    }
-    .form-group-row > .form-group {
-      flex: 1;
-    }
-    @media (max-width: 576px) {
-      .form-group-row {
-        flex-direction: column;
-      }
-    }
-
-    body[data-page="venue-details"] .venue-main-content { align-items: flex-start; margin-top: 30px; }
-    body[data-page="venue-details"] .gallery-section { margin-bottom: 40px; }
-    body[data-page="venue-details"] .gallery-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: repeat(2, 180px); gap: 8px; margin-bottom: 8px; }
-    body[data-page="venue-details"] .gallery-item { position: relative; overflow: hidden; border-radius: var(--border-radius); cursor: pointer; }
-    body[data-page="venue-details"] .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-    body[data-page="venue-details"] .gallery-item:hover img { transform: scale(1.05); }
-    body[data-page="venue-details"] .gallery-item.main-image { grid-row: 1 / 3; }
-    body[data-page="venue-details"] .thumbnail-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; height: 100px; }
-    body[data-page="venue-details"] .last-image::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); transition: background 0.3s ease; }
-    body[data-page="venue-details"] .last-image:hover::after { background: rgba(0,0,0,0.7); }
-    body[data-page="venue-details"] .show-all-photos-btn { position: absolute; z-index: 2; bottom: 12px; right: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--white-color); color: var(--white-color); padding: 8px 12px; border-radius: var(--border-radius); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
-    body[data-page="venue-details"] .show-all-photos-btn svg { width: 20px; height: 20px; fill: currentColor; }
-    body[data-page="venue-details"] .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; font-size: 2rem; cursor: pointer; padding: 10px 15px; z-index: 1001; user-select: none; }
-    body[data-page="venue-details"] .lightbox-nav.prev { left: 20px; }
-    body[data-page="venue-details"] .lightbox-nav.next { right: 20px; }
-    @media (max-width: 768px) {
-      body[data-page="venue-details"] .venue-main-content { flex-direction: column; }
-      body[data-page="venue-details"] .gallery-grid,
-      body[data-page="venue-details"] .thumbnail-grid { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
-      body[data-page="venue-details"] .gallery-grid { grid-template-rows: repeat(3, 200px); }
-      body[data-page="venue-details"] .thumbnail-grid { grid-template-columns: repeat(2, 1fr); }
-      body[data-page="venue-details"] .gallery-item.main-image { grid-column: auto; grid-row: auto; }
-      body[data-page="venue-details"] .gallery-item { height: 250px; }
-      body[data-page="venue-details"] .thumbnail-grid .gallery-item { height: 150px; }
-    }
-    body[data-page="venue-details"] .details-facilities-section h3 { margin-top: 30px; }
-    body[data-page="venue-details"] .widget-note { font-size: 0.85rem; color: var(--gray-color); text-align: center; margin-top: 15px; }
-    body[data-page="venue-details"] .contact-section-locked .locked-content { background-color: var(--light-gray-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 40px 20px; text-align: center; margin-top: 15px; }
-    body[data-page="venue-details"] .contact-section-locked .locked-content svg { width: 48px; height: 48px; fill: var(--primary-color); margin-bottom: 15px; opacity: 0.8; }
-    body[data-page="venue-details"] .contact-section-locked .locked-content p { font-size: 1.1rem; font-weight: 500; color: var(--dark-color); margin-bottom: 25px; }
-    body[data-page="venue-details"] .contact-section-locked .locked-content .cta-button { background-color: var(--primary-color); color: var(--white-color); }
-    body[data-page="venue-details"] .contact-section-locked .locked-content .cta-button:hover { background-color: var(--dark-color); }
-  </style>
-</head>
-<body data-page="locations">
-  <main>
-      <section class="main-search-section">
-        <div class="container">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ouidoEvents - Toate Locațiile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Copiază stilurile CSS din index.html AICI */
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #4364F7;
+            --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); 
+            --dark-color: #1a202c;
+            --gray-color: #555;
+            --light-gray-color: #f0f2f5;
+            --bg-color: #f8f9fa;
+            --white-color: #ffffff;
+            --border-color: #e5eaf1;
+            --shadow-color: rgba(0, 82, 212, 0.1);
+            --border-radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+
+
+
+        .nav-links a:hover { color: var(--primary-color); }
+
+
+        role-switcher display: flex; align-items: center; gap: 8px; margin-left: 20px; }
+        .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
+        .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
+        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
+
+        /* NOU: Stiluri pentru bara de căutare (preluate din index.html) */
+        .main-search-section { text-align: left; padding: 60px 0; background: var(--white-color); }
+        .main-search-section h1 { font-size: 2.5rem; margin-bottom: 15px; font-weight: 700; }
+        .main-search-section p { font-size: 1.1rem; margin-bottom: 40px; color: var(--gray-color); max-width: 700px; }
+
+        .search-box { display: flex; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 8px 25px var(--shadow-color); overflow: hidden; height: 80px; border: 1px solid var(--border-color); max-width: 1100px; margin: 0 auto; }
+        .search-group { flex: 1; position: relative; height: 100%; border-right: 1px solid var(--border-color); padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
+        .search-group:hover, .search-group:focus-within { background-color: #fcfdff; }
+        .event-type-group { flex: 1.2; } .location-group { flex: 1.2; } .date-group { flex: 1; } .guests-group { flex: 0.8; border-right: none; }
+        .search-group label { font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 6px; text-align: left; }
+        .search-group input, .search-group select { width: 100%; border: none; outline: none; font-size: 16px; color: var(--gray-color); font-family: inherit; background: transparent; padding: 0; margin: 0; }
+        .search-box .search-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 18px; width: 180px; height: 100%; transition: all 0.3s ease; }
+        .search-box .search-button:hover { opacity: 0.9; }
+
+        /* Stilizare specifică pentru pagina de locații */
+        .locations-container { display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 40px 0; align-items: flex-start; }
+        .filters { width: 100%; }
+        .filter-group { margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--white-color); overflow: hidden; }
+        .filter-group summary { padding: 15px; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .filter-group summary::-webkit-details-marker { display: none; }
+        .filter-group-content { padding: 0 15px 15px; }
+        .filter-group-content label { display: block; margin-bottom: 10px; font-weight: 400; font-size: 0.95rem; }
+        .filter-group-content ul { list-style: none; padding: 0; }
+        .filter-group-content li { margin-bottom: 8px; display: flex; align-items: center; }
+        .filter-group-content li label { font-size: 0.9rem; font-weight: 400; margin-bottom: 0; }
+        .filter-group-content input[type="checkbox"] { margin-right: 8px; }
+        .filter-group-content input[type="radio"] { margin-right: 8px; }
+        #price-value { font-weight: 600; }
+
+        .main-content { flex: 1; }
+        .sort-bar { display: flex; justify-content: flex-end; margin-bottom: 20px; align-items: center; }
+        .sort-bar label { margin-right: 10px; font-weight: 500; }
+        .sort-bar select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); }
+
+        .locations-list { display: flex; flex-direction: column; gap: 20px; }
+
+        .result-card { display: flex; background: var(--white-color); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); transition: all 0.3s ease; border: 1px solid var(--border-color); }
+        .result-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px var(--shadow-color); }
+
+        /* NOU: Buton Favorite */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(2px);
+        }
+        .favorite-btn:hover {
+            background: var(--white-color);
+            transform: scale(1.1);
+        }
+        .favorite-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--dark-color);
+            stroke-width: 2;
+            fill: none;
+            transition: all 0.2s ease;
+        }
+        .favorite-btn.is-favorite svg {
+            fill: #ff4d4d;
+            stroke: #ff4d4d;
+        }
+
+        .result-image { height: 220px; background: url('/api/placeholder/400/300') center/cover no-repeat; }
+        .result-details { padding: 20px; }
+        .result-tags { display: flex; gap: 8px; margin-bottom: 12px; }
+        .tag { background-color: var(--light-gray-color); color: var(--gray-color); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .result-name { font-weight: 600; font-size: 1.2rem; margin-bottom: 5px; color: var(--dark-color); }
+        .result-location { color: var(--gray-color); font-size: 0.95rem; margin-bottom: 10px; }
+
+        .result-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .rating-badge { background-color: var(--primary-color); color: white; font-weight: 700; padding: 4px 8px; border-radius: 6px; font-size: 0.9rem; }
+        .rating-text { font-weight: 600; }
+        .rating-reviews { color: var(--gray-color); font-size: 0.9rem; }
+
+        .result-card { display: flex; gap: 20px; }
+        .result-image { width: 250px; height: auto; flex-shrink: 0; }
+        .result-details { flex: 1; display: flex; flex-direction: column; }
+        /* NOU: Sectiunea pentru meta-informatii (capacitate, etc.) */
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .result-meta svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--gray-color);
+            opacity: 0.8;
+        }
+
+        /* MODIFICAT: Bara de actiune de jos */
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto; /* Impinge in jos */
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .result-price {
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .result-price strong {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .view-details-btn {
+            background-color: var(--primary-color); color: var(--white-color); text-decoration: none;
+            padding: 8px 16px; border-radius: 50px; font-weight: 500; font-size: 14px;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* Previne trecerea textului pe randul 2 */
+        }
+        .view-details-btn:hover { background-color: var(--secondary-color); }
+
+        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
         
+        /* NOU: Stiluri pentru calendarul modern (Flatpickr) */
+        .flatpickr-calendar {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            width: auto;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .flatpickr-day:hover {
+            background: var(--light-gray-color);
+            border-color: var(--light-gray-color);
+        }
+        .flatpickr-day.today { border-color: var(--secondary-color); }
+        .flatpickr-day.today:hover { border-color: var(--secondary-color); background: var(--secondary-color); color: var(--white-color); }
+        .flatpickr-months .flatpickr-month, .flatpickr-weekdays, .numInputWrapper, .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: var(--dark-color);
+            fill: var(--dark-color);
+        }
 
-          <div class="search-box">
-            <div class="search-group event-type-group">
-              <label for="event-type">Tipul evenimentului</label>
-              <select id="event-type">
-                <option value="nunta">Nuntă</option>
-                <option value="botez">Botez</option>
-                <option value="corporate">Eveniment Corporate</option>
-                <option value="privat">Petrecere Privată</option>
-                <option value="conferinta">Conferință</option>
-              </select>
+        /* Adaugă aici stilurile pentru meniul mobil din pasul 1 */
+        .mobile-menu-button { display: none; /* ... etc */ }
+        .mobile-nav-overlay { display: none; /* ... etc */ }
+        /* ... restul stilurilor pentru mobil ... */
+        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; } /* ... restul stilurilor ... */
+        .footer-about p { color: #bbb; }
+        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
+        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
+
+        @media (max-width: 992px) {
+            .nav-links, .header-actions { display: none; }
+            .mobile-menu-button { display: block; }
+
+            .search-box { height: auto; flex-direction: column; }
+            .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
+            .guests-group { border-bottom: none; }
+            .search-box .search-button { width: 100%; padding: 18px; border-radius: 0 0 var(--border-radius) var(--border-radius); }
+        }
+
+        @media (max-width: 820px) { /* Ajustat pentru a preveni suprapunerea cardurilor */
+            .locations-container { grid-template-columns: 1fr; }
+            .filters { width: 100%; margin-right: 0; margin-bottom: 20px; }
+            .result-card { flex-direction: column; }
+            .result-image { width: 100%; height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">OuidoEvents</a>
+            <nav class="nav-links">
+                <a href="locations.html">Locații</a>
+                <a href="#">Blog</a>
+                <a href="#">Despre noi</a>
+                <a href="contact.html">Contact</a>
+                <div class="gradient-switcher">
+                    <label for="role-selector">Role:</label>
+                    <select id="role-selector">
+                        <option value="client">Client</option>
+                        <option value="owner">Owner</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="secondary-cta-button">Conectare</a>
+                <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
             </div>
-            <div class="search-group location-group">
-              <label for="location">Locația</label>
-              <input type="text" id="location" placeholder="Oraș sau județ">
+            <button class="mobile-menu-button">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="mobile-nav-overlay">
+            <nav class="nav-links">
+                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
+            </nav>
+            <div class="header-actions">
+                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
             </div>
-            <div class="search-group date-group">
-              <label for="event-date">Data evenimentului</label>
-              <input type="text" id="event-date" class="date-picker" placeholder="dd/mm/yyyy" readonly>
-            </div>
-            <div class="search-group guests-group">
+        </div>
+    </header>
+
+    <main>
+        <section class="main-search-section">
+            <div class="container">
+                <div class="search-box">
+                    <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
+                    <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
+                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="text" id="event-date" placeholder="dd/mm/yyyy"></div>
+                    <div class="search-group guests-group">
               <label for="guests">Invitați</label>
               <select id="guests">
                 <option value="any">Oricâți</option>
@@ -2795,1756 +294,256 @@
                 <option value="300+">Peste 300</option>
               </select>
             </div>
-            <button class="search-button" type="button">Caută</button>
-          </div>
-        </div>
-      </section>
+                    <button class="search-button">Caută</button>
+                </div>
+            </div>
+        </section>
 
-      <div class="container locations-container">
-        <aside class="filters">
-          <details class="filter-group" open>
-            <summary>Buget (Preț/persoană)</summary>
-            <div class="filter-group-content">
-              <input type="range" id="price-slider" min="50" max="300" value="300">
-              <label for="price-slider">Până la: <span id="price-value">300</span>€</label>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Capacitate Invitați</summary>
-            <div class="filter-group-content">
-              <ul id="capacity-filter-list">
-                  <li><input type="radio" name="capacity" value="any" id="cap-any" checked><label for="cap-any">Oricâți</label></li>
-                  <li><input type="radio" name="capacity" value="0-50" id="cap-0-50"><label for="cap-0-50">Sub 50</label></li>
-                  <li><input type="radio" name="capacity" value="50-100" id="cap-50-100"><label for="cap-50-100">50 - 100</label></li>
-                  <li><input type="radio" name="capacity" value="100-150" id="cap-100-150"><label for="cap-100-150">100 - 150</label></li>
-                  <li><input type="radio" name="capacity" value="150-200" id="cap-150-200"><label for="cap-150-200">150 - 200</label></li>
-                  <li><input type="radio" name="capacity" value="200-300" id="cap-200-300"><label for="cap-200-300">200 - 300</label></li>
-                  <li><input type="radio" name="capacity" value="300+" id="cap-300-plus"><label for="cap-300-plus">Peste 300</label></li>
-              </ul>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Rating</summary>
-            <div class="filter-group-content">
-              <ul>
-                <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9">Wonderful: 9+</label></li>
-                <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8">Very Good: 8+</label></li>
-                <li><input type="radio" name="rating" value="7" id="rating-7"><label for="rating-7">Good: 7+</label></li>
-                <li><input type="radio" name="rating" value="6" id="rating-6"><label for="rating-6">Pleasant: 6+</label></li>
-                <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all">Toate</label></li>
-              </ul>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Facilități</summary>
-            <div class="filter-group-content">
-              <ul id="facilities-filter" class="facilities-filter-list">
-                <li><input type="checkbox" id="f-terasa" value="Terasă / Grădină"><label for="f-terasa">Terasă / Grădină</label></li>
-                <li><input type="checkbox" id="f-catering" value="Servicii de catering personalizate"><label for="f-catering">Catering personalizat</label></li>
-                <li><input type="checkbox" id="f-bar" value="Bar (serviciu complet)"><label for="f-bar">Bar (serviciu complet)</label></li>
-                <li><input type="checkbox" id="f-decor" value="Decor (servicii de amenajare)"><label for="f-decor">Decor (servicii de amenajare)</label></li>
-                <li><input type="checkbox" id="f-parcare" value="Parcare privată"><label for="f-parcare">Parcare privată</label></li>
-                <li><input type="checkbox" id="f-cazare" value="Cazare invitati"><label for="f-cazare">Cazare invitati</label></li>
-                <li><input type="checkbox" id="f-camera-miri" value="Cameră miri"><label for="f-camera-miri">Cameră miri</label></li>
-                <li><input type="checkbox" id="f-piscina" value="Piscina"><label for="f-piscina">Piscina</label></li>
-                <li><input type="checkbox" id="f-vedere-lac" value="Vedere lac"><label for="f-vedere-lac">Vedere lac</label></li>
-                <li><input type="checkbox" id="f-vedere-munte" value="Vedere munte"><label for="f-vedere-munte">Vedere munte</label></li>
-                <li><input type="checkbox" id="f-ponton" value="Ponton"><label for="f-ponton">Ponton</label></li>
-                <li><input type="checkbox" id="f-planner" value="Event planner dedicat"><label for="f-planner">Event planner dedicat</label></li>
-                <li><input type="checkbox" id="f-wifi" value="Wi-Fi gratuit de mare viteză"><label for="f-wifi">Wi-Fi gratuit</label></li>
-                <li><input type="checkbox" id="f-sunet" value="Sistem de sunet și lumini profesional"><label for="f-sunet">Sistem sunet/lumini</label></li>
-                <li><input type="checkbox" id="f-aer-liber" value="Ceremonie in aer liber"><label for="f-aer-liber">Ceremonie in aer liber</label></li>
-                <li><input type="checkbox" id="f-kids" value="Kids corner"><label for="f-kids">Kids corner</label></li>
-                <li><input type="checkbox" id="f-lounge" value="Spațiu lounge"><label for="f-lounge">Spațiu lounge</label></li>
-              </ul>
-            </div>
-          </details>
-          <details class="filter-group" open>
-            <summary>Stil locație</summary>
-            <div class="filter-group-content">
-              <ul id="style-filter" class="facilities-filter-list">
-                <li><input type="checkbox" id="s-elegant" value="Elegant"><label for="s-elegant">Elegant</label></li>
-                <li><input type="checkbox" id="s-modern" value="Modern"><label for="s-modern">Modern</label></li>
-                <li><input type="checkbox" id="s-minimalist" value="Minimalist"><label for="s-minimalist">Minimalist</label></li>
-                <li><input type="checkbox" id="s-clasic" value="Clasic"><label for="s-clasic">Clasic</label></li>
-                <li><input type="checkbox" id="s-boho" value="Boho-Chic"><label for="s-boho">Boho-Chic</label></li>
-                <li><input type="checkbox" id="s-glamour" value="Glamour"><label for="s-glamour">Glamour</label></li>
-                <li><input type="checkbox" id="s-rustic" value="Rustic"><label for="s-rustic">Rustic</label></li>
-                <li><input type="checkbox" id="s-natura" value="Natură"><label for="s-natura">Natură</label></li>
-                <li><input type="checkbox" id="s-central" value="Central"><label for="s-central">Central</label></li>
-                <li><input type="checkbox" id="s-panoramic" value="Panoramic"><label for="s-panoramic">Panoramic</label></li>
-                <li><input type="checkbox" id="s-istoric" value="Istoric"><label for="s-istoric">Istoric</label></li>
-                <li><input type="checkbox" id="s-exclusivist" value="Exclusivist"><label for="s-exclusivist">Exclusivist</label></li>
-              </ul>
-            </div>
-          </details>
-        </aside>
+        <div class="container locations-container">
+            <aside class="filters">
+                <details class="filter-group" open>
+                    <summary>Buget (Preț/persoană)</summary>
+                    <div class="filter-group-content">
+                        <input type="range" id="price-slider" min="50" max="300" value="300" style="width: 100%;">
+                        <label>Până la: <span id="price-value">300</span>€</label>
+                    </div>
+                </details>
+                <details class="filter-group" open>
+                    <summary>Capacitate Invitați</summary>
+                    <div class="filter-group-content">
+                        <input type="number" id="capacity-input" placeholder="Ex: 150" min="0" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    </div>
+                </details>
+                <details class="filter-group" open>
+                    <summary>Rating</summary>
+                    <div class="filter-group-content">
+                        <ul>
+                            <li><input type="radio" name="rating" value="9" id="rating-9"><label for="rating-9">Wonderful: 9+</label></li>
+                            <li><input type="radio" name="rating" value="8" id="rating-8"><label for="rating-8">Very Good: 8+</label></li>
+                            <li><input type="radio" name="rating" value="7" id="rating-7"><label for="rating-7">Good: 7+</label></li>
+                            <li><input type="radio" name="rating" value="6" id="rating-6"><label for="rating-6">Pleasant: 6+</label></li>
+                            <li><input type="radio" name="rating" value="0" id="rating-all" checked><label for="rating-all">Toate</label></li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="filter-group" open>
+                    <summary>Facilități</summary>
+                    <div class="filter-group-content">
+                        <ul id="facilities-filter">
+                            <li><input type="checkbox" value="Parcare" id="f-parcare"><label for="f-parcare">Parcare</label></li>
+                            <li><input type="checkbox" value="Piscină" id="f-piscina"><label for="f-piscina">Piscină</label></li>
+                            <li><input type="checkbox" value="Cazare" id="f-cazare"><label for="f-cazare">Cazare</label></li>
+                            <li><input type="checkbox" value="Vedere la Lac" id="f-lac"><label for="f-lac">Vedere la Lac</label></li>
+                            <li><input type="checkbox" value="Ceremonii în aer liber" id="f-aer-liber"><label for="f-aer-liber">Ceremonii în aer liber</label></li>
+                            <li><input type="checkbox" value="Kids Corner" id="f-kids"><label for="f-kids">Kids Corner</label></li>
+                        </ul>
+                    </div>
+                </details>
+            </aside>
 
-        <div class="main-content">
-          <div class="sort-bar">
-            <label for="sort-options">Sortează după:</label>
-            <select id="sort-options">
-              <option value="recommended">Recomandate</option>
-              <option value="price_asc">Preț (crescător)</option>
-              <option value="price_desc">Preț (descrescător)</option>
-              <option value="rating_desc">Rating (descrescător)</option>
-              <option value="capacity_desc">Capacitate (descrescător)</option>
-            </select>
-          </div>
-          <section class="locations-list" id="locations-list">
-            <!-- Rezultatele generate dinamic -->
-          </section>
+            <div class="main-content">
+                <div class="sort-bar">
+                    <label for="sort-options">Sortează după:</label>
+                    <select id="sort-options">
+                        <option value="recommended">Recomandate</option>
+                        <option value="price_asc">Preț (crescător)</option>
+                        <option value="price_desc">Preț (descrescător)</option>
+                        <option value="rating_desc">Rating (descrescător)</option>
+                        <option value="capacity_desc">Capacitate (descrescător)</option>
+                    </select>
+                </div>
+                <section class="locations-list" id="locations-list">
+                    <!-- Rezultatele vor fi generate dinamic aici de JavaScript -->
+                </section>
+            </div>
         </div>
-      </div>
     </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
-  <script type="module">
-    const NAV_LINKS = [
-      { href: 'index.html', label: 'Acasă', page: 'home' },
-      { href: 'locations.html', label: 'Locații', page: 'locations' },
-      { href: 'blog.html', label: 'Blog', page: 'blog' },
-      { href: '#', label: 'Despre noi', page: 'about' },
-      { href: 'contact.html', label: 'Contact', page: 'contact' }
-    ];
-
-    function createNavLinksMarkup(activePage) {
-      return NAV_LINKS.map(({ href, label, page }) => {
-        const isActive = activePage === page;
-        return `<a href="${href}" data-page-key="${page}" class="${isActive ? 'active' : ''}">${label}</a>`;
-      }).join('');
-    }
-
-    function buildHeader({ activeNavKey }) {
-      const header = document.createElement('header');
-
-      header.innerHTML = `
-        <div class="container header-container">
-          <a href="index.html" class="logo">OuidoEvents</a>
-          <nav class="nav-links" data-nav="desktop">
-            ${createNavLinksMarkup(activeNavKey)}
-          </nav>
-          <div class="header-actions" data-actions="desktop">
-            <div class="user-links-placeholder" data-user-links></div>
-            <a href="owner-crm.html" class="header-od-button" aria-label="Deschide CRM proprietar">OD</a>
-            <a href="login.html" class="secondary-cta-button">Conectare</a>
-            <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
-          </div>
-          <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-nav">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="mobile-nav-overlay" id="mobile-nav">
-          <nav class="nav-links" data-nav="mobile"></nav>
-          <div class="header-actions" data-actions="mobile"></div>
-        </div>
-      `;
-
-      const desktopNav = header.querySelector('[data-nav="desktop"]');
-      const mobileNav = header.querySelector('[data-nav="mobile"]');
-      if (mobileNav && desktopNav) {
-        mobileNav.innerHTML = desktopNav.innerHTML;
-      }
-
-      const desktopActions = header.querySelector('[data-actions="desktop"]');
-      const mobileActions = header.querySelector('[data-actions="mobile"]');
-      if (mobileActions && desktopActions) {
-        mobileActions.innerHTML = desktopActions.innerHTML;
-      }
-
-      const mobileMenuButton = header.querySelector('.mobile-menu-button');
-      const mobileOverlay = header.querySelector('.mobile-nav-overlay');
-      if (mobileMenuButton && mobileOverlay) {
-        mobileMenuButton.addEventListener('click', () => {
-          const isOpen = mobileMenuButton.classList.toggle('open');
-          mobileMenuButton.setAttribute('aria-expanded', String(isOpen));
-          mobileOverlay.classList.toggle('active');
-        });
-      }
-
-      return header;
-    }
-
-    function buildFooter() {
-      const footer = document.createElement('footer');
-      footer.innerHTML = `
+    <footer>
         <div class="container">
-          <div class="footer-container">
-            <div class="footer-about">
-              <h3 class="footer-title">ouidoEvents</h3>
-              <p>Platforma care conectează organizatorii de evenimente cu locații perfecte pentru momente memorabile.</p>
+            <div class="footer-container">
+                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
+                <div><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="create-account.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
+                <div><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
+                <div><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
             </div>
-            <div>
-              <h3 class="footer-title">Link-uri rapide</h3>
-              <ul class="footer-links">
-                <li><a href="locations.html">Locații</a></li>
-                <li><a href="create-account.html">Adaugă locația ta</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 class="footer-title">Resurse</h3>
-              <ul class="footer-links">
-                <li><a href="#">Ghid de organizare</a></li>
-                <li><a href="#">Checklist eveniment</a></li>
-                <li><a href="#">Calculator buget</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 class="footer-title">Contact</h3>
-              <ul class="footer-links">
-                <li>București, România</li>
-                <li><a href="mailto:contact@ouidoevents.com">contact@ouidoevents.com</a></li>
-                <li><a href="tel:+40712345678">+40 712 345 678</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="copyright">&copy; 2025 ouidoEvents. Toate drepturile rezervate.</div>
+            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
         </div>
-      `;
-      return footer;
-    }
+    </footer>
 
-    function resolveActiveNavKey(pageKey) {
-      if (pageKey === 'venue-details') {
-        return 'locations';
-      }
-      return pageKey;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    function initLayout({ pageKey = 'home', withFooter = true } = {}) {
-      const main = document.querySelector('main');
-      if (!main) {
-        return;
-      }
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Structura de Date
+        const locations = [
+            { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, capacity_min: 150, capacity_max: 400, tags: ['Exclusivist', 'Panoramic'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Event planner'], rating: 9.4, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, capacity_min: 80, capacity_max: 200, tags: ['Natură', 'Piscină'], facilities: ['Parcare', 'Piscină', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.8, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fHJlc29ydCUyMHN3aW1taW5nJTIwcG9vbHxlbnwwfHx8fDE2NTg0MjYwMTA&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, capacity_min: 50, capacity_max: 150, tags: ['Modern', 'Rooftop'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 9.1, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxyb29mdG9wJTIwYmFyfGVufDB8fHx8MTY1ODQyNjA1Mw&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 4, name: 'Palatul Noblesse', city: 'Iași', price: 105, capacity_min: 100, capacity_max: 250, tags: ['Istoric', 'Elegant'], facilities: ['Parcare', 'Event planner', 'Wi-Fi gratuit'], rating: 8.9, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 5, name: 'Laguna Albastră', city: 'Constanța', price: 130, capacity_min: 100, capacity_max: 300, tags: ['Plajă', 'Vedere la mare'], facilities: ['Parcare', 'Piscină', 'Ceremonii în aer liber', 'Vedere la Lac'], rating: 9.5, imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE2NTg0MjYxNDQ&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 6, name: 'Conacul din Vii', city: 'Prahova', price: 85, capacity_min: 40, capacity_max: 120, tags: ['Rustic', 'Tradițional'], facilities: ['Parcare', 'Cazare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 8.5, imageUrl: 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxydXN0aWMlMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYxODU&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, capacity_min: 100, capacity_max: 250, tags: ['Lac', 'Natură'], facilities: ['Parcare', 'Vedere la Lac', 'Ceremonii în aer liber', 'Event planner'], rating: 9.6, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsYWtlJTIwcmVzb3J0fGVufDB8fHx8MTY1ODQyNjIyOA&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 8, name: 'Mountain Peak', city: 'Sinaia', price: 100, capacity_min: 60, capacity_max: 180, tags: ['Munte', 'Panoramic'], facilities: ['Parcare', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.2, imageUrl: 'https://images.unsplash.com/photo-1559538739-998a8116a533?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxtb3VudGFpbiUyMGNoYWxldHxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 9, name: 'Urban Loft', city: 'Timișoara', price: 75, capacity_min: 30, capacity_max: 80, tags: ['Industrial', 'Modern'], facilities: ['Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Kids Corner'], rating: 8.2, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 10, name: 'Grădina cu Lavandă', city: 'Sibiu', price: 90, capacity_min: 50, capacity_max: 150, tags: ['Grădină', 'Romantic'], facilities: ['Parcare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 9.0, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 11, name: 'Delta Paradise', city: 'Tulcea', price: 70, capacity_min: 40, capacity_max: 100, tags: ['Natură', 'Delta'], facilities: ['Parcare', 'Cazare', 'Vedere la Lac'], rating: 7.8, imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6164a83639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsdXh1cnklMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
+            { id: 12, name: 'Centrul de Conferințe Oradea', city: 'Oradea', price: 65, capacity_min: 20, capacity_max: 500, tags: ['Business', 'Modern'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 6.9, imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxhdWRpdG9yaXVtfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' }
+        ];
 
-      const activeNavKey = resolveActiveNavKey(pageKey);
-      const header = buildHeader({ activeNavKey });
-      main.parentElement.insertBefore(header, main);
-
-      if (withFooter) {
-        const footer = buildFooter();
-        if (main.nextElementSibling) {
-          main.parentElement.insertBefore(footer, main.nextElementSibling);
-        } else {
-          main.parentElement.appendChild(footer);
-        }
-      }
-
-      synchronizeActiveLinks(header, activeNavKey);
-    }
-
-    function synchronizeActiveLinks(header, activeNavKey) {
-      if (!header) {
-        return;
-      }
-
-      const anchors = header.querySelectorAll('.nav-links a');
-      anchors.forEach(anchor => {
-        const linkPage = anchor.dataset.pageKey;
-        if (linkPage) {
-          if (linkPage === activeNavKey) {
-            anchor.classList.add('active');
-          } else {
-            anchor.classList.remove('active');
-          }
-        }
-      });
-    }
-
-    function initDatePickers() {
-      // Initialize all date pickers with a common class
-      flatpickr(".date-picker", {
-        locale: {
-          firstDayOfWeek: 1 // Monday
-        },
-        dateFormat: "d/m/Y",
-        altInput: true,
-        altFormat: "d/m/Y",
-      });
-    }
-
-    const locations = [
-      "București", "Cluj-Napoca", "Timișoara", "Iași", "Constanța", "Craiova", "Brașov", "Galați", "Ploiești", "Oradea", "Brăila", "Arad", "Pitești", "Sibiu", "Bacău", "Târgu Mureș", "Baia Mare", "Buzău", "Botoșani", "Satu Mare", "Râmnicu Vâlcea", "Suceava", "Piatra Neamț", "Drobeta-Turnu Severin", "Focșani", "Târgu Jiu", "Tulcea", "Târgoviște", "Reșița", "Slatina", "Hunedoara", "Vaslui", "Bârlad", "Roman", "Giurgiu", "Alba Iulia", "Zalău", "Sfântu Gheorghe", "Turda", "Mediaș", "Sighișoara", "Slobozia", "Călărași", "Alexandria", "Miercurea Ciuc", "Deva", "Lugoj", "Mangalia", "Sinaia", "Predeal", "Bușteni", "Mamaia",
-      "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
-    ];
-    // Remove duplicates
-    const romanianLocations = [...new Set(locations)];
-
-    function normalizeString(str) {
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
-
-    function initAutocomplete(inputId) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-
-      let suggestionsWrapper;
-
-      input.addEventListener('input', function() {
-        const value = this.value;
-        closeAllLists();
-        if (!value) {
-          return false;
-        }
-
-        suggestionsWrapper = document.createElement("div");
-        suggestionsWrapper.setAttribute("class", "autocomplete-items");
-    
-        // Append to body and position it absolutely relative to the input
-        document.body.appendChild(suggestionsWrapper);
-        const rect = this.getBoundingClientRect();
-        suggestionsWrapper.style.left = (rect.left + window.scrollX) + 'px';
-        suggestionsWrapper.style.top = (rect.bottom + window.scrollY) + 'px';
-        suggestionsWrapper.style.width = rect.width + 'px';
-    
-        const normalizedValue = normalizeString(value).toUpperCase();
-
-        const filteredLocations = romanianLocations.filter(loc => 
-          normalizeString(loc).toUpperCase().startsWith(normalizedValue)
-        );
-
-        filteredLocations.forEach(city => {
-          const suggestionItem = document.createElement("div");
-          const matchIndex = normalizeString(city).toUpperCase().indexOf(normalizedValue);
-          suggestionItem.innerHTML = "<strong>" + city.substr(matchIndex, value.length) + "</strong>" + city.substr(matchIndex + value.length);
-          suggestionItem.innerHTML += "<input type='hidden' value='" + city + "'>";
-      
-          suggestionItem.addEventListener("click", function(e) {
-              input.value = this.getElementsByTagName("input")[0].value;
-              closeAllLists();
-          });
-          suggestionsWrapper.appendChild(suggestionItem);
-        });
-      });
-
-      function closeAllLists(elmnt) {
-        const items = document.getElementsByClassName("autocomplete-items");
-        for (let i = 0; i < items.length; i++) {
-          if (elmnt != items[i] && elmnt != input) {
-            items[i].remove();
-          }
-        }
-      }
-
-      document.addEventListener("click", function (e) {
-          closeAllLists(e.target);
-      });
-    }
-
-    function initSearch(pageKey, { onFiltersChange } = {}) {
+        const locationsListContainer = document.getElementById('locations-list');
+        const priceSlider = document.getElementById('price-slider');
+        const priceValue = document.getElementById('price-value');
+        const capacityInput = document.getElementById('capacity-input');
+        const facilitiesCheckboxes = document.querySelectorAll('#facilities-filter input[type="checkbox"]');
+        const ratingRadios = document.querySelectorAll('input[name="rating"]');
+        const sortOptions = document.getElementById('sort-options');
         const searchButton = document.querySelector('.search-button');
+        // Simulare stare login & favorite
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Vom presupune ca userul e logat daca aceasta valoare e 'true'
+        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
 
-        const triggerFilters = () => {
-            if (typeof onFiltersChange === 'function') {
-                onFiltersChange();
+        // Logica pentru meniul mobil (identica cu index.html)
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+        const desktopNav = document.querySelector('.header-container .nav-links');
+        const desktopActions = document.querySelector('.header-container .header-actions');
+        mobileNavOverlay.querySelector('.nav-links').innerHTML = '';
+        mobileNavOverlay.querySelector('.header-actions').innerHTML = '';
+        mobileMenuButton.addEventListener('click', function() {
+            this.classList.toggle('open');
+            mobileNavOverlay.classList.toggle('active');
+        });
+
+
+        searchButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            applyFiltersAndSort();
+        });
+
+        // 4. Funcția principală de randare
+        function renderLocations(locationsArray) {
+            locationsListContainer.innerHTML = ''; // Golește containerul
+            if (locationsArray.length === 0) {
+                locationsListContainer.innerHTML = '<p>Nicio locație nu corespunde filtrelor selectate.</p>';
+                return;
             }
-        };
 
-        if (searchButton) {
-            searchButton.addEventListener('click', event => {
-                event.preventDefault();
+            locationsArray.forEach(loc => {
+                const ratingText = loc.rating >= 9.5 ? 'Excepțional' : loc.rating >= 9 ? 'Superb' : loc.rating >= 8.5 ? 'Foarte bine' : 'Bine';
+                const isFavorite = favoriteIds.includes(loc.id);
+                const cardHTML = `
+                    <div class="result-card">
+                        <button class="favorite-btn ${isFavorite ? 'is-favorite' : ''}" data-id="${loc.id}" title="Adaugă la favorite">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </button>
+                        <div class="result-image" style="background-image: url('${loc.imageUrl}')"></div>
+                        <div class="result-details">
+                            <h3 class="result-name">${loc.name}</h3>
+                            <p class="result-location">${loc.city}, România</p>
+                            <div class="result-rating">
+                                <span class="rating-badge">${loc.rating}</span>
+                                <span class="rating-text">${ratingText}</span>
+                                <span class="rating-reviews">• ${Math.floor(loc.rating * 25)} recenzii</span>
+                            </div>
+                            <div class="result-meta">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>${loc.capacity_min} - ${loc.capacity_max} invitați</span>
+                            </div>
+                            <div class="result-info">
+                                <span class="result-price">de la <strong>${loc.price}€</strong>/pers</span>
+                                <a href="venue-details.html?id=${loc.id}" class="view-details-btn">Vezi disponibilitatea</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                locationsListContainer.innerHTML += cardHTML;
+            });
 
-                const eventTypeElement = document.getElementById('event-type');
-                const locationElement = document.getElementById('location');
-                const dateElement = document.getElementById('event-date');
-                const guestsElement = document.getElementById('guests');
+            // Adaugă event listeners pentru noile butoane de favorite
+            addFavoriteButtonListeners();
+        }
 
-                const params = new URLSearchParams();
-                const eventTypeValue = eventTypeElement?.value?.trim();
-                const locationValue = locationElement?.value?.trim();
-                const dateValue = dateElement?.value?.trim();
-                const guestsValue = guestsElement?.value;
+        function addFavoriteButtonListeners() {
+            const favButtons = document.querySelectorAll('.favorite-btn');
+            favButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isLoggedIn) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
 
-                if (eventTypeValue) params.set('eventType', eventTypeValue);
-                if (locationValue) params.set('location', locationValue);
-                if (dateValue) params.set('date', dateValue);
-                if (guestsValue && guestsValue !== 'any') params.set('guests', guestsValue);
+                    const locationId = parseInt(this.dataset.id);
+                    this.classList.toggle('is-favorite');
 
-                if (pageKey === 'home' || pageKey === 'venue-details') {
-                    const query = params.toString();
-                    const target = 'locations.html' + (query ? `?${query}` : '');
-                    window.location.href = target;
-                    return;
-                }
-
-                if (pageKey === 'locations') {
-                    const query = params.toString();
-                    const newUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
-                    window.history.replaceState({ path: newUrl }, '', newUrl);
-                    triggerFilters();
-                }
+                    if (favoriteIds.includes(locationId)) {
+                        // Remove from favorites
+                        favoriteIds = favoriteIds.filter(id => id !== locationId);
+                    } else {
+                        // Add to favorites
+                        favoriteIds.push(locationId);
+                    }
+                    localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+                });
             });
         }
 
-        applyUrlParamsToFilters(pageKey);
+        // 5. Logica de Filtrare și Sortare
+        function applyFiltersAndSort() {
+            // Filtrare
+            const maxPrice = parseInt(priceSlider.value);
+            const requiredCapacity = parseInt(capacityInput.value) || 0;
+            const selectedFacilities = Array.from(facilitiesCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+            const minRating = parseFloat(document.querySelector('input[name="rating"]:checked').value);
 
-        if (pageKey === 'locations') {
-            triggerFilters();
-        }
-    }
+            let filteredLocations = locations.filter(loc => {
+                const priceMatch = loc.price <= maxPrice;
+                const capacityMatch = requiredCapacity === 0 || (requiredCapacity >= loc.capacity_min && requiredCapacity <= loc.capacity_max);
+                const facilitiesMatch = selectedFacilities.every(facility => loc.facilities.includes(facility));
+                const ratingMatch = loc.rating >= minRating;
+                return priceMatch && capacityMatch && facilitiesMatch && ratingMatch;
+            });
 
-    function applyUrlParamsToFilters(pageKey) {
-        const params = new URLSearchParams(window.location.search);
-
-        const eventType = params.get('eventType');
-        const eventTypeElement = document.getElementById('event-type');
-        if (eventType && eventTypeElement) {
-            eventTypeElement.value = eventType;
-        }
-
-        const location = params.get('location');
-        const locationElement = document.getElementById('location');
-        if (location && locationElement) {
-            locationElement.value = location;
-        }
-
-        const date = params.get('date');
-        const dateElement = document.getElementById('event-date');
-        if (date && dateElement) {
-            if (dateElement._flatpickr) {
-                dateElement._flatpickr.setDate(date, true, 'd/m/Y');
-            } else {
-                dateElement.value = date;
-            }
-        }
-
-        const guests = params.get('guests');
-        const guestsElement = document.getElementById('guests');
-        if (guests && guestsElement) {
-            guestsElement.value = guests;
-        }
-
-        if (pageKey === 'locations' && guests) {
-            const capacityRadio = document.querySelector(`input[name="capacity"][value="${guests}"]`);
-            if (capacityRadio) {
-                capacityRadio.checked = true;
-            }
-        }
-    }
-
-    function initTestimonialSlider() {
-      const slider = document.querySelector('.testimonial-slider');
-      const slides = slider ? slider.querySelectorAll('.testimonial-card') : [];
-      const prevButton = document.querySelector('.slider-nav.prev');
-      const nextButton = document.querySelector('.slider-nav.next');
-
-      if (!slider || slides.length === 0 || !prevButton || !nextButton) {
-        return;
-      }
-
-      if (slides.length <= 3) {
-        prevButton.style.display = 'none';
-        nextButton.style.display = 'none';
-        return;
-      }
-
-      let currentIndex = 0;
-      let itemsToShow = calculateItemsToShow();
-
-      function calculateItemsToShow() {
-        if (window.innerWidth >= 1200) {
-          return 3;
-        }
-        if (window.innerWidth >= 768) {
-          return 2;
-        }
-        return 1;
-      }
-
-      function updateSliderPosition() {
-        const cardWidth = slides[0].offsetWidth;
-        const gap = 30;
-        const offset = -currentIndex * (cardWidth + gap);
-        slider.style.transform = `translateX(${offset}px)`;
-
-        prevButton.disabled = currentIndex === 0;
-        nextButton.disabled = currentIndex >= slides.length - itemsToShow;
-      }
-
-      function handleResize() {
-        const previousItemsToShow = itemsToShow;
-        itemsToShow = calculateItemsToShow();
-        if (itemsToShow !== previousItemsToShow) {
-          currentIndex = Math.min(currentIndex, Math.max(0, slides.length - itemsToShow));
-          updateSliderPosition();
-        }
-      }
-
-      nextButton.addEventListener('click', () => {
-        if (currentIndex < slides.length - itemsToShow) {
-          currentIndex += 1;
-          updateSliderPosition();
-        }
-      });
-
-      prevButton.addEventListener('click', () => {
-        if (currentIndex > 0) {
-          currentIndex -= 1;
-          updateSliderPosition();
-        }
-      });
-
-      window.addEventListener('resize', handleResize);
-
-      updateSliderPosition();
-    }
-
-    function initHomePage() {
-      initTestimonialSlider();
-    }
-
-    const LOCATION_DATA = [
-      { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, capacity_min: 150, capacity_max: 400, tags: ['Exclusivist', 'Panoramic'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Event planner'], rating: 9.4, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, capacity_min: 80, capacity_max: 200, tags: ['Natură', 'Piscină'], facilities: ['Parcare', 'Piscină', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.8, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fHJlc29ydCUyMHN3aW1taW5nJTIwcG9vbHxlbnwwfHx8fDE2NTg0MjYwMTA&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, capacity_min: 50, capacity_max: 150, tags: ['Modern', 'Rooftop'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 9.1, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxyb29mdG9wJTIwYmFyfGVufDB8fHx8MTY1ODQyNjA1Mw&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 4, name: 'Palatul Noblesse', city: 'Iași', price: 105, capacity_min: 100, capacity_max: 250, tags: ['Istoric', 'Elegant'], facilities: ['Parcare', 'Event planner', 'Wi-Fi gratuit'], rating: 8.9, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 5, name: 'Laguna Albastră', city: 'Constanța', price: 130, capacity_min: 100, capacity_max: 300, tags: ['Plajă', 'Vedere la mare'], facilities: ['Parcare', 'Piscină', 'Ceremonii în aer liber', 'Vedere la Lac'], rating: 9.5, imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxiZWFjaCUyMHJlc29ydHxlbnwwfHx8fDE2NTg0MjYxNDQ&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 6, name: 'Conacul din Vii', city: 'Prahova', price: 85, capacity_min: 40, capacity_max: 120, tags: ['Rustic', 'Tradițional'], facilities: ['Parcare', 'Cazare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 8.5, imageUrl: 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxydXN0aWMlMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYxODU&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, capacity_min: 100, capacity_max: 250, tags: ['Lac', 'Natură'], facilities: ['Parcare', 'Vedere la Lac', 'Ceremonii în aer liber', 'Event planner'], rating: 9.6, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsYWtlJTIwcmVzb3J0fGVufDB8fHx8MTY1ODQyNjIyOA&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 8, name: 'Mountain Peak', city: 'Sinaia', price: 100, capacity_min: 60, capacity_max: 180, tags: ['Munte', 'Panoramic'], facilities: ['Parcare', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.2, imageUrl: 'https://images.unsplash.com/photo-1559538739-998a8116a533?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxtb3VudGFpbiUyMGNoYWxldHxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 9, name: 'Urban Loft', city: 'Timișoara', price: 75, capacity_min: 30, capacity_max: 80, tags: ['Industrial', 'Modern'], facilities: ['Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Kids Corner'], rating: 8.2, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDE0fHxiYWxscm9vbXxlbnwwfHx8fDE2NTg0MjU5MjU&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 10, name: 'Grădina cu Lavandă', city: 'Sibiu', price: 90, capacity_min: 50, capacity_max: 150, tags: ['Grădină', 'Romantic'], facilities: ['Parcare', 'Ceremonii în aer liber', 'Kids Corner'], rating: 9.0, imageUrl: 'https://images.unsplash.com/photo-1596941240485-b38822695b36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEwfHxoZXJpdGFnZSUyMGJ1aWxkaW5nfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 11, name: 'Delta Paradise', city: 'Tulcea', price: 70, capacity_min: 40, capacity_max: 100, tags: ['Natură', 'Delta'], facilities: ['Parcare', 'Cazare', 'Vedere la Lac'], rating: 7.8, imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6164a83639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxsdXh1cnklMjBob3VzZXxlbnwwfHx8fDE2NTg0MjYyNjk&ixlib=rb-1.2.1&q=80&w=400' },
-      { id: 12, name: 'Centrul de Conferințe Oradea', city: 'Oradea', price: 65, capacity_min: 20, capacity_max: 500, tags: ['Business', 'Modern'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 6.9, imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDEyfHxhdWRpdG9yaXVtfGVufDB8fHx8MTY1ODQyNjEwMg&ixlib=rb-1.2.1&q=80&w=400' }
-    ];
-
-    function formatRatingText(rating) {
-      if (rating >= 9.5) {
-        return 'Excepțional';
-      }
-      if (rating >= 9) {
-        return 'Superb';
-      }
-      if (rating >= 8.5) {
-        return 'Foarte bine';
-      }
-      return 'Bine';
-    }
-
-    function initLocationsPage() {
-      const locationsListContainer = document.getElementById('locations-list');
-      const priceSlider = document.getElementById('price-slider');
-      const priceValue = document.getElementById('price-value');
-      const capacityInput = document.getElementById('capacity-input');
-      const facilitiesCheckboxes = document.querySelectorAll('#facilities-filter input[type="checkbox"]');
-      const ratingRadios = document.querySelectorAll('input[name="rating"]');
-      const sortOptions = document.getElementById('sort-options');
-      const searchButton = document.querySelector('.search-button');
-
-      if (!locationsListContainer) {
-        return;
-      }
-
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
-
-      function renderLocations(locationsArray) {
-        locationsListContainer.innerHTML = '';
-
-        if (locationsArray.length === 0) {
-          locationsListContainer.innerHTML = '<p>Nicio locație nu corespunde filtrelor selectate.</p>';
-          return;
-        }
-
-        const fragment = document.createDocumentFragment();
-
-        locationsArray.forEach(location => {
-          const ratingText = formatRatingText(location.rating);
-          const card = document.createElement('article');
-          card.className = 'result-card';
-          card.innerHTML = `
-            <button class="favorite-btn ${favoriteIds.includes(location.id) ? 'is-favorite' : ''}" data-id="${location.id}" title="Adaugă la favorite">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            </button>
-            <div class="result-image" style="background-image: url('${location.imageUrl}')"></div>
-            <div class="result-details">
-              <h3 class="result-name">${location.name}</h3>
-              <p class="result-location">${location.city}, România</p>
-              <div class="result-rating">
-                <span class="rating-badge">${location.rating}</span>
-                <span class="rating-text">${ratingText}</span>
-                <span class="rating-reviews">• ${Math.floor(location.rating * 25)} recenzii</span>
-              </div>
-              <div class="result-meta">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                <span>${location.capacity_min} - ${location.capacity_max} invitați</span>
-              </div>
-              <div class="result-info">
-                <span class="result-price">de la <strong>${location.price}€</strong>/pers</span>
-                <a href="venue-details.html?id=${location.id}" class="view-details-btn" title="Vezi detalii locație">Detalii</a>
-              </div>
-            </div>
-          `;
-          fragment.appendChild(card);
-        });
-
-        locationsListContainer.appendChild(fragment);
-        attachFavoriteListeners();
-      }
-
-      function attachFavoriteListeners() {
-        const favoriteButtons = locationsListContainer.querySelectorAll('.favorite-btn');
-        favoriteButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            const locationId = parseInt(button.dataset.id, 10);
-            if (!isLoggedIn) {
-              window.location.href = 'login.html';
-              return;
+            // Sortare
+            const sortValue = sortOptions.value;
+            switch (sortValue) {
+                case 'price_asc':
+                    filteredLocations.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price_desc':
+                    filteredLocations.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating_desc':
+                    filteredLocations.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'capacity_desc':
+                    filteredLocations.sort((a, b) => b.capacity_max - a.capacity_max);
+                    break;
+                // 'recommended' nu sortează suplimentar, păstrează ordinea implicită
             }
 
-            if (favoriteIds.includes(locationId)) {
-              favoriteIds = favoriteIds.filter(id => id !== locationId);
-              button.classList.remove('is-favorite');
-            } else {
-              favoriteIds.push(locationId);
-              button.classList.add('is-favorite');
-            }
-
-            localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
-          });
-        });
-      }
-
-      function applyFiltersAndSort() {
-        const maxPrice = priceSlider ? parseInt(priceSlider.value, 10) : Infinity;
-        const requiredCapacity = capacityInput ? parseInt(capacityInput.value, 10) || 0 : 0;
-        const selectedFacilities = Array.from(facilitiesCheckboxes)
-          .filter(checkbox => checkbox.checked)
-          .map(checkbox => checkbox.value);
-        const ratingRadio = document.querySelector('input[name="rating"]:checked');
-        const minRating = ratingRadio ? parseFloat(ratingRadio.value) : 0;
-
-        let filtered = LOCATION_DATA.filter(location => {
-          const priceMatch = location.price <= maxPrice;
-          const capacityMatch = requiredCapacity === 0 || (requiredCapacity >= location.capacity_min && requiredCapacity <= location.capacity_max);
-          const facilitiesMatch = selectedFacilities.every(facility => location.facilities.includes(facility));
-          const ratingMatch = location.rating >= minRating;
-          return priceMatch && capacityMatch && facilitiesMatch && ratingMatch;
-        });
-
-        const sortValue = sortOptions ? sortOptions.value : 'recommended';
-
-        switch (sortValue) {
-          case 'price_asc':
-            filtered = filtered.sort((a, b) => a.price - b.price);
-            break;
-          case 'price_desc':
-            filtered = filtered.sort((a, b) => b.price - a.price);
-            break;
-          case 'rating_desc':
-            filtered = filtered.sort((a, b) => b.rating - a.rating);
-            break;
-          case 'capacity_desc':
-            filtered = filtered.sort((a, b) => b.capacity_max - a.capacity_max);
-            break;
-          default:
-            break;
+            renderLocations(filteredLocations);
         }
 
-        renderLocations(filtered);
-      }
-
-      if (priceSlider && priceValue) {
-        priceValue.textContent = priceSlider.value;
+        // Adaugă Event Listeners
         priceSlider.addEventListener('input', () => {
-          priceValue.textContent = priceSlider.value;
+            priceValue.textContent = priceSlider.value;
         });
         priceSlider.addEventListener('change', applyFiltersAndSort);
-      }
-
-      if (capacityInput) {
         capacityInput.addEventListener('input', applyFiltersAndSort);
-      }
-
-      facilitiesCheckboxes.forEach(checkbox => checkbox.addEventListener('change', applyFiltersAndSort));
-      ratingRadios.forEach(radio => radio.addEventListener('change', applyFiltersAndSort));
-      if (sortOptions) {
+        facilitiesCheckboxes.forEach(cb => cb.addEventListener('change', applyFiltersAndSort));
+        ratingRadios.forEach(radio => radio.addEventListener('change', applyFiltersAndSort));
         sortOptions.addEventListener('change', applyFiltersAndSort);
-      }
 
+        // Randare inițială
+        renderLocations(locations);
 
-      renderLocations(LOCATION_DATA);
-      applyDatePicker();
-
-      return applyFiltersAndSort;
-    }
-
-    function applyDatePicker() {
-      if (typeof flatpickr === 'function') {
-        flatpickr('#event-date', {
-          dateFormat: 'd/m/Y',
-          monthSelectorType: 'dropdown'
+        // NOU: Inițializare calendar modern
+        flatpickr("#event-date", {
+            dateFormat: "d/m/Y",
+            monthSelectorType: 'dropdown'
         });
-      }
-    }
-
-    function initGallery() {
-      const mainImage = document.getElementById('main-venue-image');
-      const thumbnails = document.querySelectorAll('.thumbnail-gallery img');
-      if (!mainImage || thumbnails.length === 0) {
-        return;
-      }
-
-      thumbnails.forEach((thumbnail, index) => {
-        thumbnail.addEventListener('click', () => {
-          thumbnails.forEach(image => image.classList.remove('active'));
-          thumbnail.classList.add('active');
-          const highResSrc = thumbnail.src.includes('w=400') ? thumbnail.src.replace('w=400', 'w=1200') : thumbnail.src;
-          mainImage.src = highResSrc;
-          mainImage.alt = thumbnail.alt;
-        });
-
-        if (index === 0) {
-          thumbnail.classList.add('active');
-          const highResSrc = thumbnail.src.includes('w=400') ? thumbnail.src.replace('w=400', 'w=1200') : thumbnail.src;
-          mainImage.src = highResSrc;
-        }
-      });
-    }
-
-    function initLightbox() {
-      const mainImage = document.getElementById('main-venue-image');
-      const lightbox = document.getElementById('lightbox');
-      const lightboxImage = document.getElementById('lightbox-image');
-      const closeLightbox = document.querySelector('.close-lightbox');
-
-      if (!mainImage || !lightbox || !lightboxImage || !closeLightbox) {
-        return;
-      }
-
-      mainImage.addEventListener('click', () => {
-        lightbox.style.display = 'flex';
-        lightboxImage.src = mainImage.src;
-        lightboxImage.alt = mainImage.alt;
-      });
-
-      closeLightbox.addEventListener('click', () => {
-        lightbox.style.display = 'none';
-      });
-
-      lightbox.addEventListener('click', event => {
-        if (event.target === lightbox) {
-          lightbox.style.display = 'none';
-        }
-      });
-
-      document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && lightbox.style.display === 'flex') {
-          lightbox.style.display = 'none';
-        }
-      });
-    }
-
-    function initFavoriteButton() {
-      const favoriteButton = document.querySelector('.hero-section .favorite-btn');
-      if (!favoriteButton) {
-        return;
-      }
-
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
-      const locationId = parseInt(favoriteButton.dataset.id, 10);
-
-      if (favoriteIds.includes(locationId)) {
-        favoriteButton.classList.add('is-favorite');
-      }
-
-      favoriteButton.addEventListener('click', () => {
-        if (!isLoggedIn) {
-          window.location.href = 'login.html';
-          return;
-        }
-
-        if (favoriteIds.includes(locationId)) {
-          favoriteIds = favoriteIds.filter(id => id !== locationId);
-          favoriteButton.classList.remove('is-favorite');
-        } else {
-          favoriteIds.push(locationId);
-          favoriteButton.classList.add('is-favorite');
-        }
-
-        localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
-      });
-    }
-
-    function initVenueDetailsPage() {
-      initGallery();
-      initLightbox();
-      initFavoriteButton();
-    }
-
-    const EVENT_STATUS_VARIANTS = {
-      confirmed: 'booked',
-      'pre-booked': 'prebooked',
-      pending: 'request',
-      declined: 'unavailable'
-    };
-
-    const CALENDAR_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const WEEK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-    function initOwnerCrmPage() {
-      const crmApp = document.querySelector('.crm-app');
-      if (!crmApp) {
-        return;
-      }
-
-      const venues = [
-        {
-          id: 1,
-          name: 'The Grand Ballroom',
-          location: 'București, România',
-          status: 'Published',
-          imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80'
-        },
-        {
-          id: 2,
-          name: 'Lakeside Manor',
-          location: 'Cluj-Napoca, România',
-          status: 'Pending',
-          imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'
-        }
-      ];
-
-      const eventRequests = [
-        {
-          id: 1,
-          venueId: 2,
-          client: 'Andrei Popescu',
-          email: 'a.popescu@example.com',
-          phone: '0722123456',
-          eventType: 'Nuntă',
-          date: '2025-10-25',
-          guests: 150,
-          status: 'pending'
-        },
-        {
-          id: 2,
-          venueId: 1,
-          client: 'Tech Solutions Inc.',
-          email: 'contact@techsolutions.ro',
-          phone: '0733987654',
-          eventType: 'Eveniment Corporate',
-          date: '2025-11-12',
-          guests: 200,
-          status: 'pre-booked'
-        },
-        {
-          id: 3,
-          venueId: 1,
-          client: 'Elena Ionescu',
-          email: 'e.ionescu@email.com',
-          phone: '0744112233',
-          eventType: 'Petrecere Privată',
-          date: '2025-10-18',
-          guests: 80,
-          status: 'confirmed'
-        }
-      ];
-
-      const visitRequests = [
-        {
-          id: 1,
-          venueId: 1,
-          client: 'Maria Stan',
-          email: 'm.stan@example.ro',
-          phone: '0755654321',
-          date: '2025-10-10',
-          time: '14:00',
-          status: 'pending'
-        },
-        {
-          id: 2,
-          venueId: 1,
-          client: 'George Dobre',
-          email: 'g.dobre@email.com',
-          phone: '0766778899',
-          date: '2025-10-09',
-          time: '11:00',
-          status: 'confirmed'
-        },
-        {
-          id: 3,
-          venueId: 2,
-          client: 'Ana Diaconu',
-          email: 'a.diaconu@example.com',
-          phone: '0721998877',
-          date: '2025-10-11',
-          time: '16:30',
-          status: 'pending'
-        }
-      ];
-
-      const monthlyVisitTrend = [
-        { label: 'Ian', value: 12 },
-        { label: 'Feb', value: 15 },
-        { label: 'Mar', value: 18 },
-        { label: 'Apr', value: 16 },
-        { label: 'Mai', value: 19 },
-        { label: 'Iun', value: 21 },
-        { label: 'Iul', value: 24 },
-        { label: 'Aug', value: 26 },
-        { label: 'Sep', value: 28 },
-        { label: 'Oct', value: 30 },
-        { label: 'Nov', value: 27 },
-        { label: 'Dec', value: 32 }
-      ];
-
-      const occupancyForecast = [
-        { month: 'Octombrie', occupiedDays: 18, totalDays: 31 },
-        { month: 'Noiembrie', occupiedDays: 20, totalDays: 30 },
-        { month: 'Decembrie', occupiedDays: 16, totalDays: 31 }
-      ];
-
-      const occupancyColors = ['var(--primary-color)', 'var(--secondary-color)', '#28a745'];
-
-      const availabilityData = {
-        1: {
-          blockedDates: ['2025-11-15'],
-          visitSlots: {
-            Monday: [
-              { start: '10:00', end: '12:00' },
-              { start: '14:00', end: '17:00' }
-            ],
-            Wednesday: [{ start: '10:00', end: '17:00' }]
-          }
-        },
-        2: {
-          blockedDates: ['2025-12-24', '2025-12-25'],
-          visitSlots: {
-            Tuesday: [{ start: '09:00', end: '13:00' }]
-          }
-        }
-      };
-
-      let activeAvailabilityVenueId = venues[0]?.id ?? null;
-      let availabilitySelection = 'all';
-
-      const navLinks = Array.from(document.querySelectorAll('.crm-nav-link'));
-      const crmPages = Array.from(document.querySelectorAll('.crm-page'));
-      const schedulerContainer = document.querySelector('.crm-availability-scheduler');
-      const availabilityDialog = document.getElementById('availability-dialog');
-      const availabilityDialogClose = availabilityDialog?.querySelector('[data-dialog-close]');
-
-      function ensureVenueAvailability(venueId) {
-        if (!availabilityData[venueId]) {
-          availabilityData[venueId] = { blockedDates: [], visitSlots: {} };
-        }
-      }
-
-      function showPage(pageId, { updateHash = true } = {}) {
-        crmPages.forEach(page => {
-          if (page.dataset.pageSection === pageId) {
-            page.classList.add('is-active');
-          } else {
-            page.classList.remove('is-active');
-          }
-        });
-
-        navLinks.forEach(link => {
-          if (link.dataset.pageTarget === pageId) {
-            link.classList.add('is-active');
-          } else {
-            link.classList.remove('is-active');
-          }
-        });
-
-        if (updateHash) {
-          window.location.hash = pageId;
-        }
-
-        if (pageId === 'availability') {
-          updateAvailabilityPage();
-        }
-      }
-
-      function populateVenueSelector(selectorId, { includeAllOption = false } = {}) {
-        const selector = document.getElementById(selectorId);
-        if (!selector) {
-          return;
-        }
-
-        selector.innerHTML = '';
-        if (includeAllOption) {
-          selector.insertAdjacentHTML('beforeend', '<option value="all">Toate locațiile</option>');
-        }
-
-        venues.forEach(venue => {
-          selector.insertAdjacentHTML(
-            'beforeend',
-            `<option value="${venue.id}">${venue.name}</option>`
-          );
-        });
-
-        if (selectorId === 'availability-venue-selector') {
-          selector.value = availabilitySelection === 'all'
-            ? 'all'
-            : String(activeAvailabilityVenueId);
-        }
-      }
-
-      function getLatestVisitMonthKey(requests) {
-        if (!requests.length) {
-          return null;
-        }
-
-        const sorted = [...requests].sort((a, b) => b.date.localeCompare(a.date));
-        const latestDate = sorted[0]?.date;
-        return latestDate ? latestDate.slice(0, 7) : null;
-      }
-
-      function renderDashboardStats() {
-        const totalVenuesEl = document.getElementById('total-venues-stat');
-        const activeVenuesEl = document.getElementById('active-venues-stat');
-        const eventRequestsEl = document.getElementById('event-requests-stat');
-        const visitRequestsEl = document.getElementById('visit-requests-stat');
-        const totalVisitsEl = document.getElementById('total-visits-stat');
-        const monthlyVisitsEl = document.getElementById('monthly-visits-stat');
-
-        if (totalVenuesEl) {
-          totalVenuesEl.textContent = String(venues.length);
-        }
-
-        if (activeVenuesEl) {
-          const activeCount = venues.filter(venue => venue.status === 'Published').length;
-          activeVenuesEl.textContent = String(activeCount);
-        }
-
-        if (eventRequestsEl) {
-          const pendingEvents = eventRequests.filter(request => request.status === 'pending').length;
-          eventRequestsEl.textContent = String(pendingEvents);
-        }
-
-        if (visitRequestsEl) {
-          const pendingVisits = visitRequests.filter(request => request.status === 'pending').length;
-          visitRequestsEl.textContent = String(pendingVisits);
-        }
-
-        if (totalVisitsEl) {
-          totalVisitsEl.textContent = String(visitRequests.length);
-        }
-
-        if (monthlyVisitsEl) {
-          const latestMonthKey = getLatestVisitMonthKey(visitRequests);
-          const visitsInMonth = latestMonthKey
-            ? visitRequests.filter(request => request.date.startsWith(latestMonthKey)).length
-            : 0;
-          monthlyVisitsEl.textContent = String(visitsInMonth);
-        }
-      }
-
-      function renderVenuesPage() {
-        const listContainer = document.getElementById('venues-list');
-        if (!listContainer) {
-          return;
-        }
-
-        listContainer.innerHTML = '';
-
-        venues.forEach(venue => {
-          const badgeStatus = venue.status === 'Published' ? 'published' : 'pending';
-          const badgeLabel = venue.status === 'Published' ? 'Publicată' : 'În așteptare';
-
-          const cardMarkup = `
-            <article class="result-card crm-venue-card">
-              <div class="result-image" style="background-image: url('${venue.imageUrl}');"></div>
-              <div class="result-details">
-                <div class="crm-venue-meta">
-                  <span class="crm-status-badge" data-status="${badgeStatus}">${badgeLabel}</span>
-                  <span class="result-location">${venue.location}</span>
-                </div>
-                <h3 class="result-name">${venue.name}</h3>
-                <div class="crm-venue-actions">
-                  <a href="#availability" class="cta-button" data-crm-nav data-page-target="availability" data-venue-id="${venue.id}">Gestionează disponibilitatea</a>
-                  <button type="button" class="secondary-cta-button" data-venue-id="${venue.id}" aria-label="Editează locația">Editează</button>
-                  <button type="button" class="crm-ghost-button" data-venue-id="${venue.id}" aria-label="Pune locația în pauză">Pauză</button>
-                </div>
-              </div>
-            </article>
-          `;
-
-          listContainer.insertAdjacentHTML('beforeend', cardMarkup);
-        });
-      }
-
-      function renderVisitsTrendChart() {
-        const container = document.getElementById('visits-trend-chart');
-        if (!container) {
-          return;
-        }
-
-        container.innerHTML = '';
-
-        if (!monthlyVisitTrend.length) {
-          container.textContent = 'Nu există suficiente date pentru a genera graficul.';
-          return;
-        }
-
-        const width = 600;
-        const height = 260;
-        const paddingX = 50;
-        const paddingY = 40;
-        const chartHeight = height - paddingY * 1.5;
-        const chartBottom = height - paddingY;
-        const maxValue = Math.max(...monthlyVisitTrend.map(item => item.value), 1);
-        const stepX = monthlyVisitTrend.length > 1
-          ? (width - paddingX * 2) / (monthlyVisitTrend.length - 1)
-          : 0;
-
-        const svgNs = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(svgNs, 'svg');
-        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        svg.setAttribute('aria-hidden', 'true');
-        svg.setAttribute('focusable', 'false');
-
-        const desc = document.createElementNS(svgNs, 'desc');
-        desc.textContent = 'Evoluția numărului de vizite în ultimele 12 luni.';
-        svg.appendChild(desc);
-
-        const baseline = document.createElementNS(svgNs, 'line');
-        baseline.setAttribute('x1', String(paddingX));
-        baseline.setAttribute('y1', String(chartBottom));
-        baseline.setAttribute('x2', String(width - paddingX + 10));
-        baseline.setAttribute('y2', String(chartBottom));
-        baseline.setAttribute('stroke', '#e5eaf1');
-        baseline.setAttribute('stroke-width', '2');
-        svg.appendChild(baseline);
-
-        const points = monthlyVisitTrend.map((item, index) => {
-          const x = paddingX + stepX * index;
-          const valueRatio = item.value / maxValue;
-          const y = chartBottom - valueRatio * chartHeight;
-          return { x, y, label: item.label, value: item.value };
-        });
-
-        const polyline = document.createElementNS(svgNs, 'polyline');
-        polyline.setAttribute('points', points.map(point => `${point.x},${point.y}`).join(' '));
-        polyline.setAttribute('fill', 'none');
-        polyline.setAttribute('stroke', '#0052d4');
-        polyline.setAttribute('stroke-width', '3');
-        polyline.setAttribute('stroke-linejoin', 'round');
-        polyline.setAttribute('stroke-linecap', 'round');
-        svg.appendChild(polyline);
-
-        points.forEach(point => {
-          const circle = document.createElementNS(svgNs, 'circle');
-          circle.setAttribute('cx', String(point.x));
-          circle.setAttribute('cy', String(point.y));
-          circle.setAttribute('r', '5');
-          circle.setAttribute('fill', '#ffffff');
-          circle.setAttribute('stroke', '#0052d4');
-          circle.setAttribute('stroke-width', '2');
-          svg.appendChild(circle);
-
-          const label = document.createElementNS(svgNs, 'text');
-          label.setAttribute('x', String(point.x));
-          label.setAttribute('y', String(chartBottom + 18));
-          label.setAttribute('text-anchor', 'middle');
-          label.setAttribute('font-size', '12');
-          label.setAttribute('fill', '#7a7f87');
-          label.textContent = point.label;
-          svg.appendChild(label);
-        });
-
-        container.appendChild(svg);
-      }
-
-      function renderOccupancyChart() {
-        const container = document.getElementById('occupancy-pie-chart');
-        if (!container) {
-          return;
-        }
-
-        container.innerHTML = '';
-
-        if (!occupancyForecast.length) {
-          container.textContent = 'Nu există date despre rata de ocupare pentru următoarele luni.';
-          return;
-        }
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'crm-occupancy-chart';
-
-        occupancyForecast.forEach((entry, index) => {
-          const ratio = entry.totalDays > 0 ? entry.occupiedDays / entry.totalDays : 0;
-          const percentage = Math.round(ratio * 100);
-          const color = occupancyColors[index % occupancyColors.length];
-
-          const donutCard = document.createElement('div');
-          donutCard.className = 'crm-donut-card';
-
-          const donut = document.createElement('div');
-          donut.className = 'crm-donut';
-          donut.dataset.percentage = String(percentage);
-          donut.style.setProperty('--occupied-color', color);
-          donut.style.setProperty('--occupied-deg', `${Math.min(360, Math.max(0, ratio * 360)).toFixed(2)}deg`);
-
-          const label = document.createElement('p');
-          label.className = 'crm-donut-label';
-          label.textContent = `${entry.month} · ${entry.occupiedDays}/${entry.totalDays} zile ocupate`;
-
-          donutCard.append(donut, label);
-          wrapper.appendChild(donutCard);
-        });
-
-        container.appendChild(wrapper);
-      }
-
-      function getTableColumnCount(tableBody) {
-        const table = tableBody.closest('table');
-        if (!table) {
-          return 1;
-        }
-
-        const headers = table.querySelectorAll('thead th');
-        return headers.length || 1;
-      }
-
-      function formatStatusBadge(status) {
-        const normalized = status.toLowerCase();
-        let label = status.replace('-', ' ');
-
-        if (normalized === 'pending') {
-          label = 'În așteptare';
-        } else if (normalized === 'pre-booked') {
-          label = 'Pre-rezervat';
-        } else if (normalized === 'confirmed') {
-          label = 'Confirmat';
-        } else if (normalized === 'declined') {
-          label = 'Respins';
-        }
-
-        return `<span class="crm-status-badge" data-status="${normalized}">${label}</span>`;
-      }
-
-      function renderRequestsTable(tableBodyId, requests, venueFilterId) {
-        const tableBody = document.getElementById(tableBodyId);
-        const filterSelect = document.getElementById(venueFilterId);
-        if (!tableBody || !filterSelect) {
-          return;
-        }
-
-        const filterValue = filterSelect.value;
-        tableBody.innerHTML = '';
-
-        const filteredRequests = requests.filter(request => {
-          return filterValue === 'all' || String(request.venueId) === filterValue;
-        });
-
-        if (filteredRequests.length === 0) {
-          const colspan = getTableColumnCount(tableBody);
-          tableBody.innerHTML = `<tr class="crm-empty-row"><td colspan="${colspan}">Nu există solicitări pentru filtrul selectat.</td></tr>`;
-          return;
-        }
-
-        filteredRequests.forEach(request => {
-          const venueName = venues.find(venue => venue.id === request.venueId)?.name ?? 'N/A';
-
-          let cellsMarkup = '';
-          if (tableBodyId === 'bookings-table-body') {
-            cellsMarkup = `
-              <td>${request.client}</td>
-              <td>${venueName}</td>
-              <td>${request.eventType}</td>
-              <td>${request.date}</td>
-              <td>${request.guests}</td>
-              <td><a href="mailto:${request.email}">${request.email}</a></td>
-              <td><a href="tel:${request.phone}">${request.phone}</a></td>
-              <td>${formatStatusBadge(request.status)}</td>
-            `;
-          } else {
-            const status = request.status === 'pending' ? 'visit-pending' : request.status;
-            let visitLabel = 'Confirmată';
-            if (status === 'visit-pending') {
-              visitLabel = 'În așteptare';
-            } else if (status === 'declined') {
-              visitLabel = 'Respinsă';
-            }
-
-            cellsMarkup = `
-              <td>${request.client}</td>
-              <td>${venueName}</td>
-              <td>${request.date}</td>
-              <td>${request.time}</td>
-              <td><a href="mailto:${request.email}">${request.email}</a></td>
-              <td><a href="tel:${request.phone}">${request.phone}</a></td>
-              <td><span class="crm-status-badge" data-status="${status}">${visitLabel}</span></td>
-            `;
-          }
-
-          const actionsMarkup = request.status === 'pending'
-            ? `<div class="crm-action-buttons">
-                <button class="crm-action-button" type="button" data-action="confirm" data-request-type="${tableBodyId}" data-request-id="${request.id}" title="Confirmă">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </button>
-                <button class="crm-action-button" type="button" data-action="decline" data-request-type="${tableBodyId}" data-request-id="${request.id}" title="Respinge">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>`
-            : '';
-
-          tableBody.insertAdjacentHTML('beforeend', `<tr>${cellsMarkup}<td>${actionsMarkup}</td></tr>`);
-        });
-      }
-
-      function buildCalendarHeader(container) {
-        container.innerHTML = `
-          <div class="crm-calendar-header">
-            <button class="crm-calendar-nav-button" type="button" data-direction="prev" aria-label="Luna anterioară">&lt;</button>
-            <h2 class="crm-calendar-current"></h2>
-            <button class="crm-calendar-nav-button" type="button" data-direction="next" aria-label="Luna următoare">&gt;</button>
-          </div>
-          <div class="crm-calendar-grid"></div>
-        `;
-      }
-
-      function renderCalendarGrid(calendarGrid, currentDate, events, blockedDates, { interactive = false, onToggleDate } = {}) {
-        calendarGrid.innerHTML = '';
-
-        CALENDAR_DAY_NAMES.forEach(dayName => {
-          calendarGrid.insertAdjacentHTML('beforeend', `<div class="crm-calendar-day-name">${dayName}</div>`);
-        });
-
-        const month = currentDate.getMonth();
-        const year = currentDate.getFullYear();
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        for (let index = 0; index < firstDayOfMonth; index += 1) {
-          calendarGrid.insertAdjacentHTML('beforeend', '<div class="crm-calendar-date" data-outside="true"></div>');
-        }
-
-        for (let day = 1; day <= daysInMonth; day += 1) {
-          const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-          const dateElement = document.createElement('div');
-          dateElement.className = 'crm-calendar-date';
-          dateElement.dataset.date = dateString;
-          dateElement.innerHTML = `<div class="crm-day-number">${day}</div>`;
-
-          const dayEvents = events.filter(event => event.date === dateString);
-          dayEvents.forEach(event => {
-            const variant = EVENT_STATUS_VARIANTS[event.status] ?? 'request';
-            const eventElement = document.createElement('div');
-            eventElement.className = 'crm-calendar-event';
-            eventElement.dataset.variant = variant;
-            const venueName = venues.find(venue => venue.id === event.venueId)?.name ?? '';
-            const truncatedVenue = venueName.length > 18 ? `${venueName.slice(0, 15)}…` : venueName;
-            eventElement.textContent = `${event.eventType} · ${truncatedVenue}`;
-            dateElement.appendChild(eventElement);
-          });
-
-          if (blockedDates.includes(dateString)) {
-            const blockedElement = document.createElement('div');
-            blockedElement.className = 'crm-calendar-event';
-            blockedElement.dataset.variant = 'unavailable';
-            blockedElement.textContent = 'Indisponibil';
-            dateElement.appendChild(blockedElement);
-            dateElement.classList.add('is-unavailable');
-          }
-
-          if (interactive) {
-            dateElement.addEventListener('click', () => {
-              if (dayEvents.length > 0) {
-                return;
-              }
-
-              const willBlock = !dateElement.classList.contains('is-unavailable');
-              dateElement.classList.toggle('is-unavailable', willBlock);
-
-              if (typeof onToggleDate === 'function') {
-                onToggleDate(dateString, willBlock);
-              }
-            });
-          }
-
-          calendarGrid.appendChild(dateElement);
-        }
-      }
-
-      function createCalendar(containerId, venueFilter, { interactive = false, activeVenueId = null } = {}) {
-        const calendarContainer = document.getElementById(containerId);
-        if (!calendarContainer) {
-          return;
-        }
-
-        buildCalendarHeader(calendarContainer);
-
-        const currentMonthLabel = calendarContainer.querySelector('.crm-calendar-current');
-        const calendarGrid = calendarContainer.querySelector('.crm-calendar-grid');
-
-        const currentDate = new Date();
-        currentDate.setDate(1);
-
-        const navigate = direction => {
-          if (direction === 'prev') {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-          } else {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-          }
-
-          updateGrid();
-        };
-
-        function updateGrid() {
-          const monthLabel = currentDate.toLocaleString('ro-RO', { month: 'long', year: 'numeric' });
-          if (currentMonthLabel) {
-            currentMonthLabel.textContent = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
-          }
-
-          const visibleEvents = venueFilter === 'all'
-            ? eventRequests
-            : eventRequests.filter(event => String(event.venueId) === String(venueFilter));
-
-          const blockedDates = interactive && activeVenueId && availabilityData[activeVenueId]
-            ? availabilityData[activeVenueId].blockedDates
-            : [];
-
-          renderCalendarGrid(calendarGrid, currentDate, visibleEvents, blockedDates, {
-            interactive,
-            onToggleDate(dateString, shouldBlock) {
-              if (!activeVenueId) {
-                return;
-              }
-
-              ensureVenueAvailability(activeVenueId);
-              const blocked = availabilityData[activeVenueId].blockedDates;
-              if (shouldBlock) {
-                if (!blocked.includes(dateString)) {
-                  blocked.push(dateString);
-                }
-              } else {
-                availabilityData[activeVenueId].blockedDates = blocked.filter(date => date !== dateString);
-              }
-            }
-          });
-        }
-
-        calendarContainer.addEventListener('click', event => {
-          const button = event.target.closest('.crm-calendar-nav-button');
-          if (!button) {
-            return;
-          }
-
-          const direction = button.dataset.direction === 'prev' ? 'prev' : 'next';
-          navigate(direction);
-        });
-
-        updateGrid();
-      }
-
-      function renderVisitScheduler() {
-        if (!schedulerContainer) {
-          return;
-        }
-
-        if (availabilitySelection === 'all') {
-          schedulerContainer.innerHTML = '<p class="crm-scheduler-placeholder">Selectează o locație din listă pentru a stabili intervalele de vizită.</p>';
-          return;
-        }
-
-        ensureVenueAvailability(activeAvailabilityVenueId);
-        const venueSlots = availabilityData[activeAvailabilityVenueId].visitSlots;
-        schedulerContainer.innerHTML = '';
-
-        WEEK_DAYS.forEach(day => {
-          const slots = venueSlots[day] ?? [];
-          const slotsMarkup = slots.map(slot => `
-            <div class="crm-time-slot" data-start="${slot.start}" data-end="${slot.end}">
-              <span>${slot.start} - ${slot.end}</span>
-              <button class="crm-remove-slot-btn" type="button" aria-label="Elimină intervalul">✕</button>
-            </div>
-          `).join('');
-
-          schedulerContainer.insertAdjacentHTML('beforeend', `
-            <section class="crm-day-schedule" data-day="${day}">
-              <h4>${day}</h4>
-              <div class="crm-time-slots">${slotsMarkup}</div>
-              <form class="crm-add-slot-form">
-                <input type="time" class="crm-start-time" required>
-                <input type="time" class="crm-end-time" required>
-                <button type="submit" class="crm-add-slot-btn" aria-label="Adaugă interval">+</button>
-              </form>
-            </section>
-          `);
-        });
-      }
-
-      function updateAvailabilityPage() {
-        const title = document.getElementById('availability-page-title');
-        const availabilitySelector = document.getElementById('availability-venue-selector');
-
-        if (availabilitySelector) {
-          availabilitySelector.value = availabilitySelection === 'all'
-            ? 'all'
-            : String(activeAvailabilityVenueId);
-        }
-
-        if (availabilitySelection === 'all') {
-          if (title) {
-            title.textContent = 'Disponibilitate pentru toate locațiile';
-          }
-          createCalendar('availability-calendar-container', 'all', { interactive: false });
-          const availabilityPage = document.getElementById('availability');
-          if (availabilityPage?.classList.contains('is-active') && availabilityDialog?.classList.contains('is-hidden')) {
-            availabilityDialog.classList.remove('is-hidden');
-          }
-          renderVisitScheduler();
-          return;
-        }
-
-        ensureVenueAvailability(activeAvailabilityVenueId);
-        const venue = venues.find(item => item.id === activeAvailabilityVenueId);
-        if (title && venue) {
-          title.textContent = `Disponibilitate pentru ${venue.name}`;
-        }
-
-        createCalendar('availability-calendar-container', activeAvailabilityVenueId, {
-          interactive: true,
-          activeVenueId: activeAvailabilityVenueId
-        });
-        renderVisitScheduler();
-      }
-
-      function handleRequestAction(requestCollection, requestId, action) {
-        const request = requestCollection.find(item => item.id === requestId);
-        if (!request) {
-          return;
-        }
-
-        if (action === 'confirm') {
-          request.status = 'confirmed';
-        } else if (action === 'decline') {
-          request.status = 'declined';
-        }
-      }
-
-      function handleActionButtonClick(event) {
-        const actionButton = event.target.closest('.crm-action-button');
-        if (!actionButton) {
-          return;
-        }
-
-        const { action, requestType, requestId } = actionButton.dataset;
-        if (!action || !requestType || !requestId) {
-          return;
-        }
-
-        const id = Number.parseInt(requestId, 10);
-        if (Number.isNaN(id)) {
-          return;
-        }
-
-        if (requestType === 'bookings-table-body') {
-          handleRequestAction(eventRequests, id, action);
-          renderRequestsTable('bookings-table-body', eventRequests, 'bookings-venue-filter');
-        } else if (requestType === 'visits-table-body') {
-          handleRequestAction(visitRequests, id, action);
-          renderRequestsTable('visits-table-body', visitRequests, 'visits-venue-filter');
-        }
-
-        renderDashboardStats();
-      }
-
-      function initializeFilters() {
-        populateVenueSelector('bookings-venue-filter', { includeAllOption: true });
-        populateVenueSelector('visits-venue-filter', { includeAllOption: true });
-        populateVenueSelector('availability-venue-selector', { includeAllOption: true });
-
-        const bookingsFilter = document.getElementById('bookings-venue-filter');
-        if (bookingsFilter) {
-          bookingsFilter.addEventListener('change', () => {
-            renderRequestsTable('bookings-table-body', eventRequests, 'bookings-venue-filter');
-          });
-        }
-
-        const visitsFilter = document.getElementById('visits-venue-filter');
-        if (visitsFilter) {
-          visitsFilter.addEventListener('change', () => {
-            renderRequestsTable('visits-table-body', visitRequests, 'visits-venue-filter');
-          });
-        }
-
-        const availabilitySelector = document.getElementById('availability-venue-selector');
-        if (availabilitySelector) {
-          availabilitySelector.addEventListener('change', event => {
-            const { value } = event.target;
-            if (value === 'all') {
-              availabilitySelection = 'all';
-              availabilityDialog?.classList.remove('is-hidden');
-              updateAvailabilityPage();
-              return;
-            }
-
-            const selectedId = Number.parseInt(value, 10);
-            if (!Number.isNaN(selectedId)) {
-              availabilitySelection = String(selectedId);
-              activeAvailabilityVenueId = selectedId;
-              updateAvailabilityPage();
-            }
-          });
-        }
-      }
-
-      document.addEventListener('click', handleActionButtonClick);
-
-      crmApp.addEventListener('click', event => {
-        const navTrigger = event.target.closest('[data-crm-nav]');
-        if (!navTrigger) {
-          return;
-        }
-
-        event.preventDefault();
-        const pageId = navTrigger.dataset.pageTarget;
-        if (!pageId) {
-          return;
-        }
-
-        const venueId = navTrigger.dataset.venueId;
-        if (pageId === 'availability' && venueId) {
-          const parsedVenueId = Number.parseInt(venueId, 10);
-          if (!Number.isNaN(parsedVenueId)) {
-            availabilitySelection = String(parsedVenueId);
-            activeAvailabilityVenueId = parsedVenueId;
-          }
-        }
-
-        showPage(pageId);
-      });
-
-      schedulerContainer?.addEventListener('submit', event => {
-        if (!event.target.classList.contains('crm-add-slot-form')) {
-          return;
-        }
-
-        event.preventDefault();
-        const form = event.target;
-        const startInput = form.querySelector('.crm-start-time');
-        const endInput = form.querySelector('.crm-end-time');
-
-        if (!startInput || !endInput) {
-          return;
-        }
-
-        const start = startInput.value;
-        const end = endInput.value;
-        if (!start || !end || start >= end) {
-          alert('Introduceți un interval orar valid.');
-          return;
-        }
-
-        if (availabilitySelection === 'all' || !activeAvailabilityVenueId) {
-          alert('Selectează o locație pentru a adăuga intervale de vizită.');
-          return;
-        }
-
-        ensureVenueAvailability(activeAvailabilityVenueId);
-        const day = form.closest('.crm-day-schedule')?.dataset.day;
-        if (!day) {
-          return;
-        }
-
-        const slots = availabilityData[activeAvailabilityVenueId].visitSlots;
-        if (!slots[day]) {
-          slots[day] = [];
-        }
-
-        slots[day].push({ start, end });
-        renderVisitScheduler();
-      });
-
-      schedulerContainer?.addEventListener('click', event => {
-        if (!event.target.classList.contains('crm-remove-slot-btn')) {
-          return;
-        }
-
-        const slotElement = event.target.closest('.crm-time-slot');
-        const day = event.target.closest('.crm-day-schedule')?.dataset.day;
-        if (!slotElement || !day) {
-          return;
-        }
-
-        const { start, end } = slotElement.dataset;
-        if (!start || !end) {
-          return;
-        }
-
-        if (availabilitySelection === 'all' || !activeAvailabilityVenueId) {
-          return;
-        }
-
-        const slots = availabilityData[activeAvailabilityVenueId].visitSlots[day] ?? [];
-        availabilityData[activeAvailabilityVenueId].visitSlots[day] = slots.filter(slot => !(slot.start === start && slot.end === end));
-        slotElement.remove();
-      });
-
-      availabilityDialogClose?.addEventListener('click', () => {
-        availabilityDialog?.classList.add('is-hidden');
-      });
-
-      availabilityDialog?.addEventListener('click', event => {
-        if (event.target === availabilityDialog) {
-          availabilityDialog.classList.add('is-hidden');
-        }
-      });
-
-      function initializePages() {
-        renderDashboardStats();
-        renderVenuesPage();
-        renderRequestsTable('bookings-table-body', eventRequests, 'bookings-venue-filter');
-        renderRequestsTable('visits-table-body', visitRequests, 'visits-venue-filter');
-        renderVisitsTrendChart();
-        renderOccupancyChart();
-        updateAvailabilityPage();
-
-        const initialHash = window.location.hash.replace('#', '') || 'dashboard';
-        const validPage = crmPages.some(page => page.dataset.pageSection === initialHash);
-        showPage(validPage ? initialHash : 'dashboard', { updateHash: false });
-      }
-
-      initializeFilters();
-      initializePages();
-    }
-
-    function getPageKey() {
-      return document.body?.dataset.page || 'home';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const pageKey = getPageKey();
-      const withFooter = pageKey !== 'owner-crm';
-
-      initLayout({ pageKey, withFooter });
-      initDatePickers();
-      initAutocomplete('location');
-
-      let searchOptions = {};
-
-      switch (pageKey) {
-        case 'home':
-          initHomePage();
-          break;
-        case 'locations':
-          searchOptions.onFiltersChange = initLocationsPage();
-          break;
-        case 'venue-details':
-          initVenueDetailsPage();
-          break;
-        case 'owner-crm':
-          initOwnerCrmPage();
-          break;
-        case 'blog':
-          // initBlogPage();
-          break;
-        default:
-          break;
-      }
-
-      initSearch(pageKey, searchOptions);
     });
-  </script>
+    </script>
 </body>
 </html>
