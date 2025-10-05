@@ -293,7 +293,18 @@
                     <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
                     <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
                     <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="text" id="event-date" placeholder="dd/mm/yyyy"></div>
-                    <div class="search-group guests-group"><label for="guests">Invitați</label><input type="number" id="guests" placeholder="Număr" min="10"></div>
+                    <div class="search-group guests-group">
+              <label for="guests">Invitați</label>
+              <select id="guests">
+                <option value="any">Oricâți</option>
+                <option value="0-50">Sub 50</option>
+                <option value="50-100">50 - 100</option>
+                <option value="100-150">100 - 150</option>
+                <option value="150-200">150 - 200</option>
+                <option value="200-300">200 - 300</option>
+                <option value="300+">Peste 300</option>
+              </select>
+            </div>
                     <button class="search-button">Caută</button>
                 </div>
             </div>
