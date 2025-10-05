@@ -326,7 +326,7 @@
         <div class="container header-container">
             <a href="index.html" class="logo">OuidoEvents</a>
             <nav class="nav-links">
-                <a href="locations.html">Locații</a> <a href="blog.html">Blog</a> <a href="#">Despre noi</a> <a href="contact.html">Contact</a>
+                <a href="locations.html">Locații</a> <a href="blog.html">Blog</a> <a href="owner-crm.html">Despre noi</a> <a href="contact.html">Contact</a>
                 <div class="role-switcher">
                     <label for="role-selector">Role:</label>
                     <select id="role-selector">
@@ -661,7 +661,9 @@
             const searchButton = document.querySelector('.search-button');
             const topLocationsSection = document.getElementById('top-locations');
             const searchResultsSection = document.getElementById('search-results');
-            const gradientSelector = document.getElementById('gradient-selector');
+            // Find the select element in the document
+            const roleSelector = document.getElementById('role-selector');
+
             const header = document.querySelector('header');
             
             searchButton.addEventListener('click', function(event) {
@@ -670,9 +672,17 @@
                 window.location.href = 'locations.html';
             });
 
-            gradientSelector.addEventListener('change', function() {
-                header.setAttribute('data-gradient', this.value);
+
+
+            // Add an event listener that waits for the user to change the selection
+            roleSelector.addEventListener('change', function() {
+                // Check if the selected option's value is 'owner'
+                if (this.value === 'owner') {
+                    // If it is, redirect the browser to the owner page
+                    window.location.href = 'owner-crm.html';
+                }
             });
+
 
             // NOU: Logica pentru meniul mobil
             const mobileMenuButton = document.querySelector('.mobile-menu-button');
