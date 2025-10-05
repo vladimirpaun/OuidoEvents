@@ -11,7 +11,7 @@
         :root {
             --primary-color: #0052D4;
             --secondary-color: #4364F7;
-            --header-bg: #ffffff;
+            --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); 
             --dark-color: #1a202c;
             --gray-color: #555;
             --light-gray-color: #f0f2f5;
@@ -22,7 +22,7 @@
             --border-radius: 12px;
         }
 
-        header[data-gradient="classic"] { --header-bg: #ffffff; }
+        header[data-gradient="classic"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
         header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
         header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
         header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
@@ -40,14 +40,14 @@
         .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
         
         header[data-gradient="deep"] .nav-links a,
-        header[data-gradient="deep"] .gradient-switcher label { color: var(--white-color); opacity: 0.9; }
+        header[data-gradient="deep"] .role-switcher label { color: var(--white-color); opacity: 0.9; }
         
         .nav-links a:hover { color: var(--primary-color); }
         header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
 
-        .gradient-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
-        .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
-        .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+        .role-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
+        .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
+        .role-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
         
         /* NOU: Meniu mobil (Hamburger) */
         .mobile-menu-button { display: none; cursor: pointer; background: none; border: none; padding: 5px; }
@@ -61,7 +61,7 @@
         .mobile-nav-overlay .header-actions { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 20px; }
         .mobile-nav-overlay .header-actions .cta-button,
         .mobile-nav-overlay .header-actions .secondary-cta-button { text-align: center; width: 100%; padding: 12px; }
-        .mobile-nav-overlay .gradient-switcher { margin-left: 0; margin-top: auto; }
+        .mobile-nav-overlay .role-switcher { margin-left: 0; margin-top: auto; }
 
         /* Stiluri pentru butonul X de inchidere */
         .mobile-menu-button.open .icon-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
@@ -322,17 +322,17 @@
     </style> 
 </head>
 <body>
-    <header data-gradient="classic">
+    <header data-gradient="sky">
         <div class="container header-container">
             <a href="index.html" class="logo">OuidoEvents</a>
             <nav class="nav-links">
                 <a href="locations.html">Locații</a> <a href="#">Blog</a> <a href="#">Despre noi</a> <a href="contact.html">Contact</a>
-                <div class="gradient-switcher">
-                    <label for="gradient-selector">Stil Meniu:</label>
-                    <select id="gradient-selector">
-                        <option value="classic">Clasic</option> <option value="sky">Cer Senin</option>
-                        <option value="ocean">Ocean</option> <option value="twilight">Amurg</option>
-                        <option value="deep">Albastru Intens</option>
+                <div class="role-switcher">
+                    <label for="role-selector">Role:</label>
+                    <select id="role-selector">
+                        <option value="client">Client</option>
+                        <option value="owner">Owner</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
             </nav>

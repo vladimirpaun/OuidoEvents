@@ -12,7 +12,7 @@
         :root {
             --primary-color: #0052D4;
             --secondary-color: #4364F7;
-            --header-bg: #ffffff;
+            --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); 
             --dark-color: #1a202c;
             --gray-color: #555;
             --light-gray-color: #f0f2f5;
@@ -22,12 +22,6 @@
             --shadow-color: rgba(0, 82, 212, 0.1);
             --border-radius: 12px;
         }
-
-        header[data-gradient="classic"] { --header-bg: #ffffff; }
-        header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
-        header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
-        header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
-        header[data-gradient="deep"] { --header-bg: linear-gradient(to right, #4364F7, #0052D4); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -40,14 +34,13 @@
         .nav-links { display: flex; align-items: center; gap: 30px; }
         .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
 
-        header[data-gradient="deep"] .nav-links a,
-        header[data-gradient="deep"] .gradient-switcher label { color: var(--white-color); opacity: 0.9; }
+
 
         .nav-links a:hover { color: var(--primary-color); }
-        header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
 
-        .gradient-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
-        .gradient-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
+
+        role-switcher display: flex; align-items: center; gap: 8px; margin-left: 20px; }
+        .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
         .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
 
         .header-actions { display: flex; align-items: center; gap: 15px; }
@@ -220,8 +213,6 @@
         .mobile-menu-button { display: none; /* ... etc */ }
         .mobile-nav-overlay { display: none; /* ... etc */ }
         /* ... restul stilurilor pentru mobil ... */
-
-
         .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; } /* ... restul stilurilor ... */
         .footer-about p { color: #bbb; }
         .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
@@ -247,7 +238,7 @@
     </style>
 </head>
 <body>
-    <header data-gradient="classic">
+    <header>
         <div class="container header-container">
             <a href="index.html" class="logo">OuidoEvents</a>
             <nav class="nav-links">
@@ -256,13 +247,11 @@
                 <a href="#">Despre noi</a>
                 <a href="contact.html">Contact</a>
                 <div class="gradient-switcher">
-                    <label for="gradient-selector">Stil Meniu:</label>
-                    <select id="gradient-selector">
-                        <option value="classic">Clasic</option>
-                        <option value="sky">Cer Senin</option>
-                        <option value="ocean">Ocean</option>
-                        <option value="twilight">Amurg</option>
-                        <option value="deep">Albastru Intens</option>
+                    <label for="role-selector">Role:</label>
+                    <select id="role-selector">
+                        <option value="client">Client</option>
+                        <option value="owner">Owner</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
             </nav>
@@ -410,9 +399,6 @@
         const ratingRadios = document.querySelectorAll('input[name="rating"]');
         const sortOptions = document.getElementById('sort-options');
         const searchButton = document.querySelector('.search-button');
-        const gradientSelector = document.getElementById('gradient-selector');
-        const header = document.querySelector('header');
-
         // Simulare stare login & favorite
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Vom presupune ca userul e logat daca aceasta valoare e 'true'
         let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
@@ -422,8 +408,8 @@
         const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
         const desktopNav = document.querySelector('.header-container .nav-links');
         const desktopActions = document.querySelector('.header-container .header-actions');
-        mobileNavOverlay.querySelector('.nav-links').innerHTML = desktopNav.innerHTML;
-        mobileNavOverlay.querySelector('.header-actions').innerHTML = desktopActions.innerHTML;
+        mobileNavOverlay.querySelector('.nav-links').innerHTML = '';
+        mobileNavOverlay.querySelector('.header-actions').innerHTML = '';
         mobileMenuButton.addEventListener('click', function() {
             this.classList.toggle('open');
             mobileNavOverlay.classList.toggle('active');
@@ -548,10 +534,6 @@
         facilitiesCheckboxes.forEach(cb => cb.addEventListener('change', applyFiltersAndSort));
         ratingRadios.forEach(radio => radio.addEventListener('change', applyFiltersAndSort));
         sortOptions.addEventListener('change', applyFiltersAndSort);
-
-        gradientSelector.addEventListener('change', function() {
-            header.setAttribute('data-gradient', this.value);
-        });
 
         // Randare inițială
         renderLocations(locations);
