@@ -24,7 +24,7 @@
       --shadow-color: rgba(0, 82, 212, 0.1);
       --border-radius: 12px;
       --header-height: 74px;
-      --crm-sidebar-width: 650px;
+      --crm-sidebar-width: 280px;
       --crm-sidebar-width-collapsed: 90px;
       --crm-booked-color: #0052d4;
       --crm-prebooked-color: #28a745;
@@ -150,6 +150,7 @@
       box-shadow: 12px 0 32px rgba(67, 100, 247, 0.08);
       display: flex;
       flex-direction: column;
+      flex-shrink: 0; /* Prevent sidebar from shrinking */
       gap: 24px;
     }
     
@@ -225,6 +226,7 @@
 
     .crm-main {
       min-height: calc(100vh - var(--header-height));
+      flex-grow: 1;
       padding: 32px 40px;
       display: flex;
       flex-direction: column;
