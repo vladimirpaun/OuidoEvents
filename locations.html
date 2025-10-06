@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        /* Copiază stilurile CSS din index.html AICI */
         :root {
             --primary-color: #0052D4;
             --secondary-color: #4364F7;
@@ -27,27 +26,6 @@
 
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
-        .nav-links { display: flex; align-items: center; gap: 30px; }
-        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-
-
-
-        .nav-links a:hover { color: var(--primary-color); }
-
-
-        role-switcher display: flex; align-items: center; gap: 8px; margin-left: 20px; }
-        .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
-        .gradient-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
-
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
-        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
-        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
 
         /* NOU: Stiluri pentru bara de căutare (preluate din index.html) */
         .main-search-section { text-align: left; padding: 60px 0; background: var(--white-color); }
@@ -183,8 +161,6 @@
         }
         .view-details-btn:hover { background-color: var(--secondary-color); }
 
-        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
-        
         /* NOU: Stiluri pentru calendarul modern (Flatpickr) */
         .flatpickr-calendar {
             background: var(--white-color);
@@ -209,20 +185,7 @@
             fill: var(--dark-color);
         }
 
-        /* Adaugă aici stilurile pentru meniul mobil din pasul 1 */
-        .mobile-menu-button { display: none; /* ... etc */ }
-        .mobile-nav-overlay { display: none; /* ... etc */ }
-        /* ... restul stilurilor pentru mobil ... */
-        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; } /* ... restul stilurilor ... */
-        .footer-about p { color: #bbb; }
-        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
-        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
-        .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
-
         @media (max-width: 992px) {
-            .nav-links, .header-actions { display: none; }
-            .mobile-menu-button { display: block; }
-
             .search-box { height: auto; flex-direction: column; }
             .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
             .guests-group { border-bottom: none; }
@@ -238,42 +201,8 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="container header-container">
-            <a href="index.html" class="logo">OuidoEvents</a>
-            <nav class="nav-links">
-                <a href="locations.html">Locații</a>
-                <a href="#">Blog</a>
-                <a href="#">Despre noi</a>
-                <a href="contact.html">Contact</a>
-                <div class="gradient-switcher">
-                    <label for="role-selector">Role:</label>
-                    <select id="role-selector">
-                        <option value="client">Client</option>
-                        <option value="owner">Owner</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-            </nav>
-            <div class="header-actions">
-                <a href="login.html" class="secondary-cta-button">Conectare</a>
-                <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
-            </div>
-            <button class="mobile-menu-button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="mobile-nav-overlay">
-            <nav class="nav-links">
-                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
-            </nav>
-            <div class="header-actions">
-                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
-            </div>
-        </div>
-    </header>
+    <div data-include="header.html"></div>
+    <div data-include="mobile-menu.html"></div>
 
     <main>
         <section class="main-search-section">
@@ -388,19 +317,10 @@
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-container">
-                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
-                <div><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="create-account.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
-                <div><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
-                <div><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
-            </div>
-            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
-        </div>
-    </footer>
+    <div data-include="footer.html"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="main.js"></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -432,23 +352,12 @@
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Vom presupune ca userul e logat daca aceasta valoare e 'true'
         let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
 
-        // Logica pentru meniul mobil (identica cu index.html)
-        const mobileMenuButton = document.querySelector('.mobile-menu-button');
-        const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-        const desktopNav = document.querySelector('.header-container .nav-links');
-        const desktopActions = document.querySelector('.header-container .header-actions');
-        mobileNavOverlay.querySelector('.nav-links').innerHTML = '';
-        mobileNavOverlay.querySelector('.header-actions').innerHTML = '';
-        mobileMenuButton.addEventListener('click', function() {
-            this.classList.toggle('open');
-            mobileNavOverlay.classList.toggle('active');
-        });
-
-
-        searchButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            applyFiltersAndSort();
-        });
+        if (searchButton) {
+            searchButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                applyFiltersAndSort();
+            });
+        }
 
         // 4. Funcția principală de randare
         function renderLocations(locationsArray) {
@@ -567,11 +476,12 @@
         // Randare inițială
         renderLocations(locations);
 
-        // NOU: Inițializare calendar modern
-        flatpickr("#event-date", {
-            dateFormat: "d/m/Y",
-            monthSelectorType: 'dropdown'
-        });
+        if (typeof flatpickr === 'function') {
+            flatpickr('#event-date', {
+                dateFormat: 'd/m/Y',
+                monthSelectorType: 'dropdown'
+            });
+        }
     });
     </script>
 </body>
