@@ -1115,7 +1115,6 @@
                     </div>
                     <div class="context-tags">
                         <span class="context-tag">Rată confirmare vizite: 92%</span>
-                        <span class="context-tag">Media evaluării tururilor: 4.8</span>
                     </div>
                 </div>
 
@@ -1145,41 +1144,6 @@
                             <tbody id="viewings-table-body"></tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="grid-two-columns">
-                    <article class="panel">
-                        <header>
-                            <h2>Checklist înainte de vizionare</h2>
-                        </header>
-                        <ul class="list" style="margin:0; padding-left:16px;">
-                            <li>Confirmați accesul și parcarea pentru clienți.</li>
-                            <li>Actualizați materialele de prezentare în spațiul comun.</li>
-                            <li>Asigurați-vă că setările audio/video sunt funcționale.</li>
-                            <li>Trimiteți remindere automate cu 24h înainte.</li>
-                        </ul>
-                    </article>
-                    <article class="panel">
-                        <header>
-                            <h2>Feedback recent după vizionări</h2>
-                        </header>
-                        <div class="list">
-                            <div class="list-item">
-                                <div>
-                                    <strong>Villa Lac</strong>
-                                    <span>"Gazda foarte bine pregătită, spațiul impecabil."</span>
-                                </div>
-                                <span class="status-chip" data-status="confirmed">Scor: 5/5</span>
-                            </div>
-                            <div class="list-item">
-                                <div>
-                                    <strong>Urban Loft</strong>
-                                    <span>"Poze actualizate necesare pentru zona lounge."</span>
-                                </div>
-                                <span class="status-chip" data-status="awaiting">Acțiune necesară</span>
-                            </div>
-                        </div>
-                    </article>
                 </div>
             </section>
 
@@ -1475,9 +1439,9 @@
         const viewings = [
             { client: 'Ioana Matei', venue: 'Villa Lac', date: formatDate(addDays(2)), hour: '11:00', host: 'Andreea', status: 'confirmed' },
             { client: 'Căsătorim.ro', venue: 'Forest Lodge', date: formatDate(addDays(4)), hour: '09:30', host: 'Paul', status: 'pending' },
-            { client: 'Eventify', venue: 'Urban Loft', date: formatDate(addDays(4)), hour: '15:00', host: 'Alex', status: 'awaiting' },
+            { client: 'Eventify', venue: 'Urban Loft', date: formatDate(addDays(4)), hour: '15:00', host: 'Alex', status: 'pending' },
             { client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: formatDate(addDays(6)), hour: '17:00', host: 'Ioana', status: 'confirmed' },
-            { client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', host: 'Vlad', status: 'awaiting' }
+            { client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', host: 'Vlad', status: 'pending' }
         ];
 
         const overviewBookings = bookings.slice(0, 3).map(b => ({
