@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ouidoEvents · Dashboard Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #4364F7;
+            --accent-color: #00B4D8;
+            --dark-color: #1a202c;
+            --gray-color: #555555;
+            --muted-color: #7a7f87;
+            --light-gray-color: #f0f2f5;
+            --bg-color: #f8f9fa;
+            --white-color: #ffffff;
+            --border-color: #e5eaf1;
+            --shadow-color: rgba(67, 100, 247, 0.15);
+            --border-radius: 16px;
+            --sidebar-width: 304px;
+            --header-height: 74px;
+            --danger-color: #E02424;
+            --success-color: #14A44D;
+            --warning-color: #F59E0B;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-color);
+            background: linear-gradient(140deg, rgba(67, 100, 247, 0.06), rgba(0, 82, 212, 0.02));
+            line-height: 1.5;
+        }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
+
+        main.crm-shell {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            min-height: calc(100vh - var(--header-height));
+        }
+        .crm-sidebar {
+            position: sticky;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            background: var(--white-color);
+            border-right: 1px solid var(--border-color);
+            padding: 32px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .crm-sidebar h2 {
+            font-size: 1.25rem;
+            margin: 0 0 6px;
+        }
+        .crm-sidebar p {
+            color: var(--muted-color);
+            font-size: 0.92rem;
+            margin: 0;
+        }
+        .crm-nav { display: flex; flex-direction: column; gap: 24px; }
+        .crm-nav-section label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--muted-color);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .crm-nav-links { display: flex; flex-direction: column; gap: 8px; }
+        .crm-nav-link {
+            width: 100%;
+            border: 1px solid transparent;
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray-color);
+            font-weight: 500;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .crm-nav-link svg { width: 18px; height: 18px; opacity: 0.7; }
+        .crm-nav-link:hover,
+        .crm-nav-link.is-active {
+            background: rgba(67, 100, 247, 0.1);
+            border-color: rgba(0, 82, 212, 0.24);
+            color: var(--primary-color);
+            box-shadow: inset 0 0 0 1px rgba(0, 82, 212, 0.18);
+        }
+        .crm-sidebar-footer {
+            margin-top: auto;
+            background: rgba(0, 82, 212, 0.08);
+            border-radius: 16px;
+            padding: 18px;
+        }
+        .crm-sidebar-footer h3 { font-size: 0.96rem; margin: 0 0 4px; }
+        .crm-sidebar-footer p { font-size: 0.85rem; margin-bottom: 10px; }
+        .crm-sidebar-footer a {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .crm-pages {
+            padding: calc(var(--header-height) + 20px) 48px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+        .crm-page {
+            display: none;
+            flex-direction: column;
+            gap: 28px;
+            animation: fadeIn 0.24s ease;
+        }
+        .crm-page.is-active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page-header {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 28px 32px;
+            box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .page-header h1 { font-size: 1.8rem; margin: 0 0 4px; }
+        .page-header p { margin: 0; color: var(--muted-color); max-width: 540px; }
+        .page-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .panel {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 26px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.85);
+        }
+        .panel header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .panel header h2 { margin: 0; font-size: 1.15rem; }
+        .panel-meta { color: var(--muted-color); font-size: 0.85rem; }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, rgba(67, 100, 247, 0.12), rgba(0, 180, 216, 0.1));
+            border-radius: var(--border-radius);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid rgba(0, 82, 212, 0.08);
+        }
+        .metric-card span { color: var(--muted-color); font-size: 0.85rem; }
+        .metric-card strong { font-size: 1.7rem; }
+        .metric-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+        .metric-trend.positive { color: var(--success-color); }
+        .metric-trend.negative { color: var(--danger-color); }
+
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        table.crm-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        table.crm-table th,
+        table.crm-table td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.92rem;
+        }
+        table.crm-table th {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-color);
+        }
+        table.crm-table tbody tr:last-child td { border-bottom: none; }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+        .status-chip[data-status="approved"] { background: rgba(20, 164, 77, 0.16); color: #15803d; }
+        .status-chip[data-status="rejected"] { background: rgba(224, 36, 36, 0.16); color: #b91c1c; }
+        .status-chip[data-status="active"] { background: rgba(59, 130, 246, 0.16); color: #1d4ed8; }
+        .status-chip[data-status="inactive"] { background: rgba(156, 163, 175, 0.25); color: #4b5563; }
+
+        .crm-button {
+            border-radius: 999px;
+            padding: 10px 22px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .crm-button.primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--white-color);
+        }
+        .crm-button.ghost {
+            background: transparent;
+            border-color: rgba(0, 82, 212, 0.2);
+            color: var(--primary-color);
+        }
+        .crm-button.danger {
+            background: rgba(224, 36, 36, 0.12);
+            border-color: rgba(224, 36, 36, 0.2);
+            color: var(--danger-color);
+        }
+        .crm-button.small {
+            padding: 6px 14px;
+            font-size: 0.82rem;
+        }
+        .table-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .two-column-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(0, 82, 212, 0.08);
+        }
+        .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(67, 100, 247, 0.12);
+            display: grid;
+            place-items: center;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .activity-meta { color: var(--muted-color); font-size: 0.82rem; }
+
+        .chart-bars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 12px;
+            align-items: end;
+        }
+        .chart-bar {
+            background: rgba(67, 100, 247, 0.12);
+            border-radius: 12px 12px 4px 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-bar__value {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translate(-50%, 0);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--white-color);
+        }
+        .chart-bar__label {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.76rem;
+            color: var(--muted-color);
+            text-align: center;
+            width: 100%;
+        }
+        .chart-bar div {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border-radius: 12px 12px 4px 4px;
+        }
+
+        @media (max-width: 1180px) {
+            main.crm-shell { grid-template-columns: 1fr; }
+            .crm-sidebar {
+                position: relative;
+                top: 0;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .crm-pages { padding: 36px 24px 48px; }
+        }
+        @media (max-width: 720px) {
+            .crm-pages { padding: 28px 16px 40px; }
+            .page-header { padding: 22px; }
+            .panel { padding: 22px; }
+            .table-wrapper { margin: 0 -10px; }
+        }
+    </style>
+</head>
+<body>
+    <div data-include="header.html"></div>
+    <div data-include="mobile-menu.html"></div>
+
+    <main class="crm-shell">
+        <aside class="crm-sidebar">
+            <div>
+                <h2>Administrare platformă</h2>
+                <p>Controlează operațiunile OuidoEvents: locații, conturi și performanță.</p>
+            </div>
+
+            <nav class="crm-nav" aria-label="Navigare Admin">
+                <div class="crm-nav-section">
+                    <div class="crm-nav-links">
+                        <button class="crm-nav-link is-active" type="button" data-page-target="overview">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+                            Dashboard
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="approvals">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            Aprobări locații
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="analytics">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19V6"/><path d="M7 19v-4"/><path d="M15 19v-8"/><path d="M19 19V9"/></svg>
+                            Analytics
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="accounts">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Conturi
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="activity">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M19 9l-5 5-4-4-3 3"/></svg>
+                            Activitate & audit
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="crm-sidebar-footer">
+                <h3>Manual operațional</h3>
+                <p>Consulta ghidurile interne pentru fluxurile de moderare.</p>
+                <a href="https://docs.google.com" target="_blank" rel="noopener">Deschide documentația</a>
+            </div>
+        </aside>
+
+        <section class="crm-pages">
+            <section class="crm-page is-active" data-page="overview">
+                <div class="page-header">
+                    <h1>Panou general</h1>
+                    <p>Monitorizează sănătatea platformei și pregătește-te pentru intervenții rapide.</p>
+                    <div class="page-actions">
+                        <button class="crm-button primary" type="button" data-action="export-report">Exportă raport zilnic</button>
+                        <button class="crm-button ghost" type="button" data-action="schedule-sync">Programează sync cu echipa</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <header>
+                        <h2>Indicatori cheie</h2>
+                        <span class="panel-meta">Actualizat în timp real</span>
+                    </header>
+                    <div class="metrics-grid" id="overview-metrics"></div>
+                </div>
+
+                <div class="two-column-layout">
+                    <div class="panel">
+                        <header>
+                            <h2>Flux cereri</h2>
+                            <span class="panel-meta">Confirmări, rezervări și vizite organizate</span>
+                        </header>
+                        <div class="chart-bars" id="request-chart"></div>
+                    </div>
+                    <div class="panel">
+                        <header>
+                            <h2>Priorități de astăzi</h2>
+                            <span class="panel-meta">Locații sau conturi ce necesită acțiune</span>
+                        </header>
+                        <div class="list" id="priority-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crm-page" data-page="approvals">
+                <div class="page-header">
+                    <h1>Moderare listări locații</h1>
+                    <p>Analizează solicitările noi și aprobă doar locațiile ce respectă standardul OuidoEvents.</p>
+                </div>
+                <div class="panel">
+                    <header>
+                        <h2>Listări în așteptare</h2>
+                        <span class="panel-meta">Se recomandă timp de răspuns &lt; 12h</span>
+                    </header>
+                    <div class="table-wrapper">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Locație</th>
+                                    <th>Proprietar</th>
+                                    <th>Oraș</th>
+                                    <th>Capacitate</th>
+                                    <th>Trimis</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="pending-venues-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel">
+                    <header>
+                        <h2>Decizii recente</h2>
+                        <span class="panel-meta">Istoric ultimele 7 zile</span>
+                    </header>
+                    <div class="table-wrapper">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Locație</th>
+                                    <th>Proprietar</th>
+                                    <th>Status</th>
+                                    <th>Notițe</th>
+                                    <th>Timp procesare</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-decisions-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crm-page" data-page="analytics">
+                <div class="page-header">
+                    <h1>Analytics platformă</h1>
+                    <p>Indicatori despre clienți, proprietari, locații și performanța cererilor.</p>
+                </div>
+                <div class="panel">
+                    <header>
+                        <h2>Distribuție utilizatori</h2>
+                        <span class="panel-meta">Active vs total conturi</span>
+                    </header>
+                    <div class="metrics-grid" id="analytics-metrics"></div>
+                </div>
+                <div class="two-column-layout">
+                    <div class="panel">
+                        <header>
+                            <h2>Statistici cereri</h2>
+                            <span class="panel-meta">Ultimele 30 de zile</span>
+                        </header>
+                        <div class="list" id="request-stats"></div>
+                    </div>
+                    <div class="panel">
+                        <header>
+                            <h2>Top locații performante</h2>
+                            <span class="panel-meta">Rată confirmări > 75%</span>
+                        </header>
+                        <div class="list" id="top-venues"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crm-page" data-page="accounts">
+                <div class="page-header">
+                    <h1>Management conturi</h1>
+                    <p>Activează sau suspendă conturi și urmărește statutul clienților și proprietarilor.</p>
+                </div>
+                <div class="panel">
+                    <header>
+                        <h2>Clienți</h2>
+                        <span class="panel-meta">Ultima sincronizare CRM acum 5 min</span>
+                    </header>
+                    <div class="table-wrapper">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Nume</th>
+                                    <th>Email</th>
+                                    <th>Ultima activitate</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel">
+                    <header>
+                        <h2>Proprietari de locații</h2>
+                        <span class="panel-meta">Monitorizare contracte active</span>
+                    </header>
+                    <div class="table-wrapper">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Nume business</th>
+                                    <th>Contact</th>
+                                    <th>Locații active</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="owners-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crm-page" data-page="activity">
+                <div class="page-header">
+                    <h1>Activitate și audit</h1>
+                    <p>Trasabilitatea acțiunilor administrative din ultimele 48 de ore.</p>
+                </div>
+                <div class="panel">
+                    <header>
+                        <h2>Jurnal evenimente</h2>
+                        <span class="panel-meta">Se păstrează ultimele 100 de acțiuni</span>
+                    </header>
+                    <div class="list" id="activity-log"></div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.crm-nav-link');
+        const pages = document.querySelectorAll('.crm-page');
+
+        function activatePage(pageId) {
+            if (!pageId) return;
+            pages.forEach(page => page.classList.toggle('is-active', page.dataset.page === pageId));
+            navLinks.forEach(link => link.classList.toggle('is-active', link.dataset.pageTarget === pageId));
+            history.replaceState(null, '', `#${pageId}`);
+        }
+
+        const initialPage = window.location.hash.replace('#', '') || 'overview';
+        activatePage(initialPage);
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => activatePage(link.dataset.pageTarget));
+        });
+
+        window.addEventListener('hashchange', () => activatePage(window.location.hash.replace('#', '')));
+
+        const adminState = {
+            metrics: {
+                activeClients: 142,
+                totalClients: 158,
+                activeOwners: 84,
+                totalOwners: 93,
+                publishedVenues: 312,
+                pendingVenues: 11,
+                bookingsThisMonth: 128,
+                visitsScheduled: 74,
+                responseTimeHours: 6.2,
+                revenueGrowth: 12.5,
+            },
+            requestVolume: [
+                { label: 'Cereri rezervare', count: 58 },
+                { label: 'Vizite programate', count: 34 },
+                { label: 'Confirmări disponibilitate', count: 44 },
+                { label: 'Oferte transmise', count: 29 },
+            ],
+            priorities: [
+                { type: 'Verificare documente', description: 'Contract actualizat pentru "Skyline Events"', time: 'acum 20 min' },
+                { type: 'Escaladare suport', description: 'Client VIP așteaptă confirmarea pentru Grand Palais', time: 'acum 1 oră' },
+                { type: 'Moderare', description: 'Listare nouă "Casa Hellen" cu review-uri incomplete', time: 'acum 2 ore' },
+            ],
+            pendingVenues: [
+                { id: 301, name: 'The Ivy Loft', owner: 'Evelin Pop', city: 'București', capacity: '80-150', submittedAt: 'acum 2h' },
+                { id: 302, name: 'Domaine Verde', owner: 'Marius Bălan', city: 'Sinaia', capacity: '120-300', submittedAt: 'acum 4h' },
+                { id: 303, name: 'Mare Nostrum Terrace', owner: 'Iulia Iancu', city: 'Constanța', capacity: '60-220', submittedAt: 'ieri' },
+            ],
+            recentDecisions: [
+                { id: 201, name: 'Luna Ballroom', owner: 'Eventique SRL', status: 'approved', notes: 'Fotografii și meniu complet', time: '3h' },
+                { id: 202, name: 'Transylvania Lodge', owner: 'Valea Verde', status: 'approved', notes: 'Contract semnat', time: '7h' },
+                { id: 203, name: 'Urban Yard', owner: 'Urban Spaces', status: 'rejected', notes: 'Informații incomplete', time: '22h' },
+            ],
+            requestStats: [
+                { label: 'Cereri noi', value: 186, trend: '+14% vs luna anterioară' },
+                { label: 'Rată răspuns &lt; 12h', value: '82%', trend: '+6pp față de target' },
+                { label: 'Cereri escaladate', value: 9, trend: '-3 cazuri față de săptămâna trecută' },
+            ],
+            topVenues: [
+                { name: 'Ambience Lake Resort', owner: 'Ambience Group', confirmations: '91%', responseTime: '4h' },
+                { name: 'Skyline Events', owner: 'Skyline Holdings', confirmations: '88%', responseTime: '6h' },
+                { name: 'Forest Retreat & Spa', owner: 'GreenStay', confirmations: '84%', responseTime: '5h' },
+            ],
+            clients: [
+                { id: 1, name: 'Alex Marin', email: 'alex.marin@email.com', lastActive: 'ieri', status: 'active' },
+                { id: 2, name: 'Bianca Vasile', email: 'bianca.vasile@email.com', lastActive: 'acum 3 zile', status: 'active' },
+                { id: 3, name: 'Corina Andrei', email: 'corina.andrei@email.com', lastActive: 'acum 14 zile', status: 'inactive' },
+                { id: 4, name: 'David Popescu', email: 'david.popescu@email.com', lastActive: 'azi', status: 'active' },
+            ],
+            owners: [
+                { id: 1, business: 'Eventique SRL', contact: 'Ioana Pătrașcu', locations: 4, status: 'active' },
+                { id: 2, business: 'Nymphaea Events', contact: 'Rareș Ioniță', locations: 2, status: 'active' },
+                { id: 3, business: 'Casa Alba Events', contact: 'Lavinia Neagu', locations: 1, status: 'inactive' },
+                { id: 4, business: 'GreenStay', contact: 'Mihai Radu', locations: 3, status: 'active' },
+            ],
+            activity: [
+                { id: 501, initials: 'MP', title: 'Listare aprobată', detail: '"Luna Ballroom" a fost publicată', time: 'acum 2h' },
+                { id: 502, initials: 'AG', title: 'Cont client suspendat', detail: 'Clientul "Corina Andrei" marcat ca inactiv', time: 'acum 5h' },
+                { id: 503, initials: 'MP', title: 'Request escaladat', detail: 'Cerere #4589 transmisă spre suport premium', time: 'acum 11h' },
+                { id: 504, initials: 'DV', title: 'Raport exportat', detail: 'Raport zilnic în format CSV', time: 'ieri' },
+            ],
+        };
+
+        function renderMetrics() {
+            const metricsContainer = document.getElementById('overview-metrics');
+            const data = [
+                {
+                    label: 'Clienți activi',
+                    value: `${adminState.metrics.activeClients} / ${adminState.metrics.totalClients}`,
+                    trend: '+3,2% față de luna trecută',
+                    trendType: 'positive',
+                },
+                {
+                    label: 'Proprietari activi',
+                    value: `${adminState.metrics.activeOwners} / ${adminState.metrics.totalOwners}`,
+                    trend: '+1,8% față de luna trecută',
+                    trendType: 'positive',
+                },
+                {
+                    label: 'Locații publicate',
+                    value: adminState.metrics.publishedVenues,
+                    trend: `${adminState.metrics.pendingVenues} în așteptare`,
+                    trendType: 'neutral',
+                },
+                {
+                    label: 'Rezervări confirmate (30d)',
+                    value: adminState.metrics.bookingsThisMonth,
+                    trend: '+9% ritm de creștere',
+                    trendType: 'positive',
+                },
+                {
+                    label: 'Vizite programate',
+                    value: adminState.metrics.visitsScheduled,
+                    trend: 'Timp mediu răspuns ' + adminState.metrics.responseTimeHours + 'h',
+                    trendType: 'neutral',
+                },
+                {
+                    label: 'Creștere venituri',
+                    value: adminState.metrics.revenueGrowth + '%',
+                    trend: 'vs. Q3 2023',
+                    trendType: 'positive',
+                },
+            ];
+
+            metricsContainer.innerHTML = data.map(metric => {
+                const trendClass = metric.trendType === 'positive' ? 'metric-trend positive' : metric.trendType === 'negative' ? 'metric-trend negative' : 'metric-trend';
+                return `
+                    <article class="metric-card">
+                        <span>${metric.label}</span>
+                        <strong>${metric.value}</strong>
+                        <span class="${trendClass}">${metric.trend}</span>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderRequestChart() {
+            const chart = document.getElementById('request-chart');
+            const max = Math.max(...adminState.requestVolume.map(i => i.count));
+            chart.innerHTML = adminState.requestVolume.map(item => {
+                const height = Math.round((item.count / max) * 100);
+                return `
+                    <div class="chart-bar" style="height: 140px;">
+                        <div style="height: ${height}%;"></div>
+                        <span class="chart-bar__value">${item.count}</span>
+                        <span class="chart-bar__label">${item.label}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderPriorities() {
+            const container = document.getElementById('priority-list');
+            container.innerHTML = adminState.priorities.map(item => `
+                <div class="activity-item">
+                    <div class="activity-icon">${item.type.substring(0, 2).toUpperCase()}</div>
+                    <div>
+                        <strong>${item.type}</strong>
+                        <div>${item.description}</div>
+                        <span class="activity-meta">${item.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPendingVenues() {
+            const tbody = document.getElementById('pending-venues-body');
+            if (!adminState.pendingVenues.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--muted-color);">Nicio listare în așteptare.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = adminState.pendingVenues.map(venue => `
+                <tr data-id="${venue.id}">
+                    <td><strong>${venue.name}</strong></td>
+                    <td>${venue.owner}</td>
+                    <td>${venue.city}</td>
+                    <td>${venue.capacity}</td>
+                    <td>${venue.submittedAt}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="crm-button small primary" data-approve="${venue.id}">Aprobă</button>
+                            <button class="crm-button small danger" data-reject="${venue.id}">Respinge</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderRecentDecisions() {
+            const tbody = document.getElementById('recent-decisions-body');
+            if (!adminState.recentDecisions.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 24px; color: var(--muted-color);">Încă nu există decizii salvate.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = adminState.recentDecisions.map(decision => `
+                <tr>
+                    <td><strong>${decision.name}</strong></td>
+                    <td>${decision.owner}</td>
+                    <td><span class="status-chip" data-status="${decision.status}">${decision.status === 'approved' ? 'Aprobată' : 'Respinsă'}</span></td>
+                    <td>${decision.notes}</td>
+                    <td>${decision.time}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAnalytics() {
+            const analyticsContainer = document.getElementById('analytics-metrics');
+            const metrics = [
+                { label: 'Clienți activi', value: `${adminState.metrics.activeClients}`, detail: `/ ${adminState.metrics.totalClients} în total` },
+                { label: 'Proprietari activi', value: `${adminState.metrics.activeOwners}`, detail: `/ ${adminState.metrics.totalOwners} în total` },
+                { label: 'Locații live', value: `${adminState.metrics.publishedVenues}`, detail: `${adminState.metrics.pendingVenues} în review` },
+                { label: 'Timp mediu răspuns', value: `${adminState.metrics.responseTimeHours}h`, detail: 'Target &lt; 8h' },
+            ];
+
+            analyticsContainer.innerHTML = metrics.map(item => `
+                <article class="metric-card">
+                    <span>${item.label}</span>
+                    <strong>${item.value}</strong>
+                    <span class="metric-trend">${item.detail}</span>
+                </article>
+            `).join('');
+
+            const statsContainer = document.getElementById('request-stats');
+            statsContainer.innerHTML = adminState.requestStats.map(stat => `
+                <div class="activity-item">
+                    <div class="activity-icon">${stat.label.substring(0, 2).toUpperCase()}</div>
+                    <div>
+                        <strong>${stat.label}</strong>
+                        <div>${stat.value}</div>
+                        <span class="activity-meta">${stat.trend}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            const topContainer = document.getElementById('top-venues');
+            topContainer.innerHTML = adminState.topVenues.map(venue => `
+                <div class="activity-item">
+                    <div class="activity-icon">${venue.name.split(' ').map(word => word[0]).join('').substring(0, 2)}</div>
+                    <div>
+                        <strong>${venue.name}</strong>
+                        <div>${venue.owner}</div>
+                        <span class="activity-meta">Confirmări: ${venue.confirmations} · Răspuns: ${venue.responseTime}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAccounts() {
+            const clientsBody = document.getElementById('clients-table-body');
+            clientsBody.innerHTML = adminState.clients.map(client => `
+                <tr data-id="client-${client.id}">
+                    <td><strong>${client.name}</strong></td>
+                    <td>${client.email}</td>
+                    <td>${client.lastActive}</td>
+                    <td><span class="status-chip" data-status="${client.status}">${client.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
+                    <td>
+                        <button class="crm-button small ${client.status === 'active' ? 'danger' : 'primary'}" data-toggle-client="${client.id}">
+                            ${client.status === 'active' ? 'Dezactivează' : 'Reactivează'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const ownersBody = document.getElementById('owners-table-body');
+            ownersBody.innerHTML = adminState.owners.map(owner => `
+                <tr data-id="owner-${owner.id}">
+                    <td><strong>${owner.business}</strong></td>
+                    <td>${owner.contact}</td>
+                    <td>${owner.locations}</td>
+                    <td><span class="status-chip" data-status="${owner.status}">${owner.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
+                    <td>
+                        <button class="crm-button small ${owner.status === 'active' ? 'danger' : 'primary'}" data-toggle-owner="${owner.id}">
+                            ${owner.status === 'active' ? 'Suspendă' : 'Reactivează'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderActivity() {
+            const container = document.getElementById('activity-log');
+            container.innerHTML = adminState.activity.map(entry => `
+                <div class="activity-item">
+                    <div class="activity-icon">${entry.initials}</div>
+                    <div>
+                        <strong>${entry.title}</strong>
+                        <div>${entry.detail}</div>
+                        <span class="activity-meta">${entry.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateMetricsAfterDecision(status) {
+            if (status === 'approved') {
+                adminState.metrics.publishedVenues += 1;
+            }
+            adminState.metrics.pendingVenues = Math.max(0, adminState.pendingVenues.length);
+            renderMetrics();
+            renderAnalytics();
+            adminState.activity.unshift({
+                id: Date.now(),
+                initials: 'AP',
+                title: 'Decizie listare',
+                detail: status === 'approved' ? 'Locație aprobată pentru publicare' : 'Locație respinsă pentru revizuire',
+                time: 'chiar acum',
+            });
+            adminState.activity = adminState.activity.slice(0, 12);
+            renderActivity();
+        }
+
+        function updateAccountMetrics(type, newStatus) {
+            if (type === 'client') {
+                const activeCount = adminState.clients.filter(client => client.status === 'active').length;
+                adminState.metrics.activeClients = activeCount;
+            }
+            if (type === 'owner') {
+                const activeCount = adminState.owners.filter(owner => owner.status === 'active').length;
+                adminState.metrics.activeOwners = activeCount;
+            }
+            renderMetrics();
+            renderAnalytics();
+            adminState.activity.unshift({
+                id: Date.now(),
+                initials: type === 'client' ? 'CL' : 'OW',
+                title: `${type === 'client' ? 'Status client' : 'Status owner'} actualizat`,
+                detail: `Cont marcat ca ${newStatus === 'active' ? 'activ' : 'inactiv'}`,
+                time: 'chiar acum',
+            });
+            adminState.activity = adminState.activity.slice(0, 12);
+            renderActivity();
+        }
+
+        document.getElementById('pending-venues-body').addEventListener('click', (event) => {
+            const approveId = event.target.getAttribute('data-approve');
+            const rejectId = event.target.getAttribute('data-reject');
+            if (!approveId && !rejectId) return;
+
+            const venueId = Number(approveId || rejectId);
+            const venue = adminState.pendingVenues.find(v => v.id === venueId);
+            if (!venue) return;
+
+            adminState.pendingVenues = adminState.pendingVenues.filter(v => v.id !== venueId);
+            adminState.recentDecisions.unshift({
+                id: Date.now(),
+                name: venue.name,
+                owner: venue.owner,
+                status: approveId ? 'approved' : 'rejected',
+                notes: approveId ? 'Aprobată după verificare' : 'Respinsă - completare necesară',
+                time: 'chiar acum',
+            });
+            adminState.recentDecisions = adminState.recentDecisions.slice(0, 8);
+
+            renderPendingVenues();
+            renderRecentDecisions();
+            updateMetricsAfterDecision(approveId ? 'approved' : 'rejected');
+        });
+
+        document.getElementById('clients-table-body').addEventListener('click', (event) => {
+            const toggleId = event.target.getAttribute('data-toggle-client');
+            if (!toggleId) return;
+            const client = adminState.clients.find(c => c.id === Number(toggleId));
+            if (!client) return;
+            client.status = client.status === 'active' ? 'inactive' : 'active';
+            renderAccounts();
+            updateAccountMetrics('client', client.status);
+        });
+
+        document.getElementById('owners-table-body').addEventListener('click', (event) => {
+            const toggleId = event.target.getAttribute('data-toggle-owner');
+            if (!toggleId) return;
+            const owner = adminState.owners.find(o => o.id === Number(toggleId));
+            if (!owner) return;
+            owner.status = owner.status === 'active' ? 'inactive' : 'active';
+            renderAccounts();
+            updateAccountMetrics('owner', owner.status);
+        });
+
+        renderMetrics();
+        renderRequestChart();
+        renderPriorities();
+        renderPendingVenues();
+        renderRecentDecisions();
+        renderAnalytics();
+        renderAccounts();
+        renderActivity();
+    });
+    </script>
+</body>
+</html>

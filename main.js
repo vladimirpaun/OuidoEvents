@@ -86,6 +86,8 @@
       'owner-crm.html': 'owner-crm.html',
       client: 'client-dashboard.html',
       'client-dashboard.html': 'client-dashboard.html',
+      admin: 'admin-dashboard.html',
+      'admin-dashboard.html': 'admin-dashboard.html',
     };
 
     const targetUrl = roleRoutes[value];
