@@ -769,13 +769,6 @@
             align-items: stretch; /* NOU: Asigură înălțime egală pentru panouri */
         }
 
-        /* NOU: Stack pentru graficele din dreapta */
-        .right-chart-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 28px;
-        }
-
         /* NOU: Stiluri pentru Pie Chart */
         .pie-chart-container {
             display: flex;
@@ -864,9 +857,6 @@
             .chart-grid {
                 grid-template-columns: 1fr;
             }
-            .right-chart-stack {
-                gap: 28px;
-            }
             /* NOU: Grid pentru bookings pe mobil */
             .bookings-content-grid {
                 grid-template-columns: 1fr;
@@ -924,10 +914,6 @@
                 <div class="crm-nav-section">
                     <label>Comunicare & control</label>
                     <div class="crm-nav-links">
-                        <button class="crm-nav-link" type="button" data-page-target="communications">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            Comunicări
-                        </button>
                         <button class="crm-nav-link" type="button" data-page-target="settings">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
                             Setări
@@ -1001,46 +987,34 @@
                     </article>
                 </div>
 
-                <div class="grid-three-columns">
-                    <article class="panel">
-                        <header>
-                            <h2>Flux rapid bookings</h2>
-                            <span class="panel-meta">Cele mai recente cereri</span>
-                        </header>
-                        <div class="list" id="overview-bookings-list"></div>
-                    </article>
-                    <article class="panel">
-                        <header>
-                            <h2>Programări vizionări</h2>
-                        </header>
-                        <div class="list" id="overview-viewings-list"></div>
-                    </article>
-                    <article class="panel">
-                        <header>
-                            <h2>Evenimente confirmate (următoarele 10 zile)</h2>
-                        </header>
-                        <div class="list" id="overview-events-list"></div>
-                    </article>
-                </div>
+                <article class="panel">
+                    <header>
+                        <h2>Flux rapid bookings</h2>
+                        <span class="panel-meta">Cele mai recente cereri</span>
+                    </header>
+                    <div class="list" id="overview-bookings-list"></div>
+                </article>
+                <article class="panel">
+                    <header>
+                        <h2>Programări vizionări</h2>
+                    </header>
+                    <div class="list" id="overview-viewings-list"></div>
+                </article>
+                <article class="panel">
+                    <header>
+                        <h2>Evenimente confirmate (următoarele 10 zile)</h2>
+                    </header>
+                    <div class="list" id="overview-events-list"></div>
+                </article>
 
-                <!-- NOU: Container pentru grafice -->
-                <div class="chart-grid">
-                    <!-- Grafic Ocupare Lunară -->
-                    <article class="panel">
-                        <header><h2>Grad de ocupare lunar (urm. 12 luni)</h2></header>
-                        <div id="monthly-occupancy-chart"></div>
-                    </article>
-                    <!-- NOU: Stack pentru graficele din dreapta -->
-                    <div class="right-chart-stack">
-                        <article class="panel">
-                            <header><h2>Distribuție pe tip de eveniment</h2></header>
-                            <div id="event-type-distribution-chart"></div>
-                        </article>
-                        <article class="panel">
-                            <header><h2>Status vizionări (urm. 7 zile)</h2></header>
-                            <div id="viewings-status-chart"></div>
-                        </article>
-                    </div>
+                <!-- Grafice -->
+                <div class="metrics-grid" style="grid-template-columns: 1fr 1fr; align-items: stretch;">
+                    <article class="panel"><header><h2>Distribuție pe tip de eveniment</h2></header><div id="event-type-distribution-chart"></div></article>
+                    <article class="panel"><header><h2>Status vizionări (urm. 7 zile)</h2></header><div id="viewings-status-chart"></div></article>
+                </div>
+                <article class="panel">
+                    <header><h2>Grad de ocupare lunar (urm. 12 luni)</h2></header>
+                    <div id="monthly-occupancy-chart"></div>
                 </div>
             </section>
 
@@ -1227,32 +1201,6 @@
                 </div>
 
                 <div class="venue-grid" id="venue-cards"></div>
-            </section>
-
-            <section class="crm-page" data-page="communications" id="communications">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Comunicări & follow-up</h1>
-                            <p>Centralizează mesajele cu echipa Ouido, furnizorii sau clienții interesați.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Template mesaj</button>
-                            <button class="crm-button primary" type="button">Trimite update</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Inbox partajat · sincronizare 2 min</span>
-                        <span class="context-tag">4 conversații active</span>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Mesaje recente</h2>
-                    </header>
-                    <div class="communications-grid" id="communications-grid"></div>
-                </div>
             </section>
 
             <section class="crm-page" data-page="settings" id="settings">
@@ -1473,13 +1421,6 @@
                 nextStep: 'Upload galerie foto finală',
                 highlights: ['Spațiu boutique', 'Necesită training gazde locale']
             }
-        ];
-
-        const communications = [
-            { title: 'Confirmare styling decor Villa Lac', tag: 'booking', detail: `Echipa Ouido a aprobat styling-ul pentru evenimentul din ${formatDate(addDays(28))}.`, time: 'acum 45 min' },
-            { title: 'Reminder tur Forest Lodge', tag: 'vizionare', detail: 'Clientul Căsătorim.ro a confirmat prezența. Trimiteți detalii de acces.', time: `azi · ${formatTime(new Date(today.setHours(8, 30)))}` },
-            { title: 'Update media kit Urban Loft', tag: 'marketing', detail: 'Fotograful a încărcat noile imagini. Verificați folderul partajat.', time: 'ieri · 17:15' },
-            { title: 'Request logistic Hub Creativ', tag: 'logistic', detail: `Tech Horizon solicită planul de amplasare standuri pentru ${formatDate(addDays(21))}.`, time: 'ieri · 11:05' }
         ];
 
         const monthlyOccupancyData = Array.from({ length: 12 }).map((_, i) => {
@@ -1878,28 +1819,6 @@
             });
         }
 
-        function renderCommunications() {
-            const container = document.getElementById('communications-grid');
-            if (!container) {
-                return;
-            }
-            container.innerHTML = '';
-            communications.forEach(item => {
-                const card = document.createElement('article');
-                card.className = 'communication-card';
-                const header = document.createElement('header');
-                header.innerHTML = `<strong>${item.title}</strong><span class="status-chip" data-status="awaiting">${item.tag}</span>`;
-                const detail = document.createElement('p');
-                detail.className = 'panel-meta';
-                detail.textContent = item.detail;
-                const footer = document.createElement('span');
-                footer.className = 'panel-meta';
-                footer.textContent = `Actualizat: ${item.time}`;
-                card.append(header, detail, footer);
-                container.appendChild(card);
-            });
-        }
-
         function renderMonthlyOccupancyChart() {
             const container = document.getElementById('monthly-occupancy-chart');
             if (!container) return;
@@ -2246,7 +2165,6 @@
         renderViewingsTable();
         renderAvailabilityGrid();
         renderVenueCards();
-        renderCommunications();
         renderMonthlyOccupancyChart();
         renderEventTypeDistributionChart();
         renderViewingsStatusChart();
