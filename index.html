@@ -49,25 +49,49 @@
         .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
         .role-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
         
-        /* NOU: Meniu mobil (Hamburger) */
-        .mobile-menu-button { display: none; cursor: pointer; background: none; border: none; padding: 5px; }
-        .mobile-menu-button .icon-bar { display: block; width: 25px; height: 3px; background-color: var(--dark-color); margin: 5px 0; transition: all 0.3s; }
-        header[data-gradient="deep"] .mobile-menu-button .icon-bar { background-color: var(--white-color); }
 
-        .mobile-nav-overlay { display: none; position: fixed; top: 74px; /* Inaltimea header-ului */ left: 0; width: 100%; height: calc(100% - 74px); background: var(--white-color); z-index: 999; padding: 30px; flex-direction: column; gap: 25px; }
-        .mobile-nav-overlay.active { display: flex; }
-        .mobile-nav-overlay .nav-links { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .mobile-nav-overlay .nav-links a { font-size: 1.2rem; }
-        .mobile-nav-overlay .header-actions { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 20px; }
-        .mobile-nav-overlay .header-actions .cta-button,
-        .mobile-nav-overlay .header-actions .secondary-cta-button { text-align: center; width: 100%; padding: 12px; }
-        .mobile-nav-overlay .role-switcher { margin-left: 0; margin-top: auto; }
+        /* Meniu mobil modern */
+        .mobile-menu-toggle { display: none; cursor: pointer; background: none; border: none; padding: 6px; flex-direction: column; justify-content: center; gap: 5px; }
+        .mobile-menu-toggle .icon-bar { display: block; width: 26px; height: 2px; background-color: var(--dark-color); border-radius: 999px; transition: transform 0.3s ease, opacity 0.3s ease; }
+        header[data-gradient="deep"] .mobile-menu-toggle .icon-bar { background-color: var(--white-color); }
+        .mobile-menu-toggle.open .icon-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-menu-toggle.open .icon-bar:nth-child(2) { opacity: 0; }
+        .mobile-menu-toggle.open .icon-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* Stiluri pentru butonul X de inchidere */
-        .mobile-menu-button.open .icon-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-        .mobile-menu-button.open .icon-bar:nth-child(2) { opacity: 0; }
-        .mobile-menu-button.open .icon-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        body.mobile-nav-open { overflow: hidden; }
 
+        .mobile-nav { position: fixed; inset: 0; display: flex; pointer-events: none; z-index: 1100; }
+        .mobile-nav__backdrop { flex: 1; background: rgba(15, 23, 42, 0.45); opacity: 0; transition: opacity 0.3s ease; }
+        .mobile-nav__panel { width: min(400px, 85%); background: linear-gradient(160deg, var(--white-color) 0%, #f4f7ff 100%); box-shadow: -8px 0 30px rgba(15, 23, 42, 0.15); transform: translateX(100%); transition: transform 0.35s ease; display: flex; flex-direction: column; padding: 32px 28px; border-top-left-radius: 24px; border-bottom-left-radius: 24px; outline: none; }
+        .mobile-nav.is-open { pointer-events: auto; }
+        .mobile-nav.is-open .mobile-nav__backdrop { opacity: 1; }
+        .mobile-nav.is-open .mobile-nav__panel { transform: translateX(0); }
+
+        .mobile-nav__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; font-weight: 600; color: var(--dark-color); font-size: 1.1rem; }
+        .mobile-nav__close { background: rgba(0, 82, 212, 0.1); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; }
+        .mobile-nav__close:hover { background: rgba(0, 82, 212, 0.2); transform: rotate(90deg); }
+        .mobile-nav__close-icon { position: relative; width: 18px; height: 18px; }
+        .mobile-nav__close-icon::before,
+        .mobile-nav__close-icon::after { content: ""; position: absolute; top: 50%; left: 50%; width: 18px; height: 2px; background: var(--primary-color); transform-origin: center; }
+        .mobile-nav__close-icon::before { transform: translate(-50%, -50%) rotate(45deg); }
+        .mobile-nav__close-icon::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+        .mobile-nav__content { display: flex; flex-direction: column; gap: 24px; height: 100%; overflow-y: auto; padding-right: 6px; }
+        .mobile-nav__links { display: flex; flex-direction: column; gap: 16px; }
+        .mobile-nav__links a { font-size: 1.1rem; color: var(--dark-color); text-decoration: none; font-weight: 600; letter-spacing: 0.3px; transition: color 0.2s ease, transform 0.2s ease; }
+        .mobile-nav__links a:hover { color: var(--primary-color); transform: translateX(4px); }
+        .mobile-nav__links a.is-active { color: var(--primary-color); }
+
+        .mobile-nav__actions { display: flex; flex-direction: column; gap: 12px; }
+        .mobile-nav__actions .cta-button,
+        .mobile-nav__actions .secondary-cta-button { text-align: center; width: 100%; padding: 14px; }
+
+        .mobile-nav .role-switcher { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+        .mobile-nav .role-switcher label { font-size: 0.9rem; color: var(--gray-color); }
+        .mobile-nav .role-switcher select { flex: 1; background-color: rgba(255, 255, 255, 0.85); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; }
+
+        .nav-links a.is-active { color: var(--primary-color); font-weight: 600; }
+        header[data-gradient="deep"] .nav-links a.is-active { color: var(--white-color); opacity: 1; }
 
         .header-actions { display: flex; align-items: center; gap: 15px; }
         .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
@@ -295,7 +319,7 @@
         }
         @media (max-width: 992px) {
             .nav-links, .header-actions { display: none; }
-            .mobile-menu-button { display: block; }
+            .mobile-menu-toggle { display: inline-flex; }
             .header-container { justify-content: space-between; }
 
             .section-title { font-size: 2rem; }
@@ -322,39 +346,8 @@
     </style> 
 </head>
 <body>
-    <header data-gradient="sky">
-        <div class="container header-container">
-            <a href="index.html" class="logo">OuidoEvents</a>
-            <nav class="nav-links">
-                <a href="locations.html">Locații</a> <a href="blog.html">Blog</a> <a href="owner-crm.html">Despre noi</a> <a href="contact.html">Contact</a>
-                <div class="role-switcher">
-                    <label for="role-selector">Role:</label>
-                    <select id="role-selector">
-                        <option value="client">Client</option>
-                        <option value="owner">Owner</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-            </nav>
-            <div class="header-actions">
-                <a href="login.html" class="secondary-cta-button">Conectare</a>
-                <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
-            </div>
-            <button class="mobile-menu-button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="mobile-nav-overlay">
-            <nav class="nav-links">
-                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
-            </nav>
-            <div class="header-actions">
-                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
-            </div>
-        </div>
-    </header>
+    <div data-include="header.html"></div>
+    <div data-include="mobile-menu.html"></div>
 
     <main>
         <section class="main-search-section">
@@ -642,113 +635,68 @@
         </section>
     </main>
     
-    <footer>
-        <div class="container">
-            <div class="footer-container">
-                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
-                <div class="footer-links-container"><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="create-account.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
-                <div class="footer-links-container"><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
-                <div class="footer-contact"><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
-            </div>
-            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
-        </div>
-    </footer>
+    <div data-include="footer.html"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="main.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchButton = document.querySelector('.search-button');
-            const topLocationsSection = document.getElementById('top-locations');
-            const searchResultsSection = document.getElementById('search-results');
-            // Find the select element in the document
-            const roleSelector = document.getElementById('role-selector');
+            if (searchButton) {
+                searchButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    window.location.href = 'locations.html';
+                });
+            }
 
-            const header = document.querySelector('header');
-            
-            searchButton.addEventListener('click', function(event) {
-                event.preventDefault(); 
-                // Redirecționează către pagina de locații
-                window.location.href = 'locations.html';
-            });
-
-
-
-            // Add an event listener that waits for the user to change the selection
-            roleSelector.addEventListener('change', function() {
-                // Check if the selected option's value is 'owner'
-                if (this.value === 'owner') {
-                    // If it is, redirect the browser to the owner page
-                    window.location.href = 'owner-crm.html';
-                }
-            });
-
-
-            // NOU: Logica pentru meniul mobil
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-            const desktopNav = document.querySelector('.header-container .nav-links');
-            const desktopActions = document.querySelector('.header-container .header-actions');
-
-            // Cloneaza elementele pentru a le folosi in meniul mobil
-            mobileNavOverlay.querySelector('.nav-links').innerHTML = desktopNav.innerHTML;
-            mobileNavOverlay.querySelector('.header-actions').innerHTML = desktopActions.innerHTML;
-
-            mobileMenuButton.addEventListener('click', function() {
-                this.classList.toggle('open');
-                mobileNavOverlay.classList.toggle('active');
-            });
-
-            // NOU: Logica pentru caruselul de testimoniale
             const slider = document.querySelector('.testimonial-slider');
             const slides = document.querySelectorAll('.testimonial-card');
             const prevButton = document.querySelector('.slider-nav.prev');
             const nextButton = document.querySelector('.slider-nav.next');
-            
-            if (slider && slides.length > 0 && prevButton && nextButton) {
+
+            if (slider && prevButton && nextButton && slides.length) {
                 if (slides.length <= 3) {
                     prevButton.style.display = 'none';
                     nextButton.style.display = 'none';
-                    return;
-                }
-            }
-            
-            let currentIndex = 0;
-            const itemsToShow = 3;
-            const totalItems = slides.length;
+                } else {
+                    let currentIndex = 0;
+                    const itemsToShow = 3;
+                    const totalItems = slides.length;
 
-            function updateSliderPosition() {
-                const cardWidth = slides[0].offsetWidth;
-                const gap = 30; // As defined in CSS
-                const offset = -currentIndex * (cardWidth + gap);
-                slider.style.transform = `translateX(${offset}px)`;
+                    function updateSliderPosition() {
+                        const cardWidth = slides[0].offsetWidth;
+                        const gap = 30;
+                        const offset = -currentIndex * (cardWidth + gap);
+                        slider.style.transform = `translateX(${offset}px)`;
+                        prevButton.disabled = currentIndex === 0;
+                        nextButton.disabled = currentIndex >= totalItems - itemsToShow;
+                    }
 
-                // Disable/Enable buttons
-                prevButton.disabled = currentIndex === 0;
-                nextButton.disabled = currentIndex >= totalItems - itemsToShow;
-            }
+                    nextButton.addEventListener('click', () => {
+                        if (currentIndex < totalItems - itemsToShow) {
+                            currentIndex++;
+                            updateSliderPosition();
+                        }
+                    });
 
-            nextButton.addEventListener('click', () => {
-                if (currentIndex < totalItems - itemsToShow) {
-                    currentIndex++;
+                    prevButton.addEventListener('click', () => {
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            updateSliderPosition();
+                        }
+                    });
+
                     updateSliderPosition();
                 }
-            });
+            }
 
-            prevButton.addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateSliderPosition();
-                }
-            });
-
-            updateSliderPosition(); // Set initial state
-
-            // NOU: Inițializare calendar modern
-            flatpickr("#event-date", {
-                dateFormat: "d/m/Y",
-                monthSelectorType: 'dropdown'
-            });
+            if (typeof flatpickr === 'function') {
+                flatpickr('#event-date', {
+                    dateFormat: 'd/m/Y',
+                    monthSelectorType: 'dropdown'
+                });
+            }
         });
     </script>
 </body>
