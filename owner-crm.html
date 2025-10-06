@@ -256,6 +256,17 @@
             font-weight: 500;
         }
 
+        /* NOU: Stil pentru rândul evidențiat în tabel */
+        @keyframes highlight-fade {
+            from { background-color: rgba(67, 100, 247, 0.2); }
+            to { background-color: transparent; }
+        }
+
+        table.crm-table tbody tr.is-highlighted {
+            animation: highlight-fade 2s ease-out forwards;
+        }
+
+
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -338,6 +349,22 @@
             padding-bottom: 0;
         }
 
+        /* NOU: Stil pentru elementele interactive din liste */
+        #overview-bookings-list .list-item,
+        #overview-events-list .list-item,
+        #overview-viewings-list .list-item {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-radius: 8px;
+            margin: -4px;
+            padding: 4px;
+        }
+        #overview-bookings-list .list-item:hover,
+        #overview-events-list .list-item:hover,
+        #overview-viewings-list .list-item:hover {
+            background-color: rgba(0, 82, 212, 0.04);
+        }
+
         .list-item span {
             color: var(--muted-color);
             font-size: 0.85rem;
@@ -376,9 +403,10 @@
             color: #b91c1c;
         }
 
-        .grid-two-columns {
+        .grid-three-columns {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            /* MODIFICAT: Grid cu 3 coloane */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
         }
 
@@ -626,6 +654,132 @@
             gap: 16px;
         }
 
+        /* NOU: Stiluri pentru graficul interactiv */
+        .chart-tooltip {
+            font-size: 0.6rem;
+            font-weight: 600;
+            fill: var(--primary-color);
+            text-anchor: middle;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .chart-hit-area:hover + .chart-tooltip {
+            opacity: 1;
+        }
+
+        .chart-point {
+            cursor: pointer;
+        }
+
+        /* NOU: Stiluri pentru graficul de ocupare lunară */
+        .occupancy-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .occupancy-bar-row {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .occupancy-bar-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--muted-color);
+            text-align: right;
+        }
+
+        .occupancy-bar-wrapper {
+            background: rgba(0, 82, 212, 0.08);
+            border-radius: 999px;
+            height: 28px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .occupancy-bar {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            width: var(--bar-width, 0%);
+            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: var(--white-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* NOU: Grid pentru grafice */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 2.5fr 1.5fr; /* MODIFICAT: Alocă mai mult spațiu coloanei din dreapta */
+            gap: 28px;
+            align-items: stretch; /* NOU: Asigură înălțime egală pentru panouri */
+        }
+
+        /* NOU: Stack pentru graficele din dreapta */
+        .right-chart-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* NOU: Stiluri pentru Pie Chart */
+        .pie-chart-container {
+            display: flex;
+            flex-direction: row; /* MODIFICAT: Layout orizontal */
+            justify-content: center;
+            align-items: center;
+            gap: 24px; /* MODIFICAT: Spațiere ajustată */
+            width: 100%;
+            height: 100%;
+        }
+
+        .pie-chart-svg {
+            width: 100%; 
+            max-width: 140px; /* MODIFICAT: Dimensiune redusă */
+            transform: rotate(-90deg);
+        }
+
+        .pie-slice {
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+            transform-origin: center;
+        }
+
+        .pie-slice:hover {
+            transform: scale(1.05);
+        }
+
+        .pie-chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+
         @media (max-width: 1180px) {
             main.crm-shell {
                 grid-template-columns: 1fr;
@@ -662,6 +816,13 @@
             table.crm-table {
                 min-width: 620px;
             }
+            /* NOU: Grid pentru grafice pe mobil */
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .right-chart-stack {
+                gap: 28px;
+            }
         }
     </style>
 </head>
@@ -693,9 +854,9 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H9a2 2 0 0 1-2-2V7"/><path d="M9 17h10"/><path d="M13 11h6"/><path d="M5 3h14a2 2 0 0 1 2 2v12"/><polyline points="5 7 5 21 19 21"/></svg>
                             Bookings
                         </button>
-                        <button class="crm-nav-link" type="button" data-page-target="visits">
+                        <button class="crm-nav-link" type="button" data-page-target="viewings">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3H6a2 2 0 0 0-2 2v14l4-4h10a2 2 0 0 0 2-2z"/></svg>
-                            Vizite
+                            Programări vizionări
                         </button>
                         <button class="crm-nav-link" type="button" data-page-target="availability">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -738,7 +899,7 @@
                     <div class="page-header-top">
                         <div>
                             <h1>Overview operațional</h1>
-                            <p>Monitorizează rapid cererile noi, disponibilitatea confirmată și activările pentru toate locațiile tale.</p>
+                            <p>Monitorizează cererile noi, disponibilitatea confirmată și activările pentru toate locațiile tale.</p>
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button primary" type="button">Adaugă booking manual</button>
@@ -747,7 +908,7 @@
                     </div>
                     <div class="context-tags">
                         <span class="context-tag">Locații active: 6</span>
-                        <span class="context-tag">Ultima sincronizare: 14 iunie, 09:35</span>
+                        <span class="context-tag" id="last-sync-time"></span>
                         <span class="context-tag">Responsabil: Tu & echipa</span>
                     </div>
                 </div>
@@ -770,7 +931,7 @@
                         </div>
                     </article>
                     <article class="metric-card">
-                        <span>Vizite programate săptămână curentă</span>
+                        <span>Vizionări programate săptămână curentă</span>
                         <strong>8</strong>
                         <div class="metric-trend">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/></svg>
@@ -787,7 +948,7 @@
                     </article>
                 </div>
 
-                <div class="grid-two-columns">
+                <div class="grid-three-columns">
                     <article class="panel">
                         <header>
                             <h2>Flux rapid bookings</h2>
@@ -798,26 +959,44 @@
                     <article class="panel">
                         <header>
                             <h2>Evenimente confirmate (următoarele 10 zile)</h2>
-                            <span class="panel-meta">Pregătește echipele locale</span>
                         </header>
                         <div class="list" id="overview-events-list"></div>
                     </article>
+                    <!-- NOU: Panou pentru vizionări -->
+                    <article class="panel">
+                        <header>
+                            <h2>Programări vizionări</h2>
+                        </header>
+                        <div class="list" id="overview-viewings-list"></div>
+                    </article>
                 </div>
 
-                <article class="panel">
-                    <header>
-                        <h2>Status disponibilitate săptămânală</h2>
-                        <span class="panel-meta">Rezumat pentru principalele locații</span>
-                    </header>
-                    <div class="availability-summary" id="overview-availability-summary"></div>
-                </article>
+                <!-- NOU: Container pentru grafice -->
+                <div class="chart-grid">
+                    <!-- Grafic Ocupare Lunară -->
+                    <article class="panel">
+                        <header><h2>Grad de ocupare lunar (urm. 12 luni)</h2></header>
+                        <div id="monthly-occupancy-chart"></div>
+                    </article>
+                    <!-- NOU: Stack pentru graficele din dreapta -->
+                    <div class="right-chart-stack">
+                        <article class="panel">
+                            <header><h2>Distribuție pe tip de eveniment</h2></header>
+                            <div id="event-type-distribution-chart"></div>
+                        </article>
+                        <article class="panel">
+                            <header><h2>Status vizionări (urm. 7 zile)</h2></header>
+                            <div id="viewings-status-chart"></div>
+                        </article>
+                    </div>
+                </div>
             </section>
 
             <section class="crm-page" data-page="bookings" id="bookings">
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
-                            <h1>Gestionare bookings</h1>
+                            <h1>Gestionare Bookings</h1>
                             <p>Centralizează toate cererile de evenimente, actualizează statusul și confirmă disponibilitatea.</p>
                         </div>
                         <div class="page-header-actions">
@@ -875,16 +1054,16 @@
                 </div>
             </section>
 
-            <section class="crm-page" data-page="visits" id="visits">
+            <section class="crm-page" data-page="viewings" id="viewings">
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
-                            <h1>Vizite & tururi</h1>
-                            <p>Confirmă programările și alocă gazde pentru fiecare vizită în spațiile tale.</p>
+                            <h1>Programări vizionări</h1>
+                            <p>Confirmă programările și alocă gazde pentru fiecare vizionare în spațiile tale.</p>
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button ghost" type="button">Calendar vizite</button>
-                            <button class="crm-button primary" type="button">Planifică vizită</button>
+                            <button class="crm-button primary" type="button">Planifică vizionare</button>
                         </div>
                     </div>
                     <div class="context-tags">
@@ -899,12 +1078,12 @@
                         <span class="panel-meta">Verifică statusul pentru următoarele 14 zile</span>
                     </header>
                     <div class="filter-bar">
-                        <label for="visits-venue-filter">Locație:</label>
-                        <select id="visits-venue-filter"></select>
+                        <label for="viewings-venue-filter">Locație:</label>
+                        <select id="viewings-venue-filter"></select>
                     </div>
                     <div class="table-wrapper">
-                        <table class="crm-table" aria-describedby="visits-table-caption">
-                            <caption id="visits-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Detalii vizite și responsabil</caption>
+                        <table class="crm-table" aria-describedby="viewings-table-caption">
+                            <caption id="viewings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Detalii vizionări și responsabil</caption>
                             <thead>
                                 <tr>
                                     <th>Client</th>
@@ -916,7 +1095,7 @@
                                     <th>Acțiuni</th>
                                 </tr>
                             </thead>
-                            <tbody id="visits-table-body"></tbody>
+                            <tbody id="viewings-table-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -924,7 +1103,7 @@
                 <div class="grid-two-columns">
                     <article class="panel">
                         <header>
-                            <h2>Checklist înainte de vizită</h2>
+                            <h2>Checklist înainte de vizionare</h2>
                         </header>
                         <ul class="list" style="margin:0; padding-left:16px;">
                             <li>Confirmați accesul și parcarea pentru clienți.</li>
@@ -935,7 +1114,7 @@
                     </article>
                     <article class="panel">
                         <header>
-                            <h2>Feedback recent după tururi</h2>
+                            <h2>Feedback recent după vizionări</h2>
                         </header>
                         <div class="list">
                             <div class="list-item">
@@ -992,7 +1171,11 @@
                 <div class="panel">
                     <header>
                         <h2>Calendar săptămânal</h2>
-                        <span class="panel-meta">Intervale pentru 17 - 23 iunie</span>
+                        <div class="calendar-nav">
+                            <button id="prev-week-btn" aria-label="Săptămâna precedentă">&lt;</button>
+                            <span class="panel-meta" id="availability-week-range"></span>
+                            <button id="next-week-btn" aria-label="Săptămâna următoare">&gt;</button>
+                        </div>
                     </header>
                     <div class="availability-grid">
                         <table>
@@ -1000,12 +1183,12 @@
                                 <tr>
                                     <th>Locație</th>
                                     <th>Lun · 17</th>
-                                    <th>Mar · 18</th>
-                                    <th>Mie · 19</th>
-                                    <th>Joi · 20</th>
-                                    <th>Vin · 21</th>
-                                    <th>Sâm · 22</th>
-                                    <th>Dum · 23</th>
+                                    <th>Mar</th>
+                                    <th>Mie</th>
+                                    <th>Joi</th>
+                                    <th>Vin</th>
+                                    <th>Sâm</th>
+                                    <th>Dum</th>
                                 </tr>
                             </thead>
                             <tbody id="availability-grid-body"></tbody>
@@ -1029,7 +1212,7 @@
                         <div class="list-item">
                             <div>
                                 <strong>Forest Lodge</strong>
-                                <span>Două vizite în aceeași zi (18 iunie). Alocă echipă suplimentară.</span>
+                                <span>Două vizionări în aceeași zi. Alocă echipă suplimentară.</span>
                             </div>
                             <span class="status-chip" data-status="pending">Planifică resurse</span>
                         </div>
@@ -1224,55 +1407,61 @@
             activatePage(window.location.hash.replace('#', ''));
         });
 
+        // --- DYNAMIC DATA GENERATION ---
+        const today = new Date();
+        const addDays = (days) => { const d = new Date(today); d.setDate(d.getDate() + days); return d; };
+        const monthNames = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','noi','dec'];
+        const formatDate = (date) => `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
         const bookings = [
-            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: '22 iun 2024', guests: 120, status: 'awaiting', action: 'Confirmați meniu' },
-            { client: 'Studio Creativ', event: 'Lansare produs', venue: 'Urban Loft', date: '18 iun 2024', guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
-            { client: 'Mihaela & Vlad', event: 'Petrecere botez', venue: 'Casa Miraval', date: '29 iun 2024', guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
-            { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: '05 iul 2024', guests: 150, status: 'awaiting', action: 'Planificați tur virtual' },
-            { client: 'EMEA Sales Team', event: 'Conferință anuală', venue: 'Villa Lac', date: '12 iul 2024', guests: 220, status: 'confirmed', action: 'Coordonați furnizori' }
+            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'awaiting', action: 'Confirmați meniu' },
+            { client: 'Studio Creativ', event: 'Lansare produs', venue: 'Urban Loft', date: formatDate(addDays(4)), guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
+            { client: 'Mihaela & Vlad', event: 'Petrecere botez', venue: 'Casa Miraval', date: formatDate(addDays(15)), guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
+            { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'awaiting', action: 'Planificați tur virtual' },
+            { client: 'EMEA Sales Team', event: 'Conferință anuală', venue: 'Villa Lac', date: formatDate(addDays(28)), guests: 220, status: 'confirmed', action: 'Coordonați furnizori' }
         ];
 
-        const visits = [
-            { client: 'Ioana Matei', venue: 'Villa Lac', date: '16 iun 2024', hour: '11:00', host: 'Andreea', status: 'confirmed' },
-            { client: 'Căsătorim.ro', venue: 'Forest Lodge', date: '18 iun 2024', hour: '09:30', host: 'Paul', status: 'pending' },
-            { client: 'Eventify', venue: 'Urban Loft', date: '18 iun 2024', hour: '15:00', host: 'Alex', status: 'awaiting' },
-            { client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: '20 iun 2024', hour: '17:00', host: 'Ioana', status: 'confirmed' },
-            { client: 'Art Expo Team', venue: 'Hub Creativ', date: '22 iun 2024', hour: '10:30', host: 'Vlad', status: 'awaiting' }
+        const viewings = [
+            { client: 'Ioana Matei', venue: 'Villa Lac', date: formatDate(addDays(2)), hour: '11:00', host: 'Andreea', status: 'confirmed' },
+            { client: 'Căsătorim.ro', venue: 'Forest Lodge', date: formatDate(addDays(4)), hour: '09:30', host: 'Paul', status: 'pending' },
+            { client: 'Eventify', venue: 'Urban Loft', date: formatDate(addDays(4)), hour: '15:00', host: 'Alex', status: 'awaiting' },
+            { client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: formatDate(addDays(6)), hour: '17:00', host: 'Ioana', status: 'confirmed' },
+            { client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', host: 'Vlad', status: 'awaiting' }
         ];
 
-        const eventsUpcoming = [
-            { venue: 'Villa Lac', title: 'Corporate Retreat', date: '16 iun 2024', owner: 'Andreea' },
-            { venue: 'Forest Lodge', title: 'Nuntă în aer liber', date: '21 iun 2024', owner: 'Paul' },
-            { venue: 'Urban Loft', title: 'Lansare produs tech', date: '22 iun 2024', owner: 'Alex' }
-        ];
+        const overviewBookings = bookings.slice(0, 3).map(b => ({
+            client: b.client,
+            venue: b.venue,
+            status: b.status,
+            note: b.action
+        }));
 
-        const overviewBookings = [
-            { client: 'Andrei Popescu', venue: 'Forest Lodge', status: 'awaiting', note: 'Așteaptă confirmare meniuri & cazare' },
-            { client: 'Mihaela & Vlad', venue: 'Casa Miraval', status: 'pending', note: 'Necesită validare disponibilitate 29 iun' },
-            { client: 'Tech Horizon', venue: 'Hub Creativ', status: 'confirmed', note: 'Contract semnat, se pregătește plan logistic' }
-        ];
+        const eventsUpcoming = bookings
+            .filter(b => b.status === 'confirmed')
+            .slice(0, 3)
+            .map(b => ({
+                client: b.client, // NOU: Adăugăm clientul pentru identificare
+                venue: b.venue,
+                title: b.event,
+                date: b.date,
+                owner: 'Echipa'
+            }));
 
-        const availabilityMatrix = [
-            { venue: 'Villa Lac', days: ['booked', 'booked', 'open', 'hold', 'booked', 'booked', 'open'] },
-            { venue: 'Forest Lodge', days: ['visit', 'booked', 'hold', 'open', 'open', 'booked', 'open'] },
-            { venue: 'Casa Miraval', days: ['open', 'open', 'visit', 'open', 'hold', 'booked', 'open'] },
-            { venue: 'Urban Loft', days: ['open', 'hold', 'open', 'open', 'visit', 'open', 'open'] },
-            { venue: 'Hub Creativ', days: ['booked', 'booked', 'booked', 'open', 'open', 'hold', 'open'] }
-        ];
-
-        const availabilitySummary = [
-            { venue: 'Villa Lac', info: 'Weekend-ul este aproape plin; promovați datele libere de duminică.' },
-            { venue: 'Forest Lodge', info: 'Cerere mare pentru evenimente corporate în timpul săptămânii.' },
-            { venue: 'Urban Loft', info: 'Sâmbătă liberă pe 22 iunie – oportunitate pentru evenimente premium.' }
-        ];
-
+        const overviewViewings = viewings
+            .slice(0, 3)
+            .map(v => ({
+                client: v.client,
+                venue: v.venue,
+                date: v.date
+            }));
         const venues = [
             {
                 name: 'Villa Lac',
                 city: 'Snagov',
                 status: 'activ',
                 capacity: '200 persoane',
-                nextStep: 'Eveniment corporate 16 iunie',
+                nextStep: `Eveniment corporate ${formatDate(addDays(28))}`,
                 highlights: ['Pachet corporate premium', 'Integrare completă calendar', 'Media kit actualizat']
             },
             {
@@ -1280,7 +1469,7 @@
                 city: 'Brașov',
                 status: 'activ',
                 capacity: '150 persoane',
-                nextStep: 'Tur pentru Căsătorim.ro',
+                nextStep: `Tur pentru Căsătorim.ro pe ${formatDate(addDays(4))}`,
                 highlights: ['Preferat pentru nunți rustic-chic', 'Noul meniu degustare disponibil']
             },
             {
@@ -1288,7 +1477,7 @@
                 city: 'București',
                 status: 'activ',
                 capacity: '120 persoane',
-                nextStep: 'Confirmare lansare produs 18 iunie',
+                nextStep: `Confirmare lansare produs ${formatDate(addDays(4))}`,
                 highlights: ['Studio foto integrat', 'Se pregătesc noi setup-uri lumini']
             },
             {
@@ -1302,21 +1491,49 @@
         ];
 
         const communications = [
-            { title: 'Confirmare styling decor Villa Lac', tag: 'booking', detail: 'Echipa Ouido a aprobat styling-ul pentru evenimentul din 16 iunie.', time: 'acum 45 min' },
-            { title: 'Reminder tur Forest Lodge', tag: 'vizită', detail: 'Clientul Căsătorim.ro a confirmat prezența. Trimiteți detalii de acces.', time: 'azi · 08:30' },
+            { title: 'Confirmare styling decor Villa Lac', tag: 'booking', detail: `Echipa Ouido a aprobat styling-ul pentru evenimentul din ${formatDate(addDays(28))}.`, time: 'acum 45 min' },
+            { title: 'Reminder tur Forest Lodge', tag: 'vizionare', detail: 'Clientul Căsătorim.ro a confirmat prezența. Trimiteți detalii de acces.', time: `azi · ${formatTime(new Date(today.setHours(8, 30)))}` },
             { title: 'Update media kit Urban Loft', tag: 'marketing', detail: 'Fotograful a încărcat noile imagini. Verificați folderul partajat.', time: 'ieri · 17:15' },
-            { title: 'Request logistic Hub Creativ', tag: 'logistic', detail: 'Tech Horizon solicită planul de amplasare standuri pentru 5 iulie.', time: 'ieri · 11:05' }
+            { title: 'Request logistic Hub Creativ', tag: 'logistic', detail: `Tech Horizon solicită planul de amplasare standuri pentru ${formatDate(addDays(21))}.`, time: 'ieri · 11:05' }
         ];
 
+        const monthlyOccupancyData = Array.from({ length: 12 }).map((_, i) => {
+            const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear().toString().slice(-2);
+            return { month: `${month.charAt(0).toUpperCase() + month.slice(1)} '${year}`, occupancy: Math.floor(Math.random() * 71) + 20 };
+        });
+
+        const eventTypeDistributionData = [
+            { type: 'Nunți', count: 45, color: '#0052D4' },
+            { type: 'Corporate', count: 25, color: '#4364F7' },
+            { type: 'Botezuri', count: 18, color: '#00B4D8' },
+            { type: 'Private', count: 12, color: '#90E0EF' }
+        ];
+
+        // NOU: Matrice de disponibilitate generată dinamic
+        let availabilityMatrix = [];
+        function generateAvailabilityMatrix() {
+            const statuses = ['booked', 'hold', 'visit', 'open', 'open', 'open'];
+            availabilityMatrix = venues.slice(0, 5).map(venue => {
+                const days = Array.from({ length: 7 }, () => statuses[Math.floor(Math.random() * statuses.length)]);
+                return {
+                    venue: venue.name,
+                    days: days
+                };
+            });
+        }
+
+
         const statusMeta = {
-            pending: { label: 'În așteptare', className: 'pending' },
-            awaiting: { label: 'Necesită confirmare', className: 'awaiting' },
-            confirmed: { label: 'Confirmat', className: 'confirmed' },
-            declined: { label: 'Respins', className: 'declined' }
+            pending: { label: 'În așteptare', className: 'pending', color: '#b7791f' },
+            awaiting: { label: 'Necesită confirmare', className: 'awaiting', color: '#00B4D8' },
+            confirmed: { label: 'Confirmat', className: 'confirmed', color: '#0a7d5c' },
+            declined: { label: 'Respins', className: 'declined', color: '#b91c1c' }
         };
 
         const venuesSelect = new Set(bookings.map(item => item.venue));
-        visits.forEach(item => venuesSelect.add(item.venue));
+        viewings.forEach(item => venuesSelect.add(item.venue));
 
         function populateSelect(selectEl, options, includeAll = true) {
             if (!selectEl) {
@@ -1338,7 +1555,7 @@
         }
 
         populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort());
-        populateSelect(document.getElementById('visits-venue-filter'), Array.from(venuesSelect).sort());
+        populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
 
         function createStatusChip(status) {
             const meta = statusMeta[status];
@@ -1352,7 +1569,7 @@
         function renderOverviewLists() {
             const bookingsList = document.getElementById('overview-bookings-list');
             const eventsList = document.getElementById('overview-events-list');
-            const availabilityList = document.getElementById('overview-availability-summary');
+            const viewingsList = document.getElementById('overview-viewings-list');
 
             if (bookingsList) {
                 bookingsList.innerHTML = '';
@@ -1361,10 +1578,15 @@
                     row.className = 'list-item';
 
                     const left = document.createElement('div');
-                    left.innerHTML = `<strong>${item.client}</strong><span>${item.venue} · ${item.note}</span>`;
+                    left.innerHTML = `<strong>${item.client}</strong> <span>${item.venue}</span>`;
 
                     const chip = createStatusChip(item.status);
                     row.append(left, chip);
+
+                    // MODIFICAT: Navighează la booking-ul specific
+                    row.addEventListener('click', () => {
+                        navigateToBooking(item.client);
+                    });
                     bookingsList.appendChild(row);
                 });
             }
@@ -1372,21 +1594,36 @@
             if (eventsList) {
                 eventsList.innerHTML = '';
                 eventsUpcoming.forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = 'list-item';
-                    row.innerHTML = `<div><strong>${item.title}</strong><span>${item.venue} · ${item.date}</span></div><span class="status-chip" data-status="confirmed">Owner: ${item.owner}</span>`;
-                    eventsList.appendChild(row);
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-item';
+
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.innerHTML = `<strong>${item.title}</strong> <span>${item.venue} · ${item.date}</span>`;                    
+                    // MODIFICAT: Navighează la booking-ul specific
+                    listItem.addEventListener('click', () => {
+                        navigateToBooking(item.client);
+                    });
+
+                    listItem.append(detailsDiv);
+                    eventsList.appendChild(listItem);
                 });
             }
 
-            if (availabilityList) {
-                availabilityList.innerHTML = '';
-                availabilitySummary.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'status-chip';
-                    card.dataset.status = 'awaiting';
-                    card.textContent = `${item.venue} · ${item.info}`;
-                    availabilityList.appendChild(card);
+            // NOU: Randare listă vizionări
+            if (viewingsList) {
+                viewingsList.innerHTML = '';
+                overviewViewings.forEach(item => {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-item';
+
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.innerHTML = `<strong>${item.client}</strong> <span>${item.venue} · ${item.date}</span>`;
+
+                    listItem.addEventListener('click', () => {
+                        navigateToViewing(item.client);
+                    });
+                    listItem.append(detailsDiv);
+                    viewingsList.appendChild(listItem);
                 });
             }
         }
@@ -1408,21 +1645,29 @@
                 .filter(item => venueValue === 'all' || item.venue === venueValue)
                 .filter(item => statusValue === 'all' || item.status === statusValue)
                 .forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.client}</td>
-                        <td>${item.event}</td>
-                        <td>${item.venue}</td>
-                        <td>${item.date}</td>
-                        <td>${item.guests}</td>
-                        <td></td>
-                        <td></td>
-                    `;
+                    const row = body.insertRow();
+                    row.dataset.identifier = item.client; // NOU: Adaugă identificator pentru rând
 
-                    const statusCell = row.children[5];
+                    const clientCell = row.insertCell();
+                    clientCell.textContent = item.client;
+
+                    const eventCell = row.insertCell();
+                    eventCell.textContent = item.event;
+
+                    const venueCell = row.insertCell();
+                    venueCell.textContent = item.venue;
+
+                    const dateCell = row.insertCell();
+                    dateCell.textContent = item.date;
+
+                    const guestsCell = row.insertCell();
+                    guestsCell.textContent = item.guests;
+
+                    const statusCell = row.insertCell();
+                    const actionsCell = row.insertCell();
+
                     statusCell.appendChild(createStatusChip(item.status));
 
-                    const actionsCell = row.children[6];
                     const actions = document.createElement('div');
                     actions.className = 'table-actions';
                     const confirmBtn = document.createElement('button');
@@ -1433,8 +1678,6 @@
                     shareBtn.textContent = 'Trimite ofertă';
                     actions.append(confirmBtn, noteBtn, shareBtn);
                     actionsCell.appendChild(actions);
-
-                    body.appendChild(row);
                 });
         }
 
@@ -1457,35 +1700,43 @@
             });
         }
 
-        function renderVisitsTable() {
-            const body = document.getElementById('visits-table-body');
+        function renderViewingsTable() {
+            const body = document.getElementById('viewings-table-body');
             if (!body) {
                 return;
             }
 
-            const venueFilter = document.getElementById('visits-venue-filter');
+            const venueFilter = document.getElementById('viewings-venue-filter');
             const venueValue = venueFilter ? venueFilter.value : 'all';
 
             body.innerHTML = '';
 
-            visits
+            viewings
                 .filter(item => venueValue === 'all' || item.venue === venueValue)
                 .forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.client}</td>
-                        <td>${item.venue}</td>
-                        <td>${item.date}</td>
-                        <td>${item.hour}</td>
-                        <td>${item.host}</td>
-                        <td></td>
-                        <td></td>
-                    `;
+                    const row = body.insertRow();
+                    row.dataset.identifier = item.client; // NOU: Adaugă identificator
+                    
+                    const clientCell = row.insertCell();
+                    clientCell.textContent = item.client;
 
-                    const statusCell = row.children[5];
+                    const venueCell = row.insertCell();
+                    venueCell.textContent = item.venue;
+
+                    const dateCell = row.insertCell();
+                    dateCell.textContent = item.date;
+
+                    const hourCell = row.insertCell();
+                    hourCell.textContent = item.hour;
+
+                    const hostCell = row.insertCell();
+                    hostCell.textContent = item.host;
+
+                    const statusCell = row.insertCell();
+                    const actionsCell = row.insertCell();
+
                     statusCell.appendChild(createStatusChip(item.status));
 
-                    const actionsCell = row.children[6];
                     const actions = document.createElement('div');
                     actions.className = 'table-actions';
                     const confirmBtn = document.createElement('button');
@@ -1494,20 +1745,44 @@
                     rescheduleBtn.textContent = 'Reprogramează';
                     actions.append(confirmBtn, rescheduleBtn);
                     actionsCell.appendChild(actions);
-
-                    body.appendChild(row);
                 });
         }
 
+        // NOU: Funcție refactorizată pentru calendarul săptămânal
+        let currentWeekOffset = 0;
         function renderAvailabilityGrid() {
             const body = document.getElementById('availability-grid-body');
-            if (!body) {
-                return;
+            const headerRow = document.querySelector('.availability-grid thead tr');
+            const weekRangeEl = document.getElementById('availability-week-range');
+            if (!body || !headerRow || !weekRangeEl) return;
+
+            generateAvailabilityMatrix(); // Generează date noi la fiecare randare
+
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon,...
+            const startOfWeek = new Date(today);
+            // Set to the Monday of the current week + offset
+            startOfWeek.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) + (currentWeekOffset * 7));
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+            weekRangeEl.textContent = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+
+            const dayHeaders = headerRow.querySelectorAll('th');
+            const dayNames = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm', 'Dum'];
+            for (let i = 0; i < 7; i++) {
+                const currentDay = new Date(startOfWeek);
+                currentDay.setDate(startOfWeek.getDate() + i);
+                if (dayHeaders[i + 1]) {
+                    dayHeaders[i + 1].textContent = `${dayNames[i]} · ${currentDay.getDate()}`;
+                }
             }
+
             const labels = {
                 booked: 'Rezervat',
                 hold: 'Hold',
-                visit: 'Vizită',
+                visit: 'Vizionare',
                 open: 'Liber'
             };
 
@@ -1529,6 +1804,7 @@
                 body.appendChild(row);
             });
         }
+
 
         function renderVenueCards() {
             const container = document.getElementById('venue-cards');
@@ -1592,17 +1868,369 @@
             });
         }
 
+        function renderMonthlyOccupancyChart() {
+            const container = document.getElementById('monthly-occupancy-chart');
+            if (!container) return;
+            container.innerHTML = '';
+            if (monthlyOccupancyData.length < 2) {
+                container.innerHTML = '<p style="text-align:center; color: var(--muted-color);">Date insuficiente pentru grafic.</p>';
+                return;
+            }
+
+            const svgNs = 'http://www.w3.org/2000/svg';
+            const svg = document.createElementNS(svgNs, 'svg');
+            const width = 600;
+            const height = 260;
+            const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.style.fontFamily = 'inherit'; 
+
+            const maxValue = 100; // Occupancy is a percentage
+
+            const points = monthlyOccupancyData.map((item, index) => {
+                const x = padding.left + (index / (monthlyOccupancyData.length - 1)) * chartWidth;
+                const y = padding.top + chartHeight - (item.occupancy / maxValue) * chartHeight;
+                return { x, y, label: item.month, value: item.occupancy };
+            });
+
+            // NOU: Adaugă axa Y cu procente
+            const yAxisLabels = [0, 50, 100];
+            yAxisLabels.forEach(labelValue => {
+                const y = padding.top + chartHeight - (labelValue / maxValue) * chartHeight;
+                
+                const line = document.createElementNS(svgNs, 'line');
+                line.setAttribute('x1', padding.left);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', width - padding.right);
+                line.setAttribute('y2', y);
+                line.setAttribute('stroke', 'var(--border-color)');
+                line.setAttribute('stroke-dasharray', '2,4');
+                svg.appendChild(line);
+
+                const text = document.createElementNS(svgNs, 'text');
+                text.setAttribute('x', padding.left - 10);
+                text.setAttribute('y', y + 4);
+                text.setAttribute('text-anchor', 'end');
+                text.setAttribute('font-size', '7');
+                text.setAttribute('fill', 'var(--muted-color)');
+                text.textContent = `${labelValue}%`;
+                svg.appendChild(text);
+            });
+
+            const defs = document.createElementNS(svgNs, 'defs');
+            const linearGradient = document.createElementNS(svgNs, 'linearGradient');
+            linearGradient.id = 'occupancy-gradient';
+            linearGradient.innerHTML = `<stop offset="0%" style="stop-color:rgba(67, 100, 247, 0.2)" /><stop offset="100%" style="stop-color:rgba(67, 100, 247, 0)" />`;
+            defs.appendChild(linearGradient);
+            svg.appendChild(defs);
+
+            const areaPath = document.createElementNS(svgNs, 'path');
+            const areaPoints = `M${points[0].x},${height - padding.bottom} ` + points.map(p => `L${p.x},${p.y}`).join(' ') + ` L${points[points.length - 1].x},${height - padding.bottom} Z`;
+            areaPath.setAttribute('d', areaPoints);
+            areaPath.setAttribute('fill', 'url(#occupancy-gradient)');
+            svg.appendChild(areaPath);
+
+            const polyline = document.createElementNS(svgNs, 'polyline');
+            polyline.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+            polyline.setAttribute('fill', 'none');
+            polyline.setAttribute('stroke', 'var(--secondary-color)');
+            polyline.setAttribute('stroke-width', '3');
+            polyline.setAttribute('stroke-linecap', 'round');
+            polyline.setAttribute('stroke-linejoin', 'round');
+            svg.appendChild(polyline);
+
+            points.forEach((point, index) => {
+                const group = document.createElementNS(svgNs, 'g');
+
+                const circle = document.createElementNS(svgNs, 'circle');
+                circle.setAttribute('cx', point.x);
+                circle.setAttribute('cy', point.y);
+                circle.setAttribute('r', '5');
+                circle.setAttribute('fill', 'var(--secondary-color)');
+                
+                const hitArea = document.createElementNS(svgNs, 'circle');
+                hitArea.classList.add('chart-hit-area', 'chart-point');
+                hitArea.setAttribute('cx', point.x);
+                hitArea.setAttribute('cy', point.y);
+                hitArea.setAttribute('r', '12');
+                hitArea.setAttribute('fill', 'transparent');
+
+                const tooltip = document.createElementNS(svgNs, 'text');
+                tooltip.setAttribute('x', point.x);
+                tooltip.setAttribute('y', point.y - 12);
+                tooltip.classList.add('chart-tooltip');
+                tooltip.textContent = `${point.value}%`;
+
+                const text = document.createElementNS(svgNs, 'text');
+                text.setAttribute('x', point.x);
+                text.setAttribute('y', height - padding.bottom + 18);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '7');
+                text.setAttribute('fill', 'var(--muted-color)');
+                text.textContent = point.label;
+
+                group.appendChild(hitArea);
+                group.appendChild(tooltip);
+                group.appendChild(circle);
+                group.appendChild(text);
+                svg.appendChild(group);
+            });
+
+            container.appendChild(svg);
+        }
+
+        function renderEventTypeDistributionChart() {
+            const container = document.getElementById('event-type-distribution-chart');
+            if (!container) return;
+
+            container.innerHTML = '';
+            const chartContainer = document.createElement('div');
+            chartContainer.className = 'pie-chart-container';
+
+            const svgNs = 'http://www.w3.org/2000/svg';
+            const svg = document.createElementNS(svgNs, 'svg');
+            svg.setAttribute('viewBox', '0 0 36 36');
+            svg.classList.add('pie-chart-svg');
+
+            const legendContainer = document.createElement('div');
+            legendContainer.className = 'pie-chart-legend';
+
+            const total = eventTypeDistributionData.reduce((sum, item) => sum + item.count, 0);
+            let accumulatedPercentage = 0;
+
+            eventTypeDistributionData.forEach(item => {
+                const percentage = (item.count / total) * 100;
+
+                // Create pie slice
+                const slice = document.createElementNS(svgNs, 'circle');
+                slice.classList.add('pie-slice');
+                slice.setAttribute('cx', '18');
+                slice.setAttribute('cy', '18');
+                slice.setAttribute('r', '15.9154943092'); // (100 / (2 * PI))
+                slice.setAttribute('fill', 'transparent');
+                slice.setAttribute('stroke', item.color);
+                slice.setAttribute('stroke-width', '3.8');
+                slice.setAttribute('stroke-dasharray', `${percentage} ${100 - percentage}`);
+                slice.setAttribute('stroke-dashoffset', `-${accumulatedPercentage}`);
+
+                const title = document.createElementNS(svgNs, 'title');
+                title.textContent = `${item.type}: ${percentage.toFixed(1)}%`;
+                slice.appendChild(title);
+
+                svg.appendChild(slice);
+
+                // Create legend item
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+
+                const dot = document.createElement('div');
+                dot.className = 'legend-dot';
+                dot.style.backgroundColor = item.color;
+
+                const label = document.createElement('span');
+                label.textContent = `${item.type} (${percentage.toFixed(0)}%)`;
+
+                legendItem.append(dot, label);
+                legendContainer.appendChild(legendItem);
+
+                // Add hover effect
+                legendItem.addEventListener('mouseenter', () => {
+                    slice.style.transform = 'scale(1.05)';
+                });
+                legendItem.addEventListener('mouseleave', () => { 
+                    slice.style.transform = 'scale(1)';
+                });
+                slice.addEventListener('mouseenter', () => {
+                    legendItem.style.fontWeight = '600';
+                });
+                slice.addEventListener('mouseleave', () => {
+                    legendItem.style.fontWeight = 'normal';
+                });
+
+
+                accumulatedPercentage += percentage;
+            });
+
+            chartContainer.appendChild(svg);
+            chartContainer.appendChild(legendContainer);
+            container.appendChild(chartContainer);
+        }
+
+        function renderViewingsStatusChart() {
+            const container = document.getElementById('viewings-status-chart');
+            if (!container) return;
+
+            // Procesare date
+            const now = new Date();
+            const sevenDaysFromNow = new Date();
+            sevenDaysFromNow.setDate(now.getDate() + 8); // Include today + 7 days
+            now.setHours(0, 0, 0, 0);
+
+            const monthMap = { 'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5, 'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'noi': 10, 'dec': 11 };
+
+            const viewingsInNext7Days = viewings.filter(viewing => {
+                const parts = viewing.date.split(' ');
+                if (parts.length < 3) return false;
+                const day = parseInt(parts[0], 10);
+                const month = monthMap[parts[1].toLowerCase()];
+                const year = parseInt(parts[2], 10);
+                if (isNaN(day) || month === undefined || isNaN(year)) return false;
+                const visitDate = new Date(year, month, day);
+                return visitDate >= now && visitDate <= sevenDaysFromNow;
+            });
+
+            const statusCounts = viewingsInNext7Days.reduce((acc, viewing) => {
+                acc[viewing.status] = (acc[viewing.status] || 0) + 1;
+                return acc;
+            }, {});
+
+            const chartData = Object.entries(statusCounts).map(([status, count]) => ({
+                type: statusMeta[status]?.label || status,
+                count: count,
+                color: statusMeta[status]?.color || '#cccccc'
+            }));
+
+            container.innerHTML = '';
+            if (chartData.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--muted-color); padding: 20px 0;">Nicio vizionare în următoarele 7 zile.</p>';
+                return;
+            }
+
+            const chartContainer = document.createElement('div');
+            chartContainer.className = 'pie-chart-container';
+
+            const svgNs = 'http://www.w3.org/2000/svg';
+            const svg = document.createElementNS(svgNs, 'svg');
+            svg.setAttribute('viewBox', '0 0 36 36');
+            svg.classList.add('pie-chart-svg');
+
+            const legendContainer = document.createElement('div');
+            legendContainer.className = 'pie-chart-legend';
+
+            const total = chartData.reduce((sum, item) => sum + item.count, 0);
+            let accumulatedPercentage = 0;
+
+            chartData.forEach(item => {
+                const percentage = (item.count / total) * 100;
+
+                const slice = document.createElementNS(svgNs, 'circle');
+                slice.classList.add('pie-slice');
+                slice.setAttribute('cx', '18');
+                slice.setAttribute('cy', '18');
+                slice.setAttribute('r', '15.9154943092');
+                slice.setAttribute('fill', 'transparent');
+                slice.setAttribute('stroke', item.color);
+                slice.setAttribute('stroke-width', '3.8');
+                slice.setAttribute('stroke-dasharray', `${percentage} ${100 - percentage}`);
+                slice.setAttribute('stroke-dashoffset', `-${accumulatedPercentage}`);
+
+                const title = document.createElementNS(svgNs, 'title');
+                title.textContent = `${item.type}: ${item.count} (${percentage.toFixed(1)}%)`;
+                slice.appendChild(title);
+                svg.appendChild(slice);
+
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                const dot = document.createElement('div');
+                dot.className = 'legend-dot';
+                dot.style.backgroundColor = item.color;
+                const label = document.createElement('span');
+                label.textContent = `${item.type} (${item.count})`;
+                legendItem.append(dot, label);
+                legendContainer.appendChild(legendItem);
+
+                legendItem.addEventListener('mouseenter', () => slice.style.transform = 'scale(1.05)');
+                legendItem.addEventListener('mouseleave', () => slice.style.transform = 'scale(1)');
+                slice.addEventListener('mouseenter', () => legendItem.style.fontWeight = '600');
+                slice.addEventListener('mouseleave', () => legendItem.style.fontWeight = 'normal');
+
+                accumulatedPercentage += percentage;
+            });
+
+            chartContainer.appendChild(svg);
+            chartContainer.appendChild(legendContainer);
+            container.appendChild(chartContainer);
+        }
+
+        // NOU: Funcție pentru a naviga la un booking specific și a-l evidenția
+        function navigateToBooking(clientIdentifier) {
+            activatePage('bookings');
+
+            // Așteaptă ca pagina să fie vizibilă, apoi evidențiază rândul
+            setTimeout(() => {
+                const tableBody = document.getElementById('bookings-table-body');
+                if (!tableBody) return;
+
+                const targetRow = tableBody.querySelector(`tr[data-identifier="${clientIdentifier}"]`);
+                if (targetRow) {
+                    // Elimină highlight-ul de la alte rânduri, dacă există
+                    tableBody.querySelectorAll('.is-highlighted').forEach(row => row.classList.remove('is-highlighted'));
+
+                    targetRow.classList.add('is-highlighted');
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100); // Mic delay pentru a asigura randarea
+        }
+
+        // NOU: Funcție pentru a naviga la o vizionare specifică
+        function navigateToViewing(clientIdentifier) {
+            activatePage('viewings');
+
+            setTimeout(() => {
+                const tableBody = document.getElementById('viewings-table-body');
+                if (!tableBody) return;
+
+                const targetRow = tableBody.querySelector(`tr[data-identifier="${clientIdentifier}"]`);
+                if (targetRow) {
+                    tableBody.querySelectorAll('.is-highlighted').forEach(row => row.classList.remove('is-highlighted'));
+
+                    targetRow.classList.add('is-highlighted');
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+
+
+        function initializeDynamicContent() {
+            const lastSyncEl = document.getElementById('last-sync-time');
+            if (lastSyncEl) {
+                lastSyncEl.textContent = `Ultima sincronizare: ${formatDate(today)}, ${formatTime(today)}`;
+            }
+
+            const availabilityWeekEl = document.getElementById('availability-week-range');
+            if (availabilityWeekEl) {
+                availabilityWeekEl.textContent = `Intervale pentru ${formatDate(today)} - ${formatDate(addDays(6))}`;
+            }
+        }
+
+        initializeDynamicContent();
         renderOverviewLists();
         renderBookingsStatusCards();
         renderBookingsTable();
-        renderVisitsTable();
+        renderViewingsTable();
         renderAvailabilityGrid();
         renderVenueCards();
         renderCommunications();
+        renderMonthlyOccupancyChart();
+        renderEventTypeDistributionChart();
+        renderViewingsStatusChart();
 
         document.getElementById('bookings-venue-filter')?.addEventListener('change', renderBookingsTable);
         document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
-        document.getElementById('visits-venue-filter')?.addEventListener('change', renderVisitsTable);
+        document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
+
+        // NOU: Event listeners pentru navigarea în calendar
+        document.getElementById('prev-week-btn')?.addEventListener('click', () => {
+            currentWeekOffset--;
+            renderAvailabilityGrid();
+        });
+        document.getElementById('next-week-btn')?.addEventListener('click', () => {
+            currentWeekOffset++;
+            renderAvailabilityGrid();
+        });
     });
     </script>
 </body>
