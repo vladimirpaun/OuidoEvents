@@ -594,12 +594,6 @@
             font-weight: 600;
         }
 
-        .availability-slot[data-status="visit"] {
-            background: rgba(111, 66, 193, 0.14);
-            color: #5b21b6;
-            font-weight: 600;
-        }
-
         .availability-slot[data-status="open"] {
             color: var(--muted-color);
         }
@@ -1171,10 +1165,9 @@
                         <span class="panel-meta">Folosită în matrixul de disponibilitate</span>
                     </header>
                     <div class="availability-legend">
-                        <span class="legend-item"><span class="legend-dot" style="background:#0052D4"></span> Booking confirmat</span>
+                        <span class="legend-item"><span class="legend-dot" style="background:#0052D4"></span> Rezervat</span>
                         <span class="legend-item"><span class="legend-dot" style="background:#28A745"></span> Blocaj intern</span>
                         <span class="legend-item"><span class="legend-dot" style="background:#FFC107"></span> Hold temporar</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#6F42C1"></span> Vizită programată</span>
                         <span class="legend-item"><span class="legend-dot" style="background:#CBD5E1"></span> Liber</span>
                     </div>
                 </div>
@@ -1207,35 +1200,6 @@
                     </div>
                 </div>
 
-                <div class="panel">
-                    <header>
-                        <h2>Alerte disponibilitate</h2>
-                        <span class="panel-meta">Acțiuni recomandate</span>
-                    </header>
-                    <div class="list">
-                        <div class="list-item">
-                            <div>
-                                <strong>Casa Miraval</strong>
-                                <span>Blocaj intern vineri 21 iunie – confirmă dacă se eliberează pentru o cerere corporate.</span>
-                            </div>
-                            <span class="status-chip" data-status="awaiting">Verifică</span>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <strong>Forest Lodge</strong>
-                                <span>Două vizionări în aceeași zi. Alocă echipă suplimentară.</span>
-                            </div>
-                            <span class="status-chip" data-status="pending">Planifică resurse</span>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <strong>Urban Loft</strong>
-                                <span>Sâmbătă liberă pe 22 iunie – propune în newsletter.</span>
-                            </div>
-                            <span class="status-chip" data-status="confirmed">Trimite promo</span>
-                        </div>
-                    </div>
-                </div>
             </section>
 
             <section class="crm-page" data-page="venues" id="venues">
@@ -1529,7 +1493,7 @@
         // NOU: Matrice de disponibilitate generată dinamic
         let availabilityMatrix = [];
         function generateAvailabilityMatrix() {
-            const statuses = ['booked', 'hold', 'visit', 'open', 'open', 'open'];
+            const statuses = ['booked', 'hold', 'open', 'open', 'open'];
             availabilityMatrix = venues.slice(0, 5).map(venue => {
                 const days = Array.from({ length: 7 }, () => statuses[Math.floor(Math.random() * statuses.length)]);
                 return {
@@ -1845,7 +1809,6 @@
             const labels = {
                 booked: 'Rezervat',
                 hold: 'Hold',
-                visit: 'Vizionare',
                 open: 'Liber'
             };
 
