@@ -368,6 +368,43 @@
       font-size: 1.4rem;
       font-weight: 600;
     }
+    
+    /* NOU: Stiluri pentru graficele de ocupare */
+    .crm-occupancy-chart {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-around;
+      align-items: center;
+      min-height: 260px;
+    }
+
+    .crm-donut-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-width: 120px;
+    }
+
+    .crm-donut {
+      --occupied-deg: 0deg;
+      --occupied-color: var(--primary-color);
+      --available-color: rgba(0, 82, 212, 0.08);
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: conic-gradient(var(--occupied-color) var(--occupied-deg), var(--available-color) 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--dark-color);
+      font-weight: 700;
+    }
+
+    .crm-donut::after { content: attr(data-percentage) '%'; font-size: 1.1rem; }
+    .crm-donut-label { font-size: 0.9rem; color: var(--gray-color); text-align: center; }
 
     .crm-notification-list {
       display: flex;
@@ -1138,6 +1175,12 @@
               </div>
               <div class="crm-chart" id="visits-trend-chart" role="img" aria-label="Grafic evoluție vizite"></div>
             </section>
+            <section class="crm-card">
+              <div class="crm-card-header">
+                <h2 class="crm-card-title">Rata de ocupare</h2>
+              </div>
+              <div id="occupancy-pie-chart"></div>
+            </section>
         </div>
       </section>
 
@@ -1350,6 +1393,12 @@
         { label: 'Sep', value: 28 }, { label: 'Oct', value: 30 }, { label: 'Nov', value: 27 }, { label: 'Dec', value: 32 }
     ];
     
+    const occupancyForecast = [
+        { month: 'Octombrie', occupiedDays: 18, totalDays: 31 },
+        { month: 'Noiembrie', occupiedDays: 20, totalDays: 30 },
+        { month: 'Decembrie', occupiedDays: 16, totalDays: 31 }
+    ];
+    
     const availabilityData = {
         1: { blockedDates: ['2025-11-15'], visitSlots: { 'Luni': [{ start: '10:00', end: '12:00' }, { start: '14:00', end: '17:00' }], 'Miercuri': [{ start: '10:00', end: '17:00' }] } },
         2: { blockedDates: ['2025-12-24', '2025-12-25'], visitSlots: { 'Marți': [{ start: '09:00', end: '13:00' }] } }
@@ -1521,6 +1570,40 @@
         container.appendChild(svg);
       }
 
+      function renderOccupancyChart() {
+        const container = document.getElementById('occupancy-pie-chart');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (!occupancyForecast.length) {
+          container.innerHTML = '<p style="text-align:center; color: var(--muted-color);">Date insuficiente.</p>';
+          return;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'crm-occupancy-chart';
+        const colors = ['var(--primary-color)', 'var(--secondary-color)', '#28a745'];
+
+        occupancyForecast.forEach((entry, index) => {
+          const ratio = entry.totalDays > 0 ? entry.occupiedDays / entry.totalDays : 0;
+          const percentage = Math.round(ratio * 100);
+          const color = colors[index % colors.length];
+
+          const donutCard = document.createElement('div');
+          donutCard.className = 'crm-donut-card';
+
+          const donut = document.createElement('div');
+          donut.className = 'crm-donut';
+          donut.dataset.percentage = percentage;
+          donut.style.setProperty('--occupied-color', color);
+          donut.style.setProperty('--occupied-deg', `${(ratio * 360).toFixed(2)}deg`);
+
+          donutCard.innerHTML = `<p class="crm-donut-label">${entry.month}</p>`;
+          donutCard.prepend(donut);
+          wrapper.appendChild(donutCard);
+        });
+        container.appendChild(wrapper);
+      }
 
       function formatStatusBadge(status) {
         const normalized = status.toLowerCase();
@@ -1771,6 +1854,7 @@
         renderRequestsTable('bookings-table-body', eventRequests, 'bookings-venue-filter');
         renderRequestsTable('visits-table-body', visitRequests, 'visits-venue-filter');
         renderVisitsTrendChart();
+        renderOccupancyChart();
         updateAvailabilityPage();
         
         const initialHash = window.location.hash.slice(1) || 'dashboard';
