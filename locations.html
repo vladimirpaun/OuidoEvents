@@ -195,7 +195,11 @@
             .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 60px; }
             .search-group:nth-child(2n-1) { border-right: 1px solid var(--border-color); }
             .search-group:nth-child(3), .search-group:nth-child(4) { border-bottom: none; }
-            .search-group input, .search-group select { text-align: left; color: var(--gray-color); }
+            /* NOU: Asigură alinierea și vizibilitatea placeholder-ului pe mobil/Safari */
+            .search-group input, .search-group select, .search-group input.flatpickr-input {
+                text-align: left;
+                color: var(--gray-color);
+            }
             .guests-group { border-bottom: none; }
             /* NOU: Asigură vizibilitatea placeholder-ului pe Safari/mobil */
             .search-group input::placeholder {
