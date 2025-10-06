@@ -365,6 +365,38 @@
             background-color: rgba(0, 82, 212, 0.04);
         }
 
+        /* NOU: Stil pentru legenda statusurilor */
+        .bookings-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px 24px;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .bookings-legend-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .bookings-legend-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bookings-legend-header strong {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .bookings-legend-description {
+            font-size: 0.65rem;
+            color: var(--muted-color);
+            padding-left: 18px; /* Aliniază cu textul de sus */
+        }
+
         .list-item span {
             color: var(--muted-color);
             font-size: 0.85rem;
@@ -402,6 +434,18 @@
             background: rgba(220, 38, 38, 0.15);
             color: #b91c1c;
         }
+
+        /* NOU: Stiluri pentru statusurile extinse */
+        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+        .status-chip[data-status="viewing_scheduled"] { background: rgba(20, 184, 166, 0.15); color: #0d9488; }
+        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+
+        /* Ajustare culori existente pentru consistență */
+        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+        .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+        .status-chip[data-status="confirmed"] { background: rgba(22, 163, 74, 0.15); color: #15803d; }
+        .status-chip[data-status="declined"] { background: rgba(220, 38, 38, 0.15); color: #b91c1c; }
+
 
         .grid-three-columns {
             display: grid;
@@ -823,6 +867,15 @@
             .right-chart-stack {
                 gap: 28px;
             }
+            /* NOU: Grid pentru bookings pe mobil */
+            .bookings-content-grid {
+                grid-template-columns: 1fr;
+                gap: 36px;
+            }
+            .bookings-legend {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 12px;
+            }
         }
     </style>
 </head>
@@ -958,16 +1011,15 @@
                     </article>
                     <article class="panel">
                         <header>
-                            <h2>Evenimente confirmate (următoarele 10 zile)</h2>
-                        </header>
-                        <div class="list" id="overview-events-list"></div>
-                    </article>
-                    <!-- NOU: Panou pentru vizionări -->
-                    <article class="panel">
-                        <header>
                             <h2>Programări vizionări</h2>
                         </header>
                         <div class="list" id="overview-viewings-list"></div>
+                    </article>
+                    <article class="panel">
+                        <header>
+                            <h2>Evenimente confirmate (următoarele 10 zile)</h2>
+                        </header>
+                        <div class="list" id="overview-events-list"></div>
                     </article>
                 </div>
 
@@ -1022,17 +1074,12 @@
                         <h2>Toate cererile</h2>
                         <span class="panel-meta">Actualizează statusul pe măsură ce confirmi cu echipa ta</span>
                     </header>
+                    <div class="bookings-legend" id="bookings-status-legend"></div>
                     <div class="filter-bar">
                         <label for="bookings-venue-filter">Locație:</label>
                         <select id="bookings-venue-filter"></select>
                         <label for="bookings-status-filter">Status:</label>
-                        <select id="bookings-status-filter">
-                            <option value="all">Toate</option>
-                            <option value="pending">În așteptare</option>
-                            <option value="awaiting">Necesită confirmare</option>
-                            <option value="confirmed">Confirmat</option>
-                            <option value="declined">Respins</option>
-                        </select>
+                        <select id="bookings-status-filter"></select>
                     </div>
                     <div class="table-wrapper">
                         <table class="crm-table" aria-describedby="bookings-table-caption">
@@ -1415,11 +1462,14 @@
         const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
         const bookings = [
-            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'awaiting', action: 'Confirmați meniu' },
+            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'pending', action: 'Confirmați meniu' },
             { client: 'Studio Creativ', event: 'Lansare produs', venue: 'Urban Loft', date: formatDate(addDays(4)), guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
             { client: 'Mihaela & Vlad', event: 'Petrecere botez', venue: 'Casa Miraval', date: formatDate(addDays(15)), guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
-            { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'awaiting', action: 'Planificați tur virtual' },
-            { client: 'EMEA Sales Team', event: 'Conferință anuală', venue: 'Villa Lac', date: formatDate(addDays(28)), guests: 220, status: 'confirmed', action: 'Coordonați furnizori' }
+            { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'offer_sent', action: 'Planificați tur virtual' },
+            { client: 'EMEA Sales Team', event: 'Conferință anuală', venue: 'Villa Lac', date: formatDate(addDays(28)), guests: 220, status: 'confirmed', action: 'Coordonați furnizori' },
+            { client: 'Digital Nomads', event: 'Workshop', venue: 'Urban Loft', date: formatDate(addDays(12)), guests: 40, status: 'viewing_scheduled', action: 'Pregătire tur' },
+            { client: 'Art Gallery', event: 'Vernisaj', venue: 'Hub Creativ', date: formatDate(addDays(35)), guests: 100, status: 'offer_sent', action: 'Așteaptă răspuns' },
+            { client: 'Music Fest', event: 'Festival', venue: 'Forest Lodge', date: formatDate(addDays(60)), guests: 500, status: 'cancelled', action: 'Anulat de client' }
         ];
 
         const viewings = [
@@ -1453,7 +1503,8 @@
             .map(v => ({
                 client: v.client,
                 venue: v.venue,
-                date: v.date
+                date: v.date,
+                status: v.status
             }));
         const venues = [
             {
@@ -1526,10 +1577,12 @@
 
 
         const statusMeta = {
-            pending: { label: 'În așteptare', className: 'pending', color: '#b7791f' },
-            awaiting: { label: 'Necesită confirmare', className: 'awaiting', color: '#00B4D8' },
-            confirmed: { label: 'Confirmat', className: 'confirmed', color: '#0a7d5c' },
-            declined: { label: 'Respins', className: 'declined', color: '#b91c1c' }
+            'pending': { label: 'Cerere disponibilitate', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
+            'offer_sent': { label: 'Ofertă trimisă', className: 'offer_sent', color: '#7c3aed', description: 'Ofertă expediată clientului' },
+            'viewing_scheduled': { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#0d9488', description: 'Vizionare confirmată' },
+            'confirmed': { label: 'Confirmat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans incasat' },
+            'rejected': { label: 'Respins', className: 'rejected', color: '#b91c1c', description: 'Cerere refuzată' },
+            'cancelled': { label: 'Anulat', className: 'cancelled', color: '#dc2626', description: 'Clientul a renunțat' }
         };
 
         const venuesSelect = new Set(bookings.map(item => item.venue));
@@ -1556,6 +1609,19 @@
 
         populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort());
         populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
+        
+        // NOU: Populează filtrul de status pentru bookings
+        const bookingStatusFilter = document.getElementById('bookings-status-filter');
+        if (bookingStatusFilter) {
+            const statusOptions = Object.entries(statusMeta).map(([key, value]) => ({ value: key, text: value.label }));
+            populateSelect(bookingStatusFilter, statusOptions.map(s => s.value).sort((a, b) => statusMeta[a].label.localeCompare(statusMeta[b].label)), true);
+            // Înlocuiește valorile cu textul corespunzător
+            Array.from(bookingStatusFilter.options).forEach(option => {
+                if (option.value !== 'all') {
+                    option.textContent = statusMeta[option.value].label;
+                }
+            });
+        }
 
         function createStatusChip(status) {
             const meta = statusMeta[status];
@@ -1564,6 +1630,35 @@
             span.dataset.status = meta ? meta.className : 'pending';
             span.textContent = meta ? meta.label : status;
             return span;
+        }
+        
+        // NOU: Funcție pentru a randa legenda statusurilor
+        function renderBookingStatusLegend() {
+            const container = document.getElementById('bookings-status-legend');
+            if (!container) return;
+
+            container.innerHTML = '';
+            Object.values(statusMeta).forEach(meta => {
+                const item = document.createElement('div');
+                item.className = 'bookings-legend-item';
+
+                const header = document.createElement('div');
+                header.className = 'bookings-legend-header';
+
+                const dot = document.createElement('span');
+                dot.className = 'legend-dot';
+                dot.style.borderRadius = '50%';
+                dot.style.backgroundColor = meta.color;
+                header.innerHTML = `<strong>${meta.label}</strong>`;
+                header.prepend(dot);
+
+                const description = document.createElement('p');
+                description.className = 'bookings-legend-description';
+                description.textContent = meta.description;
+
+                item.append(header, description);
+                container.appendChild(item);
+            });
         }
 
         function renderOverviewLists() {
@@ -1619,10 +1714,12 @@
                     const detailsDiv = document.createElement('div');
                     detailsDiv.innerHTML = `<strong>${item.client}</strong> <span>${item.venue} · ${item.date}</span>`;
 
+                    const chip = createStatusChip(item.status);
+
                     listItem.addEventListener('click', () => {
                         navigateToViewing(item.client);
                     });
-                    listItem.append(detailsDiv);
+                    listItem.append(detailsDiv, chip);
                     viewingsList.appendChild(listItem);
                 });
             }
@@ -1670,13 +1767,15 @@
 
                     const actions = document.createElement('div');
                     actions.className = 'table-actions';
-                    const confirmBtn = document.createElement('button');
-                    confirmBtn.textContent = 'Confirmă';
-                    const noteBtn = document.createElement('button');
-                    noteBtn.textContent = 'Adaugă notă';
-                    const shareBtn = document.createElement('button');
-                    shareBtn.textContent = 'Trimite ofertă';
-                    actions.append(confirmBtn, noteBtn, shareBtn);
+                    const detailsBtn = document.createElement('button');
+                    detailsBtn.textContent = 'Vezi detalii';
+                    const confirmAvailabilityBtn = document.createElement('button');
+                    confirmAvailabilityBtn.textContent = 'Confirma disponibilitatea';
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.textContent = 'Respinge';
+                    const confirmedBtn = document.createElement('button');
+                    confirmedBtn.textContent = 'Confirmat';
+                    actions.append(detailsBtn, confirmAvailabilityBtn, confirmedBtn, cancelBtn);
                     actionsCell.appendChild(actions);
                 });
         }
@@ -2209,6 +2308,7 @@
         initializeDynamicContent();
         renderOverviewLists();
         renderBookingsStatusCards();
+        renderBookingStatusLegend();
         renderBookingsTable();
         renderViewingsTable();
         renderAvailabilityGrid();
