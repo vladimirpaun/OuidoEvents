@@ -77,8 +77,21 @@
 
   function handleRoleSelection(event) {
     const value = event.target.value;
-    if (value === 'owner') {
-      window.location.href = 'owner-crm.html';
+    if (!value || value === '#') {
+      return;
+    }
+
+    const roleRoutes = {
+      owner: 'owner-crm.html',
+      'owner-crm.html': 'owner-crm.html',
+      client: 'client-dashboard.html',
+      'client-dashboard.html': 'client-dashboard.html',
+    };
+
+    const targetUrl = roleRoutes[value];
+
+    if (targetUrl) {
+      window.location.href = targetUrl;
     }
   }
 
