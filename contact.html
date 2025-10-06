@@ -1,165 +1,304 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ouidoEvents - Creează Cont</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <style>
-        :root {
-            --primary-color: #0052D4;
-            --secondary-color: #4364F7;
-            --header-bg: #ffffff;
-            --dark-color: #1a202c;
-            --gray-color: #555;
-            --light-gray-color: #f0f2f5;
-            --bg-color: #f8f9fa;
-            --white-color: #ffffff;
-            --border-color: #e5eaf1;
-            --shadow-color: rgba(0, 82, 212, 0.1);
-            --border-radius: 12px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ouidoEvents · Contactează-ne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #0052d4;
+      --secondary-color: #4364f7;
+      --accent-color: #5ddcff;
+      --header-bg: linear-gradient(to right, #f8fbff, #eef5ff);
+      --dark-color: #1a202c;
+      --gray-color: #555555;
+      --muted-color: #7a7f87;
+      --light-gray-color: #f0f2f5;
+      --bg-color: #f8f9fa;
+      --white-color: #ffffff;
+      --border-color: #e5eaf1;
+      --shadow-color: rgba(0, 82, 212, 0.1);
+      --border-radius: 12px;
+      --transition-base: 0.3s ease;
+      --header-height: 74px;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    * {
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Stiluri pentru pagina de creare cont */
-        .account-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 80px 20px;
-        }
-        .account-form-container {
-            background-color: var(--white-color);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 25px var(--shadow-color);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-        .account-form-container h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-        }
-        .account-form-container p {
-            color: var(--gray-color);
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.3s ease;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        .account-form-container .cta-button {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .login-link {
-            margin-top: 25px;
-            font-size: 0.95rem;
-        }
-        .login-link a {
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        /* NOU: Stiluri pentru selectarea tipului de cont */
-        .account-type-group > label {
-            margin-bottom: 12px;
-            text-align: left;
-        }
-        .radio-options {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid var(--border-color);
-            padding: 12px 15px;
-            border-radius: 8px;
-            flex: 1;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        .radio-option:hover { border-color: var(--secondary-color); }
-        .radio-option input[type="radio"] { width: auto; }
-        .radio-option label { margin-bottom: 0; font-weight: 500; cursor: pointer; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: var(--dark-color);
+      line-height: 1.6;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-    </style>
+    main {
+      flex: 1;
+      padding: 80px 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .page-header p {
+      color: var(--gray-color);
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1rem;
+    }
+
+    .contact-wrapper {
+      display: grid;
+      gap: 50px;
+      grid-template-columns: 1fr 1fr;
+      background-color: var(--white-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 25px var(--shadow-color);
+      padding: 40px 50px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .contact-info h2 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .contact-info p {
+      color: var(--gray-color);
+      font-size: 1rem;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .contact-details-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      transition: border-color var(--transition-base), transform var(--transition-base);
+    }
+
+    .contact-details-item:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .contact-details-item svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--primary-color);
+      flex-shrink: 0;
+    }
+
+    .contact-details-item span {
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+
+    .contact-form form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--dark-color);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color var(--transition-base), box-shadow var(--transition-base);
+      background-color: var(--white-color);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 100, 247, 0.15);
+    }
+
+    .form-group textarea {
+      min-height: 160px;
+      resize: vertical;
+    }
+
+    .cta-button {
+      align-self: flex-start;
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+      color: var(--white-color);
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--shadow-color);
+    }
+
+    .support-highlight {
+      display: grid;
+      gap: 20px;
+      margin-top: 40px;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background: linear-gradient(135deg, rgba(67, 100, 247, 0.08), rgba(93, 220, 255, 0.1));
+      border: 1px solid rgba(67, 100, 247, 0.2);
+    }
+
+    .support-highlight h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .support-highlight p {
+      color: var(--gray-color);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 992px) {
+      main {
+        padding: 60px 0;
+      }
+
+      .contact-wrapper {
+        grid-template-columns: 1fr;
+        padding: 32px 28px;
+      }
+
+      .contact-info h2 {
+        font-size: 1.75rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .contact-wrapper {
+        padding: 28px 22px;
+      }
+
+      .contact-details-item {
+        padding: 14px 16px;
+      }
+
+      .cta-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
-<body>
-    <div data-include="header.html"></div>
-    <div data-include="mobile-menu.html"></div>
+<body data-page="contact-us">
+  <div data-include="header.html"></div>
+  <div data-include="mobile-menu.html"></div>
 
-    <main>
-        <section class="account-section">
-            <div class="account-form-container">
-                <h1>Creează un cont nou</h1>
-                <p>Pentru a solicita disponibilitatea și a gestiona rezervările.</p>
-                <form>
-                    <div class="form-group account-type-group">
-                        <label>Tipul contului</label>
-                        <div class="radio-options">
-                            <div class="radio-option">
-                                <input type="radio" id="type-client" name="account-type" value="client" checked>
-                                <label for="type-client">Sunt Client</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="type-venue" name="account-type" value="venue">
-                                <label for="type-venue">Sunt Locație</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="full-name">Nume și Prenume</label>
-                        <input type="text" id="full-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Adresă de email</label>
-                        <input type="email" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Parolă</label>
-                        <input type="password" id="password" required>
-                    </div>
-                    <button type="submit" class="cta-button">Creează cont</button>
-                </form>
-                <p class="login-link">Ai deja cont? <a href="login.html">Autentifică-te</a></p>
+  <main>
+    <div class="container">
+      <header class="page-header">
+        <h1>Suntem aici pentru tine</h1>
+        <p>Îți stăm la dispoziție pentru întrebări, propuneri sau colaborări. Completează formularul sau folosește detaliile de mai jos.</p>
+      </header>
+
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <h2>Contactează-ne</h2>
+          <p>Ai o întrebare sau o sugestie? Scrie-ne și îți vom răspunde în cel mai scurt timp.</p>
+          <div class="contact-details">
+            <div class="contact-details-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path></svg>
+              <span>contact@ouidoevents.com</span>
             </div>
-        </section>
-    </main>
+            <div class="contact-details-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg>
+              <span>+40 712 345 678</span>
+            </div>
+          </div>
 
-    <div data-include="footer.html"></div>
+          <div class="support-highlight">
+            <h3>Program de suport</h3>
+            <p>Ne poți contacta telefonic de luni până vineri, între 09:00 și 18:00. Pentru solicitări urgente, trimite-ne un email și te contactăm în maxim 24 de ore.</p>
+          </div>
+        </div>
 
-    <script src="main.js"></script>
+        <div class="contact-form">
+          <form>
+            <div class="form-group">
+              <label for="name">Nume</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="message">Mesajul tău</label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="cta-button">Trimite mesajul</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="footer.html"></div>
+
+  <script src="main.js"></script>
 </body>
 </html>
