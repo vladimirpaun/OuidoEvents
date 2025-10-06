@@ -223,10 +223,6 @@
     }
 
     .crm-main {
-      margin-left: auto;
-      margin-right: auto;
-      width: min(1200px, calc(100% - 80px));
-      padding: 48px clamp(24px, 5vw, 60px) 72px;
       min-height: calc(100vh - var(--header-height));
       display: flex;
       flex-direction: column;
@@ -1446,47 +1442,83 @@
       function renderVisitsTrendChart() {
         const container = document.getElementById('visits-trend-chart');
         if (!container) return;
+
         container.innerHTML = '';
-        if (!monthlyVisitTrend.length) {
-          container.textContent = 'Nu există date.';
+        if (monthlyVisitTrend.length < 2) {
+          container.innerHTML = '<p style="text-align:center; color: var(--muted-color);">Date insuficiente pentru grafic.</p>';
           return;
         }
-        
+
         const svgNs = 'http://www.w3.org/2000/svg';
         const svg = document.createElementNS(svgNs, 'svg');
-        svg.setAttribute('viewBox', `0 0 600 260`);
-        const maxValue = Math.max(...monthlyVisitTrend.map(item => item.value));
+        const width = 600;
+        const height = 260;
+        const padding = { top: 20, right: 20, bottom: 30, left: 30 };
+        const chartWidth = width - padding.left - padding.right;
+        const chartHeight = height - padding.top - padding.bottom;
+
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svg.style.fontFamily = 'inherit';
+
+        const maxValue = Math.max(...monthlyVisitTrend.map(item => item.value)) * 1.1; // Add 10% buffer
+
         const points = monthlyVisitTrend.map((item, index) => {
-            const x = 50 + index * (500 / (monthlyVisitTrend.length - 1));
-            const y = 220 - (item.value / maxValue) * 180;
-            return { x, y, label: item.label };
+          const x = padding.left + (index / (monthlyVisitTrend.length - 1)) * chartWidth;
+          const y = padding.top + chartHeight - (item.value / maxValue) * chartHeight;
+          return { x, y, label: item.label };
         });
-        
+
+        // Gradient definition
+        const defs = document.createElementNS(svgNs, 'defs');
+        const linearGradient = document.createElementNS(svgNs, 'linearGradient');
+        linearGradient.id = 'area-gradient';
+        linearGradient.setAttribute('x1', '0%');
+        linearGradient.setAttribute('y1', '0%');
+        linearGradient.setAttribute('x2', '0%');
+        linearGradient.setAttribute('y2', '100%');
+        linearGradient.innerHTML = `
+          <stop offset="0%" style="stop-color:rgba(0, 82, 212, 0.2)" />
+          <stop offset="100%" style="stop-color:rgba(0, 82, 212, 0)" />
+        `;
+        defs.appendChild(linearGradient);
+        svg.appendChild(defs);
+
+        // Area path
+        const areaPath = document.createElementNS(svgNs, 'path');
+        const areaPoints = `M${points[0].x},${height - padding.bottom} ` + points.map(p => `L${p.x},${p.y}`).join(' ') + ` L${points[points.length - 1].x},${height - padding.bottom} Z`;
+        areaPath.setAttribute('d', areaPoints);
+        areaPath.setAttribute('fill', 'url(#area-gradient)');
+        svg.appendChild(areaPath);
+
+        // Line path
         const polyline = document.createElementNS(svgNs, 'polyline');
         polyline.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
         polyline.setAttribute('fill', 'none');
         polyline.setAttribute('stroke', 'var(--primary-color)');
         polyline.setAttribute('stroke-width', '3');
+        polyline.setAttribute('stroke-linecap', 'round');
+        polyline.setAttribute('stroke-linejoin', 'round');
         svg.appendChild(polyline);
 
+        // Points and labels
         points.forEach(point => {
-            const circle = document.createElementNS(svgNs, 'circle');
-            circle.setAttribute('cx', point.x);
-            circle.setAttribute('cy', point.y);
-            circle.setAttribute('r', '5');
-            circle.setAttribute('fill', 'white');
-            circle.setAttribute('stroke', 'var(--primary-color)');
-            circle.setAttribute('stroke-width', '2');
-            svg.appendChild(circle);
+          const circle = document.createElementNS(svgNs, 'circle');
+          circle.setAttribute('cx', point.x);
+          circle.setAttribute('cy', point.y);
+          circle.setAttribute('r', '5');
+          circle.setAttribute('fill', 'var(--primary-color)');
+          svg.appendChild(circle);
 
-            const text = document.createElementNS(svgNs, 'text');
-            text.setAttribute('x', point.x);
-            text.setAttribute('y', 240);
-            text.setAttribute('text-anchor', 'middle');
-            text.textContent = point.label;
-            svg.appendChild(text);
+          const text = document.createElementNS(svgNs, 'text');
+          text.setAttribute('x', point.x);
+          text.setAttribute('y', height - padding.bottom + 18);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-size', '12');
+          text.setAttribute('fill', 'var(--muted-color)');
+          text.textContent = point.label;
+          svg.appendChild(text);
         });
-        
+
         container.appendChild(svg);
       }
 
