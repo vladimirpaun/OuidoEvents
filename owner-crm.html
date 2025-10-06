@@ -243,6 +243,11 @@
             color: var(--primary-color);
         }
 
+        .crm-button.sm {
+            padding: 6px 16px;
+            font-size: 0.85rem;
+        }
+
         .crm-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 16px 26px -24px rgba(67, 100, 247, 0.8);
@@ -349,6 +354,14 @@
             gap: 16px;
             border-bottom: 1px solid rgba(0, 82, 212, 0.08);
             padding-bottom: 12px;
+        }
+
+        .list-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .list-item:last-child {
@@ -601,33 +614,126 @@
         }
 
         .venue-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 22px;
         }
 
         .venue-card {
-            border: 1px solid rgba(0, 82, 212, 0.12);
-            border-radius: 20px;
-            background: var(--white-color);
-            padding: 22px;
             display: flex;
-            flex-direction: column;
-            gap: 14px;
-            box-shadow: 0 24px 38px -48px rgba(67, 100, 247, 0.75);
+            gap: 24px;
+            align-items: stretch;
+            background: var(--white-color);
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px -32px rgba(67, 100, 247, 0.45);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .venue-card header {
+        .venue-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 28px 45px -28px rgba(67, 100, 247, 0.55);
+        }
+
+        .venue-card-image {
+            width: 240px;
+            min-height: 210px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            background-image: linear-gradient(135deg, rgba(0, 82, 212, 0.18), rgba(67, 100, 247, 0.28));
+        }
+
+        .venue-card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 22px 26px;
+        }
+
+        .venue-card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 12px;
+            gap: 16px;
         }
 
-        .venue-card ul {
-            padding-left: 18px;
+        .venue-card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .venue-card-location {
+            margin: 4px 0 0;
             color: var(--muted-color);
-            font-size: 0.88rem;
+            font-size: 0.92rem;
+        }
+
+        .venue-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            font-size: 0.86rem;
+            color: var(--muted-color);
+        }
+
+        .venue-meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .venue-meta-item svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            opacity: 0.8;
+        }
+
+        .venue-card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .venue-card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .venue-card-actions .crm-button {
+            font-size: 0.85rem;
+            padding: 8px 16px;
+        }
+
+        .venue-card-price {
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .venue-card-price strong {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 960px) {
+            .venue-card {
+                flex-direction: column;
+            }
+
+            .venue-card-image {
+                width: 100%;
+                height: 220px;
+            }
         }
 
         .communications-grid {
@@ -655,8 +761,18 @@
 
         .settings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
             gap: 24px;
+        }
+
+        .settings-card.wide {
+            grid-column: 1 / -1;
+        }
+
+        @media (min-width: 960px) {
+            .settings-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         .settings-card {
@@ -688,15 +804,24 @@
         }
 
         .settings-toggle {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
-            gap: 16px;
+            gap: 24px;
+        }
+
+        .settings-toggle span {
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .settings-toggle input[type="checkbox"] {
+            justify-self: end;
         }
 
         /* NOU: Stiluri pentru graficul interactiv */
         .chart-tooltip {
-            font-size: 0.6rem;
+            font-size: 0.8rem;
             font-weight: 600;
             fill: var(--primary-color);
             text-anchor: middle;
@@ -1007,25 +1132,33 @@
         /* NOU: Grid pentru grafice */
         .chart-grid {
             display: grid;
-            grid-template-columns: 2.5fr 1.5fr; /* MODIFICAT: Alocă mai mult spațiu coloanei din dreapta */
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 28px;
             align-items: stretch; /* NOU: Asigură înălțime egală pentru panouri */
+        }
+
+        @media (max-width: 1080px) {
+            .chart-grid {
+                grid-template-columns: 1fr; /* Responsiv: graficele se pilează pe verticală */
+            }
         }
 
         /* NOU: Stiluri pentru Pie Chart */
         .pie-chart-container {
             display: flex;
-            flex-direction: row; /* MODIFICAT: Layout orizontal */
+            flex-direction: row;
             justify-content: center;
             align-items: center;
-            gap: 24px; /* MODIFICAT: Spațiere ajustată */
+            gap: 32px;
             width: 100%;
             height: 100%;
+            flex-wrap: wrap;
         }
 
         .pie-chart-svg {
-            width: 100%; 
-            max-width: 140px; /* MODIFICAT: Dimensiune redusă */
+            width: 220px;
+            height: 220px;
+            max-width: 100%;
             transform: rotate(-90deg);
         }
 
@@ -1138,7 +1271,7 @@
                     <div class="crm-nav-links">
                         <button class="crm-nav-link" type="button" data-page-target="bookings">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H9a2 2 0 0 1-2-2V7"/><path d="M9 17h10"/><path d="M13 11h6"/><path d="M5 3h14a2 2 0 0 1 2 2v12"/><polyline points="5 7 5 21 19 21"/></svg>
-                            Bookings
+                            Rezervări
                         </button>
                         <button class="crm-nav-link" type="button" data-page-target="viewings">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3H6a2 2 0 0 0-2 2v14l4-4h10a2 2 0 0 0 2-2z"/></svg>
@@ -1190,8 +1323,6 @@
                     </div>
                     <div class="context-tags">
                         <span class="context-tag">Locații active: 6</span>
-                        <span class="context-tag" id="last-sync-time"></span>
-                        <span class="context-tag">Responsabil: Tu & echipa</span>
                     </div>
                 </div>
 
@@ -1271,17 +1402,16 @@
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
-                            <h1>Gestionare Bookings</h1>
+                            <h1>Gestionare Rezervări</h1>
                             <p>Centralizează toate cererile de evenimente, actualizează statusul și confirmă disponibilitatea.</p>
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button ghost" type="button">Filtre avansate</button>
-                            <button class="crm-button primary" type="button">Creează booking</button>
+                            <button class="crm-button primary" type="button" data-open-booking-modal>Adaugă rezervare</button>
                         </div>
                     </div>
                     <div class="context-tags">
                         <span class="context-tag">Cererile noi se sincronizează la 5 minute</span>
-                        <span class="context-tag">Contact rapid: owners@ouido.events</span>
                     </div>
                 </div>
 
@@ -1333,7 +1463,6 @@
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button ghost" type="button">Calendar vizite</button>
-                            <button class="crm-button primary" type="button">Planifică vizionare</button>
                         </div>
                     </div>
                     <div class="context-tags">
@@ -1359,7 +1488,6 @@
                                     <th>Locație</th>
                                     <th>Data</th>
                                     <th>Ora</th>
-                                    <th>Gazdă</th>
                                     <th>Status</th>
                                     <th>Acțiuni</th>
                                 </tr>
@@ -1374,7 +1502,7 @@
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
-                            <h1>Disponibilitate & blocaje</h1>
+                            <h1>Disponibilitate</h1>
                             <p>Verifică rapid intervalele ocupate, datele în hold și ferestrele deschise pentru rezervări.</p>
                         </div>
                         <div class="page-header-actions">
@@ -1399,7 +1527,7 @@
                             <h2 id="availability-month-year" style="margin:0;"></h2>
                             <button id="next-month-btn" aria-label="Luna următoare">&gt;</button>
                         </div>
-                        <button id="add-booking-calendar-btn" class="crm-button primary" style="padding: 8px 16px; font-size: 0.85rem;">Adaugă rezervare</button>
+                        <button id="add-booking-calendar-btn" class="crm-button primary" style="padding: 8px 16px; font-size: 0.85rem;" data-open-booking-modal>Adaugă rezervare</button>
                     </header>
                     <div class="monthly-calendar-grid" id="availability-calendar-grid">
                         <!-- Zilele săptămânii vor fi adăugate aici de JS -->
@@ -1540,7 +1668,6 @@
                     </div>
                     <div class="context-tags">
                         <span class="context-tag">6 locații active · 1 în onboarding</span>
-                        <span class="context-tag">Ultima actualizare: 13 iunie</span>
                     </div>
                 </div>
 
@@ -1587,21 +1714,6 @@
 
                     <section class="settings-card">
                         <header>
-                            <h2>Flux automat</h2>
-                            <span class="panel-meta">Configurații pre-integrări</span>
-                        </header>
-                        <label for="workflow-template">Șablon activ</label>
-                        <select id="workflow-template">
-                            <option>Standard evenimente private</option>
-                            <option>Corporate & conferințe</option>
-                            <option>Retreaturi & experiențe team-building</option>
-                        </select>
-                        <label for="workflow-notes">Instrucțiuni interne</label>
-                        <textarea id="workflow-notes" rows="4" placeholder="Note pentru echipă despre modul de lucru"></textarea>
-                    </section>
-
-                    <section class="settings-card">
-                        <header>
                             <h2>Acces echipă</h2>
                             <span class="panel-meta">Gestionează utilizatorii colaboratori</span>
                         </header>
@@ -1609,25 +1721,50 @@
                             <div class="list-item">
                                 <div>
                                     <strong>Andreea Ionescu</strong>
-                                    <span>Rol: Booking manager · notificări complete</span>
                                 </div>
-                                <a href="#" class="status-chip" data-status="awaiting">Modifică</a>
+                                <div class="list-item-actions">
+                                    <span class="status-chip" data-status="confirmed">Activ</span>
+                                    <button class="crm-button ghost sm" type="button">Modifică acces</button>
+                                </div>
                             </div>
                             <div class="list-item">
                                 <div>
                                     <strong>Paul Radu</strong>
-                                    <span>Rol: Gazdă vizite · acces disponibilitate</span>
                                 </div>
-                                <a href="#" class="status-chip" data-status="confirmed">Activ</a>
+                                <div class="list-item-actions">
+                                    <span class="status-chip" data-status="confirmed">Activ</span>
+                                    <button class="crm-button ghost sm" type="button">Gestionează rol</button>
+                                </div>
                             </div>
                             <div class="list-item">
                                 <div>
                                     <strong>Ana Dobre</strong>
-                                    <span>Rol: Suport marketing · acces locații și materiale</span>
                                 </div>
-                                <a href="#" class="status-chip" data-status="pending">Invitație trimisă</a>
+                                <div class="list-item-actions">
+                                    <span class="status-chip" data-status="pending">Invitație trimisă</span>
+                                    <button class="crm-button primary sm" type="button">Retrimite invitație</button>
+                                </div>
                             </div>
                         </div>
+                    </section>
+
+                    <section class="settings-card wide">
+                        <header>
+                            <h2>Detalii companie</h2>
+                            <span class="panel-meta">Actualizează datele oficiale pentru facturare</span>
+                        </header>
+                        <label for="company-name">Nume companie</label>
+                        <input id="company-name" type="text" placeholder="Ex: Ouido Events SRL">
+                        <label for="company-cui">CUI</label>
+                        <input id="company-cui" type="text" placeholder="Ex: RO12345678">
+                        <label for="company-reg">Nr. Registrul Comerțului</label>
+                        <input id="company-reg" type="text" placeholder="Ex: J40/1234/2024">
+                        <label for="company-email">Adresă de email</label>
+                        <input id="company-email" type="email" placeholder="Ex: contact@companie.ro">
+                        <label for="company-address">Adresă sediu social</label>
+                        <textarea id="company-address" rows="2" placeholder="Str. Exemplu nr. 10, București"></textarea>
+                        <label for="company-contact">Persoană de contact</label>
+                        <input id="company-contact" type="text" placeholder="Ex: Andreea Marin · 0722 000 000">
                     </section>
                 </div>
             </section>
@@ -1750,32 +1887,32 @@
                 city: 'Snagov',
                 status: 'activ',
                 capacity: '200 persoane',
-                nextStep: `Eveniment corporate ${formatDate(addDays(28))}`,
-                highlights: ['Pachet corporate premium', 'Integrare completă calendar', 'Media kit actualizat']
+                image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=60',
+                price: 180
             },
             {
                 name: 'Forest Lodge',
                 city: 'Brașov',
                 status: 'activ',
                 capacity: '150 persoane',
-                nextStep: `Tur pentru Căsătorim.ro pe ${formatDate(addDays(4))}`,
-                highlights: ['Preferat pentru nunți rustic-chic', 'Noul meniu degustare disponibil']
+                image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=60',
+                price: 145
             },
             {
                 name: 'Urban Loft',
                 city: 'București',
                 status: 'activ',
                 capacity: '120 persoane',
-                nextStep: `Confirmare lansare produs ${formatDate(addDays(4))}`,
-                highlights: ['Studio foto integrat', 'Se pregătesc noi setup-uri lumini']
+                image: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?auto=format&fit=crop&w=900&q=60',
+                price: 160
             },
             {
                 name: 'Casa Miraval',
                 city: 'Cluj-Napoca',
                 status: 'în onboarding',
                 capacity: '90 persoane',
-                nextStep: 'Upload galerie foto finală',
-                highlights: ['Spațiu boutique', 'Necesită training gazde locale']
+                image: 'https://images.unsplash.com/photo-1590490359854-dfba19688d97?auto=format&fit=crop&w=900&q=60',
+                price: 120
             }
         ];
 
@@ -1807,15 +1944,27 @@
         }
 
 
-        const statusMeta = {
-            'pending': { label: 'Confirma disponibilitatea', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
-            'offer_sent': { label: 'Ofertă trimisă', className: 'offer_sent', color: '#7c3aed', description: 'Ofertă expediată clientului' },
-            'pre_booked': { label: 'Pre-rezervat', className: 'pre_booked', color: '#0d9488', description: 'Blocaj temporar în calendar, în așteptarea confirmării finale' },
-            'manual': { label: 'Rezervat manual', className: 'manual', color: '#a855f7', description: 'Rezervare adăugată manual de proprietar' },
-            'viewing_scheduled': { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#2563eb', description: 'Vizionare confirmată' },
-            'confirmed': { label: 'Rezervat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans incasat' },
-            'rejected': { label: 'Respins', className: 'rejected', color: '#b91c1c', description: 'Cerere refuzată' },
-            'cancelled': { label: 'Anulat', className: 'cancelled', color: '#dc2626', description: 'Clientul a renunțat' }
+        const bookingStatusMeta = {
+            pending: { label: 'Confirmă disponibilitatea', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
+            offer_sent: { label: 'Ofertă trimisă', className: 'offer_sent', color: '#7c3aed', description: 'Ofertă expediată clientului' },
+            pre_booked: { label: 'Pre-rezervat', className: 'pre_booked', color: '#0d9488', description: 'Blocaj temporar în calendar, în așteptarea confirmării finale' },
+            manual: { label: 'Rezervat manual', className: 'manual', color: '#a855f7', description: 'Rezervare adăugată manual de proprietar' },
+            viewing_scheduled: { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#2563eb', description: 'Vizionare confirmată cu echipa' },
+            confirmed: { label: 'Rezervat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans încasat' },
+            rejected: { label: 'Respins', className: 'rejected', color: '#b91c1c', description: 'Cerere refuzată' },
+            cancelled: { label: 'Anulat', className: 'cancelled', color: '#dc2626', description: 'Clientul a renunțat' }
+        };
+
+        const viewingStatusMeta = {
+            pending: { label: 'În confirmare', className: 'pending', color: '#b45309', description: 'Așteaptă confirmarea clientului sau a gazdei' },
+            confirmed: { label: 'Vizionare programată', className: 'confirmed', color: '#15803d', description: 'Vizionare confirmată în calendar' },
+            viewing_scheduled: { label: 'Programată', className: 'viewing_scheduled', color: '#2563eb', description: 'Vizionare programată la o dată stabilită' },
+            cancelled: { label: 'Anulată', className: 'cancelled', color: '#dc2626', description: 'Vizionare anulată de client sau proprietar' }
+        };
+
+        const statusCatalog = {
+            booking: bookingStatusMeta,
+            viewing: viewingStatusMeta
         };
 
         const venuesSelect = new Set(bookings.map(item => item.venue));
@@ -1848,22 +1997,55 @@
         // NOU: Populează filtrul de status pentru bookings
         const bookingStatusFilter = document.getElementById('bookings-status-filter');
         if (bookingStatusFilter) {
-            const statusOptions = Object.entries(statusMeta).map(([key, value]) => ({ value: key, text: value.label }));
-            populateSelect(bookingStatusFilter, statusOptions.map(s => s.value).sort((a, b) => statusMeta[a].label.localeCompare(statusMeta[b].label)), true);
+            const statusOptions = Object.entries(bookingStatusMeta).map(([key, value]) => ({ value: key, text: value.label }));
+            populateSelect(bookingStatusFilter, statusOptions.map(s => s.value).sort((a, b) => bookingStatusMeta[a].label.localeCompare(bookingStatusMeta[b].label)), true);
             // Înlocuiește valorile cu textul corespunzător
             Array.from(bookingStatusFilter.options).forEach(option => {
                 if (option.value !== 'all') {
-                    option.textContent = statusMeta[option.value].label;
+                    option.textContent = bookingStatusMeta[option.value].label;
                 }
             });
         }
 
-        function createStatusChip(status) {
-            const meta = statusMeta[status] || { label: status, className: 'pending' };
+        function hexToRgba(hex, alpha = 1) {
+            if (typeof hex !== 'string') {
+                return null;
+            }
+            const normalized = hex.replace('#', '');
+            if (![3, 6].includes(normalized.length)) {
+                return null;
+            }
+            const full = normalized.length === 3
+                ? normalized.split('').map(char => char + char).join('')
+                : normalized;
+            const bigint = parseInt(full, 16);
+            if (Number.isNaN(bigint)) {
+                return null;
+            }
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function createStatusChip(status, category = 'booking') {
+            const catalogue = statusCatalog[category] || {};
+            const isStringStatus = typeof status === 'string';
+            const normalizedStatus = isStringStatus ? status : '';
+            const fallbackClass = normalizedStatus ? normalizedStatus.replace(/\s+/g, '-').toLowerCase() : 'pending';
+            const fallbackLabel = normalizedStatus || 'Necunoscut';
+            const meta = catalogue[normalizedStatus] || { label: fallbackLabel, className: fallbackClass };
             const span = document.createElement('span');
             span.className = 'status-chip';
-            span.dataset.status = meta.className;
-            span.textContent = meta ? meta.label : status;
+            span.dataset.status = meta.className || fallbackClass;
+            span.textContent = meta.label || fallbackLabel;
+            if (meta.color) {
+                const backgroundColor = hexToRgba(meta.color, 0.15);
+                if (backgroundColor) {
+                    span.style.backgroundColor = backgroundColor;
+                }
+                span.style.color = meta.color;
+            }
             return span;
         }
         
@@ -1873,7 +2055,7 @@
             if (!container) return;
 
             container.innerHTML = '';
-            Object.values(statusMeta).forEach(meta => {
+            Object.values(bookingStatusMeta).forEach(meta => {
                 const item = document.createElement('div');
                 item.className = 'bookings-legend-item';
 
@@ -1948,7 +2130,7 @@
                     const detailsDiv = document.createElement('div');
                     detailsDiv.innerHTML = `<strong>${item.client}</strong> <span>${item.venue} · ${item.date}</span>`;
 
-                    const chip = createStatusChip(item.status);
+                    const chip = createStatusChip(item.status, 'viewing');
 
                     listItem.addEventListener('click', () => {
                         navigateToViewing(item.client);
@@ -2025,7 +2207,7 @@
             }, {});
 
             container.innerHTML = '';
-            Object.entries(statusMeta).forEach(([status, meta]) => {
+            Object.entries(bookingStatusMeta).forEach(([status, meta]) => {
                 const card = document.createElement('article');
                 card.className = 'metric-card';
                 card.innerHTML = `<span>${meta.label}</span><strong>${counts[status] || 0}</strong>`;
@@ -2062,13 +2244,10 @@
                     const hourCell = row.insertCell();
                     hourCell.textContent = item.hour;
 
-                    const hostCell = row.insertCell();
-                    hostCell.textContent = item.host;
-
                     const statusCell = row.insertCell();
                     const actionsCell = row.insertCell();
 
-                    statusCell.appendChild(createStatusChip(item.status));
+                    statusCell.appendChild(createStatusChip(item.status, 'viewing'));
 
                     const actions = document.createElement('div');
                     actions.className = 'table-actions';
@@ -2207,12 +2386,14 @@
         // NOU: Funcționalitate pentru modal
         function setupBookingModal() {
             const modal = document.getElementById('add-booking-modal');
-            const openBtn = document.getElementById('add-booking-calendar-btn');
-            const closeBtns = modal.querySelectorAll('.modal-close-btn');
+            const openButtons = Array.from(document.querySelectorAll('[data-open-booking-modal]'));
+            const closeBtns = modal?.querySelectorAll('.modal-close-btn') || [];
             const form = document.getElementById('add-booking-form');
             const venueSelect = document.getElementById('booking-venue');
 
-            if (!modal || !openBtn || !form || !venueSelect) return;
+            if (!modal || openButtons.length === 0 || !form || !venueSelect) {
+                return;
+            }
 
             // Populează select-ul de locații din modal
             populateSelect(venueSelect, Array.from(venuesSelect).sort(), false);
@@ -2226,7 +2407,7 @@
             const openModal = () => modal.classList.add('is-visible');
             const closeModal = () => modal.classList.remove('is-visible');
 
-            openBtn.addEventListener('click', openModal);
+            openButtons.forEach(btn => btn.addEventListener('click', openModal));
             closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
@@ -2329,37 +2510,77 @@
             if (!container) {
                 return;
             }
+
             container.innerHTML = '';
             venues.forEach(venue => {
                 const card = document.createElement('article');
                 card.className = 'venue-card';
-                const statusChip = createStatusChip(venue.status === 'activ' ? 'confirmed' : 'awaiting');
+
+                const image = document.createElement('div');
+                image.className = 'venue-card-image';
+                if (venue.image) {
+                    image.style.backgroundImage = `url('${venue.image}')`;
+                }
+
+                const content = document.createElement('div');
+                content.className = 'venue-card-content';
+
+                const header = document.createElement('div');
+                header.className = 'venue-card-header';
+
+                const titleWrapper = document.createElement('div');
+                const title = document.createElement('h3');
+                title.textContent = venue.name;
+                const location = document.createElement('p');
+                location.className = 'venue-card-location';
+                location.textContent = `${venue.city}, România`;
+                titleWrapper.append(title, location);
+
+                const statusKey = venue.status === 'activ' ? 'confirmed' : 'awaiting';
+                const statusChip = createStatusChip(statusKey);
                 statusChip.textContent = venue.status;
-                statusChip.dataset.status = venue.status === 'activ' ? 'confirmed' : 'awaiting';
+                statusChip.dataset.status = statusKey;
 
-                const header = document.createElement('header');
-                header.innerHTML = `<div><h3 style="margin:0 0 4px;">${venue.name}</h3><span class="panel-meta">${venue.city}</span></div>`;
-                header.appendChild(statusChip);
+                header.append(titleWrapper, statusChip);
 
-                const info = document.createElement('div');
-                info.innerHTML = `<strong>Capacitate:</strong> ${venue.capacity}<br><strong>Următor pas:</strong> ${venue.nextStep}`;
+                const meta = document.createElement('div');
+                meta.className = 'venue-card-meta';
+                const capacityItem = document.createElement('span');
+                capacityItem.className = 'venue-meta-item';
+                capacityItem.innerHTML = `
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    <span>Capacitate: ${venue.capacity}</span>
+                `;
+                meta.appendChild(capacityItem);
 
-                const list = document.createElement('ul');
-                venue.highlights.forEach(highlight => {
-                    const li = document.createElement('li');
-                    li.textContent = highlight;
-                    list.appendChild(li);
-                });
+                const footer = document.createElement('div');
+                footer.className = 'venue-card-footer';
+
+                if (typeof venue.price === 'number') {
+                    const price = document.createElement('span');
+                    price.className = 'venue-card-price';
+                    price.innerHTML = `de la <strong>${venue.price}€</strong>/pers`;
+                    footer.appendChild(price);
+                }
 
                 const actions = document.createElement('div');
-                actions.className = 'table-actions';
-                const editBtn = document.createElement('button');
-                editBtn.textContent = 'Editează detalii';
-                const availabilityBtn = document.createElement('button');
-                availabilityBtn.textContent = 'Actualizează disponibilitate';
-                actions.append(editBtn, availabilityBtn);
+                actions.className = 'venue-card-actions';
 
-                card.append(header, info, list, actions);
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.className = 'crm-button ghost';
+                editBtn.textContent = 'Editează detalii';
+
+                const availabilityBtn = document.createElement('button');
+                availabilityBtn.type = 'button';
+                availabilityBtn.className = 'crm-button primary';
+                availabilityBtn.textContent = 'Actualizează disponibilitate';
+
+                actions.append(editBtn, availabilityBtn);
+                footer.appendChild(actions);
+
+                content.append(header, meta, footer);
+                card.append(image, content);
                 container.appendChild(card);
             });
         }
@@ -2410,7 +2631,7 @@
                 text.setAttribute('x', padding.left - 10);
                 text.setAttribute('y', y + 4);
                 text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', '7');
+                text.setAttribute('font-size', '11');
                 text.setAttribute('fill', 'var(--muted-color)');
                 text.textContent = `${labelValue}%`;
                 svg.appendChild(text);
@@ -2456,7 +2677,7 @@
 
                 const tooltip = document.createElementNS(svgNs, 'text');
                 tooltip.setAttribute('x', point.x);
-                tooltip.setAttribute('y', point.y - 12);
+                tooltip.setAttribute('y', point.y - 16);
                 tooltip.classList.add('chart-tooltip');
                 tooltip.textContent = `${point.value}%`;
 
@@ -2464,7 +2685,7 @@
                 text.setAttribute('x', point.x);
                 text.setAttribute('y', height - padding.bottom + 18);
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '7');
+                text.setAttribute('font-size', '11');
                 text.setAttribute('fill', 'var(--muted-color)');
                 text.textContent = point.label;
 
@@ -2583,11 +2804,14 @@
                 return acc;
             }, {});
 
-            const chartData = Object.entries(statusCounts).map(([status, count]) => ({
-                type: (statusMeta[status] || {label: 'Necunoscut'}).label,
-                count: count,
-                color: statusMeta[status]?.color || '#cccccc'
-            }));
+            const chartData = Object.entries(statusCounts).map(([status, count]) => {
+                const meta = viewingStatusMeta[status];
+                return {
+                    type: meta?.label || status,
+                    count,
+                    color: meta?.color || '#cccccc'
+                };
+            });
 
             container.innerHTML = '';
             if (chartData.length === 0) {
@@ -2691,11 +2915,6 @@
 
 
         function initializeDynamicContent() {
-            const lastSyncEl = document.getElementById('last-sync-time');
-            if (lastSyncEl) {
-                lastSyncEl.textContent = `Ultima sincronizare: ${formatDate(today)}, ${formatTime(today)}`;
-            }
-
             const availabilityWeekEl = document.getElementById('availability-week-range');
             if (availabilityWeekEl) {
                 availabilityWeekEl.textContent = `Intervale pentru ${formatDate(today)} - ${formatDate(addDays(6))}`;
