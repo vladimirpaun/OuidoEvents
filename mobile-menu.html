@@ -1,3 +1,36 @@
+<style>
+  body.mobile-nav-open { overflow: hidden; }
+
+  .mobile-nav { position: fixed; inset: 0; display: flex; pointer-events: none; z-index: 1100; }
+  .mobile-nav__backdrop { flex: 1; background: rgba(15, 23, 42, 0.45); opacity: 0; transition: opacity 0.3s ease; }
+  .mobile-nav__panel { width: min(400px, 85%); background: linear-gradient(160deg, var(--white-color) 0%, #f4f7ff 100%); box-shadow: -8px 0 30px rgba(15, 23, 42, 0.15); transform: translateX(100%); transition: transform 0.35s ease; display: flex; flex-direction: column; padding: 32px 28px; border-top-left-radius: 24px; border-bottom-left-radius: 24px; outline: none; }
+  .mobile-nav.is-open { pointer-events: auto; }
+  .mobile-nav.is-open .mobile-nav__backdrop { opacity: 1; }
+  .mobile-nav.is-open .mobile-nav__panel { transform: translateX(0); }
+
+  .mobile-nav__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; font-weight: 600; color: var(--dark-color); font-size: 1.1rem; }
+  .mobile-nav__close { background: rgba(0, 82, 212, 0.1); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s ease, transform 0.3s ease; }
+  .mobile-nav__close:hover { background: rgba(0, 82, 212, 0.2); transform: rotate(90deg); }
+  .mobile-nav__close-icon { position: relative; width: 18px; height: 18px; }
+  .mobile-nav__close-icon::before,
+  .mobile-nav__close-icon::after { content: ""; position: absolute; top: 50%; left: 50%; width: 18px; height: 2px; background: var(--primary-color); transform-origin: center; }
+  .mobile-nav__close-icon::before { transform: translate(-50%, -50%) rotate(45deg); }
+  .mobile-nav__close-icon::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+  .mobile-nav__content { display: flex; flex-direction: column; gap: 24px; height: 100%; overflow-y: auto; padding-right: 6px; }
+  .mobile-nav__links { display: flex; flex-direction: column; gap: 16px; }
+  .mobile-nav__links a { font-size: 1.1rem; color: var(--dark-color); text-decoration: none; font-weight: 600; letter-spacing: 0.3px; transition: color 0.2s ease, transform 0.2s ease; }
+  .mobile-nav__links a:hover { color: var(--primary-color); transform: translateX(4px); }
+  .mobile-nav__links a.is-active { color: var(--primary-color); }
+
+  .mobile-nav__actions { display: flex; flex-direction: column; gap: 12px; }
+  .mobile-nav__actions .cta-button,
+  .mobile-nav__actions .secondary-cta-button { text-align: center; width: 100%; padding: 14px; }
+
+  .mobile-nav .role-switcher { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+  .mobile-nav .role-switcher label { font-size: 0.9rem; color: var(--gray-color); }
+  .mobile-nav .role-switcher select { flex: 1; background-color: rgba(255, 255, 255, 0.85); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; }
+</style>
 <nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
   <div class="mobile-nav__backdrop" data-mobile-backdrop></div>
   <div class="mobile-nav__panel" role="dialog" aria-modal="true" tabindex="-1">

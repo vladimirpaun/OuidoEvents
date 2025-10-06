@@ -1,3 +1,48 @@
+<style>
+  header[data-gradient="classic"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
+  header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
+  header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
+  header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
+  header[data-gradient="deep"] { --header-bg: linear-gradient(to right, #4364F7, #0052D4); }
+
+  header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
+  .header-container { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
+  .nav-links { display: flex; align-items: center; gap: 30px; }
+  .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+
+  header[data-gradient="deep"] .nav-links a,
+  header[data-gradient="deep"] .role-switcher label { color: var(--white-color); opacity: 0.9; }
+
+  .nav-links a:hover { color: var(--primary-color); }
+  header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
+
+  .nav-links a.is-active { color: var(--primary-color); font-weight: 600; }
+  header[data-gradient="deep"] .nav-links a.is-active { color: var(--white-color); opacity: 1; }
+
+  .role-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
+  .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
+  .role-switcher select { background-color: rgba(255, 255, 255, 0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+
+  .header-actions { display: flex; align-items: center; gap: 15px; }
+  .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
+  .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
+  .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+  .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
+
+  .mobile-menu-toggle { display: none; cursor: pointer; background: none; border: none; padding: 6px; flex-direction: column; justify-content: center; gap: 5px; }
+  .mobile-menu-toggle .icon-bar { display: block; width: 26px; height: 2px; background-color: var(--dark-color); border-radius: 999px; transition: transform 0.3s ease, opacity 0.3s ease; }
+  header[data-gradient="deep"] .mobile-menu-toggle .icon-bar { background-color: var(--white-color); }
+  .mobile-menu-toggle.open .icon-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .mobile-menu-toggle.open .icon-bar:nth-child(2) { opacity: 0; }
+  .mobile-menu-toggle.open .icon-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 992px) {
+    .nav-links, .header-actions { display: none; }
+    .mobile-menu-toggle { display: inline-flex; }
+    .header-container { justify-content: space-between; }
+  }
+</style>
 <header class="site-header" data-gradient="sky">
   <div class="container header-container">
     <a href="index.html" class="logo">OuidoEvents</a>
