@@ -745,6 +745,9 @@
     <div id="lightbox" class="lightbox">
         <span class="close-lightbox">&times;</span>
         <img class="lightbox-content" id="lightbox-image" src="" alt="Imagine mărită">
+        <!-- NOU: Butoane de navigare -->
+        <button class="lightbox-nav prev" aria-label="Imaginea anterioară">&#10094;</button>
+        <button class="lightbox-nav next" aria-label="Imaginea următoare">&#10095;</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -752,46 +755,78 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const mainImage = document.querySelector('.gallery-grid .gallery-item.main-image img');
-            const thumbnails = document.querySelectorAll('.thumbnail-grid .gallery-item img');
+            // --- NOU: Logica avansată pentru galerie și lightbox ---
+            const galleryItems = document.querySelectorAll('.gallery-item');
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightbox-image');
             const closeLightbox = document.querySelector('.close-lightbox');
+            const prevButton = document.querySelector('.lightbox-nav.prev');
+            const nextButton = document.querySelector('.lightbox-nav.next');
+            const showAllButton = document.querySelector('.show-all-photos-btn');
 
-            if (mainImage && thumbnails.length && lightbox && lightboxImage && closeLightbox) {
-                thumbnails.forEach((thumbnail) => {
-                    thumbnail.addEventListener('click', function() {
-                        thumbnails.forEach((t) => t.classList.remove('active'));
-                        this.classList.add('active');
-                        mainImage.src = this.src;
-                        mainImage.alt = this.alt;
-                    });
-                });
+            let allImages = [];
+            let currentImageIndex = 0;
 
-                thumbnails[0].classList.add('active');
-
-                mainImage.addEventListener('click', function() {
-                    lightbox.style.display = 'flex';
-                    lightboxImage.src = this.src;
-                    lightboxImage.alt = this.alt;
-                });
-
-                closeLightbox.addEventListener('click', function() {
-                    lightbox.style.display = 'none';
-                });
-
-                lightbox.addEventListener('click', function(event) {
-                    if (event.target === lightbox) {
-                        lightbox.style.display = 'none';
+            if (galleryItems.length > 0 && lightbox) {
+                // Colectează toate imaginile din galerie
+                galleryItems.forEach(item => {
+                    const img = item.querySelector('img');
+                    if (img) {
+                        allImages.push(img.src);
                     }
                 });
 
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Escape' && lightbox.style.display === 'flex') {
-                        lightbox.style.display = 'none';
+                // Funcție pentru a deschide lightbox-ul
+                const openLightbox = (index) => {
+                    currentImageIndex = index;
+                    lightboxImage.src = allImages[currentImageIndex];
+                    lightbox.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // Blochează scroll-ul paginii
+                };
+
+                // Funcție pentru a închide lightbox-ul
+                const closeLightboxFunc = () => {
+                    lightbox.style.display = 'none';
+                    document.body.style.overflow = ''; // Permite scroll-ul din nou
+                };
+
+                // Funcție pentru a naviga la imaginea următoare/anterioară
+                const showImage = (index) => {
+                    currentImageIndex = (index + allImages.length) % allImages.length; // Asigură index valid
+                    lightboxImage.src = allImages[currentImageIndex];
+                };
+
+                // Adaugă event listeners pe fiecare imagine din galerie
+                galleryItems.forEach((item, index) => {
+                    item.addEventListener('click', () => openLightbox(index));
+                });
+
+                // Adaugă event listener pe butonul "Vezi toate"
+                if (showAllButton) {
+                    showAllButton.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Previne propagarea evenimentului la containerul .gallery-item
+                        openLightbox(0);
+                    });
+                }
+
+                // Adaugă event listeners pentru butoanele de navigare și închidere
+                closeLightbox.addEventListener('click', closeLightboxFunc);
+                prevButton.addEventListener('click', () => showImage(currentImageIndex - 1));
+                nextButton.addEventListener('click', () => showImage(currentImageIndex + 1));
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) closeLightboxFunc();
+                });
+
+                // Adaugă event listener pentru navigarea de la tastatură
+                document.addEventListener('keydown', (e) => {
+                    if (lightbox.style.display === 'flex') {
+                        if (e.key === 'ArrowRight') showImage(currentImageIndex + 1);
+                        if (e.key === 'ArrowLeft') showImage(currentImageIndex - 1);
+                        if (e.key === 'Escape') closeLightboxFunc();
                     }
                 });
             }
+
 
             const searchButton = document.querySelector('.search-button');
             if (searchButton) {
