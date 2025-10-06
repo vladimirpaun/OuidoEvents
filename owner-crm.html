@@ -1,1609 +1,1869 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ouidoEvents · CRM Proprietari V3</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #0052D4;
-            --secondary-color: #4364F7;
-            --accent-color: #00B4D8;
-            --dark-color: #1a202c;
-            --gray-color: #555555;
-            --muted-color: #7a7f87;
-            --light-gray-color: #f0f2f5;
-            --bg-color: #f8f9fa;
-            --white-color: #ffffff;
-            --border-color: #e5eaf1;
-            --shadow-color: rgba(67, 100, 247, 0.15);
-            --border-radius: 16px;
-            --sidebar-width: 296px;
-            --header-height: 74px;
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            color: var(--dark-color);
-            background-color: var(--bg-color);
-            line-height: 1.5;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        button {
-            font: inherit;
-        }
-
-        main.crm-shell {
-            display: grid;
-            grid-template-columns: var(--sidebar-width) 1fr;
-            min-height: calc(100vh - var(--header-height));
-            background: linear-gradient(135deg, rgba(67, 100, 247, 0.06), rgba(0, 82, 212, 0.02));
-        }
-
-        .crm-sidebar {
-            position: sticky;
-            top: var(--header-height);
-            height: calc(100vh - var(--header-height));
-            background: var(--white-color);
-            border-right: 1px solid var(--border-color);
-            box-shadow: 12px 0 40px -34px rgba(67, 100, 247, 0.55);
-            padding: 32px 26px;
-            display: flex;
-            flex-direction: column;
-            gap: 28px;
-        }
-
-        .crm-sidebar h2 {
-            font-size: 1.25rem;
-            margin: 0 0 6px;
-        }
-
-        .crm-sidebar p {
-            color: var(--muted-color);
-            font-size: 0.92rem;
-            margin: 0;
-        }
-
-        .crm-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .crm-nav-section label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--muted-color);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .crm-nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .crm-nav-link {
-            width: 100%;
-            border: 1px solid transparent;
-            border-radius: 14px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--gray-color);
-            font-weight: 500;
-            background: transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .crm-nav-link svg {
-            width: 18px;
-            height: 18px;
-            opacity: 0.7;
-        }
-
-        .crm-nav-link:hover,
-        .crm-nav-link.is-active {
-            background: rgba(67, 100, 247, 0.1);
-            border-color: rgba(0, 82, 212, 0.24);
-            color: var(--primary-color);
-            box-shadow: inset 0 0 0 1px rgba(0, 82, 212, 0.18);
-        }
-
-        .crm-sidebar-footer {
-            margin-top: auto;
-            background: rgba(0, 82, 212, 0.08);
-            border-radius: 16px;
-            padding: 18px;
-        }
-
-        .crm-sidebar-footer h3 {
-            font-size: 0.96rem;
-            margin: 0 0 4px;
-        }
-
-        .crm-sidebar-footer p {
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-        }
-
-        .crm-sidebar-footer a {
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 0.9rem;
-        }
-
-        .crm-pages {
-            padding: calc(var(--header-height) + 20px) 48px 60px;
-            display: flex;
-            flex-direction: column;
-            gap: 36px;
-        }
-
-        .crm-page {
-            display: none;
-            flex-direction: column;
-            gap: 28px;
-            animation: fadeIn 0.24s ease;
-        }
-
-        .crm-page.is-active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-header {
-            background: var(--white-color);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            padding: 28px 32px;
-            box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8);
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .page-header-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-
-        .page-header h1 {
-            font-size: 1.8rem;
-            margin: 0 0 4px;
-        }
-
-        .page-header p {
-            margin: 0;
-            color: var(--muted-color);
-            max-width: 520px;
-        }
-
-        .page-header-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .crm-button {
-            border-radius: 999px;
-            padding: 10px 22px;
-            border: 1px solid transparent;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .crm-button.primary {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            color: var(--white-color);
-            box-shadow: 0 16px 24px -24px rgba(0, 82, 212, 0.9);
-        }
-
-        .crm-button.ghost {
-            background: transparent;
-            border-color: rgba(0, 82, 212, 0.2);
-            color: var(--primary-color);
-        }
-
-        .crm-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 26px -24px rgba(67, 100, 247, 0.8);
-        }
-
-        .context-tags {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .context-tag {
-            background: rgba(0, 82, 212, 0.08);
-            color: var(--primary-color);
-            border-radius: 999px;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 18px;
-        }
-
-        .metric-card {
-            background: var(--white-color);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            padding: 22px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 22px 32px -42px rgba(67, 100, 247, 0.85);
-        }
-
-        .metric-card span {
-            color: var(--muted-color);
-            font-size: 0.85rem;
-        }
-
-        .metric-card strong {
-            font-size: 1.6rem;
-        }
-
-        .metric-trend {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            color: #0a7d5c;
-        }
-
-        .panel {
-            background: var(--white-color);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            padding: 26px 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.85);
-        }
-
-        .panel header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .panel header h2 {
-            margin: 0;
-            font-size: 1.1rem;
-        }
-
-        .panel-meta {
-            color: var(--muted-color);
-            font-size: 0.85rem;
-        }
-
-        .list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            border-bottom: 1px solid rgba(0, 82, 212, 0.08);
-            padding-bottom: 12px;
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .list-item span {
-            color: var(--muted-color);
-            font-size: 0.85rem;
-        }
-
-        .status-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            background: rgba(0, 82, 212, 0.08);
-            color: var(--primary-color);
-            white-space: nowrap;
-        }
-
-        .status-chip[data-status="pending"] {
-            background: rgba(255, 193, 7, 0.18);
-            color: #b7791f;
-        }
-
-        .status-chip[data-status="confirmed"] {
-            background: rgba(0, 127, 95, 0.14);
-            color: #0a7d5c;
-        }
-
-        .status-chip[data-status="awaiting"] {
-            background: rgba(0, 180, 216, 0.18);
-            color: var(--accent-color);
-        }
-
-        .status-chip[data-status="declined"] {
-            background: rgba(220, 38, 38, 0.15);
-            color: #b91c1c;
-        }
-
-        .grid-two-columns {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table.crm-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 760px;
-        }
-
-        table.crm-table thead {
-            background: rgba(0, 82, 212, 0.06);
-        }
-
-        table.crm-table th,
-        table.crm-table td {
-            padding: 14px 18px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.92rem;
-        }
-
-        table.crm-table th {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--muted-color);
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .table-actions button {
-            border-radius: 999px;
-            border: 1px solid rgba(0, 82, 212, 0.2);
-            background: transparent;
-            color: var(--primary-color);
-            padding: 6px 14px;
-            font-size: 0.82rem;
-            cursor: pointer;
-        }
-
-        .table-actions button:hover {
-            background: rgba(0, 82, 212, 0.08);
-        }
-
-        .filter-bar {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-bar label {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .filter-bar select,
-        .filter-bar input {
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            font: inherit;
-            font-size: 0.9rem;
-            background: var(--white-color);
-        }
-
-        .availability-legend,
-        .availability-grid,
-        .availability-summary {
-            display: flex;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(0, 82, 212, 0.12);
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 0.85rem;
-        }
-
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .availability-grid {
-            width: 100%;
-            border: 1px solid rgba(0, 82, 212, 0.12);
-            border-radius: 18px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        .availability-grid table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .availability-grid th,
-        .availability-grid td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid rgba(0, 82, 212, 0.08);
-            border-right: 1px solid rgba(0, 82, 212, 0.08);
-            font-size: 0.88rem;
-        }
-
-        .availability-grid th:last-child,
-        .availability-grid td:last-child {
-            border-right: none;
-        }
-
-        .availability-grid tr:last-child td {
-            border-bottom: none;
-        }
-
-        .availability-slot[data-status="booked"] {
-            background: rgba(0, 82, 212, 0.12);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .availability-slot[data-status="hold"] {
-            background: rgba(255, 193, 7, 0.18);
-            color: #b7791f;
-            font-weight: 600;
-        }
-
-        .availability-slot[data-status="visit"] {
-            background: rgba(111, 66, 193, 0.14);
-            color: #5b21b6;
-            font-weight: 600;
-        }
-
-        .availability-slot[data-status="open"] {
-            color: var(--muted-color);
-        }
-
-        .venue-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 22px;
-        }
-
-        .venue-card {
-            border: 1px solid rgba(0, 82, 212, 0.12);
-            border-radius: 20px;
-            background: var(--white-color);
-            padding: 22px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            box-shadow: 0 24px 38px -48px rgba(67, 100, 247, 0.75);
-        }
-
-        .venue-card header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .venue-card ul {
-            padding-left: 18px;
-            color: var(--muted-color);
-            font-size: 0.88rem;
-        }
-
-        .communications-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 18px;
-        }
-
-        .communication-card {
-            border: 1px solid rgba(0, 82, 212, 0.12);
-            border-radius: 18px;
-            padding: 18px;
-            background: var(--white-color);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .communication-card header {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        .settings-card {
-            border: 1px solid rgba(0, 82, 212, 0.12);
-            border-radius: 18px;
-            padding: 22px;
-            background: rgba(255, 255, 255, 0.96);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .settings-card label {
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--gray-color);
-        }
-
-        .settings-card input,
-        .settings-card select,
-        .settings-card textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            font: inherit;
-            font-size: 0.92rem;
-            background: var(--white-color);
-        }
-
-        .settings-toggle {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-        }
-
-        @media (max-width: 1180px) {
-            main.crm-shell {
-                grid-template-columns: 1fr;
-            }
-
-            .crm-sidebar {
-                position: relative;
-                top: 0;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                box-shadow: none;
-            }
-
-            .crm-pages {
-                padding: 36px 24px 48px;
-            }
-        }
-
-        @media (max-width: 720px) {
-            .page-header {
-                padding: 22px;
-            }
-
-            .page-header-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .crm-pages {
-                padding: 28px 16px 40px;
-            }
-
-            table.crm-table {
-                min-width: 620px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ouidoEvents · CRM proprietari</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ------------------- */
+    /* --- Base Styles --- */
+    /* ------------------- */
+    :root {
+      --primary-color: #0052d4;
+      --secondary-color: #4364f7;
+      --dark-color: #1a202c;
+      --gray-color: #555555;
+      --muted-color: #7a7f87;
+      --light-gray-color: #f0f2f5;
+      --bg-color: #f8f9fa;
+      --white-color: #ffffff;
+      --border-color: #e5eaf1;
+      --shadow-color: rgba(0, 82, 212, 0.1);
+      --border-radius: 12px;
+      --header-height: 74px;
+      --crm-sidebar-width: 280px;
+      --crm-sidebar-width-collapsed: 90px;
+      --crm-booked-color: #0052d4;
+      --crm-prebooked-color: #28a745;
+      --crm-request-color: #ffc107;
+      --crm-visit-request-color: #6f42c1;
+      --crm-unavailable-color: #6c757d;
+      --crm-booked-bg: rgba(0, 82, 212, 0.1);
+      --crm-prebooked-bg: rgba(40, 167, 69, 0.1);
+      --crm-request-bg: rgba(255, 193, 7, 0.15);
+      --crm-visit-request-bg: rgba(111, 66, 193, 0.1);
+      --crm-unavailable-bg: rgba(108, 117, 125, 0.1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: var(--dark-color);
+      line-height: 1.6;
+      background-color: var(--light-gray-color);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none; 
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    ul {
+      list-style: none;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 700;
+    }
+
+    /* ------------------------- */
+    /* --- Component Styles --- */
+    /* ------------------------- */
+    .cta-button, .secondary-cta-button, .crm-ghost-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 25px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .cta-button {
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+      color: var(--white-color);
+      border: none;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+    
+    .secondary-cta-button {
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        padding: 8px 25px;
+    }
+
+    .secondary-cta-button:hover {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+    }
+
+    .crm-ghost-button {
+      border-style: dashed;
+      border-color: var(--border-color);
+      background-color: transparent;
+      color: var(--muted-color);
+    }
+
+    .crm-ghost-button:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      background-color: rgba(0, 82, 212, 0.08);
+    }
+
+    /* ----------------------------- */
+    /* --- Owner CRM Page Styles --- */
+    /* ----------------------------- */
+    main.crm-shell {
+      /* This is just a wrapper now */
+    }
+
+    .crm-app {
+      display: flex;
+      align-items: flex-start;
+      padding-top: var(--header-height);
+    }
+
+    .crm-sidebar {
+      position: sticky;
+      top: var(--header-height); /* Make it sticky below the header */
+      height: calc(100vh - var(--header-height));
+      width: var(--crm-sidebar-width);
+      background-color: var(--white-color);
+      border-right: 1px solid var(--border-color);
+      box-shadow: 12px 0 32px rgba(67, 100, 247, 0.08);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0; /* Prevent sidebar from shrinking */
+      gap: 24px;
+    }
+    
+    .crm-sidebar-inner {
+        padding: 32px 24px;
+        display: flex; flex-direction: column; flex-grow: 1;
+    }
+
+    .crm-sidebar-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .crm-sidebar-logo {
+      font-weight: 700;
+      font-size: 1.6rem;
+      text-decoration: none;
+      color: var(--primary-color);
+      letter-spacing: -0.3px;
+    }
+
+    .crm-sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-grow: 1;
+    }
+
+    .crm-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: var(--gray-color);
+      font-weight: 500;
+      transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .crm-nav-link svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 1.8;
+      transition: transform 0.25s ease;
+    }
+
+    .crm-nav-link:hover {
+      background-color: rgba(67, 100, 247, 0.08);
+    }
+
+    .crm-nav-link:hover svg {
+      transform: translateX(2px);
+    }
+
+    .crm-nav-link.is-active {
+      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+      color: var(--white-color);
+      box-shadow: 0 10px 24px rgba(0, 82, 212, 0.2);
+    }
+
+    .crm-nav-link.is-active svg {
+      stroke: var(--white-color);
+      transform: translateX(2px);
+    }
+
+    .crm-sidebar-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .crm-main {
+      min-height: calc(100vh - var(--header-height));
+      flex-grow: 1;
+      padding: 32px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .crm-page {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .crm-page.is-active {
+      display: flex;
+    }
+
+    .crm-page-header {
+      margin-bottom: 8px;
+    }
+
+    .crm-page-title {
+      font-size: clamp(2rem, 2.4vw, 2.35rem);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .crm-page-subtitle {
+      font-size: 1.05rem;
+      color: var(--gray-color);
+      max-width: 720px;
+    }
+
+    .crm-card {
+      background: var(--white-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-color);
+      padding: 25px;
+    }
+
+    .crm-page-filter {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .crm-page-filter label {
+      font-weight: 600;
+    }
+
+    .crm-page-filter select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--white-color);
+      font-size: 1rem;
+    }
+
+    /* Dashboard */
+    .crm-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+
+    .crm-stat-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background-color: var(--white-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .crm-stat-icon {
+      padding: 15px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .crm-stat-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .crm-stat-card .crm-stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .crm-stat-card .crm-stat-label {
+      color: var(--gray-color);
+      font-size: 0.9rem;
+    }
+
+    .crm-stat-card[data-variant="requests"] .crm-stat-icon { background-color: var(--crm-request-bg); color: var(--crm-request-color); }
+    .crm-stat-card[data-variant="visits"] .crm-stat-icon { background-color: var(--crm-visit-request-bg); color: var(--crm-visit-request-color); }
+    .crm-stat-card[data-variant="bookings"] .crm-stat-icon { background-color: var(--crm-prebooked-bg); color: var(--crm-prebooked-color); }
+    .crm-stat-card[data-variant="venues"] .crm-stat-icon { background-color: var(--crm-booked-bg); color: var(--primary-color); }
+    .crm-stat-card[data-variant="visits-total"] .crm-stat-icon { background-color: rgba(0, 82, 212, 0.12); color: var(--primary-color); }
+    .crm-stat-card[data-variant="visits-month"] .crm-stat-icon { background-color: rgba(67, 100, 247, 0.12); color: var(--secondary-color); }
+
+    .crm-dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+    }
+    
+    .crm-dashboard-grid--charts {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin-top: 15px;
+    }
+    
+    .crm-chart {
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .crm-chart svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .crm-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .crm-card-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    
+    /* NOU: Stiluri pentru graficele de ocupare */
+    .crm-occupancy-chart {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-around;
+      align-items: center;
+      min-height: 260px;
+    }
+
+    .crm-donut-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-width: 120px;
+    }
+
+    .crm-donut {
+      --occupied-deg: 0deg;
+      --occupied-color: var(--primary-color);
+      --available-color: rgba(0, 82, 212, 0.08);
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: conic-gradient(var(--occupied-color) var(--occupied-deg), var(--available-color) 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--dark-color);
+      font-weight: 700;
+    }
+
+    .crm-donut::after { content: attr(data-percentage) '%'; font-size: 1.1rem; }
+    .crm-donut-label { font-size: 0.9rem; color: var(--gray-color); text-align: center; }
+
+    .crm-notification-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .crm-notification {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .crm-notification:last-child {
+      border-bottom: none;
+    }
+
+    .crm-notification-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .crm-notification-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .crm-notification-timestamp {
+      font-size: 0.85rem;
+      color: var(--gray-color);
+      margin-top: 4px;
+    }
+
+    /* Calendar */
+    .crm-calendar {
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .crm-calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .crm-calendar-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .crm-calendar-nav-button {
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .crm-calendar-nav-button:hover {
+      background-color: var(--light-gray-color);
+    }
+
+    .crm-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: minmax(140px, auto);
+    }
+
+    .crm-calendar-day-name {
+      text-align: center;
+      font-weight: 600;
+      color: var(--gray-color);
+      padding: 10px 0;
+    }
+
+    .crm-calendar-date {
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      font-weight: 500;
+      background-color: var(--white-color);
+      transition: background-color 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .crm-calendar-date[data-outside="true"] {
+      background-color: #fcfcfc;
+      color: #ccc;
+    }
+    
+    .crm-calendar-date.is-unavailable {
+        background-color: var(--crm-unavailable-bg);
+        color: var(--crm-unavailable-color);
+        text-decoration: line-through;
+    }
+
+    .crm-calendar-date .crm-day-number {
+      margin-bottom: 5px;
+    }
+
+    .crm-calendar-event {
+      font-size: 0.8rem;
+      padding: 4px 6px;
+      border-radius: 4px;
+      color: var(--dark-color);
+      display: block;
+      line-height: 1.35;
+      word-break: break-word;
+      border-left: 3px solid;
+    }
+    
+    .crm-calendar-event + .crm-calendar-event {
+      margin-top: 4px;
+    }
+    
+    .crm-calendar-event[data-variant="booked"] { background-color: var(--crm-booked-bg); border-color: var(--crm-booked-color); }
+    .crm-calendar-event[data-variant="prebooked"] { background-color: var(--crm-prebooked-bg); border-color: var(--crm-prebooked-color); }
+    .crm-calendar-event[data-variant="request"] { background-color: var(--crm-request-bg); border-color: var(--crm-request-color); }
+    .crm-calendar-event[data-variant="visit"] { background-color: var(--crm-visit-request-bg); border-color: var(--crm-visit-request-color); }
+    .crm-calendar-event[data-variant="unavailable"] { background-color: var(--crm-unavailable-bg); border-color: var(--crm-unavailable-color); color: var(--crm-unavailable-color); text-decoration: line-through; }
+    
+    .crm-availability-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    
+    .crm-availability-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      background-color: var(--light-gray-color);
+      color: var(--dark-color);
+      font-weight: 600;
+    }
+
+    .crm-availability-legend span::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    .crm-availability-legend span[data-variant="booked"] { color: var(--crm-booked-color); }
+    .crm-availability-legend span[data-variant="prebooked"] { color: var(--crm-prebooked-color); }
+    .crm-availability-legend span[data-variant="request"] { color: var(--crm-request-color); }
+    .crm-availability-legend span[data-variant="visit"] { color: var(--crm-visit-request-color); }
+    .crm-availability-legend span[data-variant="unavailable"] { color: var(--crm-unavailable-color); }
+    
+    /* Tables */
+    .crm-table-container {
+      overflow-x: auto;
+    }
+
+    .crm-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .crm-data-table th,
+    .crm-data-table td {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .crm-data-table th {
+      font-weight: 600;
+      color: var(--gray-color);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .crm-data-table td {
+      font-weight: 500;
+    }
+
+    .crm-data-table .crm-empty-row td {
+      text-align: center;
+      color: var(--gray-color);
+    }
+
+    .crm-status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .crm-status-badge[data-status="confirmed"],
+    .crm-status-badge[data-status="published"] { background-color: var(--crm-booked-bg); color: var(--crm-booked-color); }
+    .crm-status-badge[data-status="pending"] { background-color: var(--crm-request-bg); color: #856404; }
+    .crm-status-badge[data-status="visit-pending"] { background-color: var(--crm-visit-request-bg); color: var(--crm-visit-request-color); }
+    .crm-status-badge[data-status="pre-booked"] { background-color: var(--crm-prebooked-bg); color: var(--crm-prebooked-color); }
+    .crm-status-badge[data-status="declined"] { background-color: rgba(220, 53, 69, 0.12); color: #dc3545; }
+
+    .crm-action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .crm-action-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+    }
+
+    .crm-action-button:hover {
+      background-color: var(--light-gray-color);
+    }
+
+    .crm-action-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .crm-action-button[data-action="confirm"] svg { stroke: var(--crm-prebooked-color); }
+    .crm-action-button[data-action="decline"] svg { stroke: #dc3545; }
+
+    /* Venues */
+    .crm-venue-status {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      border: 1px dashed var(--border-color);
+      border-radius: var(--border-radius);
+      margin-bottom: 25px;
+    }
+
+    .crm-venue-status-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--crm-request-bg);
+      color: var(--crm-request-color);
+    }
+
+    #venues-list {
+      display: grid;
+      gap: 20px;
+    }
+    
+    .result-card { /* Re-used from general styles for venue cards */
+        background: var(--white-color);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        display: flex;
+        gap: 20px;
+        align-items: stretch;
+        overflow: hidden;
+    }
+    
+    .result-image {
+        flex: 0 0 260px;
+        min-height: 220px;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    .result-details {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .result-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+    .result-location {
+        color: var(--gray-color);
+        font-size: 0.95rem;
+    }
+
+    .crm-venue-card .result-details {
+      gap: 16px;
+    }
+
+    .crm-venue-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .crm-venue-actions {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .crm-venue-card .crm-status-badge {
+      font-size: 0.75rem;
+      padding: 5px 10px;
+    }
+
+    /* Availability */
+    .crm-availability-scheduler {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .crm-scheduler-placeholder {
+      padding: 24px;
+      border: 1px dashed var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: #fafbff;
+      color: var(--gray-color);
+      text-align: center;
+    }
+
+    .crm-day-schedule {
+      background-color: #fafbff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 15px;
+    }
+
+    .crm-day-schedule h4 {
+      margin-bottom: 15px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .crm-time-slots {
+      min-height: 50px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .crm-time-slot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--white-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 0.9rem;
+    }
+
+    .crm-remove-slot-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #dc3545;
+      font-weight: 700;
+    }
+
+    .crm-add-slot-form {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .crm-add-slot-form input[type="time"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .crm-add-slot-btn {
+      background-color: var(--primary-color);
+      color: var(--white-color);
+      border: none;
+      border-radius: 6px;
+      padding: 0 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Dialog / Modal */
+    .crm-dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 32, 44, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 999;
+    }
+
+    .crm-dialog-overlay.is-hidden {
+      display: none;
+    }
+
+    .crm-dialog {
+      background: var(--white-color);
+      border-radius: var(--border-radius);
+      padding: 32px;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(15, 35, 95, 0.18);
+    }
+
+    .crm-dialog h2 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .crm-dialog p {
+      color: var(--gray-color);
+      margin-bottom: 24px;
+    }
+
+    .crm-dialog .cta-button {
+      width: 100%;
+    }
+
+    /* Settings */
+    .crm-form-group {
+      margin-bottom: 20px;
+    }
+
+    .crm-form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .crm-form-group input,
+    .crm-form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background-color: var(--white-color);
+    }
+    
+    .crm-form-group input:focus,
+    .crm-form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--shadow-color);
+    }
+
+    .crm-card-footer {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      text-align: right;
+    }
+
+    .crm-form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+    
+    .crm-toggle-switch-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .crm-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+    
+    .crm-switch input { opacity: 0; width: 0; height: 0; }
+
+    .crm-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+    }
+
+    .crm-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    .crm-switch input:checked + .crm-slider { background-color: var(--primary-color); }
+    .crm-switch input:checked + .crm-slider:before { transform: translateX(22px); }
+
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .crm-dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 1024px) {
+      main.crm-shell {
+        padding-left: 0;
+      }
+
+      .crm-sidebar {
+        position: static;
+        width: 100%;
+        max-height: none;
+        box-shadow: none;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        flex-direction: column;
+      }
+
+      .crm-sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .crm-nav-link {
+        padding: 10px 14px;
+      }
+
+      .crm-main {
+        width: 100%;
+        padding: 36px 28px 60px;
+      }
+      
+      .result-card, .crm-venue-card {
+        flex-direction: column;
+      }
+      
+      .result-image {
+        width: 100%;
+        flex: none;
+        height: 220px;
+      }
+
+      .crm-venue-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .crm-venue-actions .cta-button,
+      .crm-venue-actions .secondary-cta-button,
+      .crm-venue-actions .crm-ghost-button {
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .crm-sidebar {
+        padding: 24px 20px;
+      }
+
+      .crm-sidebar-nav {
+        overflow-x: auto;
+        padding-bottom: 6px;
+        gap: 10px;
+      }
+
+      .crm-nav-link {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+
+      .crm-main {
+        padding: 32px 20px 52px;
+        gap: 28px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div data-include="header.html"></div>
-    <div data-include="mobile-menu.html"></div>
+  <!-- Header will be injected by main.js -->
+  <!-- Mobile Menu will be injected by main.js -->
+  <main class="crm-shell" data-page="owner-crm">
+    <div class="crm-app">
+    <aside class="crm-sidebar" aria-label="Navigare CRM">
+      <div class="crm-sidebar-inner">
+        <div class="crm-sidebar-header">
+          <a href="#" class="crm-sidebar-logo">ouidoEvents CRM</a>
+        </div>
+        <nav class="crm-sidebar-nav">
+          <a href="#dashboard" class="crm-nav-link is-active" data-crm-nav data-page-target="dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Dashboard</span>
+          </a>
+          <a href="#bookings" class="crm-nav-link" data-crm-nav data-page-target="bookings">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Solicitări eveniment</span>
+          </a>
+          <a href="#visits" class="crm-nav-link" data-crm-nav data-page-target="visits">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>Programări vizionări</span>
+          </a>
+          <a href="#venues" class="crm-nav-link" data-crm-nav data-page-target="venues">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Locațiile mele</span>
+          </a>
+          <a href="#availability" class="crm-nav-link" data-crm-nav data-page-target="availability">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Disponibilitate</span>
+          </a>
+          <a href="#settings" class="crm-nav-link" data-crm-nav data-page-target="settings">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Setări</span>
+          </a>
+        </nav>
+        <div class="crm-sidebar-footer">
+          <a href="#" class="crm-nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Deconectare</span>
+          </a>
+        </div>
+      </div>
+    </aside>
 
-    <main class="crm-shell">
-        <aside class="crm-sidebar">
+    <section class="crm-main" aria-label="Conținut CRM">
+      <section class="crm-page is-active" id="dashboard" data-page-section="dashboard">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Panou general</h1>
+          <p class="crm-page-subtitle">Monitorizează performanța locațiilor tale într-un singur loc.</p>
+        </header>
+
+        <div class="crm-stats-grid">
+          <article class="crm-stat-card" data-variant="venues">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
             <div>
-                <h2>CRM Proprietari</h2>
-                <p>Gestionare completă pentru bookings, vizite și disponibilitate în timp real.</p>
+              <p class="crm-stat-value" id="total-venues-stat">0</p>
+              <p class="crm-stat-label">Locații listate</p>
             </div>
-
-            <nav class="crm-nav" aria-label="Navigare CRM proprietari">
-                <div class="crm-nav-section">
-                    <label>Panou general</label>
-                    <div class="crm-nav-links">
-                        <button class="crm-nav-link is-active" type="button" data-page-target="overview">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
-                            Overview
-                        </button>
-                    </div>
-                </div>
-                <div class="crm-nav-section">
-                    <label>Gestionare operațională</label>
-                    <div class="crm-nav-links">
-                        <button class="crm-nav-link" type="button" data-page-target="bookings">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H9a2 2 0 0 1-2-2V7"/><path d="M9 17h10"/><path d="M13 11h6"/><path d="M5 3h14a2 2 0 0 1 2 2v12"/><polyline points="5 7 5 21 19 21"/></svg>
-                            Bookings
-                        </button>
-                        <button class="crm-nav-link" type="button" data-page-target="visits">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3H6a2 2 0 0 0-2 2v14l4-4h10a2 2 0 0 0 2-2z"/></svg>
-                            Vizite
-                        </button>
-                        <button class="crm-nav-link" type="button" data-page-target="availability">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            Disponibilitate
-                        </button>
-                        <button class="crm-nav-link" type="button" data-page-target="venues">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            Locațiile mele
-                        </button>
-                    </div>
-                </div>
-                <div class="crm-nav-section">
-                    <label>Comunicare & control</label>
-                    <div class="crm-nav-links">
-                        <button class="crm-nav-link" type="button" data-page-target="communications">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            Comunicări
-                        </button>
-                        <button class="crm-nav-link" type="button" data-page-target="settings">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-                            Setări
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="crm-sidebar-footer">
-                <h3>Suport dedicat</h3>
-                <p>Ai întrebări despre rezervări sau statusuri? Echipa noastră răspunde în medie în 2 ore.</p>
-                <a href="#">
-                    Deschide un tichet
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </a>
+          </article>
+          <article class="crm-stat-card" data-variant="bookings">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-        </aside>
+            <div>
+              <p class="crm-stat-value" id="active-venues-stat">0</p>
+              <p class="crm-stat-label">Locații active</p>
+            </div>
+          </article>
+          <article class="crm-stat-card" data-variant="requests">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>
+            </div>
+            <div>
+              <p class="crm-stat-value" id="event-requests-stat">0</p>
+              <p class="crm-stat-label">Solicitări eveniment</p>
+            </div>
+          </article>
+          <article class="crm-stat-card" data-variant="visits">
+            <div class="crm-stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            </div>
+            <div class="crm-stat-info">
+              <p class="crm-stat-value" id="visit-requests-stat">0</p>
+              <p class="crm-stat-label">Vizionări în așteptare</p>
+            </div>
+          </article>
+          <article class="crm-stat-card" data-variant="visits-total">
+            <div class="crm-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="crm-stat-info">
+                <p class="crm-stat-value" id="total-visits-stat">0</p>
+                <p class="crm-stat-label">Număr total vizite</p>
+            </div>
+          </article>
+          <article class="crm-stat-card" data-variant="visits-month">
+              <div class="crm-stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </div>
+              <div class="crm-stat-info">
+                  <p class="crm-stat-value" id="monthly-visits-stat">0</p>
+                  <p class="crm-stat-label">Vizionări luna curentă</p>
+              </div>
+          </article>
+        </div>
 
-        <section class="crm-pages">
-            <section class="crm-page is-active" data-page="overview" id="overview">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Overview operațional</h1>
-                            <p>Monitorizează rapid cererile noi, disponibilitatea confirmată și activările pentru toate locațiile tale.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button primary" type="button">Adaugă booking manual</button>
-                            <button class="crm-button ghost" type="button">Exportă status</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Locații active: 6</span>
-                        <span class="context-tag">Ultima sincronizare: 14 iunie, 09:35</span>
-                        <span class="context-tag">Responsabil: Tu & echipa</span>
-                    </div>
+        <div class="crm-dashboard-grid">
+          <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Activitate recentă</h2>
+            </div>
+            <div class="crm-notification-list">
+              <article class="crm-notification">
+                <div class="crm-notification-icon" style="background-color: var(--crm-visit-request-bg); color: var(--crm-visit-request-color);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </div>
-
-                <div class="metrics-grid">
-                    <article class="metric-card">
-                        <span>Booking-uri confirmate luna aceasta</span>
-                        <strong>12</strong>
-                        <div class="metric-trend">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/></svg>
-                            +3 vs luna trecută
-                        </div>
-                    </article>
-                    <article class="metric-card">
-                        <span>Cereri în așteptare răspuns</span>
-                        <strong>5</strong>
-                        <div class="metric-trend" style="color:#b7791f;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-                            răspunde în 12h
-                        </div>
-                    </article>
-                    <article class="metric-card">
-                        <span>Vizite programate săptămână curentă</span>
-                        <strong>8</strong>
-                        <div class="metric-trend">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/></svg>
-                            90% confirmări
-                        </div>
-                    </article>
-                    <article class="metric-card">
-                        <span>Disponibilitate liberă weekend</span>
-                        <strong>4</strong>
-                        <div class="metric-trend" style="color:#0c4a6e;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                            sugestie: promovați Villa Lac
-                        </div>
-                    </article>
+                <div>
+                  <p><strong>Cerere nouă de vizită</strong> pentru <strong>The Grand Ballroom</strong> din partea Mariei Stan.</p>
+                  <p class="crm-notification-timestamp">Acum 5 minute</p>
                 </div>
-
-                <div class="grid-two-columns">
-                    <article class="panel">
-                        <header>
-                            <h2>Flux rapid bookings</h2>
-                            <span class="panel-meta">Cele mai recente cereri</span>
-                        </header>
-                        <div class="list" id="overview-bookings-list"></div>
-                    </article>
-                    <article class="panel">
-                        <header>
-                            <h2>Evenimente confirmate (următoarele 10 zile)</h2>
-                            <span class="panel-meta">Pregătește echipele locale</span>
-                        </header>
-                        <div class="list" id="overview-events-list"></div>
-                    </article>
+              </article>
+              <article class="crm-notification">
+                <div class="crm-notification-icon" style="background-color: var(--crm-request-bg); color: var(--crm-request-color);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>
                 </div>
-
-                <article class="panel">
-                    <header>
-                        <h2>Status disponibilitate săptămânală</h2>
-                        <span class="panel-meta">Rezumat pentru principalele locații</span>
-                    </header>
-                    <div class="availability-summary" id="overview-availability-summary"></div>
-                </article>
+                <div>
+                  <p><strong>Solicitare de eveniment</strong> pentru <strong>Lakeside Manor</strong> din partea lui Andrei Popescu.</p>
+                  <p class="crm-notification-timestamp">Acum 15 minute</p>
+                </div>
+              </article>
+              <article class="crm-notification">
+                <div class="crm-notification-icon" style="background-color: var(--crm-prebooked-bg); color: var(--crm-prebooked-color);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div>
+                  <p><strong>Pre-rezervare confirmată</strong> pentru "Corporate Gala" la <strong>The Grand Ballroom</strong>.</p>
+                  <p class="crm-notification-timestamp">Acum 2 ore</p>
+                </div>
+              </article>
+            </div>
+          </section>
+          <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Evenimente viitoare</h2>
+            </div>
+            <p>Următoarele evenimente confirmate vor fi afișate aici pentru o planificare rapidă.</p>
+          </section>
+        </div>
+        <div class="crm-dashboard-grid crm-dashboard-grid--charts">
+            <section class="crm-card">
+              <div class="crm-card-header">
+                <h2 class="crm-card-title">Evoluție vizite pe ultimele 12 luni</h2>
+              </div>
+              <div class="crm-chart" id="visits-trend-chart" role="img" aria-label="Grafic evoluție vizite"></div>
             </section>
-
-            <section class="crm-page" data-page="bookings" id="bookings">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Gestionare bookings</h1>
-                            <p>Centralizează toate cererile de evenimente, actualizează statusul și confirmă disponibilitatea.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Filtre avansate</button>
-                            <button class="crm-button primary" type="button">Creează booking</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Cererile noi se sincronizează la 5 minute</span>
-                        <span class="context-tag">Contact rapid: owners@ouido.events</span>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Rezumat status</h2>
-                    </header>
-                    <div class="metrics-grid" id="bookings-status-cards"></div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Toate cererile</h2>
-                        <span class="panel-meta">Actualizează statusul pe măsură ce confirmi cu echipa ta</span>
-                    </header>
-                    <div class="filter-bar">
-                        <label for="bookings-venue-filter">Locație:</label>
-                        <select id="bookings-venue-filter"></select>
-                        <label for="bookings-status-filter">Status:</label>
-                        <select id="bookings-status-filter">
-                            <option value="all">Toate</option>
-                            <option value="pending">În așteptare</option>
-                            <option value="awaiting">Necesită confirmare</option>
-                            <option value="confirmed">Confirmat</option>
-                            <option value="declined">Respins</option>
-                        </select>
-                    </div>
-                    <div class="table-wrapper">
-                        <table class="crm-table" aria-describedby="bookings-table-caption">
-                            <caption id="bookings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Rezervări pentru toate locațiile administrate</caption>
-                            <thead>
-                                <tr>
-                                    <th>Client</th>
-                                    <th>Eveniment</th>
-                                    <th>Locație</th>
-                                    <th>Dată</th>
-                                    <th>Invitați</th>
-                                    <th>Status</th>
-                                    <th>Acțiuni rapide</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bookings-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <section class="crm-card">
+              <div class="crm-card-header">
+                <h2 class="crm-card-title">Rata de ocupare</h2>
+              </div>
+              <div id="occupancy-pie-chart"></div>
             </section>
+        </div>
+      </section>
 
-            <section class="crm-page" data-page="visits" id="visits">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Vizite & tururi</h1>
-                            <p>Confirmă programările și alocă gazde pentru fiecare vizită în spațiile tale.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Calendar vizite</button>
-                            <button class="crm-button primary" type="button">Planifică vizită</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Rată confirmare vizite: 92%</span>
-                        <span class="context-tag">Media evaluării tururilor: 4.8</span>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Programări viitoare</h2>
-                        <span class="panel-meta">Verifică statusul pentru următoarele 14 zile</span>
-                    </header>
-                    <div class="filter-bar">
-                        <label for="visits-venue-filter">Locație:</label>
-                        <select id="visits-venue-filter"></select>
-                    </div>
-                    <div class="table-wrapper">
-                        <table class="crm-table" aria-describedby="visits-table-caption">
-                            <caption id="visits-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Detalii vizite și responsabil</caption>
-                            <thead>
-                                <tr>
-                                    <th>Client</th>
-                                    <th>Locație</th>
-                                    <th>Data</th>
-                                    <th>Ora</th>
-                                    <th>Gazdă</th>
-                                    <th>Status</th>
-                                    <th>Acțiuni</th>
-                                </tr>
-                            </thead>
-                            <tbody id="visits-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="grid-two-columns">
-                    <article class="panel">
-                        <header>
-                            <h2>Checklist înainte de vizită</h2>
-                        </header>
-                        <ul class="list" style="margin:0; padding-left:16px;">
-                            <li>Confirmați accesul și parcarea pentru clienți.</li>
-                            <li>Actualizați materialele de prezentare în spațiul comun.</li>
-                            <li>Asigurați-vă că setările audio/video sunt funcționale.</li>
-                            <li>Trimiteți remindere automate cu 24h înainte.</li>
-                        </ul>
-                    </article>
-                    <article class="panel">
-                        <header>
-                            <h2>Feedback recent după tururi</h2>
-                        </header>
-                        <div class="list">
-                            <div class="list-item">
-                                <div>
-                                    <strong>Villa Lac</strong>
-                                    <span>"Gazda foarte bine pregătită, spațiul impecabil."</span>
-                                </div>
-                                <span class="status-chip" data-status="confirmed">Scor: 5/5</span>
-                            </div>
-                            <div class="list-item">
-                                <div>
-                                    <strong>Urban Loft</strong>
-                                    <span>"Poze actualizate necesare pentru zona lounge."</span>
-                                </div>
-                                <span class="status-chip" data-status="awaiting">Acțiune necesară</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-
-            <section class="crm-page" data-page="availability" id="availability">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Disponibilitate & blocaje</h1>
-                            <p>Verifică rapid intervalele ocupate, datele în hold și ferestrele deschise pentru rezervări.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Actualizează manual</button>
-                            <button class="crm-button primary" type="button">Importă din calendar</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Integrare Google Calendar activă</span>
-                        <span class="context-tag">Sincronizare iCal disponibilă</span>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Legendă status</h2>
-                        <span class="panel-meta">Folosită în matrixul de disponibilitate</span>
-                    </header>
-                    <div class="availability-legend">
-                        <span class="legend-item"><span class="legend-dot" style="background:#0052D4"></span> Booking confirmat</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#28A745"></span> Blocaj intern</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#FFC107"></span> Hold temporar</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#6F42C1"></span> Vizită programată</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#CBD5E1"></span> Liber</span>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Calendar săptămânal</h2>
-                        <span class="panel-meta">Intervale pentru 17 - 23 iunie</span>
-                    </header>
-                    <div class="availability-grid">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Locație</th>
-                                    <th>Lun · 17</th>
-                                    <th>Mar · 18</th>
-                                    <th>Mie · 19</th>
-                                    <th>Joi · 20</th>
-                                    <th>Vin · 21</th>
-                                    <th>Sâm · 22</th>
-                                    <th>Dum · 23</th>
-                                </tr>
-                            </thead>
-                            <tbody id="availability-grid-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Alerte disponibilitate</h2>
-                        <span class="panel-meta">Acțiuni recomandate</span>
-                    </header>
-                    <div class="list">
-                        <div class="list-item">
-                            <div>
-                                <strong>Casa Miraval</strong>
-                                <span>Blocaj intern vineri 21 iunie – confirmă dacă se eliberează pentru o cerere corporate.</span>
-                            </div>
-                            <span class="status-chip" data-status="awaiting">Verifică</span>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <strong>Forest Lodge</strong>
-                                <span>Două vizite în aceeași zi (18 iunie). Alocă echipă suplimentară.</span>
-                            </div>
-                            <span class="status-chip" data-status="pending">Planifică resurse</span>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <strong>Urban Loft</strong>
-                                <span>Sâmbătă liberă pe 22 iunie – propune în newsletter.</span>
-                            </div>
-                            <span class="status-chip" data-status="confirmed">Trimite promo</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="crm-page" data-page="venues" id="venues">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Administrare locații</h1>
-                            <p>Actualizează detalii, capacități și echipe de contact pentru spațiile din portofoliu.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Importă din fișier</button>
-                            <button class="crm-button primary" type="button">Locație nouă</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">6 locații active · 1 în onboarding</span>
-                        <span class="context-tag">Ultima actualizare: 13 iunie</span>
-                    </div>
-                </div>
-
-                <div class="venue-grid" id="venue-cards"></div>
-            </section>
-
-            <section class="crm-page" data-page="communications" id="communications">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Comunicări & follow-up</h1>
-                            <p>Centralizează mesajele cu echipa Ouido, furnizorii sau clienții interesați.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Template mesaj</button>
-                            <button class="crm-button primary" type="button">Trimite update</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Inbox partajat · sincronizare 2 min</span>
-                        <span class="context-tag">4 conversații active</span>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <header>
-                        <h2>Mesaje recente</h2>
-                    </header>
-                    <div class="communications-grid" id="communications-grid"></div>
-                </div>
-            </section>
-
-            <section class="crm-page" data-page="settings" id="settings">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1>Setări & preferințe</h1>
-                            <p>Configurează notificările, fluxurile automate și accesul echipei pentru contul tău.</p>
-                        </div>
-                        <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Resetează</button>
-                            <button class="crm-button primary" type="button">Salvează modificări</button>
-                        </div>
-                    </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Rol curent: Owner Manager</span>
-                        <span class="context-tag">Ultima salvare: 12 iunie, 19:10</span>
-                    </div>
-                </div>
-
-                <div class="settings-grid">
-                    <section class="settings-card">
-                        <header>
-                            <h2>Notificări</h2>
-                            <span class="panel-meta">Primește update-uri relevante</span>
-                        </header>
-                        <div class="settings-toggle">
-                            <span>Email pentru booking nou</span>
-                            <input type="checkbox" checked>
-                        </div>
-                        <div class="settings-toggle">
-                            <span>Push pentru vizite reprogramate</span>
-                            <input type="checkbox" checked>
-                        </div>
-                        <div class="settings-toggle">
-                            <span>Rezumat săptămânal disponibilitate</span>
-                            <input type="checkbox">
-                        </div>
-                    </section>
-
-                    <section class="settings-card">
-                        <header>
-                            <h2>Flux automat</h2>
-                            <span class="panel-meta">Configurații pre-integrări</span>
-                        </header>
-                        <label for="workflow-template">Șablon activ</label>
-                        <select id="workflow-template">
-                            <option>Standard evenimente private</option>
-                            <option>Corporate & conferințe</option>
-                            <option>Retreaturi & experiențe team-building</option>
-                        </select>
-                        <label for="workflow-notes">Instrucțiuni interne</label>
-                        <textarea id="workflow-notes" rows="4" placeholder="Note pentru echipă despre modul de lucru"></textarea>
-                    </section>
-
-                    <section class="settings-card">
-                        <header>
-                            <h2>Acces echipă</h2>
-                            <span class="panel-meta">Gestionează utilizatorii colaboratori</span>
-                        </header>
-                        <div class="list">
-                            <div class="list-item">
-                                <div>
-                                    <strong>Andreea Ionescu</strong>
-                                    <span>Rol: Booking manager · notificări complete</span>
-                                </div>
-                                <a href="#" class="status-chip" data-status="awaiting">Modifică</a>
-                            </div>
-                            <div class="list-item">
-                                <div>
-                                    <strong>Paul Radu</strong>
-                                    <span>Rol: Gazdă vizite · acces disponibilitate</span>
-                                </div>
-                                <a href="#" class="status-chip" data-status="confirmed">Activ</a>
-                            </div>
-                            <div class="list-item">
-                                <div>
-                                    <strong>Ana Dobre</strong>
-                                    <span>Rol: Suport marketing · acces locații și materiale</span>
-                                </div>
-                                <a href="#" class="status-chip" data-status="pending">Invitație trimisă</a>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </section>
+      <section class="crm-page" id="bookings" data-page-section="bookings">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Solicitări eveniment</h1>
+          <p class="crm-page-subtitle">Revizuiește toate cererile primite și actualizează starea acestora.</p>
+        </header>
+        <div class="crm-page-filter">
+          <label for="bookings-venue-filter">Filtrează după locație:</label>
+          <select id="bookings-venue-filter"></select>
+        </div>
+        <section class="crm-card">
+          <div class="crm-table-container">
+            <table class="crm-data-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Locație</th>
+                  <th>Tip eveniment</th>
+                  <th>Dată</th>
+                  <th>Invitați</th>
+                  <th>Stare</th>
+                  <th>Acțiuni</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table-body"></tbody>
+            </table>
+          </div>
         </section>
-    </main>
+      </section>
 
-    <script src="main.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const navLinks = document.querySelectorAll('.crm-nav-link');
-        const pages = document.querySelectorAll('.crm-page');
-        const storageKey = 'owner-crm-v3-active-page';
+      <section class="crm-page" id="visits" data-page-section="visits">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Cereri de vizită</h1>
+          <p class="crm-page-subtitle">Gestionează cererile de vizionare pentru fiecare locație.</p>
+        </header>
+        <div class="crm-page-filter">
+          <label for="visits-venue-filter">Filtrează după locație:</label>
+          <select id="visits-venue-filter"></select>
+        </div>
+        <section class="crm-card">
+          <div class="crm-table-container">
+            <table class="crm-data-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Locație</th>
+                  <th>Dată</th>
+                  <th>Oră</th>
+                  <th>Stare</th>
+                  <th>Acțiuni</th>
+                </tr>
+              </thead>
+              <tbody id="visits-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-        function activatePage(pageId) {
-            if (!pageId) {
-                return;
-            }
+      <section class="crm-page" id="venues" data-page-section="venues">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Locațiile mele</h1>
+          <p class="crm-page-subtitle">Actualizează detaliile spațiilor listate și adaugă locații noi.</p>
+        </header>
+        <div class="crm-card crm-venue-status">
+          <div class="crm-venue-status-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </div>
+          <div>
+            <h3>Propune o locație nouă</h3>
+            <p>Completează formularul dedicat pentru a crește vizibilitatea portofoliului tău.</p>
+          </div>
+          <a href="#" class="cta-button" style="margin-left: auto;">Adaugă locație</a>
+        </div>
+        <div id="venues-list"></div>
+      </section>
 
-            let pageFound = false;
+      <section class="crm-page" id="availability" data-page-section="availability">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title" id="availability-page-title">Disponibilitate locație</h1>
+          <div class="crm-page-filter">
+            <label for="availability-venue-selector">Selectează locația:</label>
+            <select id="availability-venue-selector"></select>
+          </div>
+        </header>
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Blochează date pentru evenimente</h2>
+          </div>
+          <p>Selectează zilele în care locația nu poate găzdui evenimente (ex. renovări, evenimente private).</p>
+          <div class="crm-availability-legend" aria-label="Legendă disponibilitate">
+            <span data-variant="booked">Confirmat</span>
+            <span data-variant="prebooked">Pre-rezervat</span>
+            <span data-variant="request">Solicitare</span>
+            <span data-variant="visit">Vizită</span>
+            <span data-variant="unavailable">Indisponibil</span>
+          </div>
+          <div id="availability-calendar-container" class="crm-calendar"></div>
+        </section>
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Program standard pentru vizite</h2>
+          </div>
+          <p>Definește intervalele orare pentru fiecare zi în care pot avea loc vizite.</p>
+          <div class="crm-availability-scheduler"></div>
+        </section>
+      </section>
 
-            pages.forEach(page => {
-                const isMatch = page.dataset.page === pageId;
-                page.classList.toggle('is-active', isMatch);
-                if (isMatch) {
-                    pageFound = true;
-                    localStorage.setItem(storageKey, pageId);
-                }
-            });
+      <section class="crm-page" id="settings" data-page-section="settings">
+        <header class="crm-page-header">
+          <h1 class="crm-page-title">Setări cont</h1>
+          <p class="crm-page-subtitle">Actualizează informațiile personale și datele companiei tale.</p>
+        </header>
 
-            navLinks.forEach(link => {
-                link.classList.toggle('is-active', link.dataset.pageTarget === pageId);
-            });
+        <section class="crm-card">
+            <div class="crm-card-header">
+              <h2 class="crm-card-title">Preferințe generale</h2>
+            </div>
+            <div class="crm-toggle-switch-group">
+              <label for="auto-confirm">Confirmare automată a disponibilității</label>
+              <label class="crm-switch">
+                <input type="checkbox" id="auto-confirm">
+                <span class="crm-slider"></span>
+              </label>
+            </div>
+        </section>
 
-            if (pageFound) {
-                history.replaceState(null, '', `#${pageId}`);
-            }
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Profil proprietar</h2>
+          </div>
+          <form>
+            <div class="crm-form-grid-2">
+              <div class="crm-form-group">
+                <label for="owner-name">Prenume</label>
+                <input type="text" id="owner-name" value="Alexandru">
+              </div>
+              <div class="crm-form-group">
+                <label for="owner-surname">Nume</label>
+                <input type="text" id="owner-surname" value="Popa">
+              </div>
+            </div>
+            <div class="crm-form-group">
+                <label for="owner-email">Email</label>
+                <input type="email" id="owner-email" value="alex.popa@grandballroom.ro" readonly>
+            </div>
+            <div class="crm-form-group">
+                <label for="owner-phone">Telefon</label>
+                <input type="tel" id="owner-phone" value="+40 712 345 678">
+            </div>
+            <div class="crm-card-footer">
+              <button type="submit" class="cta-button">Salvează profilul</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="crm-card">
+          <div class="crm-card-header">
+            <h2 class="crm-card-title">Date companie</h2>
+          </div>
+          <form>
+            <div class="crm-form-group">
+              <label for="company-name">Denumire companie</label>
+              <input type="text" id="company-name" value="The Grand Ballroom SRL">
+            </div>
+            <div class="crm-form-group">
+              <label for="company-cui">CUI</label>
+              <input type="text" id="company-cui" value="RO12345678">
+            </div>
+            <div class="crm-form-group">
+              <label for="company-address">Adresă</label>
+              <input type="text" id="company-address" value="Str. Principală, nr. 1, București">
+            </div>
+            <div class="crm-card-footer">
+              <button type="submit" class="cta-button">Salvează datele</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </section>
+    </div>
+  </main>
+  <!-- Footer is intentionally omitted on the CRM page -->
+
+  <script src="main.js"></script>
+
+  <script type="module">
+    // --- MOCK DATA (In a real app, this would come from an API) ---
+    const venues = [
+        { id: 1, name: 'The Grand Ballroom', location: 'București, România', status: 'Published', imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80' },
+        { id: 2, name: 'Lakeside Manor', location: 'Cluj-Napoca, România', status: 'Pending', imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80' }
+    ];
+    
+    let eventRequests = [
+        { id: 1, venueId: 2, client: 'Andrei Popescu', eventType: 'Nuntă', date: '2025-10-25', guests: 150, status: 'pending' },
+        { id: 2, venueId: 1, client: 'Tech Solutions Inc.', eventType: 'Eveniment Corporate', date: '2025-11-12', guests: 200, status: 'pre-booked' },
+        { id: 3, venueId: 1, client: 'Elena Ionescu', eventType: 'Petrecere Privată', date: '2025-10-18', guests: 80, status: 'confirmed' }
+    ];
+    
+    let visitRequests = [
+        { id: 1, venueId: 1, client: 'Maria Stan', date: '2025-10-10', time: '14:00', status: 'pending' },
+        { id: 2, venueId: 1, client: 'George Dobre', date: '2025-10-09', time: '11:00', status: 'confirmed' },
+        { id: 3, venueId: 2, client: 'Ana Diaconu', date: '2025-10-11', time: '16:30', status: 'pending' }
+    ];
+    
+    const monthlyVisitTrend = [
+        { label: 'Ian', value: 12 }, { label: 'Feb', value: 15 }, { label: 'Mar', value: 18 }, { label: 'Apr', value: 16 }, 
+        { label: 'Mai', value: 19 }, { label: 'Iun', value: 21 }, { label: 'Iul', value: 24 }, { label: 'Aug', value: 26 }, 
+        { label: 'Sep', value: 28 }, { label: 'Oct', value: 30 }, { label: 'Nov', value: 27 }, { label: 'Dec', value: 32 }
+    ];
+    
+    const occupancyForecast = [
+        { month: 'Octombrie', occupiedDays: 18, totalDays: 31 },
+        { month: 'Noiembrie', occupiedDays: 20, totalDays: 30 },
+        { month: 'Decembrie', occupiedDays: 16, totalDays: 31 }
+    ];
+    
+    const availabilityData = {
+        1: { blockedDates: ['2025-11-15'], visitSlots: { 'Luni': [{ start: '10:00', end: '12:00' }, { start: '14:00', end: '17:00' }], 'Miercuri': [{ start: '10:00', end: '17:00' }] } },
+        2: { blockedDates: ['2025-12-24', '2025-12-25'], visitSlots: { 'Marți': [{ start: '09:00', end: '13:00' }] } }
+    };
+
+    const EVENT_STATUS_VARIANTS = { confirmed: 'booked', 'pre-booked': 'prebooked', pending: 'request', 'visit-pending': 'visit', declined: 'unavailable' };
+    const CALENDAR_DAY_NAMES = ['Dum', 'Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm'];
+    const WEEK_DAYS = ['Duminică', 'Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă'];
+
+    function initOwnerCrmPage() {
+      const crmApp = document.querySelector('.crm-app');
+      if (!crmApp) return;
+
+      let activeAvailabilityVenueId = venues[0]?.id ?? null;
+      let availabilitySelection = 'all';
+
+      const navLinks = Array.from(document.querySelectorAll('.crm-nav-link'));
+      const crmPages = Array.from(document.querySelectorAll('.crm-page'));
+      const schedulerContainer = document.querySelector('.crm-availability-scheduler');
+      const availabilityDialog = document.getElementById('availability-dialog');
+      const availabilityDialogClose = availabilityDialog?.querySelector('[data-dialog-close]');
+
+      function ensureVenueAvailability(venueId) {
+        if (!availabilityData[venueId]) {
+          availabilityData[venueId] = { blockedDates: [], visitSlots: {} };
+        }
+      }
+
+      function showPage(pageId, { updateHash = true } = {}) {
+        crmPages.forEach(page => page.classList.toggle('is-active', page.dataset.pageSection === pageId));
+        navLinks.forEach(link => link.classList.toggle('is-active', link.dataset.pageTarget === pageId));
+
+        if (updateHash) window.location.hash = pageId;
+        if (pageId === 'availability') updateAvailabilityPage();
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function populateVenueSelector(selectorId, { includeAllOption = false } = {}) {
+        const selector = document.getElementById(selectorId);
+        if (!selector) return;
+        
+        const options = venues.map(venue => `<option value="${venue.id}">${venue.name}</option>`).join('');
+        selector.innerHTML = includeAllOption ? `<option value="all">Toate locațiile</option>${options}` : options;
+
+        if (selectorId === 'availability-venue-selector') {
+          selector.value = availabilitySelection === 'all' ? 'all' : String(activeAvailabilityVenueId);
+        }
+      }
+
+      function renderDashboardStats() {
+        document.getElementById('total-venues-stat').textContent = venues.length;
+        document.getElementById('active-venues-stat').textContent = venues.filter(v => v.status === 'Published').length;
+        document.getElementById('event-requests-stat').textContent = eventRequests.filter(r => r.status === 'pending').length;
+        document.getElementById('visit-requests-stat').textContent = visitRequests.filter(r => r.status === 'pending').length;
+        document.getElementById('total-visits-stat').textContent = visitRequests.length;
+        
+        const now = new Date();
+        const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        document.getElementById('monthly-visits-stat').textContent = visitRequests.filter(r => r.date.startsWith(currentMonthKey)).length;
+      }
+
+      function renderVenuesPage() {
+        const listContainer = document.getElementById('venues-list');
+        if (!listContainer) return;
+
+        listContainer.innerHTML = venues.map(venue => {
+          const badgeStatus = venue.status === 'Published' ? 'published' : 'pending';
+          const badgeLabel = venue.status === 'Published' ? 'Publicată' : 'În așteptare';
+          return `
+            <article class="result-card crm-venue-card">
+              <div class="result-image" style="background-image: url('${venue.imageUrl}');"></div>
+              <div class="result-details">
+                <div class="crm-venue-meta">
+                  <span class="crm-status-badge" data-status="${badgeStatus}">${badgeLabel}</span>
+                  <span class="result-location">${venue.location}</span>
+                </div>
+                <h3>${venue.name}</h3>
+                <div class="crm-venue-actions">
+                  <a href="#availability" class="cta-button" data-crm-nav data-page-target="availability" data-venue-id="${venue.id}">Disponibilitate</a>
+                  <button type="button" class="secondary-cta-button" data-venue-id="${venue.id}">Editează</button>
+                  <button type="button" class="crm-ghost-button" data-venue-id="${venue.id}">Pauză</button>
+                </div>
+              </div>
+            </article>`;
+        }).join('');
+      }
+      
+      function renderVisitsTrendChart() {
+        const container = document.getElementById('visits-trend-chart');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (monthlyVisitTrend.length < 2) {
+          container.innerHTML = '<p style="text-align:center; color: var(--muted-color);">Date insuficiente pentru grafic.</p>';
+          return;
         }
 
-        const initialPage = window.location.hash.replace('#', '');
-        const storedPage = localStorage.getItem(storageKey);
-        activatePage(initialPage || storedPage || 'overview');
+        const svgNs = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNs, 'svg');
+        const width = 600;
+        const height = 260;
+        const padding = { top: 20, right: 20, bottom: 30, left: 30 };
+        const chartWidth = width - padding.left - padding.right;
+        const chartHeight = height - padding.top - padding.bottom;
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                activatePage(link.dataset.pageTarget);
-            });
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svg.style.fontFamily = 'inherit';
+
+        const maxValue = Math.max(...monthlyVisitTrend.map(item => item.value)) * 1.1; // Add 10% buffer
+
+        const points = monthlyVisitTrend.map((item, index) => {
+          const x = padding.left + (index / (monthlyVisitTrend.length - 1)) * chartWidth;
+          const y = padding.top + chartHeight - (item.value / maxValue) * chartHeight;
+          return { x, y, label: item.label };
         });
 
-        window.addEventListener('hashchange', () => {
-            activatePage(window.location.hash.replace('#', ''));
+        // Gradient definition
+        const defs = document.createElementNS(svgNs, 'defs');
+        const linearGradient = document.createElementNS(svgNs, 'linearGradient');
+        linearGradient.id = 'area-gradient';
+        linearGradient.setAttribute('x1', '0%');
+        linearGradient.setAttribute('y1', '0%');
+        linearGradient.setAttribute('x2', '0%');
+        linearGradient.setAttribute('y2', '100%');
+        linearGradient.innerHTML = `
+          <stop offset="0%" style="stop-color:rgba(0, 82, 212, 0.2)" />
+          <stop offset="100%" style="stop-color:rgba(0, 82, 212, 0)" />
+        `;
+        defs.appendChild(linearGradient);
+        svg.appendChild(defs);
+
+        // Area path
+        const areaPath = document.createElementNS(svgNs, 'path');
+        const areaPoints = `M${points[0].x},${height - padding.bottom} ` + points.map(p => `L${p.x},${p.y}`).join(' ') + ` L${points[points.length - 1].x},${height - padding.bottom} Z`;
+        areaPath.setAttribute('d', areaPoints);
+        areaPath.setAttribute('fill', 'url(#area-gradient)');
+        svg.appendChild(areaPath);
+
+        // Line path
+        const polyline = document.createElementNS(svgNs, 'polyline');
+        polyline.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+        polyline.setAttribute('fill', 'none');
+        polyline.setAttribute('stroke', 'var(--primary-color)');
+        polyline.setAttribute('stroke-width', '3');
+        polyline.setAttribute('stroke-linecap', 'round');
+        polyline.setAttribute('stroke-linejoin', 'round');
+        svg.appendChild(polyline);
+
+        // Points and labels
+        points.forEach(point => {
+          const circle = document.createElementNS(svgNs, 'circle');
+          circle.setAttribute('cx', point.x);
+          circle.setAttribute('cy', point.y);
+          circle.setAttribute('r', '5');
+          circle.setAttribute('fill', 'var(--primary-color)');
+          svg.appendChild(circle);
+
+          const text = document.createElementNS(svgNs, 'text');
+          text.setAttribute('x', point.x);
+          text.setAttribute('y', height - padding.bottom + 18);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-size', '12');
+          text.setAttribute('fill', 'var(--muted-color)');
+          text.textContent = point.label;
+          svg.appendChild(text);
         });
 
-        const bookings = [
-            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: '22 iun 2024', guests: 120, status: 'awaiting', action: 'Confirmați meniu' },
-            { client: 'Studio Creativ', event: 'Lansare produs', venue: 'Urban Loft', date: '18 iun 2024', guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
-            { client: 'Mihaela & Vlad', event: 'Petrecere botez', venue: 'Casa Miraval', date: '29 iun 2024', guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
-            { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: '05 iul 2024', guests: 150, status: 'awaiting', action: 'Planificați tur virtual' },
-            { client: 'EMEA Sales Team', event: 'Conferință anuală', venue: 'Villa Lac', date: '12 iul 2024', guests: 220, status: 'confirmed', action: 'Coordonați furnizori' }
-        ];
+        container.appendChild(svg);
+      }
 
-        const visits = [
-            { client: 'Ioana Matei', venue: 'Villa Lac', date: '16 iun 2024', hour: '11:00', host: 'Andreea', status: 'confirmed' },
-            { client: 'Căsătorim.ro', venue: 'Forest Lodge', date: '18 iun 2024', hour: '09:30', host: 'Paul', status: 'pending' },
-            { client: 'Eventify', venue: 'Urban Loft', date: '18 iun 2024', hour: '15:00', host: 'Alex', status: 'awaiting' },
-            { client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: '20 iun 2024', hour: '17:00', host: 'Ioana', status: 'confirmed' },
-            { client: 'Art Expo Team', venue: 'Hub Creativ', date: '22 iun 2024', hour: '10:30', host: 'Vlad', status: 'awaiting' }
-        ];
+      function renderOccupancyChart() {
+        const container = document.getElementById('occupancy-pie-chart');
+        if (!container) return;
 
-        const eventsUpcoming = [
-            { venue: 'Villa Lac', title: 'Corporate Retreat', date: '16 iun 2024', owner: 'Andreea' },
-            { venue: 'Forest Lodge', title: 'Nuntă în aer liber', date: '21 iun 2024', owner: 'Paul' },
-            { venue: 'Urban Loft', title: 'Lansare produs tech', date: '22 iun 2024', owner: 'Alex' }
-        ];
+        container.innerHTML = '';
+        if (!occupancyForecast.length) {
+          container.innerHTML = '<p style="text-align:center; color: var(--muted-color);">Date insuficiente.</p>';
+          return;
+        }
 
-        const overviewBookings = [
-            { client: 'Andrei Popescu', venue: 'Forest Lodge', status: 'awaiting', note: 'Așteaptă confirmare meniuri & cazare' },
-            { client: 'Mihaela & Vlad', venue: 'Casa Miraval', status: 'pending', note: 'Necesită validare disponibilitate 29 iun' },
-            { client: 'Tech Horizon', venue: 'Hub Creativ', status: 'confirmed', note: 'Contract semnat, se pregătește plan logistic' }
-        ];
+        const wrapper = document.createElement('div');
+        wrapper.className = 'crm-occupancy-chart';
+        const colors = ['var(--primary-color)', 'var(--secondary-color)', '#28a745'];
 
-        const availabilityMatrix = [
-            { venue: 'Villa Lac', days: ['booked', 'booked', 'open', 'hold', 'booked', 'booked', 'open'] },
-            { venue: 'Forest Lodge', days: ['visit', 'booked', 'hold', 'open', 'open', 'booked', 'open'] },
-            { venue: 'Casa Miraval', days: ['open', 'open', 'visit', 'open', 'hold', 'booked', 'open'] },
-            { venue: 'Urban Loft', days: ['open', 'hold', 'open', 'open', 'visit', 'open', 'open'] },
-            { venue: 'Hub Creativ', days: ['booked', 'booked', 'booked', 'open', 'open', 'hold', 'open'] }
-        ];
+        occupancyForecast.forEach((entry, index) => {
+          const ratio = entry.totalDays > 0 ? entry.occupiedDays / entry.totalDays : 0;
+          const percentage = Math.round(ratio * 100);
+          const color = colors[index % colors.length];
 
-        const availabilitySummary = [
-            { venue: 'Villa Lac', info: 'Weekend-ul este aproape plin; promovați datele libere de duminică.' },
-            { venue: 'Forest Lodge', info: 'Cerere mare pentru evenimente corporate în timpul săptămânii.' },
-            { venue: 'Urban Loft', info: 'Sâmbătă liberă pe 22 iunie – oportunitate pentru evenimente premium.' }
-        ];
+          const donutCard = document.createElement('div');
+          donutCard.className = 'crm-donut-card';
 
-        const venues = [
-            {
-                name: 'Villa Lac',
-                city: 'Snagov',
-                status: 'activ',
-                capacity: '200 persoane',
-                nextStep: 'Eveniment corporate 16 iunie',
-                highlights: ['Pachet corporate premium', 'Integrare completă calendar', 'Media kit actualizat']
-            },
-            {
-                name: 'Forest Lodge',
-                city: 'Brașov',
-                status: 'activ',
-                capacity: '150 persoane',
-                nextStep: 'Tur pentru Căsătorim.ro',
-                highlights: ['Preferat pentru nunți rustic-chic', 'Noul meniu degustare disponibil']
-            },
-            {
-                name: 'Urban Loft',
-                city: 'București',
-                status: 'activ',
-                capacity: '120 persoane',
-                nextStep: 'Confirmare lansare produs 18 iunie',
-                highlights: ['Studio foto integrat', 'Se pregătesc noi setup-uri lumini']
-            },
-            {
-                name: 'Casa Miraval',
-                city: 'Cluj-Napoca',
-                status: 'în onboarding',
-                capacity: '90 persoane',
-                nextStep: 'Upload galerie foto finală',
-                highlights: ['Spațiu boutique', 'Necesită training gazde locale']
+          const donut = document.createElement('div');
+          donut.className = 'crm-donut';
+          donut.dataset.percentage = percentage;
+          donut.style.setProperty('--occupied-color', color);
+          donut.style.setProperty('--occupied-deg', `${(ratio * 360).toFixed(2)}deg`);
+
+          donutCard.innerHTML = `<p class="crm-donut-label">${entry.month}</p>`;
+          donutCard.prepend(donut);
+          wrapper.appendChild(donutCard);
+        });
+        container.appendChild(wrapper);
+      }
+
+      function formatStatusBadge(status) {
+        const normalized = status.toLowerCase();
+        let label = status.replace('-', ' ');
+        if (normalized === 'pending') label = 'În așteptare';
+        else if (normalized === 'pre-booked') label = 'Pre-rezervat';
+        else if (normalized === 'confirmed') label = 'Confirmat';
+        else if (normalized === 'declined') label = 'Respins';
+        return `<span class="crm-status-badge" data-status="${normalized}">${label}</span>`;
+      }
+
+      function renderRequestsTable(tableBodyId, requests, venueFilterId) {
+        const tableBody = document.getElementById(tableBodyId);
+        const filter = document.getElementById(venueFilterId);
+        if (!tableBody || !filter) return;
+        
+        const filtered = requests.filter(r => filter.value === 'all' || String(r.venueId) === filter.value);
+        if (filtered.length === 0) {
+            const colspan = tableBody.closest('table').querySelector('thead').rows[0].cells.length;
+            tableBody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center;">Nicio solicitare.</td></tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = filtered.map(req => {
+            const venueName = venues.find(v => v.id === req.venueId)?.name ?? 'N/A';
+            const actions = req.status === 'pending' ?
+                `<div class="crm-action-buttons">
+                    <button class="crm-action-button" data-action="confirm" data-request-type="${tableBodyId}" data-request-id="${req.id}" title="Confirmă"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+                    <button class="crm-action-button" data-action="decline" data-request-type="${tableBodyId}" data-request-id="${req.id}" title="Respinge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>` : '';
+
+            if (tableBodyId === 'bookings-table-body') {
+                return `<tr>
+                    <td>${req.client}</td>
+                    <td>${venueName}</td>
+                    <td>${req.eventType}</td>
+                    <td>${req.date}</td>
+                    <td>${req.guests}</td>
+                    <td>${formatStatusBadge(req.status)}</td>
+                    <td>${actions}</td>
+                </tr>`;
+            } else { // visits-table-body
+                const status = req.status === 'pending' ? 'visit-pending' : req.status;
+                let visitLabel = req.status.charAt(0).toUpperCase() + req.status.slice(1);
+                if (status === 'visit-pending') visitLabel = 'În așteptare';
+                if (status === 'confirmed') visitLabel = 'Confirmată';
+                if (status === 'declined') visitLabel = 'Respinsă';
+                
+                return `<tr>
+                    <td>${req.client}</td>
+                    <td>${venueName}</td>
+                    <td>${req.date}</td>
+                    <td>${req.time}</td>
+                    <td><span class="crm-status-badge" data-status="${status}">${visitLabel}</span></td>
+                    <td>${actions}</td>
+                </tr>`;
             }
-        ];
+        }).join('');
+      }
 
-        const communications = [
-            { title: 'Confirmare styling decor Villa Lac', tag: 'booking', detail: 'Echipa Ouido a aprobat styling-ul pentru evenimentul din 16 iunie.', time: 'acum 45 min' },
-            { title: 'Reminder tur Forest Lodge', tag: 'vizită', detail: 'Clientul Căsătorim.ro a confirmat prezența. Trimiteți detalii de acces.', time: 'azi · 08:30' },
-            { title: 'Update media kit Urban Loft', tag: 'marketing', detail: 'Fotograful a încărcat noile imagini. Verificați folderul partajat.', time: 'ieri · 17:15' },
-            { title: 'Request logistic Hub Creativ', tag: 'logistic', detail: 'Tech Horizon solicită planul de amplasare standuri pentru 5 iulie.', time: 'ieri · 11:05' }
-        ];
+      function createCalendar(containerId, venueFilter, { interactive = false, activeVenueId = null } = {}) {
+        const calendarContainer = document.getElementById(containerId);
+        if (!calendarContainer) return;
+        
+        calendarContainer.innerHTML = `
+            <div class="crm-calendar-header">
+                <button class="crm-calendar-nav-button" data-direction="prev">&lt;</button>
+                <h2 class="crm-calendar-current"></h2>
+                <button class="crm-calendar-nav-button" data-direction="next">&gt;</button>
+            </div>
+            <div class="crm-calendar-grid"></div>`;
 
-        const statusMeta = {
-            pending: { label: 'În așteptare', className: 'pending' },
-            awaiting: { label: 'Necesită confirmare', className: 'awaiting' },
-            confirmed: { label: 'Confirmat', className: 'confirmed' },
-            declined: { label: 'Respins', className: 'declined' }
+        const currentMonthLabel = calendarContainer.querySelector('.crm-calendar-current');
+        const calendarGrid = calendarContainer.querySelector('.crm-calendar-grid');
+        const currentDate = new Date();
+        currentDate.setDate(1);
+
+        const updateGrid = () => {
+            currentMonthLabel.textContent = currentDate.toLocaleString('ro-RO', { month: 'long', year: 'numeric' });
+            calendarGrid.innerHTML = CALENDAR_DAY_NAMES.map(day => `<div class="crm-calendar-day-name">${day}</div>`).join('');
+            
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) calendarGrid.insertAdjacentHTML('beforeend', '<div class="crm-calendar-date" data-outside="true"></div>');
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dateEl = document.createElement('div');
+                dateEl.className = 'crm-calendar-date';
+                dateEl.dataset.date = dateString;
+                dateEl.innerHTML = `<div class="crm-day-number">${day}</div>`;
+                
+                const allEvents = [ ...eventRequests, ...visitRequests.map(v => ({...v, eventType: "Vizită", status: v.status === 'pending' ? 'visit-pending' : v.status}))];
+                const events = (venueFilter === 'all' ? allEvents : allEvents.filter(e => String(e.venueId) === String(venueFilter)))
+                    .filter(e => e.date === dateString);
+                
+                events.forEach(event => {
+                    dateEl.innerHTML += `<div class="crm-calendar-event" data-variant="${EVENT_STATUS_VARIANTS[event.status] || 'request'}">${event.eventType}</div>`;
+                });
+                
+                const isBlocked = activeVenueId && availabilityData[activeVenueId]?.blockedDates.includes(dateString);
+                if(isBlocked) {
+                    dateEl.classList.add('is-unavailable');
+                    dateEl.innerHTML += `<div class="crm-calendar-event" data-variant="unavailable">Indisponibil</div>`;
+                }
+
+                if (interactive && !events.length) {
+                    dateEl.style.cursor = 'pointer';
+                    dateEl.addEventListener('click', () => {
+                        ensureVenueAvailability(activeVenueId);
+                        const blocked = availabilityData[activeVenueId].blockedDates;
+                        if(blocked.includes(dateString)) {
+                            availabilityData[activeVenueId].blockedDates = blocked.filter(d => d !== dateString);
+                        } else {
+                            blocked.push(dateString);
+                        }
+                        updateGrid();
+                    });
+                }
+                
+                calendarGrid.appendChild(dateEl);
+            }
         };
 
-        const venuesSelect = new Set(bookings.map(item => item.venue));
-        visits.forEach(item => venuesSelect.add(item.venue));
+        calendarContainer.querySelector('[data-direction="prev"]').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); updateGrid(); });
+        calendarContainer.querySelector('[data-direction="next"]').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); updateGrid(); });
+        updateGrid();
+      }
 
-        function populateSelect(selectEl, options, includeAll = true) {
-            if (!selectEl) {
-                return;
-            }
-            selectEl.innerHTML = '';
-            if (includeAll) {
-                const opt = document.createElement('option');
-                opt.value = 'all';
-                opt.textContent = 'Toate locațiile';
-                selectEl.appendChild(opt);
-            }
-            options.forEach(option => {
-                const opt = document.createElement('option');
-                opt.value = option;
-                opt.textContent = option;
-                selectEl.appendChild(opt);
-            });
+      function renderVisitScheduler() {
+        if (!schedulerContainer) return;
+        if (availabilitySelection === 'all') {
+          schedulerContainer.innerHTML = '<p class="crm-scheduler-placeholder">Selectează o locație pentru a stabili intervalele.</p>';
+          return;
         }
 
-        populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort());
-        populateSelect(document.getElementById('visits-venue-filter'), Array.from(venuesSelect).sort());
+        ensureVenueAvailability(activeAvailabilityVenueId);
+        const venueSlots = availabilityData[activeAvailabilityVenueId].visitSlots;
+        schedulerContainer.innerHTML = WEEK_DAYS.map(day => {
+            const slots = venueSlots[day] ?? [];
+            return `
+            <section class="crm-day-schedule" data-day="${day}">
+              <h4>${day}</h4>
+              <div class="crm-time-slots">${slots.map(slot => `<div class="crm-time-slot" data-start="${slot.start}" data-end="${slot.end}"><span>${slot.start} - ${slot.end}</span><button class="crm-remove-slot-btn">✕</button></div>`).join('')}</div>
+              <form class="crm-add-slot-form">
+                <input type="time" class="crm-start-time" required><input type="time" class="crm-end-time" required><button type="submit" class="crm-add-slot-btn">+</button>
+              </form>
+            </section>`;
+        }).join('');
+      }
 
-        function createStatusChip(status) {
-            const meta = statusMeta[status];
-            const span = document.createElement('span');
-            span.className = 'status-chip';
-            span.dataset.status = meta ? meta.className : 'pending';
-            span.textContent = meta ? meta.label : status;
-            return span;
+      function updateAvailabilityPage() {
+        const title = document.getElementById('availability-page-title');
+        document.getElementById('availability-venue-selector').value = availabilitySelection === 'all' ? 'all' : String(activeAvailabilityVenueId);
+
+        if (availabilitySelection === 'all') {
+            title.textContent = 'Disponibilitate (Toate locațiile)';
+            createCalendar('availability-calendar-container', 'all', { interactive: false });
+            if (document.getElementById('availability').classList.contains('is-active')) {
+                availabilityDialog?.classList.remove('is-hidden');
+            }
+        } else {
+            const venue = venues.find(v => v.id === activeAvailabilityVenueId);
+            title.textContent = `Disponibilitate: ${venue.name}`;
+            createCalendar('availability-calendar-container', activeAvailabilityVenueId, { interactive: true, activeVenueId });
+        }
+        renderVisitScheduler();
+      }
+      
+      function handleRequestAction(requestCollection, requestId, action) {
+        const request = requestCollection.find(item => item.id === requestId);
+        if (request) request.status = action === 'confirm' ? 'confirmed' : 'declined';
+      }
+
+      // --- Event Listeners ---
+      document.addEventListener('click', (event) => {
+        const navTrigger = event.target.closest('[data-crm-nav]');
+        if (navTrigger) {
+          event.preventDefault();
+          const pageId = navTrigger.dataset.pageTarget;
+          const venueId = navTrigger.dataset.venueId;
+          if (pageId === 'availability' && venueId) {
+            activeAvailabilityVenueId = parseInt(venueId, 10);
+            availabilitySelection = String(activeAvailabilityVenueId);
+          }
+          showPage(pageId);
         }
 
-        function renderOverviewLists() {
-            const bookingsList = document.getElementById('overview-bookings-list');
-            const eventsList = document.getElementById('overview-events-list');
-            const availabilityList = document.getElementById('overview-availability-summary');
-
-            if (bookingsList) {
-                bookingsList.innerHTML = '';
-                overviewBookings.forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = 'list-item';
-
-                    const left = document.createElement('div');
-                    left.innerHTML = `<strong>${item.client}</strong><span>${item.venue} · ${item.note}</span>`;
-
-                    const chip = createStatusChip(item.status);
-                    row.append(left, chip);
-                    bookingsList.appendChild(row);
-                });
-            }
-
-            if (eventsList) {
-                eventsList.innerHTML = '';
-                eventsUpcoming.forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = 'list-item';
-                    row.innerHTML = `<div><strong>${item.title}</strong><span>${item.venue} · ${item.date}</span></div><span class="status-chip" data-status="confirmed">Owner: ${item.owner}</span>`;
-                    eventsList.appendChild(row);
-                });
-            }
-
-            if (availabilityList) {
-                availabilityList.innerHTML = '';
-                availabilitySummary.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'status-chip';
-                    card.dataset.status = 'awaiting';
-                    card.textContent = `${item.venue} · ${item.info}`;
-                    availabilityList.appendChild(card);
-                });
-            }
+        const actionButton = event.target.closest('.crm-action-button');
+        if (actionButton) {
+            const { action, requestType, requestId } = actionButton.dataset;
+            const collection = requestType.includes('bookings') ? eventRequests : visitRequests;
+            handleRequestAction(collection, parseInt(requestId), action);
+            renderRequestsTable(requestType, collection, requestType.replace('table-body', 'venue-filter'));
+            renderDashboardStats();
         }
-
-        function renderBookingsTable() {
-            const body = document.getElementById('bookings-table-body');
-            if (!body) {
-                return;
-            }
-
-            const venueFilter = document.getElementById('bookings-venue-filter');
-            const statusFilter = document.getElementById('bookings-status-filter');
-            const venueValue = venueFilter ? venueFilter.value : 'all';
-            const statusValue = statusFilter ? statusFilter.value : 'all';
-
-            body.innerHTML = '';
-
-            bookings
-                .filter(item => venueValue === 'all' || item.venue === venueValue)
-                .filter(item => statusValue === 'all' || item.status === statusValue)
-                .forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.client}</td>
-                        <td>${item.event}</td>
-                        <td>${item.venue}</td>
-                        <td>${item.date}</td>
-                        <td>${item.guests}</td>
-                        <td></td>
-                        <td></td>
-                    `;
-
-                    const statusCell = row.children[5];
-                    statusCell.appendChild(createStatusChip(item.status));
-
-                    const actionsCell = row.children[6];
-                    const actions = document.createElement('div');
-                    actions.className = 'table-actions';
-                    const confirmBtn = document.createElement('button');
-                    confirmBtn.textContent = 'Confirmă';
-                    const noteBtn = document.createElement('button');
-                    noteBtn.textContent = 'Adaugă notă';
-                    const shareBtn = document.createElement('button');
-                    shareBtn.textContent = 'Trimite ofertă';
-                    actions.append(confirmBtn, noteBtn, shareBtn);
-                    actionsCell.appendChild(actions);
-
-                    body.appendChild(row);
-                });
+      });
+      
+      schedulerContainer?.addEventListener('submit', event => {
+        if (event.target.classList.contains('crm-add-slot-form')) {
+          event.preventDefault();
+          const form = event.target;
+          const start = form.querySelector('.crm-start-time').value;
+          const end = form.querySelector('.crm-end-time').value;
+          if (!start || !end || start >= end || availabilitySelection === 'all') return;
+          const day = form.closest('.crm-day-schedule').dataset.day;
+          ensureVenueAvailability(activeAvailabilityVenueId);
+          availabilityData[activeAvailabilityVenueId].visitSlots[day] = availabilityData[activeAvailabilityVenueId].visitSlots[day] || [];
+          availabilityData[activeAvailabilityVenueId].visitSlots[day].push({ start, end });
+          renderVisitScheduler();
         }
-
-        function renderBookingsStatusCards() {
-            const container = document.getElementById('bookings-status-cards');
-            if (!container) {
-                return;
-            }
-            const counts = bookings.reduce((acc, booking) => {
-                acc[booking.status] = (acc[booking.status] || 0) + 1;
-                return acc;
-            }, {});
-
-            container.innerHTML = '';
-            Object.entries(statusMeta).forEach(([status, meta]) => {
-                const card = document.createElement('article');
-                card.className = 'metric-card';
-                card.innerHTML = `<span>${meta.label}</span><strong>${counts[status] || 0}</strong>`;
-                container.appendChild(card);
-            });
+      });
+      
+      schedulerContainer?.addEventListener('click', event => {
+        if (event.target.classList.contains('crm-remove-slot-btn')) {
+            const slotEl = event.target.closest('.crm-time-slot');
+            const day = event.target.closest('.crm-day-schedule').dataset.day;
+            const { start, end } = slotEl.dataset;
+            const slots = availabilityData[activeAvailabilityVenueId].visitSlots[day];
+            availabilityData[activeAvailabilityVenueId].visitSlots[day] = slots.filter(s => s.start !== start || s.end !== end);
+            renderVisitScheduler();
         }
+      });
+      
+      availabilityDialogClose?.addEventListener('click', () => availabilityDialog?.classList.add('is-hidden'));
+      availabilityDialog?.addEventListener('click', (e) => { if(e.target === availabilityDialog) availabilityDialog.classList.add('is-hidden'); });
+      
+      document.getElementById('bookings-venue-filter')?.addEventListener('change', () => renderRequestsTable('bookings-table-body', eventRequests, 'bookings-venue-filter'));
+      document.getElementById('visits-venue-filter')?.addEventListener('change', () => renderRequestsTable('visits-table-body', visitRequests, 'visits-venue-filter'));
+      document.getElementById('availability-venue-selector')?.addEventListener('change', (e) => {
+        const { value } = e.target;
+        availabilitySelection = value;
+        if (value !== 'all') activeAvailabilityVenueId = parseInt(value, 10);
+        updateAvailabilityPage();
+      });
 
-        function renderVisitsTable() {
-            const body = document.getElementById('visits-table-body');
-            if (!body) {
-                return;
-            }
+      // --- Initialization ---
+      (function initialize() {
+        populateVenueSelector('bookings-venue-filter', { includeAllOption: true });
+        populateVenueSelector('visits-venue-filter', { includeAllOption: true });
+        populateVenueSelector('availability-venue-selector', { includeAllOption: true });
+        
+        renderDashboardStats();
+        renderVenuesPage();
+        renderRequestsTable('bookings-table-body', eventRequests, 'bookings-venue-filter');
+        renderRequestsTable('visits-table-body', visitRequests, 'visits-venue-filter');
+        renderVisitsTrendChart();
+        renderOccupancyChart();
+        updateAvailabilityPage();
+        
+        const initialHash = window.location.hash.slice(1) || 'dashboard';
+        const isValidHash = crmPages.some(p => p.id === initialHash);
+        showPage(isValidHash ? initialHash : 'dashboard', { updateHash: false });
+      })();
+    }
 
-            const venueFilter = document.getElementById('visits-venue-filter');
-            const venueValue = venueFilter ? venueFilter.value : 'all';
-
-            body.innerHTML = '';
-
-            visits
-                .filter(item => venueValue === 'all' || item.venue === venueValue)
-                .forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.client}</td>
-                        <td>${item.venue}</td>
-                        <td>${item.date}</td>
-                        <td>${item.hour}</td>
-                        <td>${item.host}</td>
-                        <td></td>
-                        <td></td>
-                    `;
-
-                    const statusCell = row.children[5];
-                    statusCell.appendChild(createStatusChip(item.status));
-
-                    const actionsCell = row.children[6];
-                    const actions = document.createElement('div');
-                    actions.className = 'table-actions';
-                    const confirmBtn = document.createElement('button');
-                    confirmBtn.textContent = 'Confirmă prezența';
-                    const rescheduleBtn = document.createElement('button');
-                    rescheduleBtn.textContent = 'Reprogramează';
-                    actions.append(confirmBtn, rescheduleBtn);
-                    actionsCell.appendChild(actions);
-
-                    body.appendChild(row);
-                });
-        }
-
-        function renderAvailabilityGrid() {
-            const body = document.getElementById('availability-grid-body');
-            if (!body) {
-                return;
-            }
-            const labels = {
-                booked: 'Rezervat',
-                hold: 'Hold',
-                visit: 'Vizită',
-                open: 'Liber'
-            };
-
-            body.innerHTML = '';
-            availabilityMatrix.forEach(rowData => {
-                const row = document.createElement('tr');
-                const venueCell = document.createElement('td');
-                venueCell.textContent = rowData.venue;
-                row.appendChild(venueCell);
-
-                rowData.days.forEach(status => {
-                    const cell = document.createElement('td');
-                    cell.className = 'availability-slot';
-                    cell.dataset.status = status;
-                    cell.textContent = labels[status] || status;
-                    row.appendChild(cell);
-                });
-
-                body.appendChild(row);
-            });
-        }
-
-        function renderVenueCards() {
-            const container = document.getElementById('venue-cards');
-            if (!container) {
-                return;
-            }
-            container.innerHTML = '';
-            venues.forEach(venue => {
-                const card = document.createElement('article');
-                card.className = 'venue-card';
-                const statusChip = createStatusChip(venue.status === 'activ' ? 'confirmed' : 'awaiting');
-                statusChip.textContent = venue.status;
-                statusChip.dataset.status = venue.status === 'activ' ? 'confirmed' : 'awaiting';
-
-                const header = document.createElement('header');
-                header.innerHTML = `<div><h3 style="margin:0 0 4px;">${venue.name}</h3><span class="panel-meta">${venue.city}</span></div>`;
-                header.appendChild(statusChip);
-
-                const info = document.createElement('div');
-                info.innerHTML = `<strong>Capacitate:</strong> ${venue.capacity}<br><strong>Următor pas:</strong> ${venue.nextStep}`;
-
-                const list = document.createElement('ul');
-                venue.highlights.forEach(highlight => {
-                    const li = document.createElement('li');
-                    li.textContent = highlight;
-                    list.appendChild(li);
-                });
-
-                const actions = document.createElement('div');
-                actions.className = 'table-actions';
-                const editBtn = document.createElement('button');
-                editBtn.textContent = 'Editează detalii';
-                const availabilityBtn = document.createElement('button');
-                availabilityBtn.textContent = 'Actualizează disponibilitate';
-                actions.append(editBtn, availabilityBtn);
-
-                card.append(header, info, list, actions);
-                container.appendChild(card);
-            });
-        }
-
-        function renderCommunications() {
-            const container = document.getElementById('communications-grid');
-            if (!container) {
-                return;
-            }
-            container.innerHTML = '';
-            communications.forEach(item => {
-                const card = document.createElement('article');
-                card.className = 'communication-card';
-                const header = document.createElement('header');
-                header.innerHTML = `<strong>${item.title}</strong><span class="status-chip" data-status="awaiting">${item.tag}</span>`;
-                const detail = document.createElement('p');
-                detail.className = 'panel-meta';
-                detail.textContent = item.detail;
-                const footer = document.createElement('span');
-                footer.className = 'panel-meta';
-                footer.textContent = `Actualizat: ${item.time}`;
-                card.append(header, detail, footer);
-                container.appendChild(card);
-            });
-        }
-
-        renderOverviewLists();
-        renderBookingsStatusCards();
-        renderBookingsTable();
-        renderVisitsTable();
-        renderAvailabilityGrid();
-        renderVenueCards();
-        renderCommunications();
-
-        document.getElementById('bookings-venue-filter')?.addEventListener('change', renderBookingsTable);
-        document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
-        document.getElementById('visits-venue-filter')?.addEventListener('change', renderVisitsTable);
-    });
-    </script>
+    document.addEventListener('fragments:loaded', initOwnerCrmPage);
+  </script>
 </body>
 </html>
