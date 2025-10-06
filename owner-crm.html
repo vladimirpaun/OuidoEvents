@@ -449,7 +449,6 @@
         /* Ajustare culori existente pentru consistență */
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
         .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-        .status-chip[data-status="confirmed"] { background: rgba(22, 163, 74, 0.15); color: #15803d; }
         .status-chip[data-status="declined"] { background: rgba(220, 38, 38, 0.15); color: #b91c1c; }
 
 
@@ -989,16 +988,16 @@
 
                 <article class="panel">
                     <header>
+                        <h2>Programări vizionări</h2>
+                    </header>
+                    <div class="list" id="overview-viewings-list"></div>
+                </article>
+                <article class="panel">
+                    <header>
                         <h2>Flux rapid bookings</h2>
                         <span class="panel-meta">Cele mai recente cereri</span>
                     </header>
                     <div class="list" id="overview-bookings-list"></div>
-                </article>
-                <article class="panel">
-                    <header>
-                        <h2>Programări vizionări</h2>
-                    </header>
-                    <div class="list" id="overview-viewings-list"></div>
                 </article>
                 <article class="panel">
                     <header>
@@ -1015,7 +1014,7 @@
                 <article class="panel">
                     <header><h2>Grad de ocupare lunar (urm. 12 luni)</h2></header>
                     <div id="monthly-occupancy-chart"></div>
-                </div>
+                </article>
             </section>
 
             <section class="crm-page" data-page="bookings" id="bookings">
@@ -1344,7 +1343,7 @@
         const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
         const bookings = [
-            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'pending', action: 'Confirmați meniu' },
+            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'pending', action: 'Confirmă disponibilitatea' },
             { client: 'Studio Creativ', event: 'Lansare produs', venue: 'Urban Loft', date: formatDate(addDays(4)), guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
             { client: 'Mihaela & Vlad', event: 'Petrecere botez', venue: 'Casa Miraval', date: formatDate(addDays(15)), guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
             { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'offer_sent', action: 'Planificați tur virtual' },
@@ -1452,7 +1451,7 @@
 
 
         const statusMeta = {
-            'pending': { label: 'Cerere disponibilitate', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
+            'pending': { label: 'Confirma disponibilitatea', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
             'offer_sent': { label: 'Ofertă trimisă', className: 'offer_sent', color: '#7c3aed', description: 'Ofertă expediată clientului' },
             'viewing_scheduled': { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#0d9488', description: 'Vizionare confirmată' },
             'confirmed': { label: 'Confirmat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans incasat' },
@@ -1499,10 +1498,10 @@
         }
 
         function createStatusChip(status) {
-            const meta = statusMeta[status];
+            const meta = statusMeta[status] || { label: status, className: 'pending' };
             const span = document.createElement('span');
             span.className = 'status-chip';
-            span.dataset.status = meta ? meta.className : 'pending';
+            span.dataset.status = meta.className;
             span.textContent = meta ? meta.label : status;
             return span;
         }
@@ -1553,7 +1552,6 @@
                     const chip = createStatusChip(item.status);
                     row.append(left, chip);
 
-                    // MODIFICAT: Navighează la booking-ul specific
                     row.addEventListener('click', () => {
                         navigateToBooking(item.client);
                     });
@@ -2039,7 +2037,7 @@
             }, {});
 
             const chartData = Object.entries(statusCounts).map(([status, count]) => ({
-                type: statusMeta[status]?.label || status,
+                type: (statusMeta[status] || {label: 'Necunoscut'}).label,
                 count: count,
                 color: statusMeta[status]?.color || '#cccccc'
             }));
