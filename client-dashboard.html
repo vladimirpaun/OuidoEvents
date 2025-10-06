@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ouidoEvents · Dashboard Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #4364F7;
+            --accent-color: #00B4D8;
+            --dark-color: #1a202c;
+            --gray-color: #555555;
+            --muted-color: #7a7f87;
+            --light-gray-color: #f0f2f5;
+            --bg-color: #f8f9fa;
+            --white-color: #ffffff;
+            --border-color: #e5eaf1;
+            --shadow-color: rgba(67, 100, 247, 0.15);
+            --border-radius: 16px;
+            --sidebar-width: 296px;
+            --header-height: 74px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--dark-color); background-color: var(--bg-color); line-height: 1.5; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
+
+        /* --- Layout Shell --- */
+        main.crm-shell { display: grid; grid-template-columns: var(--sidebar-width) 1fr; min-height: calc(100vh - var(--header-height)); background: linear-gradient(135deg, rgba(67, 100, 247, 0.06), rgba(0, 82, 212, 0.02)); }
+        .crm-sidebar { position: sticky; top: var(--header-height); height: calc(100vh - var(--header-height)); background: var(--white-color); border-right: 1px solid var(--border-color); padding: 32px 26px; display: flex; flex-direction: column; gap: 28px; }
+        .crm-sidebar h2 { font-size: 1.25rem; margin: 0 0 6px; }
+        .crm-sidebar p { color: var(--muted-color); font-size: 0.92rem; margin: 0; }
+        .crm-nav { display: flex; flex-direction: column; gap: 24px; }
+        .crm-nav-section label { font-size: 0.78rem; font-weight: 600; color: var(--muted-color); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; display: block; }
+        .crm-nav-links { display: flex; flex-direction: column; gap: 8px; }
+        .crm-nav-link { width: 100%; border: 1px solid transparent; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: var(--gray-color); font-weight: 500; background: transparent; cursor: pointer; transition: all 0.2s ease; }
+        .crm-nav-link svg { width: 18px; height: 18px; opacity: 0.7; }
+        .crm-nav-link:hover, .crm-nav-link.is-active { background: rgba(67, 100, 247, 0.1); border-color: rgba(0, 82, 212, 0.24); color: var(--primary-color); box-shadow: inset 0 0 0 1px rgba(0, 82, 212, 0.18); }
+        .crm-sidebar-footer { margin-top: auto; background: rgba(0, 82, 212, 0.08); border-radius: 16px; padding: 18px; }
+        .crm-sidebar-footer h3 { font-size: 0.96rem; margin: 0 0 4px; }
+        .crm-sidebar-footer p { font-size: 0.85rem; margin-bottom: 10px; }
+        .crm-sidebar-footer a { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; color: var(--primary-color); font-size: 0.9rem; }
+
+        /* --- Pages & Content --- */
+        .crm-pages { padding: calc(var(--header-height) + 20px) 48px 60px; display: flex; flex-direction: column; gap: 36px; }
+        .crm-page { display: none; flex-direction: column; gap: 28px; animation: fadeIn 0.24s ease; }
+        .crm-page.is-active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Componente comune --- */
+        .page-header { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 28px 32px; box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8); display: flex; flex-direction: column; gap: 18px; }
+        .page-header h1 { font-size: 1.8rem; margin: 0 0 4px; }
+        .page-header p { margin: 0; color: var(--muted-color); max-width: 520px; }
+        .panel { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 26px 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.85); }
+        .panel header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+        .panel header h2 { margin: 0; font-size: 1.1rem; }
+        .panel-meta { color: var(--muted-color); font-size: 0.85rem; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px; }
+        .metric-card { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+        .metric-card span { color: var(--muted-color); font-size: 0.85rem; }
+        .metric-card strong { font-size: 1.6rem; }
+        .list { display: flex; flex-direction: column; gap: 12px; }
+        .list-item { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid rgba(0, 82, 212, 0.08); padding-bottom: 12px; }
+        .list-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+        .status-chip[data-status="confirmed"] { background: rgba(22, 163, 74, 0.15); color: #15803d; }
+        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+        .crm-button { border-radius: 999px; padding: 10px 22px; border: 1px solid transparent; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+        .crm-button.primary { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); }
+        .crm-button.ghost { background: transparent; border-color: rgba(0, 82, 212, 0.2); color: var(--primary-color); }
+
+        /* --- Stiluri specifice paginii de client --- */
+        .favorites-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .location-card { display: flex; flex-direction: column; background: var(--white-color); border-radius: var(--border-radius); overflow: hidden; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .location-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px var(--shadow-color); }
+        .location-image { height: 200px; background-size: cover; background-position: center; position: relative; }
+        .remove-favorite-btn { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.8); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .remove-favorite-btn svg { width: 20px; height: 20px; fill: #ff4d4d; stroke: #ff4d4d; }
+        .location-details { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .location-details h3 { font-size: 1.1rem; margin-bottom: 4px; }
+        .location-details p { font-size: 0.9rem; color: var(--muted-color); margin-bottom: 15px; }
+        .location-card-footer { margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .location-price { font-weight: 600; }
+
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        table.crm-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        table.crm-table th, table.crm-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; }
+        table.crm-table th { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-color); }
+        .table-actions { display: flex; gap: 10px; }
+        .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 6px 14px; font-size: 0.82rem; cursor: pointer; }
+
+        /* Responsive */
+        @media (max-width: 1180px) {
+            main.crm-shell { grid-template-columns: 1fr; }
+            .crm-sidebar { position: relative; top: 0; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .crm-pages { padding: 36px 24px 48px; }
+        }
+        @media (max-width: 720px) {
+            .crm-pages { padding: 28px 16px 40px; }
+            .page-header { padding: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div data-include="header.html"></div>
+    <div data-include="mobile-menu.html"></div>
+
+    <main class="crm-shell">
+        <aside class="crm-sidebar">
+            <div>
+                <h2>Contul meu</h2>
+                <p>Bun venit, Alex! Gestionează-ți cererile și locațiile favorite.</p>
+            </div>
+
+            <nav class="crm-nav" aria-label="Navigare cont client">
+                <div class="crm-nav-section">
+                    <div class="crm-nav-links">
+                        <button class="crm-nav-link is-active" type="button" data-page-target="overview">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+                            Dashboard
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="favorites">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            Locații Favorite
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="requests">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H9a2 2 0 0 1-2-2V7"/><path d="M9 17h10"/><path d="M13 11h6"/><path d="M5 3h14a2 2 0 0 1 2 2v12"/><polyline points="5 7 5 21 19 21"/></svg>
+                            Cererile mele
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="messages">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Mesaje
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="crm-sidebar-footer">
+                <h3>Ai nevoie de ajutor?</h3>
+                <p>Echipa noastră de suport este aici pentru a te ghida.</p>
+                <a href="contact.html">Contactează-ne</a>
+            </div>
+        </aside>
+
+        <section class="crm-pages">
+            <!-- Pagina Overview -->
+            <section class="crm-page is-active" data-page="overview">
+                <div class="page-header">
+                    <h1>Dashboard Client</h1>
+                    <p>Vezi rapid statusul cererilor tale, locațiile favorite și ofertele primite de la proprietari.</p>
+                </div>
+                <div class="metrics-grid">
+                    <article class="metric-card">
+                        <span>Locații favorite</span>
+                        <strong id="overview-favorites-count">0</strong>
+                    </article>
+                    <article class="metric-card">
+                        <span>Cereri active</span>
+                        <strong id="overview-requests-count">0</strong>
+                    </article>
+                    <article class="metric-card">
+                        <span>Oferte primite</span>
+                        <strong id="overview-offers-count">0</strong>
+                    </article>
+                </div>
+                <div class="panel">
+                    <header><h2>Activitate recentă</h2></header>
+                    <div class="list" id="overview-recent-activity"></div>
+                </div>
+            </section>
+
+            <!-- Pagina Favorite -->
+            <section class="crm-page" data-page="favorites">
+                <div class="page-header">
+                    <h1>Locațiile Tale Favorite</h1>
+                    <p>Aici găsești toate locațiile pe care le-ai salvat. Compară-le și trimite cereri de disponibilitate.</p>
+                </div>
+                <div class="favorites-grid" id="favorites-grid">
+                    <!-- Cardurile cu locații favorite vor fi generate aici -->
+                </div>
+            </section>
+
+            <!-- Pagina Cererile Mele -->
+            <section class="crm-page" data-page="requests">
+                <div class="page-header">
+                    <h1>Cererile Mele de Disponibilitate</h1>
+                    <p>Urmărește statusul tuturor cererilor trimise către locații.</p>
+                </div>
+                <div class="panel">
+                    <div class="table-wrapper">
+                        <table class="crm-table">
+                            <thead>
+                                <tr>
+                                    <th>Locație</th>
+                                    <th>Dată Eveniment</th>
+                                    <th>Invitați</th>
+                                    <th>Status</th>
+                                    <th>Acțiuni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requests-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pagina Mesaje -->
+            <section class="crm-page" data-page="messages">
+                <div class="page-header">
+                    <h1>Mesaje</h1>
+                    <p>Centralizează aici toate conversațiile cu proprietarii locațiilor.</p>
+                </div>
+                <div class="panel">
+                    <div class="list" id="messages-list">
+                        <!-- Lista de mesaje va fi generată aici -->
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.crm-nav-link');
+        const pages = document.querySelectorAll('.crm-page');
+
+        function activatePage(pageId) {
+            if (!pageId) return;
+            pages.forEach(page => page.classList.toggle('is-active', page.dataset.page === pageId));
+            navLinks.forEach(link => link.classList.toggle('is-active', link.dataset.pageTarget === pageId));
+            history.replaceState(null, '', `#${pageId}`);
+        }
+
+        const initialPage = window.location.hash.replace('#', '') || 'overview';
+        activatePage(initialPage);
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => activatePage(link.dataset.pageTarget));
+        });
+
+        window.addEventListener('hashchange', () => activatePage(window.location.hash.replace('#', '')));
+
+        // --- MOCK DATA ---
+        const locations = [
+            { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, capacity_min: 150, capacity_max: 400, tags: ['Exclusivist', 'Panoramic'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional', 'Event planner'], rating: 9.4, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400' },
+            { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, capacity_min: 80, capacity_max: 200, tags: ['Natură', 'Piscină'], facilities: ['Parcare', 'Piscină', 'Cazare', 'Vedere la Munte', 'Wi-Fi gratuit'], rating: 9.8, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400' },
+            { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, capacity_min: 50, capacity_max: 150, tags: ['Modern', 'Rooftop'], facilities: ['Parcare', 'Wi-Fi gratuit', 'Sistem de sunet și lumini profesional'], rating: 9.1, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?w=400' },
+            { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, capacity_min: 100, capacity_max: 250, tags: ['Lac', 'Natură'], facilities: ['Parcare', 'Vedere la Lac', 'Ceremonii în aer liber', 'Event planner'], rating: 9.6, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400' },
+        ];
+
+        const clientRequests = [
+            { id: 1, locationId: 2, eventDate: '24 Aug 2024', guests: 120, status: 'offer_sent' },
+            { id: 2, locationId: 7, eventDate: '15 Sep 2024', guests: 150, status: 'confirmed' },
+            { id: 3, locationId: 1, eventDate: '05 Oct 2024', guests: 200, status: 'pending' },
+            { id: 4, locationId: 3, eventDate: '12 Oct 2024', guests: 80, status: 'cancelled' },
+        ];
+
+        const clientMessages = [
+            { id: 1, locationName: 'Forest Retreat & Spa', subject: 'Detalii meniu nuntă', lastMessage: 'Am dori să știm dacă meniul include și opțiuni vegetariene. Mulțumim!', time: 'acum 2 ore', unread: true },
+            { id: 2, locationName: 'Ambiance Lake', subject: 'Confirmare avans', lastMessage: 'Perfect, vom efectua plata în cursul zilei de mâine.', time: 'ieri', unread: false },
+        ];
+
+        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [2, 7]; // Mock some favorites
+
+        const statusMeta = {
+            'pending': { label: 'În așteptare răspuns' },
+            'confirmed': { label: 'Disponibilitate confirmată' },
+            'offer_sent': { label: 'Ofertă primită' },
+            'cancelled': { label: 'Anulat' }
+        };
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderOverview() {
+            document.getElementById('overview-favorites-count').textContent = favoriteIds.length;
+            document.getElementById('overview-requests-count').textContent = clientRequests.filter(r => r.status !== 'cancelled').length;
+            document.getElementById('overview-offers-count').textContent = clientRequests.filter(r => r.status === 'offer_sent').length;
+
+            const activityContainer = document.getElementById('overview-recent-activity');
+            activityContainer.innerHTML = '';
+
+            // Add recent favorites
+            const favoriteLocations = locations.filter(loc => favoriteIds.includes(loc.id)).slice(0, 2);
+            favoriteLocations.forEach(loc => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `<div><strong>Ai adăugat la favorite:</strong> ${loc.name}</div> <span class="panel-meta">${loc.city}</span>`;
+                activityContainer.appendChild(item);
+            });
+
+            // Add recent requests
+            clientRequests.slice(0, 2).forEach(req => {
+                const location = locations.find(loc => loc.id === req.locationId);
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `<div><strong>Cerere pentru ${location.name}:</strong> Status actualizat</div>`;
+                const chip = document.createElement('span');
+                chip.className = 'status-chip';
+                chip.dataset.status = req.status;
+                chip.textContent = statusMeta[req.status].label;
+                item.appendChild(chip);
+                activityContainer.appendChild(item);
+            });
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favorites-grid');
+            container.innerHTML = '';
+
+            const favoriteLocations = locations.filter(loc => favoriteIds.includes(loc.id));
+
+            if (favoriteLocations.length === 0) {
+                container.innerHTML = '<p>Nu ai nicio locație favorită adăugată.</p>';
+                return;
+            }
+
+            favoriteLocations.forEach(loc => {
+                const card = document.createElement('div');
+                card.className = 'location-card';
+                card.innerHTML = `
+                    <div class="location-image" style="background-image: url('${loc.imageUrl}')">
+                        <button class="remove-favorite-btn" data-id="${loc.id}" title="Elimină de la favorite">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </button>
+                    </div>
+                    <div class="location-details">
+                        <h3>${loc.name}</h3>
+                        <p>${loc.city}, România</p>
+                        <div class="location-card-footer">
+                            <span class="location-price">de la <strong>${loc.price}€</strong>/pers</span>
+                            <a href="venue-details.html?id=${loc.id}" class="crm-button ghost" style="padding: 6px 14px; font-size: 0.85rem;">Vezi detalii</a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Add event listeners for remove buttons
+            container.querySelectorAll('.remove-favorite-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const idToRemove = parseInt(this.dataset.id);
+                    favoriteIds = favoriteIds.filter(id => id !== idToRemove);
+                    localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+                    renderFavorites(); // Re-render the list
+                    renderOverview(); // Update overview counts
+                });
+            });
+        }
+
+        function renderRequests() {
+            const tableBody = document.getElementById('requests-table-body');
+            tableBody.innerHTML = '';
+
+            if (clientRequests.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nu ai nicio cerere de disponibilitate trimisă.</td></tr>';
+                return;
+            }
+
+            clientRequests.forEach(req => {
+                const location = locations.find(loc => loc.id === req.locationId);
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${location.name}</td>
+                    <td>${req.eventDate}</td>
+                    <td>${req.guests}</td>
+                    <td></td>
+                    <td></td>
+                `;
+                const statusCell = row.cells[3];
+                const chip = document.createElement('span');
+                chip.className = 'status-chip';
+                chip.dataset.status = req.status;
+                chip.textContent = statusMeta[req.status].label;
+                statusCell.appendChild(chip);
+
+                const actionsCell = row.cells[4];
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'table-actions';
+                if (req.status === 'offer_sent') {
+                    actionsDiv.innerHTML = '<button>Vezi oferta</button><button>Anulează cererea</button>';
+                } else {
+                    actionsDiv.innerHTML = '<button>Anulează cererea</button>';
+                }
+                actionsCell.appendChild(actionsDiv);
+            });
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messages-list');
+            container.innerHTML = '';
+
+            if (clientMessages.length === 0) {
+                container.innerHTML = '<p style="text-align: center;">Nu ai niciun mesaj.</p>';
+                return;
+            }
+
+            clientMessages.forEach(msg => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${msg.locationName}</strong>
+                        <span style="display: block; color: var(--dark-color);">${msg.subject}</span>
+                        <span style="color: var(--muted-color);">${msg.lastMessage}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="panel-meta">${msg.time}</span>
+                        ${msg.unread ? '<span class="status-chip" data-status="pending" style="margin-top: 8px;">Nou</span>' : ''}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Initial Render
+        renderOverview();
+        renderFavorites();
+        renderRequests();
+        renderMessages();
+    });
+    </script>
+</body>
+</html>
