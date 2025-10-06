@@ -486,6 +486,11 @@
             .search-group:nth-child(3), .search-group:nth-child(4) { border-bottom: none; }
             .search-group input, .search-group select { text-align: left; color: var(--gray-color); }
             .guests-group { border-bottom: none; }
+            /* NOU: Asigură vizibilitatea placeholder-ului pe Safari/mobil */
+            .search-group input::placeholder {
+                color: var(--muted-color, #7a7f87);
+                opacity: 1;
+            }
             .search-box .search-button { width: 100%; padding: 15px; border-radius: 0; grid-column: 1 / -1; }
 
             .venue-main-content {
