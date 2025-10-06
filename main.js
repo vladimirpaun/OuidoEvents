@@ -257,11 +257,141 @@
     trapFocus(panel);
   }
 
+  function getSearchComponentConfig(component) {
+    const wrapper = component.closest('[data-search-default-action], [data-search-navigate-to]');
+    const defaultAction = component.dataset.defaultAction || (wrapper ? wrapper.dataset.searchDefaultAction : '');
+    const navigateTo = component.dataset.navigateTo || (wrapper ? wrapper.dataset.searchNavigateTo : '');
+
+    return {
+      defaultAction: defaultAction || 'none',
+      navigateTo: navigateTo || 'locations.html',
+    };
+  }
+
+  function collectSearchValues(component) {
+    const eventType = component.querySelector('#event-type');
+    const locationInput = component.querySelector('#location');
+    const dateInput = component.querySelector('[data-search-date]');
+    const guests = component.querySelector('#guests');
+
+    const isPlaceholderActive = dateInput && dateInput.dataset.placeholderActive === 'true';
+
+    return {
+      eventType: eventType ? eventType.value : '',
+      location: locationInput ? locationInput.value.trim() : '',
+      date: !dateInput || isPlaceholderActive ? '' : dateInput.value.trim(),
+      guests: guests ? guests.value : '',
+    };
+  }
+
+  function initializeSearchComponents(context = document) {
+    const components = context.querySelectorAll('[data-search-box]');
+
+    components.forEach((component) => {
+      if (component.dataset.searchReady === 'true') {
+        return;
+      }
+
+      component.dataset.searchReady = 'true';
+
+      const { defaultAction, navigateTo } = getSearchComponentConfig(component);
+      const dateInput = component.querySelector('[data-search-date]');
+
+      if (dateInput) {
+        const placeholderText = dateInput.getAttribute('data-placeholder') || dateInput.getAttribute('placeholder') || 'dd/mm/yyyy';
+        const placeholderColor = 'var(--muted-color, #999)';
+        const activeColor = 'var(--gray-color)';
+
+        const applyPlaceholder = () => {
+          dateInput.value = placeholderText;
+          dateInput.style.color = placeholderColor;
+          dateInput.dataset.placeholderActive = 'true';
+        };
+
+        const activateValue = () => {
+          dateInput.style.color = activeColor;
+          dateInput.dataset.placeholderActive = 'false';
+        };
+
+        if (typeof flatpickr === 'function') {
+          flatpickr(dateInput, {
+            dateFormat: 'd/m/Y',
+            monthSelectorType: 'dropdown',
+            onReady(selectedDates, dateStr, instance) {
+              if (!instance.input.value) {
+                applyPlaceholder();
+              } else {
+                activateValue();
+              }
+            },
+            onChange(selectedDates, dateStr, instance) {
+              activateValue();
+            },
+            onClose(selectedDates, dateStr, instance) {
+              if (!instance.input.value) {
+                applyPlaceholder();
+              }
+            },
+          });
+        } else {
+          if (!dateInput.value) {
+            applyPlaceholder();
+          } else {
+            activateValue();
+          }
+
+          dateInput.addEventListener('input', () => {
+            if (dateInput.value) {
+              activateValue();
+            } else {
+              applyPlaceholder();
+            }
+          });
+        }
+      }
+
+      const submitButton = component.querySelector('[data-search-submit]');
+      if (submitButton) {
+        submitButton.addEventListener('click', (event) => {
+          event.preventDefault();
+
+          const detail = {
+            ...collectSearchValues(component),
+            component,
+          };
+          const searchEvent = new CustomEvent('search:submit', {
+            bubbles: true,
+            cancelable: true,
+            detail,
+          });
+
+          const shouldProceed = component.dispatchEvent(searchEvent);
+
+          if (shouldProceed && defaultAction === 'navigate') {
+            window.location.href = navigateTo;
+          }
+        });
+      }
+
+      component.dispatchEvent(new CustomEvent('search:ready', { bubbles: true, detail: { component } }));
+    });
+  }
+
   async function initSharedLayout() {
     await injectFragments();
     setupHeaderAndMobileMenu();
+    initializeSearchComponents();
     document.dispatchEvent(new CustomEvent('fragments:loaded'));
   }
+
+  document.addEventListener('search:init', (event) => {
+    const context = event && event.detail && event.detail.context;
+    if (context instanceof Element || context instanceof Document || context instanceof DocumentFragment) {
+      initializeSearchComponents(context);
+    } else {
+      initializeSearchComponents();
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     initSharedLayout().catch((error) => {

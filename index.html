@@ -30,21 +30,6 @@
         .main-search-section h1 { font-size: 2.4rem; margin-bottom: 15px; font-weight: 700; }
         .main-search-section p { font-size: 1rem; margin-bottom: 40px; color: var(--gray-color); max-width: 700px; margin-left: auto; margin-right: auto; }
 
-        .search-box { display: flex; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 8px 25px var(--shadow-color); overflow: hidden; height: 80px; border: 1px solid var(--border-color); max-width: 1100px; margin: 0 auto; }
-        .search-group { flex: 1; position: relative; height: 100%; border-right: 1px solid var(--border-color); padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
-        .search-group:hover, .search-group:focus-within { background-color: #fcfdff; }
-        .event-type-group { flex: 1.2; } .location-group { flex: 1.2; } .date-group { flex: 1; } .guests-group { flex: 0.8; border-right: none; }
-        .search-group label { font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 6px; text-align: left; }
-        /* NOU: Asigură vizibilitatea placeholder-ului */
-        .search-group input::placeholder {
-            color: var(--muted-color, #7a7f87);
-            opacity: 1;
-        }
-
-        .search-group input, .search-group select { width: 100%; border: none; outline: none; font-size: 16px; color: var(--gray-color); font-family: inherit; background: transparent; padding: 0; margin: 0; }
-        .search-box .search-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; border: none; cursor: pointer; font-weight: 600; font-size: 18px; width: 180px; height: 100%; transition: all 0.3s ease; }
-        .search-box .search-button:hover { opacity: 0.9; }
-        
         /* NOU: Stiluri pentru noile secțiuni */
         .section-padding { padding: 80px 0; }
         .section-title { font-size: 2rem; margin-bottom: 15px; text-align: center; font-weight: 700; }
@@ -247,25 +232,6 @@
             .section-title { font-size: 2rem; }
             .features-grid, .steps-grid { grid-template-columns: 1fr; }
 
-            .search-box {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                height: auto;
-                gap: 0;
-            }
-            .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
-            .search-group:nth-child(2n-1) { border-right: 1px solid var(--border-color); } /* Add border to odd elements */
-            .search-group:nth-child(3), .search-group:nth-child(4) { border-bottom: none; }
-            .guests-group { border-bottom: none; }
-            .search-box .search-button { width: 100%; padding: 18px; border-radius: 0; grid-column: 1 / -1; }
-            /* NOU: Asigură alinierea și vizibilitatea placeholder-ului pe mobil/Safari */
-            .search-group input, .search-group select, .search-group input.flatpickr-input {
-                text-align: left;
-            }
-            .search-group input::placeholder {
-                color: var(--muted-color, #999);
-                opacity: 1;
-            }
             /* NOU: Reduce dimensiunea textului principal pe mobil */
             .main-search-section h1 { font-size: 1.0rem; }
             .main-search-section p { font-size: 0.9rem; }
@@ -296,23 +262,10 @@
             <div class="container">
                 <h1>Găsește locația perfectă pentru evenimentul tău</h1>
                 <p>Pentru evenimente, botezuri, petreceri corporate și private. Caută, compară și rezervă spațiul ideal pentru momentele tale speciale.</p>
-                <div class="search-box">
-                    <div class="search-group event-type-group"><label for="event-type">Tipul evenimentului</label><select id="event-type"><option value="nunta">Nuntă</option><option value="botez">Botez</option><option value="corporate">Eveniment Corporate</option><option value="privat">Petrecere Privată</option><option value="conferinta">Conferință</option></select></div>
-                    <div class="search-group location-group"><label for="location">Locația</label><input type="text" id="location" placeholder="Oraș sau județ"></div>
-                    <div class="search-group date-group"><label for="event-date">Data evenimentului</label><input type="text" id="event-date" placeholder="dd/mm/yyyy"></div>
-                    <div class="search-group guests-group">
-              <label for="guests">Invitați</label>
-              <select id="guests">
-                <option value="any">Oricâți</option>
-                <option value="0-50">Sub 50</option>
-                <option value="50-100">50 - 100</option>
-                <option value="100-150">100 - 150</option>
-                <option value="150-200">150 - 200</option>
-                <option value="200-300">200 - 300</option>
-                <option value="300+">Peste 300</option>
-              </select>
-            </div>
-                    <button class="search-button">Caută</button>
+                <div
+                    data-search-default-action="navigate"
+                    data-search-navigate-to="locations.html"
+                    data-include="search-box.html">
                 </div>
             </div>
         </section>
@@ -584,14 +537,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const searchButton = document.querySelector('.search-button');
-            if (searchButton) {
-                searchButton.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    window.location.href = 'locations.html';
-                });
-            }
-
             const slider = document.querySelector('.testimonial-slider');
             const slides = document.querySelectorAll('.testimonial-card');
             const prevButton = document.querySelector('.slider-nav.prev');
@@ -631,31 +576,6 @@
 
                     updateSliderPosition();
                 }
-            }
-
-            if (typeof flatpickr === 'function') {
-                const dateInput = document.getElementById('event-date');
-                const placeholderText = 'dd/mm/yyyy';
-
-                const fp = flatpickr(dateInput, {
-                    dateFormat: 'd/m/Y',
-                    monthSelectorType: 'dropdown',
-                    onReady: function(selectedDates, dateStr, instance) {
-                        if (!instance.input.value) {
-                            instance.input.value = placeholderText;
-                            instance.input.style.color = 'var(--muted-color, #999)';
-                        }
-                    },
-                    onChange: function(selectedDates, dateStr, instance) {
-                        instance.input.style.color = 'var(--gray-color)';
-                    },
-                    onClose: function(selectedDates, dateStr, instance) {
-                        if (!instance.input.value) {
-                            instance.input.value = placeholderText;
-                            instance.input.style.color = 'var(--muted-color, #999)';
-                        }
-                    }
-                });
             }
         });
     </script>

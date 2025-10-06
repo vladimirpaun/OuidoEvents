@@ -1,0 +1,162 @@
+<style>
+  .search-box {
+    display: flex;
+    background: var(--white-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 25px var(--shadow-color);
+    overflow: hidden;
+    height: 80px;
+    border: 1px solid var(--border-color);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .search-box .search-group {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    border-right: 1px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .search-box .search-group:hover,
+  .search-box .search-group:focus-within {
+    background-color: #fcfdff;
+  }
+
+  .search-box .event-type-group { flex: 1.2; }
+  .search-box .location-group { flex: 1.2; }
+  .search-box .date-group { flex: 1; }
+  .search-box .guests-group {
+    flex: 0.8;
+    border-right: none;
+  }
+
+  .search-box .search-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 6px;
+    text-align: left;
+  }
+
+  .search-box .search-group input::placeholder {
+    color: var(--muted-color, #7a7f87);
+    opacity: 1;
+  }
+
+  .search-box .search-group input,
+  .search-box .search-group select,
+  .search-box .search-group input.flatpickr-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--gray-color);
+    font-family: inherit;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+  }
+
+  .search-box .search-button {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+    width: 180px;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .search-box .search-button:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 992px) {
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: auto;
+      gap: 0;
+    }
+
+    .search-box .search-group {
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
+      height: 75px;
+    }
+
+    .search-box .search-group:nth-child(2n-1) {
+      border-right: 1px solid var(--border-color);
+    }
+
+    .search-box .search-group:nth-child(3),
+    .search-box .search-group:nth-child(4) {
+      border-bottom: none;
+    }
+
+    .search-box .guests-group {
+      border-bottom: none;
+    }
+
+    .search-box .search-button {
+      width: 100%;
+      padding: 18px;
+      border-radius: 0;
+      grid-column: 1 / -1;
+    }
+
+    .search-box .search-group input,
+    .search-box .search-group select,
+    .search-box .search-group input.flatpickr-input {
+      text-align: left;
+    }
+
+    .search-box .search-group input::placeholder {
+      color: var(--muted-color, #999);
+      opacity: 1;
+    }
+  }
+</style>
+
+<div class="search-box" data-search-box>
+  <div class="search-group event-type-group">
+    <label for="event-type">Tipul evenimentului</label>
+    <select id="event-type">
+      <option value="nunta">Nuntă</option>
+      <option value="botez">Botez</option>
+      <option value="corporate">Eveniment Corporate</option>
+      <option value="privat">Petrecere Privată</option>
+      <option value="conferinta">Conferință</option>
+    </select>
+  </div>
+  <div class="search-group location-group">
+    <label for="location">Locația</label>
+    <input type="text" id="location" placeholder="Oraș sau județ">
+  </div>
+  <div class="search-group date-group">
+    <label for="event-date">Data evenimentului</label>
+    <input type="text" id="event-date" placeholder="dd/mm/yyyy" data-search-date>
+  </div>
+  <div class="search-group guests-group">
+    <label for="guests">Invitați</label>
+    <select id="guests">
+      <option value="any">Oricâți</option>
+      <option value="0-50">Sub 50</option>
+      <option value="50-100">50 - 100</option>
+      <option value="100-150">100 - 150</option>
+      <option value="150-200">150 - 200</option>
+      <option value="200-300">200 - 300</option>
+      <option value="300+">Peste 300</option>
+    </select>
+  </div>
+  <button class="search-button" type="button" data-search-submit>Caută</button>
+</div>
