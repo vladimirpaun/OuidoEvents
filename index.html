@@ -634,9 +634,27 @@
             }
 
             if (typeof flatpickr === 'function') {
-                flatpickr('#event-date', {
+                const dateInput = document.getElementById('event-date');
+                const placeholderText = 'dd/mm/yyyy';
+
+                const fp = flatpickr(dateInput, {
                     dateFormat: 'd/m/Y',
-                    monthSelectorType: 'dropdown'
+                    monthSelectorType: 'dropdown',
+                    onReady: function(selectedDates, dateStr, instance) {
+                        if (!instance.input.value) {
+                            instance.input.value = placeholderText;
+                            instance.input.style.color = 'var(--muted-color, #999)';
+                        }
+                    },
+                    onChange: function(selectedDates, dateStr, instance) {
+                        instance.input.style.color = 'var(--gray-color)';
+                    },
+                    onClose: function(selectedDates, dateStr, instance) {
+                        if (!instance.input.value) {
+                            instance.input.value = placeholderText;
+                            instance.input.style.color = 'var(--muted-color, #999)';
+                        }
+                    }
                 });
             }
         });
