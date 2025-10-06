@@ -1298,12 +1298,11 @@
                 </div>
             </nav>
 
-            <div class="crm-sidebar-footer">
-                <h3>Suport dedicat</h3>
-                <p>Ai întrebări despre rezervări sau statusuri? Echipa noastră răspunde în medie în 2 ore.</p>
-                <a href="#">
-                    Deschide un tichet
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <!-- MODIFICAT: Înlocuit secțiunea de suport cu buton de logout -->
+            <div class="crm-sidebar-footer" style="background: transparent; padding: 0; border: none;">
+                <a href="login.html" class="crm-button ghost" style="width: 100%; justify-content: center; display: flex; align-items: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Logout
                 </a>
             </div>
         </aside>
@@ -1462,7 +1461,6 @@
                             <p>Confirmă programările și alocă gazde pentru fiecare vizionare în spațiile tale.</p>
                         </div>
                         <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Calendar vizite</button>
                         </div>
                     </div>
                     <div class="context-tags">
@@ -1496,6 +1494,25 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- NOU: Calendar pentru vizionări -->
+                <div class="panel">
+                    <header class="monthly-calendar-header">
+                        <div class="filter-bar">
+                            <label for="viewings-calendar-venue-filter">Calendar pentru locația:</label>
+                            <select id="viewings-calendar-venue-filter"></select>
+                        </div>
+                        <div class="calendar-nav">
+                            <button id="prev-viewings-month-btn" aria-label="Luna precedentă">&lt;</button>
+                            <h2 id="viewings-month-year" style="margin:0;"></h2>
+                            <button id="next-viewings-month-btn" aria-label="Luna următoare">&gt;</button>
+                        </div>
+                    </header>
+                    <div class="monthly-calendar-grid" id="viewings-calendar-grid">
+                        <!-- Calendarul vizionărilor va fi generat aici -->
+                    </div>
+                </div>
+
             </section>
 
             <section class="crm-page" data-page="availability" id="availability">
@@ -1686,10 +1703,6 @@
                             <button class="crm-button primary" type="button">Salvează modificări</button>
                         </div>
                     </div>
-                    <div class="context-tags">
-                        <span class="context-tag">Rol curent: Owner Manager</span>
-                        <span class="context-tag">Ultima salvare: 12 iunie, 19:10</span>
-                    </div>
                 </div>
 
                 <div class="settings-grid">
@@ -1757,14 +1770,14 @@
                         <input id="company-name" type="text" placeholder="Ex: Ouido Events SRL">
                         <label for="company-cui">CUI</label>
                         <input id="company-cui" type="text" placeholder="Ex: RO12345678">
-                        <label for="company-reg">Nr. Registrul Comerțului</label>
-                        <input id="company-reg" type="text" placeholder="Ex: J40/1234/2024">
                         <label for="company-email">Adresă de email</label>
                         <input id="company-email" type="email" placeholder="Ex: contact@companie.ro">
+                        <label for="company-phone">Număr de telefon</label>
+                        <input id="company-phone" type="tel" placeholder="Ex: 021 123 4567">
                         <label for="company-address">Adresă sediu social</label>
                         <textarea id="company-address" rows="2" placeholder="Str. Exemplu nr. 10, București"></textarea>
                         <label for="company-contact">Persoană de contact</label>
-                        <input id="company-contact" type="text" placeholder="Ex: Andreea Marin · 0722 000 000">
+                        <input id="company-contact" type="text" placeholder="Ex: Andreea Marin">
                     </section>
                 </div>
             </section>
@@ -1991,6 +2004,7 @@
 
         populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort());
         populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
+        populateSelect(document.getElementById('viewings-calendar-venue-filter'), Array.from(venuesSelect).sort(), true); // NOU: Populează filtrul noului calendar
         populateSelect(document.getElementById('availability-venue-filter'), Array.from(venuesSelect).sort(), true); // MODIFICAT: Permite "Toate locațiile"
         document.getElementById('availability-venue-filter')?.addEventListener('change', renderMonthlyCalendar);
         
@@ -2375,6 +2389,85 @@
                             // Păstrează funcționalitatea veche pentru celelalte
                             navigateToBooking(event.client);
                         }
+                    });
+                    dayCell.appendChild(eventDiv);
+                });
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        // NOU: Funcție pentru a randa calendarul de vizionări
+        let currentViewingsMonthOffset = 0;
+        function renderViewingsCalendar() {
+            const grid = document.getElementById('viewings-calendar-grid');
+            const monthYearEl = document.getElementById('viewings-month-year');
+            const venueFilter = document.getElementById('viewings-calendar-venue-filter');
+            if (!grid || !monthYearEl || !venueFilter) return;
+
+            grid.innerHTML = '';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const currentDate = new Date();
+            currentDate.setDate(1);
+            currentDate.setMonth(currentDate.getMonth() + currentViewingsMonthOffset);
+
+            const selectedVenue = venueFilter.value;
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            
+            const monthName = currentDate.toLocaleString('ro-RO', { month: 'long' });
+            monthYearEl.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
+
+            const dayNames = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
+            dayNames.forEach(dayName => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = dayName;
+                grid.appendChild(dayHeader);
+            });
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7;
+
+            for (let i = 0; i < startDayOfWeek; i++) {
+                grid.appendChild(document.createElement('div')).className = 'calendar-day is-other-month';
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                const thisDate = new Date(year, month, day);
+
+                if (thisDate.getTime() === today.getTime()) {
+                    dayCell.classList.add('is-today');
+                }
+
+                dayCell.innerHTML = `<span class="day-number">${day}</span>`;
+
+                const viewingsForDay = viewings.filter(viewing => {
+                    const venueMatch = (selectedVenue === 'all') || (viewing.venue === selectedVenue);
+                    const viewingDate = parseBookingDate(viewing.date);
+                    return venueMatch && viewingDate &&
+                           viewingDate.getFullYear() === year &&
+                           viewingDate.getMonth() === month &&
+                           viewingDate.getDate() === day;
+                });
+
+                viewingsForDay.forEach(viewing => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'calendar-event';
+                    eventDiv.dataset.status = viewing.status === 'confirmed' ? 'booked' : 'pending';
+                    eventDiv.textContent = `${viewing.client} - ${viewing.hour}`;
+                    eventDiv.title = `Click pentru a vedea detalii pentru ${viewing.client}`;
+                    eventDiv.style.backgroundColor = viewing.status === 'confirmed' ? 'rgba(21, 128, 61, 0.15)' : 'rgba(245, 158, 11, 0.15)';
+                    eventDiv.style.color = viewing.status === 'confirmed' ? '#15803d' : '#b45309';
+
+                    eventDiv.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        navigateToViewing(viewing.client);
                     });
                     dayCell.appendChild(eventDiv);
                 });
@@ -2928,6 +3021,7 @@
         renderBookingsTable();
         renderViewingsTable();
         renderMonthlyCalendar();
+        renderViewingsCalendar(); // NOU: Randează calendarul de vizionări
         setupBookingModal(); // NOU: Inițializează modal-ul
         setupEditModal(); // MODIFICAT: Inițializează modal-ul de editare
         renderVenueCards();
@@ -2938,6 +3032,17 @@
         document.getElementById('bookings-venue-filter')?.addEventListener('change', renderBookingsTable);
         document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
         document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
+        document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar); // NOU
+
+        // NOU: Event listeners pentru calendarul de vizionări
+        document.getElementById('prev-viewings-month-btn')?.addEventListener('click', () => {
+            currentViewingsMonthOffset--;
+            renderViewingsCalendar();
+        });
+        document.getElementById('next-viewings-month-btn')?.addEventListener('click', () => {
+            currentViewingsMonthOffset++;
+            renderViewingsCalendar();
+        });
 
         // MODIFICAT: Event listeners pentru noul calendar lunar
         document.getElementById('prev-month-btn')?.addEventListener('click', () => {
