@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        /* Copiază stilurile CSS din index.html AICI */
         :root {
             --primary-color: #0052D4;
             --secondary-color: #4364F7;
@@ -21,59 +20,13 @@
             --border-color: #e5eaf1;
             --shadow-color: rgba(0, 82, 212, 0.1);
             --border-radius: 12px;
+            --transition-base: 0.3s ease;
         }
-
-        header[data-gradient="classic"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
-        header[data-gradient="sky"] { --header-bg: linear-gradient(to right, #f8fbff, #eef5ff); }
-        header[data-gradient="ocean"] { --header-bg: linear-gradient(to right, #e4f0ff, #d8e9ff); }
-        header[data-gradient="twilight"] { --header-bg: linear-gradient(to right, #d1e3ff, #c4d9f7); }
-        header[data-gradient="deep"] { --header-bg: linear-gradient(to right, #4364F7, #0052D4); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        header { padding: 15px 0; background: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; transition: background 0.3s ease; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 700; font-size: 28px; text-decoration: none; color: var(--primary-color); }
-        .nav-links { display: flex; align-items: center; gap: 30px; }
-        .nav-links a { color: var(--gray-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-
-        header[data-gradient="deep"] .nav-links a,
-        header[data-gradient="deep"] .role-switcher label { color: var(--white-color); opacity: 0.9; }
-
-        .nav-links a:hover { color: var(--primary-color); }
-        header[data-gradient="deep"] .nav-links a:hover { color: var(--white-color); opacity: 1; }
-
-        .role-switcher { display: flex; align-items: center; gap: 8px; margin-left: 20px; }
-        .role-switcher label { font-size: 14px; color: var(--gray-color); font-weight: 500; }
-        .role-switcher select { background-color: rgba(255,255,255,0.5); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
-
-        /* NOU: Meniu mobil (Hamburger) */
-        .mobile-menu-button { display: none; cursor: pointer; background: none; border: none; padding: 5px; }
-        .mobile-menu-button .icon-bar { display: block; width: 25px; height: 3px; background-color: var(--dark-color); margin: 5px 0; transition: all 0.3s; }
-        header[data-gradient="deep"] .mobile-menu-button .icon-bar { background-color: var(--white-color); }
-
-        .mobile-nav-overlay { display: none; position: fixed; top: 74px; /* Inaltimea header-ului */ left: 0; width: 100%; height: calc(100% - 74px); background: var(--white-color); z-index: 999; padding: 30px; flex-direction: column; gap: 25px; }
-        .mobile-nav-overlay.active { display: flex; }
-        .mobile-nav-overlay .nav-links { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .mobile-nav-overlay .nav-links a { font-size: 1.2rem; }
-        .mobile-nav-overlay .header-actions { flex-direction: column; align-items: stretch; gap: 15px; margin-top: 20px; }
-        .mobile-nav-overlay .header-actions .cta-button,
-        .mobile-nav-overlay .header-actions .secondary-cta-button { text-align: center; width: 100%; padding: 12px; }
-        .mobile-nav-overlay .role-switcher { margin-left: 0; margin-top: auto; }
-
-        /* Stiluri pentru butonul X de inchidere */
-        .mobile-menu-button.open .icon-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-        .mobile-menu-button.open .icon-bar:nth-child(2) { opacity: 0; }
-        .mobile-menu-button.open .icon-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        .cta-button { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); padding: 10px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; }
-        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-color); }
-        .secondary-cta-button { background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); padding: 8px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
-        .secondary-cta-button:hover { background-color: var(--primary-color); color: var(--white-color); }
 
         /* Stiluri pentru bara de căutare (preluate din index.html) */
         .main-search-section { padding: 25px 0; background-color: var(--light-gray-color); text-align: left; }
@@ -518,18 +471,10 @@
         }
 
         /* Footer (identic cu index.html) */
-        footer { padding: 60px 0 30px; background-color: var(--dark-color); color: var(--white-color); }
-        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 50px; }
-        .footer-about p { color: #bbb; }
-        .footer-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
-        .footer-links { list-style: none; } .footer-links li { margin-bottom: 10px; } .footer-links a { color: #bbb; text-decoration: none; transition: all 0.3s ease; } .footer-links a:hover { color: var(--secondary-color); }
         .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
 
         /* Responsive adjustments */
         @media (max-width: 992px) {
-            .nav-links, .header-actions { display: none; }
-            .mobile-menu-button { display: block; }
-
             .search-box { height: auto; flex-direction: column; }
             .search-group { border-right: none; border-bottom: 1px solid var(--border-color); height: 75px; }
             .guests-group { border-bottom: none; }
@@ -596,42 +541,8 @@
     </style>
 </head>
 <body data-page="venue-details">
-    <header data-gradient="classic">
-        <div class="container header-container">
-            <a href="index.html" class="logo">OuidoEvents</a>
-            <nav class="nav-links">
-                <a href="locations.html">Locații</a>
-                <a href="#">Blog</a>
-                <a href="#">Despre noi</a>
-                <a href="contact.html">Contact</a>
-                <div class="role-switcher">
-                    <label for="role-selector">Role:</label>
-                    <select id="role-selector">
-                        <option value="client">Client</option>
-                        <option value="owner">Owner</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-            </nav>
-            <div class="header-actions">
-                <a href="login.html" class="secondary-cta-button">Conectare</a>
-                <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
-            </div>
-            <button class="mobile-menu-button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="mobile-nav-overlay">
-            <nav class="nav-links">
-                <!-- Link-urile sunt duplicate aici pentru meniul mobil -->
-            </nav>
-            <div class="header-actions">
-                <!-- Butoanele sunt duplicate aici pentru meniul mobil -->
-            </div>
-        </div>
-    </header>
+    <div data-include="header.html"></div>
+    <div data-include="mobile-menu.html"></div>
 
     <main>
         <section class="main-search-section">
@@ -828,17 +739,7 @@
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-container">
-                <div class="footer-about"><h3 class="footer-title">ouidoEvents</h3><p>Platforma care conectează organizatorii de evenimente cu locații perfecte...</p></div>
-                <div><h3 class="footer-title">Link-uri rapide</h3><ul class="footer-links"><li><a href="locations.html">Locații</a></li><li><a href="create-account.html">Adaugă locația ta</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li></ul></div>
-                <div><h3 class="footer-title">Resurse</h3><ul class="footer-links"><li><a href="#">Ghid de organizare</a></li><li><a href="#">Checklist eveniment</a></li><li><a href="#">Calculator buget</a></li></ul></div>
-                <div><h3 class="footer-title">Contact</h3><ul class="footer-links"><li>București, România</li><li>contact@ouidoevents.com</li><li>+40 712 345 678</li></ul></div>
-            </div>
-            <div class="copyright"> &copy; 2025 ouidoEvents. Toate drepturile rezervate. </div>
-        </div>
-    </footer>
+    <div data-include="footer.html"></div>
 
     <!-- Lightbox/Modal HTML -->
     <div id="lightbox" class="lightbox">
@@ -847,42 +748,28 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="main.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Gradient switcher logic (copied from existing pages)
-            const gradientSelector = document.getElementById('gradient-selector');
-            const header = document.querySelector('header');
-            if (gradientSelector && header) {
-                gradientSelector.addEventListener('change', function() {
-                    header.setAttribute('data-gradient', this.value);
-                });
-            }
-
-            // Photo Gallery Logic
-            const mainImage = document.getElementById('main-venue-image');
-            const thumbnails = document.querySelectorAll('.thumbnail-gallery img');
+            const mainImage = document.querySelector('.gallery-grid .gallery-item.main-image img');
+            const thumbnails = document.querySelectorAll('.thumbnail-grid .gallery-item img');
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightbox-image');
             const closeLightbox = document.querySelector('.close-lightbox');
 
-            if (mainImage && thumbnails.length > 0 && lightbox && lightboxImage && closeLightbox) {
-                thumbnails.forEach(thumbnail => {
+            if (mainImage && thumbnails.length && lightbox && lightboxImage && closeLightbox) {
+                thumbnails.forEach((thumbnail) => {
                     thumbnail.addEventListener('click', function() {
-                        // Remove active class from all thumbnails
-                        thumbnails.forEach(t => t.classList.remove('active'));
-                        // Add active class to clicked thumbnail
+                        thumbnails.forEach((t) => t.classList.remove('active'));
                         this.classList.add('active');
-                        // Change main image source
-                        mainImage.src = this.src.replace('w=400', 'w=1200'); // Use higher res for main image if available
+                        mainImage.src = this.src;
                         mainImage.alt = this.alt;
                     });
                 });
 
-                // Set the first thumbnail as active initially
                 thumbnails[0].classList.add('active');
 
-                // Lightbox functionality
                 mainImage.addEventListener('click', function() {
                     lightbox.style.display = 'flex';
                     lightboxImage.src = this.src;
@@ -893,41 +780,34 @@
                     lightbox.style.display = 'none';
                 });
 
-                // Close lightbox when clicking outside the image
-                lightbox.addEventListener('click', function(e) {
-                    if (e.target === lightbox) {
+                lightbox.addEventListener('click', function(event) {
+                    if (event.target === lightbox) {
                         lightbox.style.display = 'none';
                     }
                 });
 
-                // Close lightbox with Escape key
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape' && lightbox.style.display === 'flex') {
                         lightbox.style.display = 'none';
                     }
                 });
             }
 
-            // Placeholder for calendar functionality (if a library like Flatpickr is used later)
-            // For now, it's just a static div.
-
-            // Search button logic
             const searchButton = document.querySelector('.search-button');
             if (searchButton) {
-                searchButton.addEventListener('click', function() {
+                searchButton.addEventListener('click', function(event) {
+                    event.preventDefault();
                     window.location.href = 'locations.html';
                 });
             }
 
-            // NOU: Logica pentru butonul de favorite
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
             const favButton = document.querySelector('.hero-section .favorite-btn');
 
             if (favButton) {
-                const locationId = parseInt(favButton.dataset.id);
+                const locationId = parseInt(favButton.dataset.id, 10);
 
-                // Setează starea inițială a butonului
                 if (favoriteIds.includes(locationId)) {
                     favButton.classList.add('is-favorite');
                 }
@@ -941,32 +821,14 @@
                     this.classList.toggle('is-favorite');
 
                     if (favoriteIds.includes(locationId)) {
-                        // Remove from favorites
-                        favoriteIds = favoriteIds.filter(id => id !== locationId);
+                        favoriteIds = favoriteIds.filter((id) => id !== locationId);
                     } else {
-                        // Add to favorites
                         favoriteIds.push(locationId);
                     }
                     localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
                 });
             }
 
-            // NOU: Logica pentru meniul mobil
-            const mobileMenuButton = document.querySelector('.mobile-menu-button');
-            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-            const desktopNav = document.querySelector('.header-container .nav-links');
-            const desktopActions = document.querySelector('.header-container .header-actions');
-
-            // Cloneaza elementele pentru a le folosi in meniul mobil
-            mobileNavOverlay.querySelector('.nav-links').innerHTML = desktopNav.innerHTML;
-            mobileNavOverlay.querySelector('.header-actions').innerHTML = desktopActions.innerHTML;
-
-            mobileMenuButton.addEventListener('click', function() {
-                this.classList.toggle('open');
-                mobileNavOverlay.classList.toggle('active');
-            });
-
-            // Simulare autentificare: afișează secțiunea de contact după 2 secunde
             const lockedContactSection = document.querySelector('.contact-section-locked');
             const contactSection = document.querySelector('.contact-section');
 
@@ -986,16 +848,12 @@
                 setTimeout(revealContactSection, 2000);
             }
 
-            // Pentru a testa funcționalitatea de logat, poți rula în consolă:
-            // localStorage.setItem('isLoggedIn', 'true');
-            // Pentru a te deloga:
-            // localStorage.removeItem('isLoggedIn');
-
-            // NOU: Inițializare calendar modern
-            flatpickr("#event-date", {
-                dateFormat: "d/m/Y",
-                monthSelectorType: 'dropdown'
-            });
+            if (typeof flatpickr === 'function') {
+                flatpickr('#event-date', {
+                    dateFormat: 'd/m/Y',
+                    monthSelectorType: 'dropdown'
+                });
+            }
         });
     </script>
 </body>
