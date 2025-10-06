@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ouidoEvents · CRM Proprietari V3</title>
@@ -421,19 +422,15 @@
             white-space: nowrap;
         }
 
-        .status-chip[data-status="pending"] {
-            background: rgba(255, 193, 7, 0.18);
-            color: #b7791f;
-        }
-
+        /* MODIFICAT: Culori sincronizate cu logica JS */
         .status-chip[data-status="confirmed"] {
-            background: rgba(0, 127, 95, 0.14);
-            color: #0a7d5c;
+            background: rgba(21, 128, 61, 0.15);
+            color: #15803d;
         }
 
         .status-chip[data-status="awaiting"] {
-            background: rgba(0, 180, 216, 0.18);
-            color: var(--accent-color);
+            background: rgba(59, 130, 246, 0.15);
+            color: #2563eb;
         }
 
         .status-chip[data-status="declined"] {
@@ -441,15 +438,15 @@
             color: #b91c1c;
         }
 
-        /* NOU: Stiluri pentru statusurile extinse */
+        /* MODIFICAT: Culori sincronizate cu logica JS */
         .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
-        .status-chip[data-status="viewing_scheduled"] { background: rgba(20, 184, 166, 0.15); color: #0d9488; }
+        .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
         .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+        .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.15); color: #0d9488; }
+        .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.15); color: #b91c1c; }
 
         /* Ajustare culori existente pentru consistență */
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-        .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-        .status-chip[data-status="declined"] { background: rgba(220, 38, 38, 0.15); color: #b91c1c; }
 
 
         .grid-three-columns {
@@ -760,6 +757,253 @@
             font-weight: 600;
         }
 
+        /* NOU: Stiluri pentru calendarul lunar */
+        .monthly-calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .calendar-nav button {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .calendar-nav button:hover {
+            background-color: var(--light-gray-color);
+        }
+        #availability-month-year {
+            font-weight: 600;
+            font-size: 1.1rem;
+            min-width: 150px;
+            text-align: center;
+        }
+        .monthly-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border-left: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+        }
+        .calendar-day-header, .calendar-day {
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .calendar-day-header {
+            text-align: center;
+            padding: 8px 0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--muted-color);
+            background-color: var(--light-gray-color);
+        }
+        .calendar-day {
+            /* MODIFICAT: Înălțime fixă și gestionare overflow */
+            height: 120px; 
+            padding: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        /* NOU: Efect de fade-out pentru conținutul care depășește spațiul */
+        .calendar-day::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to top, var(--white-color), transparent);
+            pointer-events: none;
+        }
+        .calendar-day.is-other-month {
+            background-color: #fcfcfd;
+            color: #ccc;
+        }
+        .calendar-day.is-today .day-number {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .calendar-event {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer; /* NOU: Indică interactivitate */
+        }
+        .calendar-event[data-status="booked"] { background-color: rgba(0, 82, 212, 0.15); color: var(--primary-color); }
+        .calendar-event[data-status="hold"] { background-color: rgba(245, 158, 11, 0.15); color: #b45309; }
+        .calendar-event[data-status="pre_booked"] { background-color: rgba(20, 184, 166, 0.15); color: #0d9488; } /* NOU: Culoare pentru pre-rezervat */
+        .calendar-event[data-status="manual_booking"] { background-color: rgba(139, 92, 246, 0.15); color: #7c3aed; } /* NOU: Culoare pentru adăugat manual */
+
+        /* NOU: Stiluri pentru modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(26, 32, 44, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .modal-overlay.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            padding: 28px 32px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: scale(0.95);
+            transition: transform 0.2s ease-in-out;
+        }
+        .modal-overlay.is-visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--muted-color);
+        }
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .modal-footer {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* NOU: Stiluri pentru formularul din modal, inspirate de login.html */
+        .modal-body .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+        .modal-body .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+        }
+        .modal-body .form-group input,
+        .modal-body .form-group select,
+        .modal-body .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--white-color);
+        }
+        .modal-body .form-group input:focus,
+        .modal-body .form-group select:focus,
+        .modal-body .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.1);
+        }
+        /* NOU: Ajustare pentru butonul de anulare din modal */
+        .modal-footer .crm-button.ghost {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* NOU: Stiluri pentru vizualizare detalii in modal */
+        .booking-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .booking-details-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .booking-details-item label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-color);
+            text-transform: uppercase;
+        }
+        .booking-details-item p {
+            font-size: 1rem;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        /* NOU: Stiluri pentru calendarul Flatpickr, preluate din index.html */
+        .flatpickr-calendar {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            width: auto;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .flatpickr-day:hover {
+            background: var(--light-gray-color);
+        }
+        .flatpickr-day.today {
+            border-color: var(--secondary-color);
+        }
+        .flatpickr-day.today:hover {
+            border-color: var(--secondary-color);
+            background: var(--secondary-color);
+            color: var(--white-color);
+        }
+        .flatpickr-months .flatpickr-month, .flatpickr-weekdays, .numInputWrapper, .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: var(--dark-color);
+            fill: var(--dark-color);
+        }
+
         /* NOU: Grid pentru grafice */
         .chart-grid {
             display: grid;
@@ -1007,13 +1251,19 @@
                 </article>
 
                 <!-- Grafice -->
-                <div class="metrics-grid" style="grid-template-columns: 1fr 1fr; align-items: stretch;">
-                    <article class="panel"><header><h2>Distribuție pe tip de eveniment</h2></header><div id="event-type-distribution-chart"></div></article>
-                    <article class="panel"><header><h2>Status vizionări (urm. 7 zile)</h2></header><div id="viewings-status-chart"></div></article>
+                <div class="chart-grid">
+                    <article class="panel">
+                        <header><h2>Distribuție pe tip de eveniment</h2></header>
+                        <div class="panel-content" id="event-type-distribution-chart"></div>
+                    </article>
+                    <article class="panel">
+                        <header><h2>Status vizionări (urm. 7 zile)</h2></header>
+                        <div class="panel-content" id="viewings-status-chart"></div>
+                    </article>
                 </div>
                 <article class="panel">
                     <header><h2>Grad de ocupare lunar (urm. 12 luni)</h2></header>
-                    <div id="monthly-occupancy-chart"></div>
+                    <div class="panel-content" id="monthly-occupancy-chart"></div>
                 </article>
             </section>
 
@@ -1056,7 +1306,7 @@
                     </div>
                     <div class="table-wrapper">
                         <table class="crm-table" aria-describedby="bookings-table-caption">
-                            <caption id="bookings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Rezervări pentru toate locațiile administrate</caption>
+                            <caption id="bookings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0; font-size: 1rem; white-space: nowrap;">Rezervări pentru toate locațiile administrate</caption>
                             <thead>
                                 <tr>
                                     <th>Client</th>
@@ -1139,45 +1389,140 @@
                 </div>
 
                 <div class="panel">
-                    <header>
-                        <h2>Legendă status</h2>
-                        <span class="panel-meta">Folosită în matrixul de disponibilitate</span>
+                    <header class="monthly-calendar-header">
+                        <div class="filter-bar">
+                            <label for="availability-venue-filter">Vizualizare pentru:</label>
+                            <select id="availability-venue-filter"></select>
+                        </div>
+                        <div class="calendar-nav">
+                            <button id="prev-month-btn" aria-label="Luna precedentă">&lt;</button>
+                            <h2 id="availability-month-year" style="margin:0;"></h2>
+                            <button id="next-month-btn" aria-label="Luna următoare">&gt;</button>
+                        </div>
+                        <button id="add-booking-calendar-btn" class="crm-button primary" style="padding: 8px 16px; font-size: 0.85rem;">Adaugă rezervare</button>
                     </header>
-                    <div class="availability-legend">
-                        <span class="legend-item"><span class="legend-dot" style="background:#0052D4"></span> Rezervat</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#28A745"></span> Blocaj intern</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#FFC107"></span> Hold temporar</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#CBD5E1"></span> Liber</span>
+                    <div class="monthly-calendar-grid" id="availability-calendar-grid">
+                        <!-- Zilele săptămânii vor fi adăugate aici de JS -->
+                    </div>
+                    <div class="availability-legend" style="margin-top: 10px;">
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #0052D4;"></span> Rezervat</span>
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #0d9488;"></span> Pre-rezervat</span>
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #7c3aed;"></span> Creat manual</span>
                     </div>
                 </div>
 
-                <div class="panel">
-                    <header>
-                        <h2>Calendar săptămânal</h2>
-                        <div class="calendar-nav">
-                            <button id="prev-week-btn" aria-label="Săptămâna precedentă">&lt;</button>
-                            <span class="panel-meta" id="availability-week-range"></span>
-                            <button id="next-week-btn" aria-label="Săptămâna următoare">&gt;</button>
+                <!-- NOU: Modal pentru adăugare booking -->
+                <div id="add-booking-modal" class="modal-overlay">
+                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+                        <div class="modal-header">
+                            <h3 id="modal-title">Adaugă Rezervare Manuală</h3>
+                            <button class="modal-close-btn" aria-label="Închide">&times;</button>
                         </div>
-                    </header>
-                    <div class="availability-grid">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Locație</th>
-                                    <th>Lun · 17</th>
-                                    <th>Mar</th>
-                                    <th>Mie</th>
-                                    <th>Joi</th>
-                                    <th>Vin</th>
-                                    <th>Sâm</th>
-                                    <th>Dum</th>
-                                </tr>
-                            </thead>
-                            <tbody id="availability-grid-body"></tbody>
-                        </table>
+                        <form id="add-booking-form">
+                            <div class="modal-body">
+                                <div class="form-group" style="gap: 8px;">
+                                    <label for="booking-client">Nume Client</label>
+                                    <input type="text" id="booking-client" name="client" required>
+                                </div>
+                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label for="booking-email">Email</label>
+                                        <input type="email" id="booking-email" name="email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="booking-phone">Nr. telefon</label>
+                                        <input type="tel" id="booking-phone" name="phone" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking-event-type">Tip Eveniment</label>
+                                    <select id="booking-event-type" name="event" required>
+                                        <option value="Nuntă">Nuntă</option>
+                                        <option value="Botez">Botez</option>
+                                        <option value="Eveniment Corporate">Eveniment Corporate</option>
+                                        <option value="Cununie Civilă">Cununie Civilă</option>
+                                        <option value="Petrecere Privată">Petrecere Privată</option>
+                                        <option value="Conferință">Conferință</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label for="booking-venue">Locație</label>
+                                    <select id="booking-venue" name="venue" required></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="booking-date">Data</label>
+                                    <input type="text" id="booking-date" name="date" required placeholder="Selectează data">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking-guests">Nr. invitați</label>
+                                    <input type="number" id="booking-guests" name="guests" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking-details">Alte detalii</label>
+                                    <textarea id="booking-details" name="details" rows="3" placeholder="Ex: preferințe meniu, cerințe speciale..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
+                                <button type="submit" class="crm-button primary">Salvează</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+
+                <!-- NOU: Modal pentru vizualizare detalii booking -->
+                <div id="view-booking-modal" class="modal-overlay">
+                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+                        <div class="modal-header">
+                            <h3 id="edit-modal-title">Editează Rezervare</h3>
+                            <button class="modal-close-btn" aria-label="Închide">&times;</button>
+                        </div>
+                        <form id="edit-booking-form">
+                            <input type="hidden" id="edit-booking-id">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="edit-booking-client">Nume Client</label>
+                                    <input type="text" id="edit-booking-client" name="client" required>
+                                </div>
+                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label for="edit-booking-email">Email</label>
+                                        <input type="email" id="edit-booking-email" name="email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-booking-phone">Nr. telefon</label>
+                                        <input type="tel" id="edit-booking-phone" name="phone" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-booking-event-type">Tip Eveniment</label>
+                                    <select id="edit-booking-event-type" name="event" required></select>
+                                </div>
+                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div class="form-group">
+                                        <label for="edit-booking-venue">Locație</label>
+                                        <select id="edit-booking-venue" name="venue" required></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-booking-guests">Nr. invitați</label>
+                                        <input type="number" id="edit-booking-guests" name="guests" min="1" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-booking-details">Alte detalii</label>
+                                    <textarea id="edit-booking-details" name="details" rows="3" placeholder="Ex: preferințe meniu, cerințe speciale..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
+                                <button type="submit" class="crm-button primary">Salvează Modificări</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
 
             </section>
 
@@ -1289,6 +1634,7 @@
         </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="main.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -1342,15 +1688,26 @@
         const formatDate = (date) => `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
         const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
+        // MODIFICAT: Tipuri de evenimente standardizate
         const bookings = [
-            { client: 'Andrei Popescu', event: 'Nuntă rustică', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'pending', action: 'Confirmă disponibilitatea' },
-            { client: 'Studio Creativ', event: 'Lansare produs', venue: 'Urban Loft', date: formatDate(addDays(4)), guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
-            { client: 'Mihaela & Vlad', event: 'Petrecere botez', venue: 'Casa Miraval', date: formatDate(addDays(15)), guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
-            { client: 'Tech Horizon', event: 'Hackathon privat', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'offer_sent', action: 'Planificați tur virtual' },
-            { client: 'EMEA Sales Team', event: 'Conferință anuală', venue: 'Villa Lac', date: formatDate(addDays(28)), guests: 220, status: 'confirmed', action: 'Coordonați furnizori' },
-            { client: 'Digital Nomads', event: 'Workshop', venue: 'Urban Loft', date: formatDate(addDays(12)), guests: 40, status: 'viewing_scheduled', action: 'Pregătire tur' },
-            { client: 'Art Gallery', event: 'Vernisaj', venue: 'Hub Creativ', date: formatDate(addDays(35)), guests: 100, status: 'offer_sent', action: 'Așteaptă răspuns' },
-            { client: 'Music Fest', event: 'Festival', venue: 'Forest Lodge', date: formatDate(addDays(60)), guests: 500, status: 'cancelled', action: 'Anulat de client' }
+            { client: 'Andrei Popescu', event: 'Nuntă', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'pending', action: 'Confirmă disponibilitatea' },
+            { client: 'Studio Creativ', event: 'Eveniment Corporate', venue: 'Urban Loft', date: formatDate(addDays(4)), guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
+            { client: 'Mihaela & Vlad', event: 'Botez', venue: 'Casa Miraval', date: formatDate(addDays(15)), guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
+            { client: 'Tech Horizon', event: 'Petrecere Privată', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'pre_booked', action: 'Așteaptă confirmare finală' },
+            { client: 'EMEA Sales Team', event: 'Conferință', venue: 'Villa Lac', date: formatDate(addDays(28)), guests: 220, status: 'confirmed', action: 'Coordonați furnizori' },
+            { client: 'Digital Nomads', event: 'Eveniment Corporate', venue: 'Urban Loft', date: formatDate(addDays(12)), guests: 40, status: 'viewing_scheduled', action: 'Pregătire tur' },
+            { 
+                client: 'Art Gallery', 
+                event: 'Petrecere Privată', 
+                venue: 'Hub Creativ', 
+                date: formatDate(addDays(35)), 
+                guests: 100, 
+                status: 'manual', 
+                action: 'Adăugat manual',
+                email: 'contact@artgallery.ro', phone: '0744555666', details: 'Necesită sistem de sunet pentru muzică ambientală și un proiector.'
+                , id: 999 // Adăugăm un ID unic pentru a-l putea identifica
+            },
+            { client: 'Familia Ionescu', event: 'Cununie Civilă', venue: 'Forest Lodge', date: formatDate(addDays(60)), guests: 30, status: 'cancelled', action: 'Anulat de client' }
         ];
 
         const viewings = [
@@ -1453,8 +1810,10 @@
         const statusMeta = {
             'pending': { label: 'Confirma disponibilitatea', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
             'offer_sent': { label: 'Ofertă trimisă', className: 'offer_sent', color: '#7c3aed', description: 'Ofertă expediată clientului' },
-            'viewing_scheduled': { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#0d9488', description: 'Vizionare confirmată' },
-            'confirmed': { label: 'Confirmat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans incasat' },
+            'pre_booked': { label: 'Pre-rezervat', className: 'pre_booked', color: '#0d9488', description: 'Blocaj temporar în calendar, în așteptarea confirmării finale' },
+            'manual': { label: 'Rezervat manual', className: 'manual', color: '#a855f7', description: 'Rezervare adăugată manual de proprietar' },
+            'viewing_scheduled': { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#2563eb', description: 'Vizionare confirmată' },
+            'confirmed': { label: 'Rezervat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans incasat' },
             'rejected': { label: 'Respins', className: 'rejected', color: '#b91c1c', description: 'Cerere refuzată' },
             'cancelled': { label: 'Anulat', className: 'cancelled', color: '#dc2626', description: 'Clientul a renunțat' }
         };
@@ -1462,7 +1821,7 @@
         const venuesSelect = new Set(bookings.map(item => item.venue));
         viewings.forEach(item => venuesSelect.add(item.venue));
 
-        function populateSelect(selectEl, options, includeAll = true) {
+        function populateSelect(selectEl, options, includeAll = true, allText = 'Toate locațiile') {
             if (!selectEl) {
                 return;
             }
@@ -1470,7 +1829,7 @@
             if (includeAll) {
                 const opt = document.createElement('option');
                 opt.value = 'all';
-                opt.textContent = 'Toate locațiile';
+                opt.textContent = allText;
                 selectEl.appendChild(opt);
             }
             options.forEach(option => {
@@ -1483,6 +1842,8 @@
 
         populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort());
         populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
+        populateSelect(document.getElementById('availability-venue-filter'), Array.from(venuesSelect).sort(), true); // MODIFICAT: Permite "Toate locațiile"
+        document.getElementById('availability-venue-filter')?.addEventListener('change', renderMonthlyCalendar);
         
         // NOU: Populează filtrul de status pentru bookings
         const bookingStatusFilter = document.getElementById('bookings-status-filter');
@@ -1720,60 +2081,246 @@
                 });
         }
 
-        // NOU: Funcție refactorizată pentru calendarul săptămânal
-        let currentWeekOffset = 0;
-        function renderAvailabilityGrid() {
-            const body = document.getElementById('availability-grid-body');
-            const headerRow = document.querySelector('.availability-grid thead tr');
-            const weekRangeEl = document.getElementById('availability-week-range');
-            if (!body || !headerRow || !weekRangeEl) return;
+        // NOU: Funcție pentru a parsa data din formatul "zi luna an"
+        const monthMap = { 'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5, 'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'noi': 10, 'dec': 11 };
+        function parseBookingDate(dateString) {
+            const parts = dateString.split(' ');
+            if (parts.length < 3) return null;
+            const day = parseInt(parts[0], 10);
+            const month = monthMap[parts[1].toLowerCase()];
+            const year = parseInt(parts[2], 10);
+            if (isNaN(day) || month === undefined || isNaN(year)) return null;
+            return new Date(year, month, day);
+        }
 
-            generateAvailabilityMatrix(); // Generează date noi la fiecare randare
+        // MODIFICAT: Funcție complet refactorizată pentru calendarul lunar
+        let currentMonthOffset = 0;
+        function renderMonthlyCalendar() {
+            const grid = document.getElementById('availability-calendar-grid');
+            const monthYearEl = document.getElementById('availability-month-year');
+            const venueFilter = document.getElementById('availability-venue-filter');
+            if (!grid || !monthYearEl || !venueFilter) return;
 
+            grid.innerHTML = ''; // Golește grila
             const today = new Date();
-            const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon,...
-            const startOfWeek = new Date(today);
-            // Set to the Monday of the current week + offset
-            startOfWeek.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) + (currentWeekOffset * 7));
+            today.setHours(0, 0, 0, 0);
 
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            const currentDate = new Date();
+            currentDate.setDate(1); // Mergem la prima zi a lunii curente
+            currentDate.setMonth(currentDate.getMonth() + currentMonthOffset);
 
-            weekRangeEl.textContent = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+            const selectedVenue = venueFilter.value;
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            
+            const monthName = currentDate.toLocaleString('ro-RO', { month: 'long' });
+            monthYearEl.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
 
-            const dayHeaders = headerRow.querySelectorAll('th');
-            const dayNames = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm', 'Dum'];
-            for (let i = 0; i < 7; i++) {
-                const currentDay = new Date(startOfWeek);
-                currentDay.setDate(startOfWeek.getDate() + i);
-                if (dayHeaders[i + 1]) {
-                    dayHeaders[i + 1].textContent = `${dayNames[i]} · ${currentDay.getDate()}`;
-                }
+            // Adaugă headerele pentru zilele săptămânii
+            const dayNames = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
+            dayNames.forEach(dayName => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = dayName;
+                grid.appendChild(dayHeader);
+            });
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // 0 = Duminică, 1 = Luni, etc. Ajustăm pentru a începe cu Luni.
+            const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; 
+
+            // Adaugă zilele goale de la începutul lunii
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day is-other-month';
+                grid.appendChild(emptyCell);
             }
 
-            const labels = {
-                booked: 'Rezervat',
-                hold: 'Hold',
-                open: 'Liber'
-            };
+            // Adaugă zilele lunii curente
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                const thisDate = new Date(year, month, day);
 
-            body.innerHTML = '';
-            availabilityMatrix.forEach(rowData => {
-                const row = document.createElement('tr');
-                const venueCell = document.createElement('td');
-                venueCell.textContent = rowData.venue;
-                row.appendChild(venueCell);
+                if (thisDate.getTime() === today.getTime()) {
+                    dayCell.classList.add('is-today');
+                }
 
-                rowData.days.forEach(status => {
-                    const cell = document.createElement('td');
-                    cell.className = 'availability-slot';
-                    cell.dataset.status = status;
-                    cell.textContent = labels[status] || status;
-                    row.appendChild(cell);
+                dayCell.innerHTML = `<span class="day-number">${day}</span>`;
+
+                // MODIFICAT: Caută evenimente reale în `bookings`
+                const eventsForDay = bookings.filter(booking => {
+                    const venueMatch = (selectedVenue === 'all') || (booking.venue === selectedVenue);
+                    const bookingDate = parseBookingDate(booking.date);
+                    // MODIFICAT: Afișează evenimentele confirmate, pre-rezervate și adăugate manual
+                    return (booking.status === 'confirmed' || booking.status === 'pre_booked' || booking.status === 'manual') &&
+                           venueMatch &&
+                           bookingDate &&
+                           bookingDate.getFullYear() === year &&
+                           bookingDate.getMonth() === month &&
+                           bookingDate.getDate() === day;
                 });
 
-                body.appendChild(row);
+                eventsForDay.forEach(event => {
+                    let eventStatus = 'hold';
+                    if (event.status === 'confirmed') {
+                        eventStatus = 'booked';
+                    } else if (event.status === 'pre_booked') {
+                        eventStatus = 'pre_booked';
+                    } else if (event.status === 'manual') {
+                        eventStatus = 'manual_booking';
+                    }
+
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'calendar-event';
+                    eventDiv.dataset.status = eventStatus;
+                    
+                    // MODIFICAT: Afișează tip eveniment și locație
+                    if (selectedVenue === 'all') {
+                        eventDiv.textContent = `${event.event} - ${event.venue}`;
+                    } else {
+                        eventDiv.textContent = event.event;
+                    }
+
+                    eventDiv.title = `Click pentru a vedea detaliile booking-ului pentru "${event.client}"`;
+
+                    // MODIFICAT: Adaugă event listener pentru a naviga la booking
+                    eventDiv.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (event.status === 'manual') {
+                            // NOU: Deschide modalul cu detalii pentru evenimentele manuale
+                            openEditBookingModal(event);
+                        } else {
+                            // Păstrează funcționalitatea veche pentru celelalte
+                            navigateToBooking(event.client);
+                        }
+                    });
+                    dayCell.appendChild(eventDiv);
+                });
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        // NOU: Funcționalitate pentru modal
+        function setupBookingModal() {
+            const modal = document.getElementById('add-booking-modal');
+            const openBtn = document.getElementById('add-booking-calendar-btn');
+            const closeBtns = modal.querySelectorAll('.modal-close-btn');
+            const form = document.getElementById('add-booking-form');
+            const venueSelect = document.getElementById('booking-venue');
+
+            if (!modal || !openBtn || !form || !venueSelect) return;
+
+            // Populează select-ul de locații din modal
+            populateSelect(venueSelect, Array.from(venuesSelect).sort(), false);
+
+            // NOU: Inițializează flatpickr pentru câmpul de dată
+            if (typeof flatpickr === 'function') {
+                const dateInput = document.getElementById('booking-date');
+                flatpickr(dateInput, { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "ro" });
+            }
+
+            const openModal = () => modal.classList.add('is-visible');
+            const closeModal = () => modal.classList.remove('is-visible');
+
+            openBtn.addEventListener('click', openModal);
+            closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
             });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const dateValue = formData.get('date');
+                // NOU: Verificare dacă data este validă
+                if (!dateValue) {
+                    alert('Te rugăm să selectezi o dată.');
+                    return;
+                }
+                const dateObject = new Date(dateValue);
+                const newBooking = {
+                    client: formData.get('client'),
+                    event: formData.get('event'),
+                    venue: formData.get('venue'),
+                    id: Date.now(), // NOU: Adaugă un ID unic la creare
+                    date: formatDate(dateObject), // MODIFICAT: Folosește obiectul Date creat
+                    guests: parseInt(formData.get('guests'), 10) || 0, // MODIFICAT: Preia numărul de invitați
+                    status: 'manual', // MODIFICAT: Setează statusul ca fiind adăugat manual
+                    action: 'Adăugat manual',
+                    // NOU: Adaugă și celelalte câmpuri în obiect, chiar dacă nu sunt afișate în tabel
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    details: formData.get('details')
+                };
+                bookings.push(newBooking);
+                renderMonthlyCalendar(); // Re-randează calendarul
+                renderBookingsTable(); // Re-randează și tabelul de bookings
+                form.reset();
+                closeModal();
+            });
+        }
+
+        // MODIFICAT: Funcționalitate pentru modalul de editare
+        function setupEditModal() {
+            const modal = document.getElementById('view-booking-modal');
+            const form = document.getElementById('edit-booking-form');
+            if (!modal) return;
+
+            const closeBtns = modal.querySelectorAll('.modal-close-btn');
+            const closeModal = () => modal.classList.remove('is-visible');
+
+            closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const bookingId = parseInt(document.getElementById('edit-booking-id').value, 10);
+                const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+
+                if (bookingIndex > -1) {
+                    const formData = new FormData(form);
+                    bookings[bookingIndex].client = formData.get('client');
+                    bookings[bookingIndex].email = formData.get('email');
+                    bookings[bookingIndex].phone = formData.get('phone');
+                    bookings[bookingIndex].event = formData.get('event');
+                    bookings[bookingIndex].venue = formData.get('venue');
+                    bookings[bookingIndex].guests = parseInt(formData.get('guests'), 10) || 0;
+                    bookings[bookingIndex].details = formData.get('details');
+
+                    renderMonthlyCalendar();
+                    renderBookingsTable();
+                }
+                closeModal();
+            });
+        }
+
+        // NOU: Funcție pentru a deschide și popula modalul de editare
+        function openEditBookingModal(booking) {
+            const modal = document.getElementById('view-booking-modal');
+            if (!modal) return;
+
+            // Populează câmpurile formularului
+            document.getElementById('edit-booking-id').value = booking.id;
+            document.getElementById('edit-booking-client').value = booking.client || '';
+            document.getElementById('edit-booking-email').value = booking.email || '';
+            document.getElementById('edit-booking-phone').value = booking.phone || '';
+            document.getElementById('edit-booking-guests').value = booking.guests || '';
+            document.getElementById('edit-booking-details').value = booking.details || '';
+
+            // Populează și selectează opțiunile corecte pentru dropdown-uri
+            const eventTypeSelect = document.getElementById('edit-booking-event-type');
+            eventTypeSelect.innerHTML = document.getElementById('booking-event-type').innerHTML;
+            eventTypeSelect.value = booking.event;
+
+            const venueSelect = document.getElementById('edit-booking-venue');
+            venueSelect.innerHTML = document.getElementById('booking-venue').innerHTML;
+            venueSelect.value = booking.venue;
+
+            modal.classList.add('is-visible');
         }
 
 
@@ -1828,7 +2375,7 @@
 
             const svgNs = 'http://www.w3.org/2000/svg';
             const svg = document.createElementNS(svgNs, 'svg');
-            const width = 600;
+            const width = container.clientWidth || 600;
             const height = 260;
             const padding = { top: 20, right: 20, bottom: 30, left: 40 };
             const chartWidth = width - padding.left - padding.right;
@@ -2161,7 +2708,9 @@
         renderBookingStatusLegend();
         renderBookingsTable();
         renderViewingsTable();
-        renderAvailabilityGrid();
+        renderMonthlyCalendar();
+        setupBookingModal(); // NOU: Inițializează modal-ul
+        setupEditModal(); // MODIFICAT: Inițializează modal-ul de editare
         renderVenueCards();
         renderMonthlyOccupancyChart();
         renderEventTypeDistributionChart();
@@ -2171,14 +2720,14 @@
         document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
         document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
 
-        // NOU: Event listeners pentru navigarea în calendar
-        document.getElementById('prev-week-btn')?.addEventListener('click', () => {
-            currentWeekOffset--;
-            renderAvailabilityGrid();
+        // MODIFICAT: Event listeners pentru noul calendar lunar
+        document.getElementById('prev-month-btn')?.addEventListener('click', () => {
+            currentMonthOffset--;
+            renderMonthlyCalendar();
         });
-        document.getElementById('next-week-btn')?.addEventListener('click', () => {
-            currentWeekOffset++;
-            renderAvailabilityGrid();
+        document.getElementById('next-month-btn')?.addEventListener('click', () => {
+            currentMonthOffset++;
+            renderMonthlyCalendar();
         });
     });
     </script>
