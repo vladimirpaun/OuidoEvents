@@ -105,6 +105,18 @@
             outline: none;
             border-color: var(--primary-color);
         }
+        /* NOU: Stil pentru link-ul "Ai uitat parola?" */
+        .form-extra-options {
+            text-align: right;
+            font-size: 0.9rem;
+            margin: -10px 0 20px;
+        }
+        .form-extra-options a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .form-extra-options a:hover { text-decoration: underline; }
+
         .account-form-container .cta-button {
             width: 100%;
             padding: 15px;
@@ -176,6 +188,9 @@
                     <div class="form-group">
                         <label for="password">Parolă</label>
                         <input type="password" id="password" required>
+                    </div>
+                    <div class="form-extra-options">
+                        <a href="#">Ai uitat parola?</a>
                     </div>
                     <button type="submit" class="cta-button">Conectare</button>
                 </form>
