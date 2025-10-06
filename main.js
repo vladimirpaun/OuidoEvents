@@ -33,8 +33,20 @@
       targets.map(async (target) => {
         const url = target.getAttribute(INCLUDE_ATTR);
         const html = await fetchFragment(url);
-        target.innerHTML = html;
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        const fragment = template.content.cloneNode(true);
+        const normalizedUrl = (url || '').split(/[?#]/)[0];
+        const shouldReplaceWrapper = /(?:^|\/)header\.html$/i.test(normalizedUrl);
+
         target.removeAttribute(INCLUDE_ATTR);
+
+        if (shouldReplaceWrapper) {
+          target.replaceWith(fragment);
+        } else {
+          target.innerHTML = '';
+          target.appendChild(fragment);
+        }
       })
     );
   }
@@ -180,6 +192,18 @@
     if (mobileNav) {
       setupRoleSwitcher(mobileNav);
     }
+
+    const syncHeaderHeight = () => {
+      const height = header.offsetHeight;
+      if (!height) {
+        return;
+      }
+      document.documentElement.style.setProperty('--header-height', `${height}px`);
+    };
+
+    syncHeaderHeight();
+    window.addEventListener('load', syncHeaderHeight);
+    window.addEventListener('resize', syncHeaderHeight);
 
     const toggle = header.querySelector('.mobile-menu-toggle');
     if (!toggle || !mobileNav) {
