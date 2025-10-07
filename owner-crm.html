@@ -285,6 +285,11 @@
             gap: 18px;
         }
 
+        .metrics-grid.metrics-grid--compact {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
         .metric-card {
             background: var(--white-color);
             border-radius: var(--border-radius);
@@ -294,6 +299,25 @@
             flex-direction: column;
             gap: 10px;
             box-shadow: 0 22px 32px -42px rgba(67, 100, 247, 0.85);
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .metrics-grid--compact .metric-card {
+            padding: 16px 18px;
+            gap: 6px;
+            box-shadow: none;
+            min-height: 100px;
+        }
+
+        .metrics-grid--compact .metric-card strong {
+            font-size: 1.35rem;
+            align-self: flex-end;
+            margin-top: auto;
+        }
+
+        .metrics-grid--compact .metric-card span {
+            font-size: 0.78rem;
         }
 
         .metric-card span {
@@ -1413,7 +1437,7 @@
                     <header>
                         <h2>Rezumat status</h2>
                     </header>
-                    <div class="metrics-grid" id="bookings-status-cards"></div>
+                    <div class="metrics-grid metrics-grid--compact" id="bookings-status-cards"></div>
                 </div>
 
                 <div class="panel">
@@ -1809,6 +1833,12 @@
 
             if (pageFound) {
                 history.replaceState(null, '', `#${pageId}`);
+                const scrollContainer = document.querySelector('.crm-pages');
+                if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             }
         }
 
@@ -2216,12 +2246,33 @@
             }, {});
 
             container.innerHTML = '';
-            Object.entries(bookingStatusMeta).forEach(([status, meta]) => {
+            const orderedStatuses = Object.entries(bookingStatusMeta).sort((a, b) => {
+                const countDiff = (counts[b[0]] || 0) - (counts[a[0]] || 0);
+                return countDiff !== 0 ? countDiff : a[1].label.localeCompare(b[1].label);
+            });
+
+            let hasContent = false;
+            orderedStatuses.forEach(([status, meta]) => {
+                const value = counts[status] || 0;
+                if (!value) {
+                    return; // ascunde statusurile fără activitate pentru compactare
+                }
+                hasContent = true;
                 const card = document.createElement('article');
                 card.className = 'metric-card';
-                card.innerHTML = `<span>${meta.label}</span><strong>${counts[status] || 0}</strong>`;
+                card.innerHTML = `
+                    <span>${meta.label}</span>
+                    <strong>${value}</strong>
+                `;
                 container.appendChild(card);
             });
+
+            if (!hasContent) {
+                const card = document.createElement('article');
+                card.className = 'metric-card';
+                card.innerHTML = `<span>Nicio rezervare activă</span><strong>0</strong>`;
+                container.appendChild(card);
+            }
         }
 
         function renderViewingsTable() {
@@ -2483,6 +2534,8 @@
                 return;
             }
 
+            modal.classList.remove('is-visible');
+
             // Populează select-ul de locații din modal
             populateSelect(venueSelect, Array.from(venuesSelect).sort(), false);
 
@@ -2684,7 +2737,7 @@
 
             const svgNs = 'http://www.w3.org/2000/svg';
             const svg = document.createElementNS(svgNs, 'svg');
-            const width = container.clientWidth || 600;
+            const width = container.offsetWidth || 600;
             const height = 260;
             const padding = { top: 20, right: 20, bottom: 30, left: 40 };
             const chartWidth = width - padding.left - padding.right;
