@@ -862,50 +862,6 @@
             cursor: pointer;
         }
 
-        /* NOU: Stiluri pentru graficul de ocupare lunară */
-        .occupancy-chart {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .occupancy-bar-row {
-            display: grid;
-            grid-template-columns: 80px 1fr;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .occupancy-bar-label {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--muted-color);
-            text-align: right;
-        }
-
-        .occupancy-bar-wrapper {
-            background: rgba(0, 82, 212, 0.08);
-            border-radius: 999px;
-            height: 28px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .occupancy-bar {
-            height: 100%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
-            width: var(--bar-width, 0%);
-            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            color: var(--white-color);
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
         /* NOU: Stiluri pentru calendarul lunar */
         .monthly-calendar-header {
             display: flex;
@@ -1152,6 +1108,24 @@
             color: var(--dark-color);
             fill: var(--dark-color);
         }
+
+        /* NOU: Stiluri pentru graficul interactiv */
+        .chart-tooltip {
+            font-size: 0.8rem;
+            font-weight: 600;
+            fill: var(--primary-color);
+            text-anchor: middle;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .chart-point:hover .chart-tooltip {
+            opacity: 1;
+        }
+        .chart-point {
+            cursor: pointer;
+        }
+
 
         /* NOU: Grid pentru grafice */
         .chart-grid {
@@ -2726,114 +2700,95 @@
             });
         }
 
+        // MODIFICAT: Funcție refăcută pentru a genera un line chart SVG
         function renderMonthlyOccupancyChart() {
             const container = document.getElementById('monthly-occupancy-chart');
             if (!container) return;
-            container.innerHTML = '';
-            if (monthlyOccupancyData.length < 2) {
-                container.innerHTML = '<p style="text-align:center; color: var(--muted-color);">Date insuficiente pentru grafic.</p>';
-                return;
-            }
 
+            container.innerHTML = '';
             const svgNs = 'http://www.w3.org/2000/svg';
             const svg = document.createElementNS(svgNs, 'svg');
-            const width = container.offsetWidth || 600;
-            const height = 260;
-            const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+            const width = container.clientWidth || 800;
+            const height = 280;
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            const padding = { top: 20, right: 20, bottom: 40, left: 40 };
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
 
-            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-            svg.style.fontFamily = 'inherit'; 
-
-            const maxValue = 100; // Occupancy is a percentage
-
-            const points = monthlyOccupancyData.map((item, index) => {
-                const x = padding.left + (index / (monthlyOccupancyData.length - 1)) * chartWidth;
-                const y = padding.top + chartHeight - (item.occupancy / maxValue) * chartHeight;
-                return { x, y, label: item.month, value: item.occupancy };
-            });
-
-            // NOU: Adaugă axa Y cu procente
-            const yAxisLabels = [0, 50, 100];
-            yAxisLabels.forEach(labelValue => {
-                const y = padding.top + chartHeight - (labelValue / maxValue) * chartHeight;
-                
+            // Axe Y (procente)
+            const yAxis = document.createElementNS(svgNs, 'g');
+            const yTicks = [0, 25, 50, 75, 100];
+            yTicks.forEach(tick => {
+                const y = padding.top + chartHeight - (tick / 100) * chartHeight;
                 const line = document.createElementNS(svgNs, 'line');
                 line.setAttribute('x1', padding.left);
                 line.setAttribute('y1', y);
                 line.setAttribute('x2', width - padding.right);
                 line.setAttribute('y2', y);
-                line.setAttribute('stroke', 'var(--border-color)');
-                line.setAttribute('stroke-dasharray', '2,4');
-                svg.appendChild(line);
+                line.setAttribute('stroke', '#e5eaf1');
+                line.setAttribute('stroke-dasharray', '3,3');
+                yAxis.appendChild(line);
 
                 const text = document.createElementNS(svgNs, 'text');
                 text.setAttribute('x', padding.left - 10);
                 text.setAttribute('y', y + 4);
                 text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', '11');
-                text.setAttribute('fill', 'var(--muted-color)');
-                text.textContent = `${labelValue}%`;
+                text.setAttribute('font-size', '10');
+                text.setAttribute('fill', '#7a7f87');
+                text.textContent = `${tick}%`;
+                yAxis.appendChild(text);
+            });
+            svg.appendChild(yAxis);
+
+            // Calculează punctele și axa X
+            const points = monthlyOccupancyData.map((item, i) => {
+                const x = padding.left + i * (chartWidth / (monthlyOccupancyData.length - 1));
+                const y = padding.top + chartHeight - (item.occupancy / 100) * chartHeight;
+                return { x, y, data: item };
+            });
+
+            points.forEach((point, i) => {
+                const text = document.createElementNS(svgNs, 'text');
+                text.setAttribute('x', point.x);
+                text.setAttribute('y', height - padding.bottom + 15);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '10');
+                text.setAttribute('fill', '#7a7f87');
+                text.textContent = point.data.month;
                 svg.appendChild(text);
             });
 
-            const defs = document.createElementNS(svgNs, 'defs');
-            const linearGradient = document.createElementNS(svgNs, 'linearGradient');
-            linearGradient.id = 'occupancy-gradient';
-            linearGradient.innerHTML = `<stop offset="0%" style="stop-color:rgba(67, 100, 247, 0.2)" /><stop offset="100%" style="stop-color:rgba(67, 100, 247, 0)" />`;
-            defs.appendChild(linearGradient);
-            svg.appendChild(defs);
+            // Desenează linia
+            const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            const linePath = document.createElementNS(svgNs, 'path');
+            linePath.setAttribute('d', pathData);
+            linePath.setAttribute('fill', 'none');
+            linePath.setAttribute('stroke', 'var(--primary-color)');
+            linePath.setAttribute('stroke-width', '2.5');
+            linePath.setAttribute('stroke-linejoin', 'round');
+            linePath.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(linePath);
 
-            const areaPath = document.createElementNS(svgNs, 'path');
-            const areaPoints = `M${points[0].x},${height - padding.bottom} ` + points.map(p => `L${p.x},${p.y}`).join(' ') + ` L${points[points.length - 1].x},${height - padding.bottom} Z`;
-            areaPath.setAttribute('d', areaPoints);
-            areaPath.setAttribute('fill', 'url(#occupancy-gradient)');
-            svg.appendChild(areaPath);
-
-            const polyline = document.createElementNS(svgNs, 'polyline');
-            polyline.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
-            polyline.setAttribute('fill', 'none');
-            polyline.setAttribute('stroke', 'var(--secondary-color)');
-            polyline.setAttribute('stroke-width', '3');
-            polyline.setAttribute('stroke-linecap', 'round');
-            polyline.setAttribute('stroke-linejoin', 'round');
-            svg.appendChild(polyline);
-
-            points.forEach((point, index) => {
+            // Adaugă punctele pe linie
+            points.forEach(point => {
                 const group = document.createElementNS(svgNs, 'g');
+                group.classList.add('chart-point');
 
                 const circle = document.createElementNS(svgNs, 'circle');
                 circle.setAttribute('cx', point.x);
                 circle.setAttribute('cy', point.y);
-                circle.setAttribute('r', '5');
-                circle.setAttribute('fill', 'var(--secondary-color)');
-                
-                const hitArea = document.createElementNS(svgNs, 'circle');
-                hitArea.classList.add('chart-hit-area', 'chart-point');
-                hitArea.setAttribute('cx', point.x);
-                hitArea.setAttribute('cy', point.y);
-                hitArea.setAttribute('r', '12');
-                hitArea.setAttribute('fill', 'transparent');
+                circle.setAttribute('r', '4');
+                circle.setAttribute('fill', 'var(--primary-color)');
 
                 const tooltip = document.createElementNS(svgNs, 'text');
                 tooltip.setAttribute('x', point.x);
-                tooltip.setAttribute('y', point.y - 16);
+                tooltip.setAttribute('y', point.y - 12);
                 tooltip.classList.add('chart-tooltip');
-                tooltip.textContent = `${point.value}%`;
+                tooltip.textContent = `${point.data.occupancy}%`;
 
-                const text = document.createElementNS(svgNs, 'text');
-                text.setAttribute('x', point.x);
-                text.setAttribute('y', height - padding.bottom + 18);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '11');
-                text.setAttribute('fill', 'var(--muted-color)');
-                text.textContent = point.label;
-
-                group.appendChild(hitArea);
-                group.appendChild(tooltip);
                 group.appendChild(circle);
-                group.appendChild(text);
+                group.appendChild(tooltip);
                 svg.appendChild(group);
             });
 
