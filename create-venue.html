@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ouidoEvents - Detalii Locație</title>
+    <title>ouidoEvents - Adaugă Locație Nouă</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #0052D4;
@@ -20,17 +21,199 @@
             --border-color: #e5eaf1;
             --shadow-color: rgba(0, 82, 212, 0.1);
             --border-radius: 12px;
+            --sidebar-width: 296px;
+            --header-height: 74px;
             --transition-base: 0.3s ease;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; color: var(--dark-color); line-height: 1.6; background-color: var(--bg-color); }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, rgba(67, 100, 247, 0.06), rgba(0, 82, 212, 0.02));
+            line-height: 1.6;
+        }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        /* Stiluri pentru bara de căutare */
-        .main-search-section { padding: 25px 0; background-color: var(--light-gray-color); text-align: left; }
+        /* NOU: Asigură că butoanele moștenesc fontul */
+        button {
+            font: inherit;
+        }
 
+        /* NOU: Stiluri pentru layout-ul CRM */
+        main.crm-shell {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            min-height: calc(100vh - var(--header-height));
+        }
+        .crm-sidebar {
+            position: sticky;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            background: var(--white-color);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 12px 0 40px -34px rgba(67, 100, 247, 0.55);
+            padding: 32px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .crm-sidebar h2 { font-size: 1.25rem; margin: 0 0 6px; }
+        .crm-sidebar p { color: var(--muted-color); font-size: 0.92rem; margin: 0; }
+        .crm-nav { display: flex; flex-direction: column; gap: 24px; }
+        .crm-nav-section label { font-size: 0.78rem; font-weight: 600; color: var(--muted-color); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; display: block; }
+        .crm-nav-links { display: flex; flex-direction: column; gap: 8px; }
+        .crm-nav-link { width: 100%; border: 1px solid transparent; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: var(--gray-color); font-weight: 500; background: transparent; cursor: pointer; transition: all 0.2s ease; }
+        .crm-nav-link svg { width: 18px; height: 18px; opacity: 0.7; }
+        .crm-nav-link:hover, .crm-nav-link.is-active { background: rgba(67, 100, 247, 0.1); border-color: rgba(0, 82, 212, 0.24); color: var(--primary-color); box-shadow: inset 0 0 0 1px rgba(0, 82, 212, 0.18); }
+        .crm-sidebar-footer { margin-top: auto; }
+        .crm-sidebar-footer a { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; color: var(--primary-color); font-size: 0.9rem; }
+        .crm-pages { padding: calc(var(--header-height) + 20px) 48px 60px; display: flex; flex-direction: column; gap: 36px; }
+        .crm-page { display: flex; flex-direction: column; gap: 28px; }
+
+        .page-header {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 28px 32px;
+            box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .page-header h1 { font-size: 1.8rem; margin: 0; }
+        .page-header p { margin: 0; color: var(--muted-color); max-width: 520px; }
+
+        .crm-button {
+            border-radius: 999px;
+            padding: 10px 22px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .crm-button.primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--white-color);
+            box-shadow: 0 16px 24px -24px rgba(0, 82, 212, 0.9);
+        }
+        .crm-button.ghost {
+            background: transparent;
+            border-color: rgba(0, 82, 212, 0.2);
+            color: var(--primary-color);
+        }
+        .crm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 26px -24px rgba(67, 100, 247, 0.8);
+        }
+
+        /* --- Stiluri pentru conținutul paginii (preluate și adaptate) --- */
+        .form-section {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 26px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .form-section header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .form-section h2 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+        .form-section .panel-meta {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+        }
+
+        /* NOU: Stiluri pentru formulare extinse */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px 24px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font: inherit;
+            font-size: 0.95rem;
+            background: var(--white-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.1);
+        }
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .checkbox-item {
+            position: relative; /* Necesar pentru a poziționa pseudo-elemente */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--light-gray-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .checkbox-item:hover {
+            border-color: var(--primary-color);
+            background-color: #f7faff;
+        }
+        /* NOU: Ajustare dimensiune font text */
+        .checkbox-item span {
+            font-size: 0.9rem;
+        }
+        .checkbox-item input[type="checkbox"]:checked + span {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 40px; text-align: center; color: var(--muted-color); cursor: pointer; transition: background-color 0.2s ease;
+        }
+        .upload-area:hover { background-color: var(--light-gray-color); }
+        
         /* Hero Section */
         .hero-section {
             padding: 30px 0;
@@ -529,41 +712,199 @@
 </head>
 <body data-page="venue-details">
     <div data-include="header.html"></div>
-    <div data-include="mobile-menu.html"></div>
 
-    <main>
-        <section class="main-search-section">
-            <div class="container">
-                <div
-                    data-search-default-action="navigate"
-                    data-search-navigate-to="locations.html"
-                    data-include="search-box.html">
+    <main class="crm-shell">
+        <!-- NOU: Meniu lateral preluat din owner-crm.html -->
+        <aside class="crm-sidebar">
+            <div>
+                <h2>CRM Proprietari</h2>
+                <p>Gestionare completă pentru bookings, vizite și disponibilitate în timp real.</p>
+            </div>
+
+            <nav class="crm-nav" aria-label="Navigare CRM proprietari">
+                <div class="crm-nav-section">
+                    <label>Panou general</label>
+                    <div class="crm-nav-links">
+                        <button class="crm-nav-link" type="button" data-page-target="overview" onclick="window.location.href='owner-crm.html#overview'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+                            Overview
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="bookings" onclick="window.location.href='owner-crm.html#bookings'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H9a2 2 0 0 1-2-2V7"/><path d="M9 17h10"/><path d="M13 11h6"/><path d="M5 3h14a2 2 0 0 1 2 2v12"/><polyline points="5 7 5 21 19 21"/></svg>
+                            Rezervări
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="viewings" onclick="window.location.href='owner-crm.html#viewings'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3H6a2 2 0 0 0-2 2v14l4-4h10a2 2 0 0 0 2-2z"/></svg>
+                            Programări vizionări
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="availability" onclick="window.location.href='owner-crm.html#availability'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Disponibilitate
+                        </button>
+                        <button class="crm-nav-link is-active" type="button" data-page-target="venues" onclick="window.location.href='owner-crm.html#venues'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            Locațiile mele
+                        </button>
+                    </div>
                 </div>
+                <div class="crm-nav-section">
+                    <label>Comunicare & control</label>
+                    <div class="crm-nav-links">
+                        <button class="crm-nav-link" type="button" data-page-target="settings" onclick="window.location.href='owner-crm.html#settings'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+                            Setări
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="crm-sidebar-footer" style="background: transparent; padding: 0; border: none;">
+                <a href="login.html" class="crm-button ghost" style="width: 100%; justify-content: center; display: flex; align-items: center; gap: 8px;">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <section class="crm-pages">
+            <div class="crm-page is-active">
+                <div class="page-header">
+                    <div>
+                        <h1>Adaugă o locație nouă</h1>
+                        <p>Completează detaliile de mai jos pentru a adăuga o nouă locație în portofoliul tău.</p>
+                    </div>
+                    <a href="owner-crm.html#venues" class="crm-button ghost">Anulează</a>
+                </div>
+
+                <form>
+                    <div class="form-section">
+                        <header>
+                            <h2>Informații generale</h2>
+                            <span class="panel-meta">Acestea sunt primele informații pe care le văd clienții.</span>
+                        </header>
+                        <div class="form-grid">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="venue-name">Numele locației</label>
+                                <input type="text" id="venue-name" placeholder="Ex: The Grand Ballroom">
+                            </div>
+                            <div class="form-group">
+                                <label for="venue-city">Oraș</label>
+                                <input type="text" id="venue-city" placeholder="Ex: București">
+                            </div>
+                            <div class="form-group">
+                                <label for="venue-address">Adresă</label>
+                                <input type="text" id="venue-address" placeholder="Ex: Str. Unirii nr. 10">
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="venue-description">Descriere scurtă</label>
+                                <textarea id="venue-description" rows="4" placeholder="Descrie locația ta în câteva paragrafe atractive..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <header>
+                            <h2>Galerie Foto</h2>
+                            <span class="panel-meta">Încarcă cele mai reprezentative imagini. Prima imagine va fi cea principală.</span>
+                        </header>
+                        <div class="upload-area">
+                            <p>Trage fișierele aici sau apasă pentru a selecta</p>
+                            <input type="file" multiple hidden>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <header>
+                            <h2>Detalii & Capacitate</h2>
+                            <span class="panel-meta">Specifică intervalul de invitați și prețul de pornire.</span>
+                        </header>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="capacity-min">Capacitate minimă</label>
+                                <input type="number" id="capacity-min" placeholder="Ex: 80">
+                            </div>
+                            <div class="form-group">
+                                <label for="capacity-max">Capacitate maximă</label>
+                                <input type="number" id="capacity-max" placeholder="Ex: 200">
+                            </div>
+                            <div class="form-group">
+                                <label for="price-start">Preț de pornire (€/persoană)</label>
+                                <input type="number" id="price-start" placeholder="Ex: 95">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <header>
+                            <h2>Stiluri și Teme</h2>
+                            <span class="panel-meta">Selectează stilurile care descriu cel mai bine locația ta.</span>
+                        </header>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" value="Elegant"><span>Elegant</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Modern"><span>Modern</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Minimalist"><span>Minimalist</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Clasic"><span>Clasic</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Boho-Chic"><span>Boho-Chic</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Glamour"><span>Glamour</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Rustic"><span>Rustic</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Natură"><span>Natură</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Central"><span>Central</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Panoramic"><span>Panoramic</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Istoric"><span>Istoric</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Exclusivist"><span>Exclusivist</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <header>
+                            <h2>Tipuri de evenimente acceptate</h2>
+                            <span class="panel-meta">Ce fel de evenimente se pot organiza la locația ta?</span>
+                        </header>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" value="Nuntă"><span>Nuntă</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Botez"><span>Botez</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Eveniment Corporate"><span>Eveniment Corporate</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Petrecere Privată"><span>Petrecere Privată</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Cununie Civilă"><span>Cununie Civilă</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Conferință"><span>Conferință</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <header>
+                            <h2>Facilități & Servicii</h2>
+                            <span class="panel-meta">Bifează toate facilitățile pe care le oferi.</span>
+                        </header>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" value="Terasă / Grădină"><span>Terasă / Grădină</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Servicii de catering personalizate"><span>Catering personalizat</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Bar (serviciu complet)"><span>Bar complet</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Decor (servicii de amenajare)"><span>Servicii decor</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Parcare privată"><span>Parcare privată</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Cazare invitati"><span>Cazare invitați</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Cameră miri"><span>Cameră miri</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Piscina"><span>Piscina</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Vedere lac"><span>Vedere lac</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Ponton"><span>Ponton</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Event planner dedicat"><span>Event planner dedicat</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Wi-Fi gratuit de mare viteză"><span>Wi-Fi gratuit</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Sistem de sunet și lumini profesional"><span>Sistem sunet & lumini</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Ceremonie in aer liber"><span>Ceremonie în aer liber</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Kids corner"><span>Kids corner</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Spațiu lounge"><span>Spațiu lounge</span></label>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                        <button type="submit" class="crm-button primary">Salvează și trimite la aprobare</button>
+                    </div>
+                </form>
             </div>
         </section>
+    </main>
 
-        <section class="hero-section">
-            <div class="container">
-                <nav class="breadcrumbs">
-                    <a href="index.html">Acasă</a> <span>&gt;</span>
-                    <a href="locations.html">Locații</a> <span>&gt;</span>
-                    <span>The Grand Ballroom</span>
-                </nav>
-                <div class="venue-name">
-                    <h1>The Grand Ballroom</h1>
-                    <button class="favorite-btn" data-id="1" title="Adaugă la favorite"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
-                </div>
-                <p class="venue-address">București, România</p>
-                <div class="venue-tags">
-                    <span class="tag">Exclusivist</span>
-                    <span class="tag">Panoramic</span>
-                    <span class="tag">Capacitate Mare</span>
-                    <span class="tag">Recomandat</span>
-                </div>
-                <p class="venue-description">The Grand Ballroom este o locație de lux situată în inima Bucureștiului, perfectă pentru evenimente grandioase. Cu o arhitectură impresionantă și servicii impecabile, oferim o experiență de neuitat pentru nunți, gale și conferințe.</p>
-            </div>
-        </section>
-
+    <!-- Conținutul vechi al paginii, care poate fi transformat în formular -->
+    <!--
         <div class="container venue-main-content">
             <section class="gallery-section">
                 <div class="gallery-grid">
@@ -636,7 +977,7 @@
                         <li>Botez</li>
                         <li>Eveniment Corporate</li>
                         <li>Petrecere Privată</li>
-                        <li>Cununie Civilă</li>
+                        <li>Gale și Ceremonii</li>
                     </ul>
 
                     <h3>Facilități disponibile</h3>
@@ -710,10 +1051,8 @@
             <p class="widget-note">După confirmarea disponibilității, proprietarul va putea aproba pre-rezervarea ta.</p>
           </div>
         </div>
-        </div>
-    </main>
-
-    <div data-include="footer.html"></div>
+    </div>
+    -->
 
     <!-- Lightbox/Modal HTML -->
     <div id="lightbox" class="lightbox">
