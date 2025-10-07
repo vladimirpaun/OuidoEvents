@@ -57,16 +57,16 @@
         .crm-pages { padding: calc(var(--header-height) + 20px) 48px 60px; display: flex; flex-direction: column; gap: 36px; }
         .crm-page { display: none; flex-direction: column; gap: 28px; animation: fadeIn 0.24s ease; }
         .crm-page.is-active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- Componente comune --- */
         .page-header { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 28px 32px; box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8); display: flex; flex-direction: column; gap: 18px; }
         .page-header h1 { font-size: 1.8rem; margin: 0 0 4px; }
-        .page-header p { margin: 0; color: var(--muted-color); max-width: 520px; }
+        .page-header p { margin: 0; color: var(--muted-color); max-width: 520px; font-size: 0.95rem; }
         .panel { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 26px 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.85); }
         .panel header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
         .panel header h2 { margin: 0; font-size: 1.1rem; }
-        .panel-meta { color: var(--muted-color); font-size: 0.85rem; }
+        .panel-meta { color: var(--muted-color); font-size: 0.82rem; }
         .panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
         .panel-grid .panel { height: 100%; }
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px; }
@@ -76,7 +76,11 @@
         .list { display: flex; flex-direction: column; gap: 12px; }
         .list-item { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid rgba(0, 82, 212, 0.08); padding-bottom: 12px; }
         .list-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+        /* NOU: Ajustare dimensiune font pentru textul din liste */
+        .list-item > div {
+            font-size: 0.9rem;
+        }
+        .status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
         .status-chip[data-status="confirmed"] { background: rgba(22, 163, 74, 0.15); color: #15803d; }
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
@@ -98,34 +102,22 @@
         .location-image { height: 200px; background-size: cover; background-position: center; position: relative; }
         .remove-favorite-btn { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.8); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .remove-favorite-btn svg { width: 20px; height: 20px; fill: #ff4d4d; stroke: #ff4d4d; }
-        .location-details { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .location-details { padding: 18px 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .location-details h3 { font-size: 1.1rem; margin-bottom: 4px; }
-        .location-details p { font-size: 0.9rem; color: var(--muted-color); margin-bottom: 15px; }
+        .location-details p { font-size: 0.88rem; color: var(--muted-color); margin-bottom: 15px; }
         .location-card-footer { margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
         .location-price { font-weight: 600; }
 
         .table-wrapper { width: 100%; overflow-x: auto; }
         table.crm-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        table.crm-table th, table.crm-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.92rem; }
-        table.crm-table th { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-color); }
+        table.crm-table th, table.crm-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        table.crm-table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-color); }
+        table.crm-table tr.is-highlighted { background: rgba(0, 180, 216, 0.08); outline: 2px solid rgba(0, 180, 216, 0.35); }
         .table-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 6px 14px; font-size: 0.82rem; cursor: pointer; }
         .filter-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .filter-bar label { font-weight: 600; font-size: 0.85rem; color: var(--muted-color); }
-        .filter-bar select { min-width: 180px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--white-color); font-size: 0.85rem; }
-        /* MODIFICAT: Stiluri aliniate cu owner-crm.html */
-        .filter-bar label {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .filter-bar select {
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            font: inherit;
-            font-size: 0.9rem;
-            background: var(--white-color);
-        }
+        .filter-bar label { font-weight: 600; font-size: 0.9rem; }
+        .filter-bar select { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); font: inherit; font-size: 0.9rem; background: var(--white-color); }
         .requests-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 18px; margin: 12px 0 4px; }
         .requests-legend-item { display: flex; align-items: flex-start; gap: 12px; font-size: 0.85rem; color: var(--gray-color); }
         .requests-legend-item .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
@@ -135,7 +127,7 @@
         .empty-state { text-align: center; color: var(--muted-color); padding: 24px; border-radius: var(--border-radius); background: rgba(0, 82, 212, 0.04); }
         .note-card { display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid rgba(0, 82, 212, 0.08); padding-bottom: 14px; }
         .note-card:last-child { border-bottom: none; padding-bottom: 0; }
-        .next-step-cell { display: flex; flex-direction: column; gap: 6px; }
+        .next-step-cell { display: flex; flex-direction: column; gap: 4px; }
         .next-step-cell strong { font-size: 0.9rem; color: var(--dark-color); }
         .next-step-cell span { font-size: 0.78rem; color: var(--muted-color); }
 
@@ -278,6 +270,7 @@
                                     <th>Dată eveniment</th>
                                     <th>Invitați</th>
                                     <th>Status</th>
+                                    <th>Următorul pas</th>
                                     <th>Acțiuni</th>
                                 </tr>
                             </thead>
@@ -310,6 +303,7 @@
                                     <th>Locație</th>
                                     <th>Dată</th>
                                     <th>Ora</th>
+                                    <th>Gazdă</th>
                                     <th>Status</th>
                                     <th>Acțiuni</th>
                                 </tr>
@@ -371,7 +365,7 @@
             { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400' }
         ];
 
-        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [2, 7];
+        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [2, 7, 3];
 
         const requestStatusMeta = {
             awaiting_venue: {
@@ -402,6 +396,13 @@
                 color: '#0f766e',
                 actor: 'Tu confirmi'
             },
+            option_hold: {
+                label: 'Dată blocată pentru tine',
+                description: 'Locația a blocat temporar data, în așteptarea deciziei tale.',
+                nextStep: 'Confirmă rezervarea sau eliberează data dacă nu mai ești interesat.',
+                color: '#0ea5e9',
+                actor: 'Tu confirmi'
+            },
             confirmed: {
                 label: 'Rezervare confirmată',
                 description: 'Ai acceptat oferta, iar locația a blocat data pentru tine.',
@@ -417,6 +418,13 @@
                 actor: 'Locația a răspuns'
             },
             cancelled_by_client: {
+                label: 'Anulat de tine',
+                description: 'Ai anulat cererea înainte de confirmare. Locația a fost notificată.',
+                nextStep: 'Poți redeschide cererea dacă te răzgândești.',
+                color: '#b91c1c',
+                actor: 'Tu ai acționat'
+            },
+            old_cancelled_by_client: {
                 label: 'Cerere anulată de tine',
                 description: 'Ai ales să închizi discuția cu această locație.',
                 nextStep: 'Poți redeschide cererea sau continua căutările.',
@@ -429,34 +437,48 @@
                 nextStep: 'Contactează locația pentru clarificări sau alege o altă opțiune.',
                 color: '#475569',
                 actor: 'Locația a acționat'
+            },
+            viewing_scheduled: {
+                label: 'Vizionare confirmată',
+                description: 'Ai o vizionare programată la locație pentru data și ora stabilite.',
+                nextStep: 'Confirmă prezența și pregătește-ți întrebările pentru vizită.',
+                color: '#2563eb',
+                actor: 'Locația a acționat'
             }
         };
 
         const viewingStatusMeta = {
             awaiting_confirmation: { label: 'Așteaptă confirmarea ta', color: '#2563eb' },
             confirmed: { label: 'Confirmată', color: '#15803d' },
-            reschedule_pending: { label: 'Reprogramare propusă', color: '#c2410c' }
+            reschedule_pending: { label: 'Reprogramare propusă', color: '#c2410c' },
+            completed: { label: 'Vizionare încheiată', color: '#0f172a' }
         };
 
         let clientRequests = [
-            { id: 1, locationId: 2, eventDate: addDays(45), guests: 120, status: 'offer_sent', lastUpdate: addDays(-1), offerValidUntil: addDays(6) },
-            { id: 2, locationId: 7, eventDate: addDays(80), guests: 150, status: 'awaiting_client', lastUpdate: addDays(-4) },
-            { id: 3, locationId: 1, eventDate: addDays(120), guests: 200, status: 'awaiting_venue', lastUpdate: addDays(-3) },
-            { id: 4, locationId: 3, eventDate: addDays(90), guests: 90, status: 'info_needed', lastUpdate: addDays(-2) },
-            { id: 5, locationId: 4, eventDate: addDays(32), guests: 80, status: 'cancelled_by_client', lastUpdate: addDays(-10) },
-            { id: 6, locationId: 7, eventDate: addDays(160), guests: 60, status: 'confirmed', lastUpdate: addDays(-12) }
+            { id: 1, locationId: 2, eventDate: addDays(45), guests: 120, status: 'awaiting_venue', lastUpdate: addDays(-1) },
+            { id: 2, locationId: 7, eventDate: addDays(80), guests: 150, status: 'offer_sent', lastUpdate: addDays(-2), offerValidUntil: addDays(6) },
+            { id: 3, locationId: 1, eventDate: addDays(120), guests: 200, status: 'awaiting_client', lastUpdate: addDays(-3) },
+            { id: 4, locationId: 3, eventDate: addDays(90), guests: 90, status: 'info_needed', lastUpdate: addDays(-5) },
+            { id: 5, locationId: 4, eventDate: addDays(62), guests: 80, status: 'option_hold', lastUpdate: addDays(-4), holdExpiresAt: addDays(3) },
+            { id: 6, locationId: 7, eventDate: addDays(160), guests: 60, status: 'confirmed', lastUpdate: addDays(-6) },
+            { id: 7, locationId: 2, eventDate: addDays(52), guests: 110, status: 'cancelled_by_venue', lastUpdate: addDays(-8) },
+            { id: 8, locationId: 3, eventDate: addDays(35), guests: 70, status: 'cancelled_by_client', lastUpdate: addDays(-10) }, // This one will use the new logic
+            { id: 9, locationId: 1, eventDate: addDays(140), guests: 180, status: 'unavailable', lastUpdate: addDays(-12) },
+            { id: 10, locationId: 2, eventDate: addDays(15), guests: 100, status: 'viewing_scheduled', lastUpdate: addDays(-1) }
         ];
 
         let requestHistory = [
-            { id: 1, message: 'Ai trimis o cerere pentru Forest Retreat & Spa', timestamp: addDays(-9) },
-            { id: 2, message: 'Forest Retreat & Spa ți-a trimis o ofertă', timestamp: addDays(-1) },
-            { id: 3, message: 'Ai confirmat vizionarea la Ambiance Lake', timestamp: addDays(-2) }
+            { id: 1, message: 'Ai salvat Forest Retreat & Spa la favorite', timestamp: addDays(-14) },
+            { id: 2, message: 'Ai trimis o cerere pentru Ambiance Lake', timestamp: addDays(-9) },
+            { id: 3, message: 'Ambiance Lake ți-a trimis o ofertă', timestamp: addDays(-2) },
+            { id: 4, message: 'Ai blocat Casa Miraval pentru 48h', timestamp: addDays(-4) }
         ];
 
         const clientViewings = [
             { id: 1, locationId: 2, date: addDays(5), hour: '17:00', host: 'Ioana Pop', status: 'awaiting_confirmation', lastUpdate: addDays(-1), note: 'Confirmă prezența cu 24h înainte' },
             { id: 2, locationId: 7, date: addDays(12), hour: '11:00', host: 'Mihai Dima', status: 'confirmed', lastUpdate: addDays(-2), note: 'Vom discuta logistica exterioară' },
-            { id: 3, locationId: 3, date: addDays(20), hour: '15:30', host: 'Irina M.', status: 'reschedule_pending', lastUpdate: addDays(-1), note: 'Proprietarul a propus o nouă dată' }
+            { id: 3, locationId: 3, date: addDays(20), hour: '15:30', host: 'Irina M.', status: 'reschedule_pending', lastUpdate: addDays(-1), note: 'Proprietarul a propus o nouă dată' },
+            { id: 4, locationId: 1, date: addDays(-3), hour: '10:00', host: 'Laura C.', status: 'completed', lastUpdate: addDays(-3), note: 'Ți-am trimis planul detaliat' }
         ];
 
         const requestFilters = { status: 'all', location: 'all', month: 'all' };
@@ -512,6 +534,31 @@
                 span.style.backgroundColor = `${meta.color}26`;
             }
             return span;
+        }
+
+        function getRequestNextStep(request) {
+            const defaultStep = {
+                title: 'Următorul pas',
+                detail: 'Ține legătura cu locația pentru a avansa discuția.'
+            };
+            if (!request) {
+                return defaultStep;
+            }
+            const meta = requestStatusMeta[request.status];
+            if (!meta) {
+                return defaultStep;
+            }
+            let detail = meta.nextStep || meta.description || defaultStep.detail;
+            if (request.status === 'offer_sent' && request.offerValidUntil instanceof Date) {
+                detail += ` Oferta expiră pe ${formatDate(request.offerValidUntil)}.`;
+            }
+            if (request.status === 'option_hold' && request.holdExpiresAt instanceof Date) {
+                detail += ` Blocajul expiră pe ${formatDate(request.holdExpiresAt)}.`;
+            }
+            return {
+                title: meta.actor ? `Responsabil: ${meta.actor}` : defaultStep.title,
+                detail: detail
+            };
         }
 
         function renderOverviewMetrics() {
@@ -574,9 +621,9 @@
                     entry.classList.add('is-interactive');
                     entry.addEventListener('click', () => {
                         if (item.type === 'request') {
-                            activatePage('requests');
+                            navigateToItem('request', item.id);
                         } else if (item.type === 'viewing') {
-                            activatePage('viewings');
+                            navigateToItem('viewing', item.id);
                         }
                     });
                 }
@@ -612,6 +659,40 @@
                 `;
                 item.appendChild(chip);
                 overviewViewingsList.appendChild(item);
+            });
+        }
+
+        function navigateToItem(type, id) {
+            if (!type || !id) return;
+            const pageId = type === 'viewing' ? 'viewings' : 'requests';
+            activatePage(pageId);
+            if (type === 'request') {
+                requestFilters.status = 'all';
+                requestFilters.location = 'all';
+                requestFilters.month = 'all';
+                if (requestsStatusFilter) requestsStatusFilter.value = 'all';
+                if (requestsLocationFilter) requestsLocationFilter.value = 'all';
+                if (requestsDateFilter) requestsDateFilter.value = 'all';
+                renderRequests();
+            } else if (type === 'viewing') {
+                viewingFilters.status = 'all';
+                viewingFilters.venue = 'all';
+                if (viewingsStatusFilter) viewingsStatusFilter.value = 'all';
+                if (viewingsVenueFilter) viewingsVenueFilter.value = 'all';
+                renderViewingsTable();
+            }
+            requestAnimationFrame(() => {
+                let targetRow = null;
+                if (type === 'viewing' && viewingsTableBody) {
+                    targetRow = viewingsTableBody.querySelector(`tr[data-id="${id}"]`);
+                } else if (type === 'request' && requestsTableBody) {
+                    targetRow = requestsTableBody.querySelector(`tr[data-id="${id}"]`);
+                }
+                if (targetRow) {
+                    targetRow.classList.add('is-highlighted');
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => targetRow.classList.remove('is-highlighted'), 2400);
+                }
             });
         }
 
@@ -753,43 +834,48 @@
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'table-actions';
 
-                if (req.status === 'offer_sent') {
+                // Implementarea noilor acțiuni
+                switch (req.status) {
+                    case 'awaiting_venue':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                        `;
+                        break;
+                    case 'offer_sent':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="view_offer" data-request-id="${req.id}">👁️ Vezi ofertă</button>
+                            <button data-request-action="accept_offer" data-request-id="${req.id}">✅ Confirmă rezervarea</button>
+                        `;
+                        break;
+                    case 'option_hold':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="confirm_hold" data-request-id="${req.id}">✅ Confirmă rezervarea</button>
+                            <button data-request-action="release_hold" data-request-id="${req.id}">🚫 Renunță la rezervare</button>
+                        `;
+                        break;
+                    case 'viewing_scheduled':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="add_to_calendar" data-request-id="${req.id}">📅 Adaugă în calendar</button>
+                            <button data-request-action="cancel_viewing" data-request-id="${req.id}">🚫 Anulează vizionarea</button>
+                        `;
+                        break;
+                    case 'confirmed':
+                        actionsDiv.innerHTML = `<button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj locației</button>`;
+                        break;
+                    case 'unavailable':
+                    case 'cancelled_by_venue': // Same action for both
+                        actionsDiv.innerHTML = `<button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Trimite o nouă cerere</button>`;
+                        break;
+                    case 'cancelled_by_client':
+                        actionsDiv.innerHTML = `<button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Retrimite cererea</button>`;
+                        break;
+                    default:
+                        // Fallback for other statuses like 'info_needed', 'awaiting_client' etc.
                     actionsDiv.innerHTML = `
-                        <button data-request-action="view_offer" data-request-id="${req.id}">Vezi oferta</button>
-                        <button data-request-action="accept_offer" data-request-id="${req.id}">Acceptă oferta</button>
-                        <button data-request-action="ask_update" data-request-id="${req.id}">Solicită clarificări</button>
-                        <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează</button>
+                        <button data-request-action="view_details" data-request-id="${req.id}">Vezi detalii</button>
                     `;
-                } else if (req.status === 'awaiting_venue') {
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="ask_update" data-request-id="${req.id}">Trimite reminder</button>
-                        <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
-                    `;
-                } else if (req.status === 'info_needed') {
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="provide_info" data-request-id="${req.id}">Trimite detaliile</button>
-                        <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
-                    `;
-                } else if (req.status === 'awaiting_client') {
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="accept_offer" data-request-id="${req.id}">Confirmă rezervarea</button>
-                        <button data-request-action="ask_update" data-request-id="${req.id}">Cere ajustări</button>
-                        <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează</button>
-                    `;
-                } else if (req.status === 'confirmed') {
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="view_offer" data-request-id="${req.id}">Vezi detalii</button>
-                        <button data-request-action="ask_update" data-request-id="${req.id}">Cere update</button>
-                    `;
-                } else if (['unavailable', 'cancelled_by_venue', 'cancelled_by_client'].includes(req.status)) {
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="reopen_request" data-request-id="${req.id}">Propune o altă dată</button>
-                        <button data-request-action="remove_request" data-request-id="${req.id}">Ascunde cererea</button>
-                    `;
-                } else {
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="reopen_request" data-request-id="${req.id}">Reactualizează cererea</button>
-                    `;
+                        break;
                 }
 
                 actionsCell.appendChild(actionsDiv);
@@ -819,11 +905,26 @@
                     request.lastUpdate = new Date();
                     break;
                 case 'cancel_request':
-                    request.status = 'cancelled';
+                    request.status = 'cancelled_by_client';
                     request.lastUpdate = new Date();
                     break;
                 case 'reopen_request':
-                    request.status = 'pending';
+                    request.status = 'awaiting_venue';
+                    request.lastUpdate = new Date();
+                    break;
+                case 'remove_request':
+                    clientRequests = clientRequests.filter(item => item.id !== requestId);
+                    break;
+                case 'confirm_hold':
+                    request.status = 'confirmed';
+                    request.lastUpdate = new Date();
+                    break;
+                case 'release_hold':
+                    request.status = 'cancelled_by_client';
+                    request.lastUpdate = new Date();
+                    break;
+                case 'provide_info':
+                    request.status = 'awaiting_venue';
                     request.lastUpdate = new Date();
                     break;
                 default:
@@ -890,6 +991,11 @@
                         <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Descarcă materiale</button>
                         <button data-viewing-action="add_note" data-viewing-id="${view.id}">Adaugă notiță</button>
                     `;
+                } else if (view.status === 'completed') {
+                    actionsDiv.innerHTML = `
+                        <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Vezi rezumatul</button>
+                        <button data-viewing-action="add_review" data-viewing-id="${view.id}">Scrie feedback</button>
+                    `;
                 } else {
                     actionsDiv.innerHTML = `
                         <button data-viewing-action="accept_reschedule" data-viewing-id="${view.id}">Acceptă noua dată</button>
@@ -911,8 +1017,6 @@
             const viewing = clientViewings.find(v => v.id === viewingId);
             if (!viewing) return;
 
-            const locationName = getLocationById(viewing.locationId)?.name || 'locație';
-
             switch (action) {
                 case 'confirm_viewing':
                     viewing.status = 'confirmed';
@@ -927,16 +1031,19 @@
                     viewing.lastUpdate = new Date();
                     break;
                 case 'download_materials':
+                    viewing.lastUpdate = new Date();
                     break;
                 case 'add_note':
+                    viewing.lastUpdate = new Date();
+                    break;
+                case 'add_review':
+                    viewing.lastUpdate = new Date();
                     break;
                 default:
                     break;
             }
 
             renderViewingsTable();
-            renderViewingsNotes();
-            renderRequestsHistory();
             renderOverview();
         }
 
