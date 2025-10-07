@@ -112,7 +112,20 @@
         .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 6px 14px; font-size: 0.82rem; cursor: pointer; }
         .filter-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
         .filter-bar label { font-weight: 600; font-size: 0.85rem; color: var(--muted-color); }
-        .filter-bar select { min-width: 180px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-color); background: var(--white-color); font-size: 0.85rem; }
+        .filter-bar select { min-width: 180px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--white-color); font-size: 0.85rem; }
+        /* MODIFICAT: Stiluri aliniate cu owner-crm.html */
+        .filter-bar label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .filter-bar select {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font: inherit;
+            font-size: 0.9rem;
+            background: var(--white-color);
+        }
         .requests-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 18px; margin: 12px 0 4px; }
         .requests-legend-item { display: flex; align-items: flex-start; gap: 12px; font-size: 0.85rem; color: var(--gray-color); }
         .requests-legend-item .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
@@ -446,18 +459,6 @@
             { id: 3, locationId: 3, date: addDays(20), hour: '15:30', host: 'Irina M.', status: 'reschedule_pending', lastUpdate: addDays(-1), note: 'Proprietarul a propus o nouă dată' }
         ];
 
-        const viewingNotes = [
-            { id: 1, viewingId: 1, title: 'Propunere set-up ceremonie', type: 'PDF', link: '#', uploadedAt: addDays(-1) },
-            { id: 2, viewingId: 2, title: 'Materiale foto spații secundare', type: 'Galerie', link: '#', uploadedAt: addDays(-2) },
-            { id: 3, viewingId: 3, title: 'Plan logistic vizită', type: 'Checklist', link: '#', uploadedAt: addDays(-3) }
-        ];
-
-        const clientTasks = [
-            { id: 1, title: 'Confirmă meniul vegetarian la Forest Retreat & Spa', status: 'due', dueDate: addDays(3) },
-            { id: 2, title: 'Trimite lista invitaților către Ambiance Lake', status: 'upcoming', dueDate: addDays(7) },
-            { id: 3, title: 'Finalizează brief-ul foto pentru Cluj SkyView', status: 'completed', dueDate: addDays(-4) }
-        ];
-
         const requestFilters = { status: 'all', location: 'all', month: 'all' };
         const viewingFilters = { venue: 'all', status: 'all' };
 
@@ -473,14 +474,11 @@
         const requestsStatusFilter = document.getElementById('requests-status-filter');
         const requestsLocationFilter = document.getElementById('requests-location-filter');
         const requestsDateFilter = document.getElementById('requests-date-filter');
-        const requestsLegendEl = document.getElementById('requests-status-legend');
         const requestsTableBody = document.getElementById('requests-table-body');
-        const requestsHistoryList = document.getElementById('requests-history-list');
 
         const viewingsVenueFilter = document.getElementById('viewings-venue-filter');
         const viewingsStatusFilter = document.getElementById('viewings-status-filter');
         const viewingsTableBody = document.getElementById('viewings-table-body');
-        const viewingsNotesList = document.getElementById('viewings-notes-list');
 
         function getLocationById(id) {
             return locations.find(loc => loc.id === id);
@@ -586,39 +584,6 @@
             });
         }
 
-        function renderOverviewNextSteps() {
-            if (!overviewTasksList) return;
-            overviewTasksList.innerHTML = '';
-
-            const taskList = clientTasks
-                .slice()
-                .sort((a, b) => a.dueDate - b.dueDate)
-                .slice(0, 4);
-
-            if (!taskList.length) {
-                overviewTasksList.innerHTML = '<div class="empty-state">Nu ai pași următori în acest moment.</div>';
-                return;
-            }
-
-            taskList.forEach(task => {
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                const chip = createStatusChip(task.status, {
-                    due: { label: 'Urgent', color: '#b91c1c' },
-                    upcoming: { label: 'În curând', color: '#0f766e' },
-                    completed: { label: 'Finalizat', color: '#15803d' }
-                });
-                item.innerHTML = `
-                    <div>
-                        <strong>${task.title}</strong>
-                        <span class="panel-meta">Limită: ${formatDate(task.dueDate)}</span>
-                    </div>
-                `;
-                item.appendChild(chip);
-                overviewTasksList.appendChild(item);
-            });
-        }
-
         function renderOverviewViewingsList() {
             if (!overviewViewingsList) return;
             const upcoming = clientViewings
@@ -636,7 +601,7 @@
                 const item = document.createElement('div');
                 // MODIFICAT: Adăugat clasă și event listener pentru interactivitate
                 item.className = 'list-item is-interactive';
-                item.addEventListener('click', () => activatePage('viewings'));
+                item.addEventListener('click', () => navigateToItem('viewing', view.id));
                 const chip = createStatusChip(view.status, viewingStatusMeta);
                 item.innerHTML = `
                     <div>
@@ -653,7 +618,6 @@
         function renderOverview() {
             renderOverviewMetrics();
             renderOverviewRecentActivity();
-            renderOverviewNextSteps();
             renderOverviewViewingsList();
         }
 
@@ -744,40 +708,6 @@
             });
         }
 
-        function getRequestNextStep(request) {
-            const meta = requestStatusMeta[request.status] || {};
-            let detail = meta.nextStep || 'Monitorizează această cerere pentru actualizări.';
-
-            if (request.status === 'offer_sent' && request.offerValidUntil) {
-                detail = `Analizează oferta înainte de ${formatDate(request.offerValidUntil)}.`;
-            }
-
-            if (request.status === 'awaiting_client' && request.offerValidUntil) {
-                detail = `Confirmă sau cere ajustări până la ${formatDate(request.offerValidUntil)}.`;
-            }
-
-            if (request.status === 'awaiting_venue' && request.lastUpdate) {
-                detail = `Ultimul răspuns de la locație: ${formatDate(request.lastUpdate)}. Poți trimite un reminder dacă nu primești vești.`;
-            }
-
-            if (request.status === 'cancelled_by_client') {
-                detail = 'Ai anulat această cerere. Redeschide discuția sau continuă căutările.';
-            }
-
-            if (request.status === 'cancelled_by_venue') {
-                detail = 'Locația a anulat discuția. Contactează-i pentru detalii sau trimite o nouă cerere.';
-            }
-
-            if (request.status === 'unavailable') {
-                detail = 'Locația nu este disponibilă în data aleasă. Poți propune o altă dată sau alege alt spațiu.';
-            }
-
-            return {
-                title: meta.label || 'Pas următor',
-                detail
-            };
-        }
-
         function renderRequests() {
             if (!requestsTableBody) return;
             requestsTableBody.innerHTML = '';
@@ -866,30 +796,6 @@
             });
 
             renderOverviewMetrics();
-        }
-
-        function renderRequestsHistory() {
-            if (!requestsHistoryList) return;
-            requestsHistoryList.innerHTML = '';
-
-            if (!requestHistory.length) {
-                requestsHistoryList.innerHTML = '<div class="empty-state">Nu există istoric pentru cererile tale.</div>';
-                return;
-            }
-
-            requestHistory
-                .slice()
-                .sort((a, b) => b.timestamp - a.timestamp)
-                .slice(0, 6)
-                .forEach(entry => {
-                    const item = document.createElement('div');
-                    item.className = 'list-item';
-                    item.innerHTML = `
-                        <div>${entry.message}</div>
-                        <span class="panel-meta">${formatDate(entry.timestamp)}</span>
-                    `;
-                    requestsHistoryList.appendChild(item);
-                });
         }
 
         function handleRequestAction(event) {
