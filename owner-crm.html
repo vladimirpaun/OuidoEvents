@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -892,6 +893,16 @@
             min-width: 150px;
             text-align: center;
         }
+        /* NOU: Stil pentru a face titlul lunii interactiv */
+        #availability-month-year, #viewings-month-year {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        #availability-month-year:hover, #viewings-month-year:hover {
+            background-color: var(--light-gray-color);
+        }
         .monthly-calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -1154,8 +1165,8 @@
         }
 
         .pie-chart-svg {
-            width: 220px;
-            height: 220px;
+            width: 160px;
+            height: 160px;
             max-width: 100%;
             transform: rotate(-90deg);
         }
@@ -1164,10 +1175,6 @@
             transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
             cursor: pointer;
             transform-origin: center;
-        }
-
-        .pie-slice:hover {
-            transform: scale(1.05);
         }
 
         .pie-chart-legend {
@@ -1532,6 +1539,7 @@
                             <label for="availability-venue-filter">Vizualizare pentru:</label>
                             <select id="availability-venue-filter"></select>
                         </div>
+                        <button id="today-availability-btn" class="crm-button ghost" style="padding: 8px 16px; font-size: 0.85rem; border-radius: 8px; margin-right: auto;">Astăzi</button>
                         <div class="calendar-nav">
                             <button id="prev-month-btn" aria-label="Luna precedentă">&lt;</button>
                             <h2 id="availability-month-year" style="margin:0;"></h2>
@@ -1806,19 +1814,14 @@
             });
 
             if (pageFound) {
-                history.replaceState(null, '', `#${pageId}`);
-                const scrollContainer = document.querySelector('.crm-pages');
-                if (scrollContainer) {
-                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Doar actualizăm URL-ul dacă este diferit, pentru a evita intrări duplicate în istoric
+                if (window.location.hash !== `#${pageId}`) {
+                    history.pushState({ page: pageId }, '', `#${pageId}`);
                 }
+                // MODIFICAT: Forțează scroll-ul la începutul paginii după activare
+                window.scrollTo(0, 0);
             }
         }
-
-        const initialPage = window.location.hash.replace('#', '');
-        const storedPage = localStorage.getItem(storageKey);
-        activatePage(initialPage || storedPage || 'overview');
 
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -1826,9 +1829,15 @@
             });
         });
 
-        window.addEventListener('hashchange', () => {
-            activatePage(window.location.hash.replace('#', ''));
+        // MODIFICAT: Folosim 'popstate' pentru a gestiona butoanele back/forward ale browserului
+        window.addEventListener('popstate', (event) => {
+            const pageId = event.state ? event.state.page : (window.location.hash.replace('#', '') || 'overview');
+            activatePage(pageId);
         });
+
+        // Inițializare la încărcarea paginii
+        const initialPage = window.location.hash.replace('#', '') || localStorage.getItem(storageKey) || 'overview';
+        activatePage(initialPage);
 
         // --- DYNAMIC DATA GENERATION ---
         const today = new Date();
@@ -1936,10 +1945,10 @@
         });
 
         const eventTypeDistributionData = [
-            { type: 'Nunți', count: 45, color: '#0052D4' },
-            { type: 'Corporate', count: 25, color: '#4364F7' },
-            { type: 'Botezuri', count: 18, color: '#00B4D8' },
-            { type: 'Private', count: 12, color: '#90E0EF' }
+            { type: 'Nuntă', count: 45, color: '#8b5cf6' },
+            { type: 'Eveniment Corporate', count: 25, color: '#22c55e' },
+            { type: 'Botez', count: 18, color: '#f59e0b' },
+            { type: 'Petrecere Privată', count: 12, color: '#f43f5e' }
         ];
 
         // NOU: Matrice de disponibilitate generată dinamic
@@ -2001,7 +2010,7 @@
             });
         }
 
-        populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort());
+        populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort(), true, 'Toate');
         populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
         populateSelect(document.getElementById('viewings-calendar-venue-filter'), Array.from(venuesSelect).sort(), true); // NOU: Populează filtrul noului calendar
         populateSelect(document.getElementById('availability-venue-filter'), Array.from(venuesSelect).sort(), true); // MODIFICAT: Permite "Toate locațiile"
@@ -2011,7 +2020,7 @@
         const bookingStatusFilter = document.getElementById('bookings-status-filter');
         if (bookingStatusFilter) {
             const statusOptions = Object.entries(bookingStatusMeta).map(([key, value]) => ({ value: key, text: value.label }));
-            populateSelect(bookingStatusFilter, statusOptions.map(s => s.value).sort((a, b) => bookingStatusMeta[a].label.localeCompare(bookingStatusMeta[b].label)), true);
+            populateSelect(bookingStatusFilter, statusOptions.map(s => s.value).sort((a, b) => bookingStatusMeta[a].label.localeCompare(bookingStatusMeta[b].label)), true, 'Toate');
             // Înlocuiește valorile cu textul corespunzător
             Array.from(bookingStatusFilter.options).forEach(option => {
                 if (option.value !== 'all') {
@@ -2711,6 +2720,8 @@
             const width = container.clientWidth || 800;
             const height = 280;
             svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            // NOU: Setează o lățime maximă pentru a-l face mai îngust și centrează-l
+            svg.style.maxWidth = '900px';
 
             const padding = { top: 20, right: 20, bottom: 40, left: 40 };
             const chartWidth = width - padding.left - padding.right;
@@ -3047,6 +3058,33 @@
             renderViewingsCalendar();
         });
 
+        // NOU: Buton pentru a reveni la luna curentă în calendarul de disponibilitate
+        document.getElementById('today-availability-btn')?.addEventListener('click', () => {
+            currentMonthOffset = 0;
+            renderMonthlyCalendar();
+        });
+
+        // NOU: Inițializează selectorul de lună/an pentru calendarul de disponibilitate
+        const monthYearPickerEl = document.getElementById('availability-month-year');
+        if (monthYearPickerEl && typeof flatpickr === 'function') {
+            flatpickr(monthYearPickerEl, {
+                plugins: [
+                    new monthSelectPlugin({
+                        shorthand: true,
+                        dateFormat: "F Y",
+                        altFormat: "F Y",
+                    })
+                ],
+                onChange: function(selectedDates, dateStr, instance) {
+                    const today = new Date();
+                    const selectedDate = selectedDates[0];
+                    const monthDiff = (selectedDate.getFullYear() - today.getFullYear()) * 12 + (selectedDate.getMonth() - today.getMonth());
+                    currentMonthOffset = monthDiff;
+                    renderMonthlyCalendar();
+                },
+            });
+        }
+
         // MODIFICAT: Event listeners pentru noul calendar lunar
         document.getElementById('prev-month-btn')?.addEventListener('click', () => {
             currentMonthOffset--;
@@ -3058,5 +3096,6 @@
         });
     });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
 </body>
 </html>
