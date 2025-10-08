@@ -343,6 +343,9 @@
             padding: 16px 18px;
             font-size: 0.92rem;
             color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         .detail-note-area span {
             display: block;
@@ -350,7 +353,32 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--muted-color);
-            margin-bottom: 8px;
+            margin: 0;
+        }
+        .detail-note-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .detail-note-header .crm-button {
+            flex-shrink: 0;
+        }
+        .detail-note-input {
+            width: 100%;
+            min-height: 140px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 82, 212, 0.18);
+            background: var(--white-color);
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            color: var(--dark-color);
+            resize: vertical;
+        }
+        .detail-note-input::placeholder {
+            color: var(--muted-color);
         }
 
 
@@ -1969,8 +1997,11 @@
                         <h3>Notă internă</h3>
                         <p class="panel-meta" style="margin:0;">Folosește această secțiune pentru follow-up și contextul discutat cu clientul.</p>
                         <div class="detail-note-area">
-                            <span>Înregistrare</span>
-                            <p id="record-detail-note">Nu există notițe salvate pentru această solicitare.</p>
+                            <div class="detail-note-header">
+                                <span>Înregistrare</span>
+                                <button type="button" class="crm-button primary sm" id="record-detail-save">Salvează nota</button>
+                            </div>
+                            <textarea id="record-detail-note" class="detail-note-input" placeholder="Nu există notițe salvate pentru această solicitare."></textarea>
                         </div>
                     </article>
                 </div>
