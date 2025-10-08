@@ -54,6 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthNames = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'noi', 'dec'];
     const formatDate = (date) => `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
     const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    const parseFormattedDate = (formatted) => {
+        const parts = formatted.split(' ');
+        if (parts.length < 3) {
+            return null;
+        }
+        const day = parseInt(parts[0], 10);
+        const monthIndex = monthNames.indexOf(parts[1].toLowerCase());
+        const year = parseInt(parts[2], 10);
+        if (!Number.isFinite(day) || monthIndex === -1 || !Number.isFinite(year)) {
+            return null;
+        }
+        return new Date(year, monthIndex, day);
+    };
 
     const availabilityStorageKey = 'owner-crm-availability-blocks';
     const manualAvailabilityBlocks = new Map();
@@ -910,6 +923,14 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMonthlyCalendar();
     }
 
+    function buildIsoDateFromBooking(formattedDate) {
+        const parsed = parseFormattedDate(formattedDate);
+        if (!parsed) {
+            return null;
+        }
+        return buildIsoDate(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    }
+
     function navigateToBookingsForDate(dateISO) {
         activeBookingsDateFilter = dateISO;
         const friendlyDate = formatFriendlyDateFromISO(dateISO);
@@ -930,6 +951,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const venueFilter = document.getElementById('availability-venue-filter');
         const currentVenueFilter = venueFilter ? venueFilter.value : 'all';
+        let selectedVenue = currentVenueFilter && currentVenueFilter !== 'all'
+            ? currentVenueFilter
+            : null;
+        if (!hasMultipleVenues) {
+            selectedVenue = Array.from(venuesSelect)[0] || null;
+        } else if (!selectedVenue) {
+            selectedVenue = Array.from(venuesSelect).sort()[0] || null;
+        }
 
         const menu = document.createElement('div');
         menu.className = 'availability-quick-menu';
@@ -941,10 +970,6 @@ document.addEventListener('DOMContentLoaded', () => {
         subtitle.className = 'availability-quick-menu-date';
         const friendlyDate = formatFriendlyDateFromISO(dateISO);
         subtitle.textContent = friendlyDate;
-
-        let selectedVenue = currentVenueFilter && currentVenueFilter !== 'all'
-            ? currentVenueFilter
-            : (hasMultipleVenues ? Array.from(venuesSelect).sort()[0] : null);
 
         const venueSelectWrapper = document.createElement('div');
         let locationSelect = null;
@@ -988,9 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
             subtitleWrapper.append(venueSelectWrapper);
         }
 
-        const getManualBlockState = () => {
-            return Boolean(getManualStatusForVenue(dateISO, selectedVenue));
-        };
+        const getManualBlockState = () => Boolean(getManualStatusForVenue(dateISO, selectedVenue));
 
         const hasAutoBooking = dayCell.dataset.hasAuto === 'true';
 
@@ -1016,12 +1039,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updateButtonsState = () => {
             const hasManualBlock = getManualBlockState();
-            if (hasAutoBooking && !hasManualBlock) {
-                freeBtn.disabled = true;
-                freeBtn.title = 'Ziua are rezervări confirmate din CRM.';
+            if (!hasManualBlock) {
+                freeBtn.hidden = true;
+                freeBtn.title = '';
             } else {
+                freeBtn.hidden = false;
                 freeBtn.disabled = false;
                 freeBtn.title = '';
+            }
+            if (hasAutoBooking && !hasManualBlock) {
+                freeBtn.hidden = true;
             }
         };
 
@@ -1191,11 +1218,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordDetailNoteInput = document.getElementById('record-detail-note');
     const recordDetailBackBtn = document.getElementById('record-detail-back');
     const recordDetailSaveBtn = document.getElementById('record-detail-save');
+    const recordDetailQuickActions = document.querySelectorAll('[data-detail-action]');
     const recordDetailState = {
         type: null,
         id: null,
         sourcePage: 'bookings'
     };
+    let recordDetailCurrentVenue = null;
 
     function populateDetailField(field, value, fallback = '—') {
         const target = recordDetailFields[field];
@@ -1291,6 +1320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recordDetailState.type = type;
         recordDetailState.id = record.id;
         recordDetailState.sourcePage = sourcePage;
+        recordDetailCurrentVenue = record.venue || null;
         if (type === 'viewing') {
             selectedViewingId = record.id;
         } else {
@@ -1970,6 +2000,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? `${event.event} - ${event.venue}`
                     : event.event;
                 eventDiv.title = `${event.client} · ${event.event}`;
+                eventDiv.dataset.bookingId = String(event.id);
+                eventDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedBookingId = event.id;
+                    showRecordDetailPage('booking', event, 'availability');
+                });
                 dayCell.appendChild(eventDiv);
             });
 
@@ -2841,4 +2877,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     recordDetailBackBtn?.addEventListener('click', () => returnToListPage({ scroll: true }));
     recordDetailSaveBtn?.addEventListener('click', saveRecordDetailNote);
+    recordDetailQuickActions.forEach(button => {
+        button.addEventListener('click', () => {
+            const action = button.dataset.detailAction;
+            const { type, id } = recordDetailState;
+            if (type !== 'booking' || !id) {
+                showAutomationToast('Selectează o rezervare pentru a folosi acțiunile rapide.');
+                return;
+            }
+            const record = bookings.find(item => item.id === id);
+            if (!record) {
+                return;
+            }
+            const currentVenue = recordDetailCurrentVenue || record.venue || null;
+            switch (action) {
+                case 'reserve':
+                    record.status = 'confirmed';
+                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_reserved', currentVenue);
+                    break;
+                case 'pre-reserve':
+                    record.status = 'pre_booked';
+                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_pre_reserved', currentVenue);
+                    break;
+                case 'free':
+                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_free', currentVenue);
+                    break;
+                default:
+                    break;
+            }
+            renderBookingsTable();
+            renderMonthlyCalendar();
+            showRecordDetailPage('booking', record, recordDetailState.sourcePage);
+        });
+    });
 });
