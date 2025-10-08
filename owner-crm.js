@@ -367,86 +367,72 @@ document.addEventListener('DOMContentLoaded', () => {
         confirm_availability: {
             key: 'confirm_availability',
             label: 'Confirmă disponibilitatea',
-            title: 'Data este liberă. Poți trimite automat oferta dacă ai activată opțiunea din setări.',
-            icon: '<span class="action-icon">✅</span>'
+            title: 'Data este liberă. Poți trimite automat oferta dacă ai activată opțiunea din setări.'
         },
         send_offer: {
             key: 'send_offer',
             label: 'Trimite ofertă',
-            title: 'Trimite propunerea de preț și pachet către client.',
-            icon: '<span class="action-icon">📤</span>'
+            title: 'Trimite propunerea de preț și pachet către client.'
         },
         send_updated_offer: {
             key: 'send_updated_offer',
             label: 'Trimite ofertă actualizată',
-            title: 'Trimite oferta actualizată după vizionare.',
-            icon: '<span class="action-icon">🔁</span>'
+            title: 'Trimite oferta actualizată după vizionare.'
         },
         schedule_viewing: {
             key: 'schedule_viewing',
             label: 'Confirmă vizionarea',
-            title: 'Confirmă intervalul de vizionare cu clientul.',
-            icon: '<span class="action-icon">📅</span>'
+            title: 'Confirmă intervalul de vizionare cu clientul.'
         },
         propose_new_date: {
             key: 'propose_new_date',
             label: 'Propune altă dată',
-            title: 'Propune un nou interval pentru vizionare.',
-            icon: '<span class="action-icon">🕓</span>'
+            title: 'Propune un nou interval pentru vizionare.'
         },
         pre_reserve: {
             key: 'pre_reserve',
             label: 'Pre-rezervă data',
-            title: 'Blochează provizoriu data pentru client.',
-            icon: '<span class="action-icon">🔒</span>'
+            title: 'Blochează provizoriu data pentru client.'
         },
         mark_confirmed: {
             key: 'mark_confirmed',
             label: 'Confirmă rezervarea',
-            title: 'Marchează rezervarea ca fiind confirmată după avans.',
-            icon: '<span class="action-icon">🎉</span>'
+            title: 'Marchează rezervarea ca fiind confirmată după avans.'
         },
         send_message: {
             key: 'send_message',
             label: 'Trimite mesaj',
-            title: 'Trimite un mesaj rapid către client.',
-            icon: '<span class="action-icon">💬</span>'
+            title: 'Trimite un mesaj rapid către client.'
         },
         send_message_owner: {
             key: 'send_message_owner',
             label: 'Răspunde la întrebări',
-            title: 'Răspunde rapid întrebărilor clientului.',
-            icon: '<span class="action-icon">✉️</span>'
+            title: 'Răspunde rapid întrebărilor clientului.'
         },
         reject: {
             key: 'reject',
             label: 'Respinge',
-            title: 'Respinge această cerere.',
-            icon: '<span class="action-icon">❌</span>'
+            title: 'Respinge această cerere.'
         },
         cancel_viewing: {
             key: 'cancel_viewing',
             label: 'Anulează vizionarea',
-            title: 'Anulează vizionarea programată.',
-            icon: '<span class="action-icon">🚫</span>'
+            title: 'Anulează vizionarea programată.'
         },
         log_viewing: {
             key: 'log_viewing',
             label: 'Notează după tur',
-            title: 'Adaugă notițe interne după vizionare.',
-            icon: '<span class="action-icon">📝</span>'
+            title: 'Adaugă notițe interne după vizionare.'
         },
         add_note: {
             key: 'add_note',
             label: 'Adaugă notă internă',
-            title: 'Adaugă o notă internă pentru echipă.',
-            icon: '<span class="action-icon">🗒️</span>'
+            title: 'Adaugă o notă internă pentru echipă.'
         },
         open_details: {
             key: 'open_details',
             label: 'Vezi detalii',
-            title: 'Deschide detaliile rezervării.',
-            icon: '<span class="action-icon">👁️</span>'
+            title: 'Deschide detaliile rezervării.'
         }
     };
 
@@ -823,7 +809,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             booking.details = noteValue;
             renderBookingsTable();
-            renderBookingsStatusCards();
             renderOverviewLists();
             renderMonthlyCalendar();
             highlightBookingRow(id);
@@ -993,7 +978,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.type = 'button';
                 button.dataset.action = definition.key;
                 button.title = definition.title || definition.label;
-                button.innerHTML = `${definition.icon}<span>${definition.label}</span>`;
+                button.textContent = definition.label;
                 actionsWrapper.appendChild(button);
             });
             actionsCell.appendChild(actionsWrapper);
@@ -1006,63 +991,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showRecordDetailPage('booking', item, 'bookings');
             });
         });
-    }
-
-    function renderBookingsStatusCards() {
-        const container = document.getElementById('bookings-status-cards');
-        if (!container) {
-            return;
-        }
-        const counts = bookings.reduce((acc, booking) => {
-            acc[booking.status] = (acc[booking.status] || 0) + 1;
-            return acc;
-        }, {});
-        container.innerHTML = '';
-        const totalBookings = bookings.length;
-        let hasContent = false;
-        bookingStatusOrder.forEach(status => {
-            const meta = bookingStatusMeta[status];
-            if (!meta) {
-                return;
-            }
-            const value = counts[status] || 0;
-            if (!value) {
-                return;
-            }
-            hasContent = true;
-            const card = document.createElement('article');
-            card.className = 'status-card';
-            const baseColor = meta.color || '#2563eb';
-            const gradientTop = hexToRgba(baseColor, 0.2) || 'rgba(67, 100, 247, 0.2)';
-            const gradientBottom = hexToRgba(baseColor, 0.05) || 'rgba(67, 100, 247, 0.05)';
-            card.style.setProperty('--status-card-color', baseColor);
-            card.style.background = `linear-gradient(140deg, ${gradientTop}, ${gradientBottom})`;
-            card.style.borderColor = hexToRgba(baseColor, 0.25) || 'rgba(67, 100, 247, 0.25)';
-            const shadowColor = hexToRgba(baseColor, 0.45) || 'rgba(67, 100, 247, 0.45)';
-            card.style.boxShadow = `0 18px 36px -30px ${shadowColor}`;
-            const percentage = totalBookings > 0 ? Math.round((value / totalBookings) * 100) : 0;
-            const nextStep = meta.owner?.nextStep || 'Verifică detaliile cererilor';
-            card.innerHTML = `
-                <div class="status-card__header">
-                    <span class="status-card__label">${meta.label}</span>
-                    <span class="status-card__count">${value}</span>
-                </div>
-                <div class="status-card__progress" aria-hidden="true">
-                    <span class="status-card__progress-fill" style="width:${percentage}%"></span>
-                </div>
-                <div class="status-card__meta">
-                    <span class="status-card__hint">${nextStep}</span>
-                    <span class="status-card__percent">${percentage}% din total</span>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-        if (!hasContent) {
-            const card = document.createElement('article');
-            card.className = 'status-card status-card--empty';
-            card.innerHTML = '<strong>0</strong><span>Nu există rezervări înregistrate încă.</span><span class="status-card__hint">Adaugă prima rezervare pentru a vedea rezumatul.</span>';
-            container.appendChild(card);
-        }
     }
 
     function renderViewingsTable() {
@@ -1395,7 +1323,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
 
-        renderBookingsStatusCards();
         renderBookingsTable();
         renderOverviewLists();
         renderMonthlyCalendar();
@@ -1745,7 +1672,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 details: formData.get('details')
             };
             bookings.push(newBooking);
-            renderBookingsStatusCards();
             renderBookingsTable();
             renderOverviewLists();
             renderMonthlyCalendar();
@@ -1840,7 +1766,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initializeDynamicContent();
     renderOverviewLists();
-    renderBookingsStatusCards();
     renderBookingsTable();
     renderViewingsTable();
     renderMonthlyCalendar();
