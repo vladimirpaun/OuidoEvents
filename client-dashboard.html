@@ -169,6 +169,35 @@
             flex-direction: column;
             gap: 10px;
         }
+        #availability-date-picker {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            border: 0;
+            clip: rect(0 0 0 0);
+            clip-path: inset(50%);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .availability-calendar {
+            display: flex;
+            justify-content: center;
+        }
+        .availability-calendar .flatpickr-calendar {
+            box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            border-radius: 16px;
+            padding: 16px 20px;
+            overflow: visible;
+            min-width: 360px;
+        }
+        .availability-calendar .flatpickr-day {
+            width: 48px;
+            height: 44px;
+            font-size: 0.95rem;
+        }
         .favorites-modal .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -184,6 +213,7 @@
             flex-wrap: wrap;
             font-size: 0.75rem;
             color: var(--muted-color);
+            justify-content: center;
         }
         .availability-legend-dot {
             display: inline-block;
@@ -222,6 +252,9 @@
         }
         .flatpickr-day {
             border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .flatpickr-day.availability-day-available:hover {
             background: rgba(59, 130, 246, 0.12);
@@ -455,8 +488,8 @@
             </header>
             <form id="availability-form">
                 <div class="form-section">
-                    <label for="availability-date-picker">Data dorită</label>
-                    <input type="text" id="availability-date-picker" placeholder="Selectează data evenimentului" readonly>
+                    <input type="hidden" id="availability-date-picker">
+                    <div id="availability-calendar" class="availability-calendar"></div>
                     <div class="availability-legend">
                         <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
                         <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
@@ -936,6 +969,7 @@
         const availabilityCancelBtn = document.getElementById('availability-cancel-btn');
 
         const eventTypeOptions = ['Nuntă', 'Botez', 'Cununie Civilă', 'Eveniment Corporate', 'Petrecere Privată', 'Aniversare'];
+        const availabilityCalendarContainer = document.getElementById('availability-calendar');
         const availabilityDateInput = document.getElementById('availability-date-picker');
         let availabilityDatePicker = null;
 
@@ -984,11 +1018,10 @@
         }
 
         function ensureAvailabilityDatePicker() {
-            if (!availabilityDateInput || typeof flatpickr !== 'function') {
+            if (!availabilityCalendarContainer || !availabilityDateInput || typeof flatpickr !== 'function') {
                 return null;
             }
             const today = new Date();
-            const maxDate = null;
             if (!availabilityDatePicker) {
                 if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
                     flatpickr.localize(flatpickr.l10ns.ro);
@@ -1000,9 +1033,8 @@
                     monthSelectorType: 'dropdown',
                     yearSelectorType: 'dropdown',
                     showMonths: 1,
-                    onOpen() {
-                        availabilityDateInput.blur();
-                    },
+                    inline: true,
+                    appendTo: availabilityCalendarContainer,
                     onChange(selectedDates, dateStr, instance) {
                         availabilityState.selectedDate = selectedDates[0] || null;
                         updateAvailabilitySelectedDate();
@@ -1012,7 +1044,6 @@
             }
             const referenceDate = availabilityState.selectedDate || today;
             availabilityDatePicker.clear(false);
-            availabilityDateInput.blur();
             availabilityDatePicker.set('disable', [
                 function(date) {
                     return getAvailabilityStatus(availabilityState.locationId, date) === 'booked';
