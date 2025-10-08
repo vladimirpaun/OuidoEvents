@@ -554,6 +554,11 @@
             white-space: nowrap;
         }
 
+        .status-chip.status-chip--compact {
+            padding: 4px 14px;
+            width: clamp(140px, 36%, 260px);
+        }
+
         /* Culori sincronizate cu logica JS */
         .status-chip[data-status="availability_request"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
         .status-chip[data-status="availability_confirmed"] { background: rgba(59, 130, 246, 0.22); color: #2563eb; }
@@ -2067,12 +2072,20 @@
                                     <span class="detail-list-value" data-detail-field="venue">—</span>
                                 </div>
                                 <div class="detail-list-item">
-                                    <span class="detail-list-label">Dată</span>
+                                    <span class="detail-list-label" data-detail-date-label>Dată eveniment</span>
                                     <span class="detail-list-value" data-detail-field="date">—</span>
                                 </div>
-                                <div class="detail-list-item" data-detail-time-wrapper hidden>
-                                    <span class="detail-list-label">Ora</span>
-                                    <span class="detail-list-value" data-detail-field="time">—</span>
+                                <div class="detail-list-item" data-detail-viewing-date-wrapper hidden>
+                                    <span class="detail-list-label">Dată vizionare</span>
+                                    <span class="detail-list-value" data-detail-field="viewingDate">—</span>
+                                </div>
+                                <div class="detail-list-item" data-detail-viewing-time-wrapper hidden>
+                                    <span class="detail-list-label">Ora vizionare</span>
+                                    <span class="detail-list-value" data-detail-field="viewingTime">—</span>
+                                </div>
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Ultima actualizare</span>
+                                    <span class="detail-list-value" data-detail-field="updatedAt">—</span>
                                 </div>
                             </div>
                         </article>
