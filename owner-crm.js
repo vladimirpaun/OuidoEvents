@@ -68,11 +68,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
         const storedBlocks = JSON.parse(localStorage.getItem(availabilityStorageKey) || '[]');
-        storedBlocks.forEach(([dateKey, status]) => {
-            if (typeof dateKey === 'string' && typeof status === 'string') {
-                manualAvailabilityBlocks.set(dateKey, status);
-            }
-        });
+        if (Array.isArray(storedBlocks)) {
+            storedBlocks.forEach(([dateKey, storedValue]) => {
+                if (typeof dateKey !== 'string') {
+                    return;
+                }
+                const entryMap = new Map();
+                if (typeof storedValue === 'string') {
+                    entryMap.set('*', storedValue);
+                } else if (storedValue && typeof storedValue === 'object') {
+                    Object.entries(storedValue).forEach(([venueKey, statusValue]) => {
+                        if (typeof statusValue === 'string') {
+                            entryMap.set(venueKey, statusValue);
+                        }
+                    });
+                }
+                if (entryMap.size > 0) {
+                    manualAvailabilityBlocks.set(dateKey, entryMap);
+                }
+            });
+        }
     } catch (error) {
         console.warn('Nu s-au putut încărca blocările de disponibilitate.', error);
     }
@@ -668,6 +683,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const venuesSelect = new Set(bookings.map(item => item.venue));
     viewings.forEach(item => venuesSelect.add(item.venue));
+    const hasMultipleVenues = venuesSelect.size > 1;
+
+    function getManualVenueKey(venue) {
+        if (!hasMultipleVenues) {
+            return '*';
+        }
+        if (!venue || venue === 'all') {
+            return null;
+        }
+        return venue;
+    }
+
+    function getManualStatusesForDate(dateISO, venue) {
+        const entry = manualAvailabilityBlocks.get(dateISO);
+        if (!entry) {
+            return [];
+        }
+        if (!hasMultipleVenues) {
+            const status = entry.get('*');
+            return status ? [{ status, venue: null }] : [];
+        }
+        if (venue && venue !== 'all') {
+            const specific = entry.get(venue);
+            if (specific) {
+                return [{ status: specific, venue }];
+            }
+            const wildcard = entry.get('*');
+            return wildcard ? [{ status: wildcard, venue }] : [];
+        }
+        const results = [];
+        entry.forEach((status, venueKey) => {
+            if (venueKey === '*') {
+                venuesSelect.forEach(name => {
+                    results.push({ status, venue: name });
+                });
+            } else {
+                results.push({ status, venue: venueKey });
+            }
+        });
+        return results;
+    }
+
+    function getManualStatusForVenue(dateISO, venue) {
+        const entry = manualAvailabilityBlocks.get(dateISO);
+        if (!entry) {
+            return null;
+        }
+        if (!hasMultipleVenues) {
+            return entry.get('*') || null;
+        }
+        if (venue && venue !== 'all') {
+            return entry.get(venue) || entry.get('*') || null;
+        }
+        return null;
+    }
+
+    function setManualStatusFor(dateISO, venue, status) {
+        const venueKey = getManualVenueKey(venue);
+        if (venueKey === null) {
+            return;
+        }
+        const key = venueKey;
+        let entry = manualAvailabilityBlocks.get(dateISO);
+        if (!entry) {
+            entry = new Map();
+            manualAvailabilityBlocks.set(dateISO, entry);
+        }
+        if (hasMultipleVenues && entry.has('*') && key !== '*') {
+            entry.delete('*');
+        }
+        if (!status) {
+            if (!entry.delete(key) && hasMultipleVenues && entry.has('*')) {
+                entry.delete('*');
+            }
+        } else {
+            entry.set(key, status);
+        }
+        if (entry.size === 0) {
+            manualAvailabilityBlocks.delete(dateISO);
+        }
+        saveAvailabilityBlocks();
+    }
 
     populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort(), true, 'Toate locațiile');
     populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
@@ -752,7 +849,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveAvailabilityBlocks() {
         try {
-            const serialized = JSON.stringify(Array.from(manualAvailabilityBlocks.entries()));
+            const serialized = JSON.stringify(Array.from(manualAvailabilityBlocks.entries()).map(([dateKey, map]) => {
+                const obj = Object.fromEntries(map);
+                return [dateKey, obj];
+            }));
             localStorage.setItem(availabilityStorageKey, serialized);
         } catch (error) {
             console.warn('Nu s-au putut salva blocările de disponibilitate.', error);
@@ -777,30 +877,31 @@ document.addEventListener('DOMContentLoaded', () => {
         return formatDate(date);
     }
 
-    function setAvailabilityStatus(dateISO, status) {
+    function setAvailabilityStatus(dateISO, status, venue) {
         if (!dateISO || !status) {
             return;
         }
-        const previousStatus = manualAvailabilityBlocks.get(dateISO);
-        if (previousStatus === status) {
-            manualAvailabilityBlocks.delete(dateISO);
-            saveAvailabilityBlocks();
-            const friendlyDate = formatFriendlyDateFromISO(dateISO);
-            showAutomationToast(`Blocarea pentru ${friendlyDate} a fost eliberată.`);
-            renderMonthlyCalendar();
-            return;
-        }
+        const previousStatus = getManualStatusForVenue(dateISO, venue);
+        const friendlyDate = formatFriendlyDateFromISO(dateISO);
+
         if (status === 'manual_free') {
-            manualAvailabilityBlocks.delete(dateISO);
-            saveAvailabilityBlocks();
-            const friendlyDate = formatFriendlyDateFromISO(dateISO);
+            if (!previousStatus) {
+                return;
+            }
+            setManualStatusFor(dateISO, venue, null);
             showAutomationToast(`Data ${friendlyDate} este din nou liberă.`);
             renderMonthlyCalendar();
             return;
         }
-        manualAvailabilityBlocks.set(dateISO, status);
-        saveAvailabilityBlocks();
-        const friendlyDate = formatFriendlyDateFromISO(dateISO);
+
+        if (previousStatus === status) {
+            setManualStatusFor(dateISO, venue, null);
+            showAutomationToast(`Blocarea pentru ${friendlyDate} a fost eliberată.`);
+            renderMonthlyCalendar();
+            return;
+        }
+
+        setManualStatusFor(dateISO, venue, status);
         if (status === 'manual_reserved') {
             showAutomationToast(`Data ${friendlyDate} a fost marcată ca rezervată manual ✅`);
         } else if (status === 'manual_pre_reserved') {
@@ -827,6 +928,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         hideAvailabilityQuickMenu();
 
+        const venueFilter = document.getElementById('availability-venue-filter');
+        const currentVenueFilter = venueFilter ? venueFilter.value : 'all';
+
         const menu = document.createElement('div');
         menu.className = 'availability-quick-menu';
         menu.setAttribute('role', 'menu');
@@ -835,9 +939,59 @@ document.addEventListener('DOMContentLoaded', () => {
         title.textContent = 'Blocare rapidă';
         const subtitle = document.createElement('span');
         subtitle.className = 'availability-quick-menu-date';
-        subtitle.textContent = formatFriendlyDateFromISO(dateISO);
+        const friendlyDate = formatFriendlyDateFromISO(dateISO);
+        subtitle.textContent = friendlyDate;
 
-        const hasManualBlock = manualAvailabilityBlocks.has(dateISO);
+        let selectedVenue = currentVenueFilter && currentVenueFilter !== 'all'
+            ? currentVenueFilter
+            : (hasMultipleVenues ? Array.from(venuesSelect).sort()[0] : null);
+
+        const venueSelectWrapper = document.createElement('div');
+        let locationSelect = null;
+        if (hasMultipleVenues) {
+            venueSelectWrapper.style.display = 'flex';
+            venueSelectWrapper.style.flexDirection = 'column';
+            venueSelectWrapper.style.gap = '6px';
+
+            const venueLabel = document.createElement('label');
+            venueLabel.style.fontSize = '0.72rem';
+            venueLabel.style.textTransform = 'uppercase';
+            venueLabel.style.letterSpacing = '0.05em';
+            venueLabel.style.color = 'var(--muted-color)';
+            venueLabel.textContent = 'Pentru locația';
+
+            locationSelect = document.createElement('select');
+            locationSelect.style.padding = '6px 8px';
+            locationSelect.style.borderRadius = '8px';
+            locationSelect.style.border = '1px solid var(--border-color)';
+            locationSelect.style.fontSize = '0.85rem';
+
+            Array.from(venuesSelect).sort().forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                locationSelect.appendChild(option);
+            });
+            if (selectedVenue) {
+                locationSelect.value = selectedVenue;
+            }
+
+            venueSelectWrapper.append(venueLabel, locationSelect);
+        }
+
+        const subtitleWrapper = document.createElement('div');
+        subtitleWrapper.style.display = 'flex';
+        subtitleWrapper.style.flexDirection = 'column';
+        subtitleWrapper.style.gap = '4px';
+        subtitleWrapper.append(subtitle);
+        if (venueSelectWrapper.firstChild) {
+            subtitleWrapper.append(venueSelectWrapper);
+        }
+
+        const getManualBlockState = () => {
+            return Boolean(getManualStatusForVenue(dateISO, selectedVenue));
+        };
+
         const hasAutoBooking = dayCell.dataset.hasAuto === 'true';
 
         const reserveBtn = document.createElement('button');
@@ -854,17 +1008,35 @@ document.addEventListener('DOMContentLoaded', () => {
         freeBtn.type = 'button';
         freeBtn.dataset.action = 'free';
         freeBtn.textContent = 'Marchează liber';
-        if (hasAutoBooking && !hasManualBlock) {
-            freeBtn.disabled = true;
-            freeBtn.title = 'Ziua are rezervări confirmate din CRM.';
-        }
 
         const viewBtn = document.createElement('button');
         viewBtn.type = 'button';
         viewBtn.dataset.action = 'view';
         viewBtn.textContent = 'Vezi cererile zilei';
 
-        menu.append(title, subtitle, reserveBtn, preReserveBtn, freeBtn, viewBtn);
+        const updateButtonsState = () => {
+            const hasManualBlock = getManualBlockState();
+            if (hasAutoBooking && !hasManualBlock) {
+                freeBtn.disabled = true;
+                freeBtn.title = 'Ziua are rezervări confirmate din CRM.';
+            } else {
+                freeBtn.disabled = false;
+                freeBtn.title = '';
+            }
+        };
+
+        updateButtonsState();
+
+        if (hasMultipleVenues && locationSelect) {
+            locationSelect.addEventListener('change', () => {
+                selectedVenue = locationSelect.value;
+                subtitle.textContent = `${friendlyDate} · ${selectedVenue}`;
+                updateButtonsState();
+            });
+            subtitle.textContent = `${friendlyDate} · ${selectedVenue}`;
+        }
+
+        menu.append(title, subtitleWrapper, reserveBtn, preReserveBtn, freeBtn, viewBtn);
         document.body.appendChild(menu);
 
         const rect = dayCell.getBoundingClientRect();
@@ -893,21 +1065,21 @@ document.addEventListener('DOMContentLoaded', () => {
             hideAvailabilityQuickMenu();
             switch (action) {
                 case 'reserve':
-                    setAvailabilityStatus(dateISO, 'manual_reserved');
+                    setAvailabilityStatus(dateISO, 'manual_reserved', selectedVenue);
                     break;
                 case 'pre-reserve':
-                    setAvailabilityStatus(dateISO, 'manual_pre_reserved');
+                    setAvailabilityStatus(dateISO, 'manual_pre_reserved', selectedVenue);
                     break;
                 case 'free':
-                    if (!manualAvailabilityBlocks.has(dateISO)) {
-                        if (dayCell.dataset.hasAuto === 'true') {
+                    if (!getManualBlockState()) {
+                        if (hasAutoBooking) {
                             showAutomationToast('Ziua conține deja rezervări sincronizate din CRM. Actualizează statusul din pagina „Rezervări”.');
                         } else {
                             showAutomationToast('Ziua este deja liberă.');
                         }
                         break;
                     }
-                    setAvailabilityStatus(dateISO, 'manual_free');
+                    setAvailabilityStatus(dateISO, 'manual_free', selectedVenue);
                     break;
                 case 'view':
                     navigateToBookingsForDate(dateISO);
@@ -1761,17 +1933,19 @@ document.addEventListener('DOMContentLoaded', () => {
             dayCell.dataset.dateIso = dateKey;
             dayCell.setAttribute('tabindex', '0');
 
-            const manualStatus = manualAvailabilityBlocks.get(dateKey);
-            if (manualStatus) {
+            const manualStatuses = getManualStatusesForDate(dateKey, selectedVenue);
+            manualStatuses.forEach(({ status, venue: manualVenue }) => {
                 const manualEvent = document.createElement('div');
                 manualEvent.className = 'calendar-event';
-                manualEvent.dataset.status = manualStatus;
-                manualEvent.textContent = manualStatus === 'manual_reserved' ? 'Rezervat manual' : 'Pre-rezervă manuală';
+                manualEvent.dataset.status = status;
+                const baseLabel = status === 'manual_reserved' ? 'Rezervat manual' : 'Pre-rezervă manuală';
+                manualEvent.textContent = baseLabel;
+                if (hasMultipleVenues && (!selectedVenue || selectedVenue === 'all') && manualVenue) {
+                    manualEvent.textContent = `${manualVenue} · ${baseLabel}`;
+                }
                 dayCell.appendChild(manualEvent);
-                dayCell.dataset.hasManual = 'true';
-            } else {
-                dayCell.dataset.hasManual = 'false';
-            }
+            });
+            dayCell.dataset.hasManual = manualStatuses.length > 0 ? 'true' : 'false';
 
             const eventsForDay = bookings.filter(booking => {
                 if (!['confirmed', 'pre_booked'].includes(booking.status)) {
@@ -1792,16 +1966,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 eventDiv.className = 'calendar-event';
                 const calendarStatus = event.status === 'confirmed' ? 'booked' : 'pre_booked';
                 eventDiv.dataset.status = calendarStatus;
-                eventDiv.textContent = selectedVenue === 'all' ? `${event.event} - ${event.venue}` : event.event;
+                eventDiv.textContent = selectedVenue === 'all'
+                    ? `${event.event} - ${event.venue}`
+                    : event.event;
                 eventDiv.title = `${event.client} · ${event.event}`;
                 dayCell.appendChild(eventDiv);
             });
 
-            if (eventsForDay.length > 0) {
-                dayCell.dataset.hasAuto = 'true';
-            } else {
-                dayCell.dataset.hasAuto = 'false';
-            }
+            dayCell.dataset.hasAuto = eventsForDay.length > 0 ? 'true' : 'false';
 
             grid.appendChild(dayCell);
         }
