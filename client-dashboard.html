@@ -110,11 +110,11 @@
 
         .table-wrapper { width: 100%; overflow-x: auto; }
         table.crm-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        table.crm-table th, table.crm-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
-        table.crm-table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-color); }
+        table.crm-table th, table.crm-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; }
+        table.crm-table th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-color); }
         table.crm-table tr.is-highlighted { background: rgba(0, 180, 216, 0.08); outline: 2px solid rgba(0, 180, 216, 0.35); }
-        .table-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 6px 14px; font-size: 0.82rem; cursor: pointer; }
+        .table-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; }
+        .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 4px 10px; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         .filter-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
         .filter-bar label { font-weight: 600; font-size: 0.9rem; }
         .filter-bar select { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); font: inherit; font-size: 0.9rem; background: var(--white-color); }
@@ -368,82 +368,71 @@
         let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [2, 7, 3];
 
         const requestStatusMeta = {
-            awaiting_venue: {
-                label: 'Așteaptă răspunsul locației',
-                description: 'Locația verifică disponibilitatea și revine cu un răspuns.',
-                nextStep: 'Așteaptă feedback-ul locației sau trimite un reminder dacă nu primești răspuns.',
-                color: '#2563eb',
-                actor: 'Locația răspunde'
+            availability_request: {
+                label: 'Cerere disponibilitate trimisă',
+                description: 'Locația a primit cererea ta și verifică disponibilitatea pentru data selectată.',
+                nextStep: 'Trimite mesaj locației sau așteaptă confirmarea lor.',
+                color: '#b45309'
+            },
+            availability_confirmed: {
+                label: 'Dată disponibilă – poți cere ofertă',
+                description: 'Locația a confirmat că data este liberă.',
+                nextStep: 'Cere ofertă sau programează o vizionare pentru a merge mai departe.',
+                color: '#2563eb'
+            },
+            offer_requested: {
+                label: 'Ofertă cerută',
+                description: 'Ai solicitat o ofertă personalizată și aștepți răspunsul locației.',
+                nextStep: 'Poți trimite întrebări suplimentare sau anula cererea dacă planurile se schimbă.',
+                color: '#a855f7'
             },
             offer_sent: {
                 label: 'Ofertă primită',
                 description: 'Locația ți-a trimis o ofertă personalizată.',
-                nextStep: 'Analizează oferta și alege dacă o accepți, soliciți ajustări sau o refuzi.',
-                color: '#7c3aed',
-                actor: 'Tu confirmi'
+                nextStep: 'Analizează oferta, pune întrebări și confirmă dacă vrei să blochezi data.',
+                color: '#7c3aed'
             },
-            info_needed: {
-                label: 'Locația cere detalii',
-                description: 'Sunt necesare informații suplimentare pentru a continua discuția.',
-                nextStep: 'Completează detaliile cerute (număr invitați, program, preferințe).',
-                color: '#b45309',
-                actor: 'Tu răspunzi'
+            viewing_request: {
+                label: 'Cerere vizionare trimisă',
+                description: 'Ai cerut o vizionare a locației.',
+                nextStep: 'Așteaptă confirmarea sau ajustează cererea dacă ai nevoie de altă dată.',
+                color: '#0ea5e9'
             },
-            awaiting_client: {
-                label: 'Așteaptă confirmarea ta',
-                description: 'Locația a răspuns și așteaptă decizia ta finală.',
-                nextStep: 'Confirmă sau respinge propunerea pentru a bloca sau elibera data.',
-                color: '#0f766e',
-                actor: 'Tu confirmi'
-            },
-            option_hold: {
-                label: 'Dată blocată pentru tine',
-                description: 'Locația a blocat temporar data, în așteptarea deciziei tale.',
-                nextStep: 'Confirmă rezervarea sau eliberează data dacă nu mai ești interesat.',
-                color: '#0ea5e9',
-                actor: 'Tu confirmi'
-            },
-            confirmed: {
-                label: 'Rezervare confirmată',
-                description: 'Ai acceptat oferta, iar locația a blocat data pentru tine.',
-                nextStep: 'Discută următorii pași (contract, plată avans, detalii logistice).',
-                color: '#15803d',
-                actor: 'Ambele părți'
-            },
-            unavailable: {
-                label: 'Locație indisponibilă',
-                description: 'Locația nu mai poate onora cererea pentru data aleasă.',
-                nextStep: 'Poți propune o nouă dată sau poți alege altă locație.',
-                color: '#dc2626',
-                actor: 'Locația a răspuns'
-            },
-            cancelled_by_client: {
-                label: 'Anulat de tine',
-                description: 'Ai anulat cererea înainte de confirmare. Locația a fost notificată.',
-                nextStep: 'Poți redeschide cererea dacă te răzgândești.',
-                color: '#b91c1c',
-                actor: 'Tu ai acționat'
-            },
-            old_cancelled_by_client: {
-                label: 'Cerere anulată de tine',
-                description: 'Ai ales să închizi discuția cu această locație.',
-                nextStep: 'Poți redeschide cererea sau continua căutările.',
-                color: '#b91c1c',
-                actor: 'Tu ai acționat'
-            },
-            cancelled_by_venue: {
-                label: 'Cerere anulată de locație',
-                description: 'Locația a închis discuția din motive interne.',
-                nextStep: 'Contactează locația pentru clarificări sau alege o altă opțiune.',
-                color: '#475569',
-                actor: 'Locația a acționat'
+            viewing_rescheduled: {
+                label: 'Vizionare reprogramată',
+                description: 'Locația a propus o altă dată pentru vizionare.',
+                nextStep: 'Acceptă noua propunere sau cere o altă variantă.',
+                color: '#0284c7'
             },
             viewing_scheduled: {
                 label: 'Vizionare confirmată',
-                description: 'Ai o vizionare programată la locație pentru data și ora stabilite.',
-                nextStep: 'Confirmă prezența și pregătește-ți întrebările pentru vizită.',
-                color: '#2563eb',
-                actor: 'Locația a acționat'
+                description: 'Vizionarea este programată la o dată și oră stabilite.',
+                nextStep: 'Adaugă vizita în calendar și pregătește întrebările pentru echipă.',
+                color: '#2563eb'
+            },
+            pre_booked: {
+                label: 'Dată blocată temporar (Pre-rezervat)',
+                description: 'Locația a blocat data provizoriu pentru tine.',
+                nextStep: 'Confirmă rezervarea sau renunță pentru a elibera data.',
+                color: '#0d9488'
+            },
+            confirmed: {
+                label: 'Rezervat',
+                description: 'Rezervarea a fost confirmată de locație după plata avansului.',
+                nextStep: 'Ține legătura cu locația pentru detalii și pregătește feedback-ul de după eveniment.',
+                color: '#15803d'
+            },
+            rejected: {
+                label: 'Indisponibil / Refuzat',
+                description: 'Locația nu este disponibilă sau a refuzat cererea.',
+                nextStep: 'Vezi mesajul locației și trimite o nouă cerere dacă dorești.',
+                color: '#b91c1c'
+            },
+            cancelled: {
+                label: 'Anulat de client',
+                description: 'Ai anulat cererea înainte de confirmare.',
+                nextStep: 'Poți retrimite cererea oricând dorești.',
+                color: '#dc2626'
             }
         };
 
@@ -455,16 +444,17 @@
         };
 
         let clientRequests = [
-            { id: 1, locationId: 2, eventDate: addDays(45), guests: 120, status: 'awaiting_venue', lastUpdate: addDays(-1) },
-            { id: 2, locationId: 7, eventDate: addDays(80), guests: 150, status: 'offer_sent', lastUpdate: addDays(-2), offerValidUntil: addDays(6) },
-            { id: 3, locationId: 1, eventDate: addDays(120), guests: 200, status: 'awaiting_client', lastUpdate: addDays(-3) },
-            { id: 4, locationId: 3, eventDate: addDays(90), guests: 90, status: 'info_needed', lastUpdate: addDays(-5) },
-            { id: 5, locationId: 4, eventDate: addDays(62), guests: 80, status: 'option_hold', lastUpdate: addDays(-4), holdExpiresAt: addDays(3) },
-            { id: 6, locationId: 7, eventDate: addDays(160), guests: 60, status: 'confirmed', lastUpdate: addDays(-6) },
-            { id: 7, locationId: 2, eventDate: addDays(52), guests: 110, status: 'cancelled_by_venue', lastUpdate: addDays(-8) },
-            { id: 8, locationId: 3, eventDate: addDays(35), guests: 70, status: 'cancelled_by_client', lastUpdate: addDays(-10) }, // This one will use the new logic
-            { id: 9, locationId: 1, eventDate: addDays(140), guests: 180, status: 'unavailable', lastUpdate: addDays(-12) },
-            { id: 10, locationId: 2, eventDate: addDays(15), guests: 100, status: 'viewing_scheduled', lastUpdate: addDays(-1) }
+            { id: 1, locationId: 2, eventDate: addDays(45), guests: 120, status: 'availability_request', lastUpdate: addDays(-1) },
+            { id: 2, locationId: 7, eventDate: addDays(80), guests: 150, status: 'availability_confirmed', lastUpdate: addDays(-2) },
+            { id: 3, locationId: 1, eventDate: addDays(120), guests: 200, status: 'offer_sent', lastUpdate: addDays(-3), offerValidUntil: addDays(6) },
+            { id: 4, locationId: 3, eventDate: addDays(90), guests: 90, status: 'offer_requested', lastUpdate: addDays(-5) },
+            { id: 5, locationId: 4, eventDate: addDays(62), guests: 80, status: 'viewing_request', lastUpdate: addDays(-4) },
+            { id: 6, locationId: 6, eventDate: addDays(70), guests: 95, status: 'viewing_rescheduled', lastUpdate: addDays(-2) },
+            { id: 7, locationId: 5, eventDate: addDays(35), guests: 100, status: 'pre_booked', lastUpdate: addDays(-4), holdExpiresAt: addDays(2) },
+            { id: 8, locationId: 7, eventDate: addDays(160), guests: 60, status: 'confirmed', lastUpdate: addDays(-6) },
+            { id: 9, locationId: 2, eventDate: addDays(52), guests: 110, status: 'rejected', lastUpdate: addDays(-8) },
+            { id: 10, locationId: 3, eventDate: addDays(35), guests: 70, status: 'cancelled', lastUpdate: addDays(-10) },
+            { id: 11, locationId: 1, eventDate: addDays(28), guests: 85, status: 'viewing_scheduled', lastUpdate: addDays(-1) }
         ];
 
         let requestHistory = [
@@ -552,18 +542,18 @@
             if (request.status === 'offer_sent' && request.offerValidUntil instanceof Date) {
                 detail += ` Oferta expiră pe ${formatDate(request.offerValidUntil)}.`;
             }
-            if (request.status === 'option_hold' && request.holdExpiresAt instanceof Date) {
+            if (request.status === 'pre_booked' && request.holdExpiresAt instanceof Date) {
                 detail += ` Blocajul expiră pe ${formatDate(request.holdExpiresAt)}.`;
             }
             return {
-                title: meta.actor ? `Responsabil: ${meta.actor}` : defaultStep.title,
+                title: defaultStep.title,
                 detail: detail
             };
         }
 
         function renderOverviewMetrics() {
             if (overviewFavoritesCount) overviewFavoritesCount.textContent = favoriteIds.length;
-            if (overviewRequestsCount) overviewRequestsCount.textContent = clientRequests.filter(req => !['cancelled_by_client', 'cancelled_by_venue', 'unavailable'].includes(req.status)).length;
+            if (overviewRequestsCount) overviewRequestsCount.textContent = clientRequests.filter(req => !['cancelled', 'rejected'].includes(req.status)).length;
             if (overviewOffersCount) overviewOffersCount.textContent = clientRequests.filter(req => req.status === 'offer_sent').length;
             if (overviewViewingsCount) overviewViewingsCount.textContent = clientViewings.filter(view => ['confirmed', 'awaiting_confirmation'].includes(view.status)).length;
         }
@@ -780,8 +770,8 @@
                 const content = document.createElement('div');
                 content.className = 'requests-legend-item-content';
                 const description = meta.description ? `<span>${meta.description}</span>` : '';
-                const actor = meta.actor ? `<span>Responsabil: ${meta.actor}</span>` : '';
-                content.innerHTML = `<strong>${meta.label}</strong>${description}${actor}`;
+                const nextStep = meta.nextStep ? `<span>${meta.nextStep}</span>` : '';
+                content.innerHTML = `<strong>${meta.label}</strong>${description}${nextStep}`;
 
                 item.appendChild(dot);
                 item.appendChild(content);
@@ -834,9 +824,21 @@
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'table-actions';
 
-                // Implementarea noilor acțiuni
                 switch (req.status) {
-                    case 'awaiting_venue':
+                    case 'availability_request':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                        `;
+                        break;
+                    case 'availability_confirmed':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="request_offer" data-request-id="${req.id}">📄 Cere ofertă</button>
+                            <button data-request-action="request_viewing" data-request-id="${req.id}">👀 Cere vizionare</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                        `;
+                        break;
+                    case 'offer_requested':
                         actionsDiv.innerHTML = `
                             <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
@@ -845,13 +847,22 @@
                     case 'offer_sent':
                         actionsDiv.innerHTML = `
                             <button data-request-action="view_offer" data-request-id="${req.id}">👁️ Vezi ofertă</button>
-                            <button data-request-action="accept_offer" data-request-id="${req.id}">✅ Confirmă rezervarea</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Pune întrebări</button>
+                            <button data-request-action="request_viewing" data-request-id="${req.id}">👀 Cere vizionare</button>
+                            <button data-request-action="accept_offer" data-request-id="${req.id}">✅ Confirmă prin pre-rezervare</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
                         `;
                         break;
-                    case 'option_hold':
+                    case 'viewing_request':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="confirm_hold" data-request-id="${req.id}">✅ Confirmă rezervarea</button>
-                            <button data-request-action="release_hold" data-request-id="${req.id}">🚫 Renunță la rezervare</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
+                            <button data-request-action="cancel_viewing_request" data-request-id="${req.id}">🚫 Anulează vizionarea</button>
+                        `;
+                        break;
+                    case 'viewing_rescheduled':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="accept_reschedule" data-request-id="${req.id}">✅ Acceptă noua dată</button>
+                            <button data-request-action="decline_reschedule" data-request-id="${req.id}">🚫 Refuză vizionarea</button>
                         `;
                         break;
                     case 'viewing_scheduled':
@@ -860,21 +871,29 @@
                             <button data-request-action="cancel_viewing" data-request-id="${req.id}">🚫 Anulează vizionarea</button>
                         `;
                         break;
+                    case 'pre_booked':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="release_hold" data-request-id="${req.id}">🚫 Renunță la rezervare</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
+                        `;
+                        break;
                     case 'confirmed':
-                        actionsDiv.innerHTML = `<button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj locației</button>`;
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj locației</button>
+                            <button data-request-action="leave_feedback" data-request-id="${req.id}">⭐ Lasă feedback</button>
+                        `;
                         break;
-                    case 'unavailable':
-                    case 'cancelled_by_venue': // Same action for both
-                        actionsDiv.innerHTML = `<button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Trimite o nouă cerere</button>`;
+                    case 'rejected':
+                        actionsDiv.innerHTML = `
+                            <button data-request-action="view_details" data-request-id="${req.id}">ℹ️ Vezi mesajul locației</button>
+                            <button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Trimite o nouă cerere</button>
+                        `;
                         break;
-                    case 'cancelled_by_client':
+                    case 'cancelled':
                         actionsDiv.innerHTML = `<button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Retrimite cererea</button>`;
                         break;
                     default:
-                        // Fallback for other statuses like 'info_needed', 'awaiting_client' etc.
-                    actionsDiv.innerHTML = `
-                        <button data-request-action="view_details" data-request-id="${req.id}">Vezi detalii</button>
-                    `;
+                        actionsDiv.innerHTML = `<button data-request-action="view_details" data-request-id="${req.id}">Vezi detalii</button>`;
                         break;
                 }
 
@@ -892,39 +911,74 @@
             const request = clientRequests.find(req => req.id === requestId);
             if (!request) return;
 
-            const locationName = getLocationById(request.locationId)?.name || 'locație';
-
             switch (action) {
                 case 'view_offer':
-                    break;
-                case 'accept_offer':
-                    request.status = 'confirmed';
                     request.lastUpdate = new Date();
                     break;
-                case 'ask_update':
+                case 'send_message':
+                case 'ask_question':
                     request.lastUpdate = new Date();
+                    break;
+                case 'request_offer':
+                    request.status = 'offer_requested';
+                    request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
+                    break;
+                case 'request_viewing':
+                    request.status = 'viewing_request';
+                    request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
                     break;
                 case 'cancel_request':
-                    request.status = 'cancelled_by_client';
+                    request.status = 'cancelled';
                     request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
+                    delete request.offerValidUntil;
                     break;
                 case 'reopen_request':
-                    request.status = 'awaiting_venue';
+                    request.status = 'availability_request';
                     request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
+                    delete request.offerValidUntil;
                     break;
-                case 'remove_request':
-                    clientRequests = clientRequests.filter(item => item.id !== requestId);
-                    break;
-                case 'confirm_hold':
-                    request.status = 'confirmed';
+                case 'accept_offer':
+                    request.status = 'pre_booked';
                     request.lastUpdate = new Date();
+                    request.holdExpiresAt = addDays(2);
+                    delete request.offerValidUntil;
                     break;
                 case 'release_hold':
-                    request.status = 'cancelled_by_client';
+                    request.status = 'availability_confirmed';
+                    request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
+                    break;
+                case 'cancel_viewing_request':
+                    request.status = 'availability_confirmed';
+                    request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
+                    break;
+                case 'add_to_calendar':
+                    window.alert('Exportul în calendar va fi disponibil în curând.');
                     request.lastUpdate = new Date();
                     break;
-                case 'provide_info':
-                    request.status = 'awaiting_venue';
+                case 'cancel_viewing':
+                    request.status = 'availability_confirmed';
+                    request.lastUpdate = new Date();
+                    delete request.holdExpiresAt;
+                    break;
+                case 'accept_reschedule':
+                    request.status = 'viewing_scheduled';
+                    request.lastUpdate = new Date();
+                    break;
+                case 'decline_reschedule':
+                    request.status = 'viewing_request';
+                    request.lastUpdate = new Date();
+                    break;
+                case 'leave_feedback':
+                    window.alert('Mulțumim! Secțiunea de feedback va fi disponibilă după eveniment.');
+                    request.lastUpdate = new Date();
+                    break;
+                case 'view_details':
                     request.lastUpdate = new Date();
                     break;
                 default:

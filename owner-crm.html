@@ -305,20 +305,21 @@
         }
 
         .metrics-grid--compact .metric-card {
-            padding: 16px 18px;
-            gap: 6px;
+            padding: 10px 12px;
+            gap: 4px;
             box-shadow: none;
-            min-height: 100px;
+            min-height: 78px;
+            border-radius: 14px;
         }
 
         .metrics-grid--compact .metric-card strong {
-            font-size: 1.35rem;
+            font-size: 1.1rem;
             align-self: flex-end;
             margin-top: auto;
         }
 
         .metrics-grid--compact .metric-card span {
-            font-size: 0.78rem;
+            font-size: 0.7rem;
         }
 
         .metric-card span {
@@ -367,6 +368,20 @@
             font-size: 0.85rem;
         }
 
+        .automation-toast {
+            display: none;
+            background: rgba(124, 58, 237, 0.12);
+            border: 1px solid rgba(124, 58, 237, 0.24);
+            color: #5b21b6;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.82rem;
+        }
+
+        .automation-toast.is-visible {
+            display: block;
+        }
+
         .list {
             display: flex;
             flex-direction: column;
@@ -411,37 +426,6 @@
         }
 
         /* NOU: Stil pentru legenda statusurilor */
-        .bookings-legend {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px 24px;
-            padding: 10px 0;
-            margin-bottom: 20px;
-        }
-
-        .bookings-legend-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .bookings-legend-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .bookings-legend-header strong {
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .bookings-legend-description {
-            font-size: 0.65rem;
-            color: var(--muted-color);
-            padding-left: 18px; /* Aliniază cu textul de sus */
-        }
-
         .list-item span {
             color: var(--muted-color);
             font-size: 0.85rem;
@@ -460,31 +444,39 @@
             white-space: nowrap;
         }
 
-        /* MODIFICAT: Culori sincronizate cu logica JS */
-        .status-chip[data-status="confirmed"] {
-            background: rgba(21, 128, 61, 0.15);
-            color: #15803d;
-        }
-
-        .status-chip[data-status="awaiting"] {
-            background: rgba(59, 130, 246, 0.15);
-            color: #2563eb;
-        }
-
-        .status-chip[data-status="declined"] {
-            background: rgba(220, 38, 38, 0.15);
-            color: #b91c1c;
-        }
-
-        /* MODIFICAT: Culori sincronizate cu logica JS */
-        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
-        .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
-        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-        .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.15); color: #0d9488; }
-        .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.15); color: #b91c1c; }
-
-        /* Ajustare culori existente pentru consistență */
+        /* Culori sincronizate cu logica JS */
+        .status-chip[data-status="availability_request"] { background: rgba(245, 158, 11, 0.18); color: #b45309; }
+        .status-chip[data-status="availability_confirmed"] { background: rgba(59, 130, 246, 0.18); color: #2563eb; }
+        .status-chip[data-status="offer_requested"] { background: rgba(168, 85, 247, 0.18); color: #a855f7; }
+        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.18); color: #7c3aed; }
+        .status-chip[data-status="viewing_request"] { background: rgba(14, 165, 233, 0.18); color: #0ea5e9; }
+        .status-chip[data-status="viewing_rescheduled"] { background: rgba(56, 189, 248, 0.18); color: #0284c7; }
+        .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.18); color: #2563eb; }
+        .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.18); color: #0d9488; }
+        .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.18); color: #15803d; }
+        .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.18); color: #b91c1c; }
+        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.18); color: #dc2626; }
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+        .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+
+        .status-secondary {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--muted-color);
+            margin-top: 6px;
+        }
+
+        .next-step-cell {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .next-step-actions {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--muted-color);
+            margin-top: 4px;
+        }
 
 
         .grid-three-columns {
@@ -511,14 +503,14 @@
 
         table.crm-table th,
         table.crm-table td {
-            padding: 14px 18px;
+            padding: 10px 14px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.92rem;
+            font-size: 0.82rem;
         }
 
         table.crm-table th {
-            font-size: 0.85rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--muted-color);
@@ -526,22 +518,33 @@
 
         .table-actions {
             display: flex;
-            gap: 10px;
+            gap: 6px;
             flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         .table-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             border-radius: 999px;
             border: 1px solid rgba(0, 82, 212, 0.2);
             background: transparent;
             color: var(--primary-color);
-            padding: 6px 14px;
-            font-size: 0.82rem;
+            padding: 4px 10px;
+            font-size: 0.75rem;
             cursor: pointer;
         }
 
         .table-actions button:hover {
             background: rgba(0, 82, 212, 0.08);
+        }
+
+        .table-actions button .action-icon {
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .filter-bar {
@@ -840,8 +843,31 @@
             text-align: left;
         }
 
+        .settings-toggle span strong {
+            display: block;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .settings-toggle span small {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--muted-color);
+            margin-top: 4px;
+        }
+
         .settings-toggle input[type="checkbox"] {
             justify-self: end;
+        }
+
+        .settings-helper {
+            font-size: 0.78rem;
+            color: var(--muted-color);
+            margin: -8px 0 0;
+        }
+
+        .settings-helper strong {
+            color: var(--dark-color);
         }
 
         /* NOU: Stiluri pentru graficul interactiv */
@@ -1426,7 +1452,7 @@
                         <h2>Toate cererile</h2>
                         <span class="panel-meta">Actualizează statusul pe măsură ce confirmi cu echipa ta</span>
                     </header>
-                    <div class="bookings-legend" id="bookings-status-legend"></div>
+                    <div id="automation-toast" class="automation-toast" role="status" aria-live="polite"></div>
                     <div class="filter-bar">
                         <label for="bookings-venue-filter">Locație:</label>
                         <select id="bookings-venue-filter"></select>
@@ -1444,6 +1470,7 @@
                                     <th>Dată</th>
                                     <th>Invitați</th>
                                     <th>Status</th>
+                                    <th>Pas următor</th>
                                     <th>Acțiuni rapide</th>
                                 </tr>
                             </thead>
@@ -1728,6 +1755,22 @@
 
                     <section class="settings-card">
                         <header>
+                            <h2>Automatizări CRM Venue</h2>
+                            <span class="panel-meta">Automatizează sincronizarea statusurilor</span>
+                        </header>
+                        <div class="settings-toggle">
+                            <span>
+                                <strong>Trimite automat ofertă după confirmarea disponibilității</strong>
+                                <small>Oferta standard pleacă imediat către client și statusurile ambelor CRM-uri se actualizează.</small>
+                            </span>
+                            <input type="checkbox" id="auto-offer-toggle" checked>
+                        </div>
+                        <p class="settings-helper"><strong>Confirmă disponibilitatea:</strong> „Data este liberă. Poți trimite automat oferta dacă ai activată opțiunea din setări.”</p>
+                        <p class="settings-helper"><strong>Ofertă automată:</strong> „Oferta standard a fost trimisă automat după confirmarea disponibilității.”</p>
+                    </section>
+
+                    <section class="settings-card">
+                        <header>
                             <h2>Acces echipă</h2>
                             <span class="panel-meta">Gestionează utilizatorii colaboratori</span>
                         </header>
@@ -1787,1315 +1830,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="main.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const navLinks = document.querySelectorAll('.crm-nav-link');
-        const pages = document.querySelectorAll('.crm-page');
-        const storageKey = 'owner-crm-v3-active-page';
-
-        function activatePage(pageId) {
-            if (!pageId) {
-                return;
-            }
-
-            let pageFound = false;
-
-            pages.forEach(page => {
-                const isMatch = page.dataset.page === pageId;
-                page.classList.toggle('is-active', isMatch);
-                if (isMatch) {
-                    pageFound = true;
-                    localStorage.setItem(storageKey, pageId);
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.toggle('is-active', link.dataset.pageTarget === pageId);
-            });
-
-            if (pageFound) {
-                // Doar actualizăm URL-ul dacă este diferit, pentru a evita intrări duplicate în istoric
-                if (window.location.hash !== `#${pageId}`) {
-                    history.pushState({ page: pageId }, '', `#${pageId}`);
-                }
-                // MODIFICAT: Forțează scroll-ul la începutul paginii după activare
-                window.scrollTo(0, 0);
-            }
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                activatePage(link.dataset.pageTarget);
-            });
-        });
-
-        // MODIFICAT: Folosim 'popstate' pentru a gestiona butoanele back/forward ale browserului
-        window.addEventListener('popstate', (event) => {
-            const pageId = event.state ? event.state.page : (window.location.hash.replace('#', '') || 'overview');
-            activatePage(pageId);
-        });
-
-        // Inițializare la încărcarea paginii
-        const initialPage = window.location.hash.replace('#', '') || localStorage.getItem(storageKey) || 'overview';
-        activatePage(initialPage);
-
-        // --- DYNAMIC DATA GENERATION ---
-        const today = new Date();
-        const addDays = (days) => { const d = new Date(today); d.setDate(d.getDate() + days); return d; };
-        const monthNames = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','noi','dec'];
-        const formatDate = (date) => `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-        const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-
-        // MODIFICAT: Tipuri de evenimente standardizate
-        const bookings = [
-            { client: 'Andrei Popescu', event: 'Nuntă', venue: 'Forest Lodge', date: formatDate(addDays(8)), guests: 120, status: 'pending', action: 'Confirmă disponibilitatea' },
-            { client: 'Studio Creativ', event: 'Eveniment Corporate', venue: 'Urban Loft', date: formatDate(addDays(4)), guests: 80, status: 'confirmed', action: 'Trimiteți acces logistic' },
-            { client: 'Mihaela & Vlad', event: 'Botez', venue: 'Casa Miraval', date: formatDate(addDays(15)), guests: 60, status: 'pending', action: 'Confirmare disponibilitate' },
-            { client: 'Tech Horizon', event: 'Petrecere Privată', venue: 'Hub Creativ', date: formatDate(addDays(21)), guests: 150, status: 'pre_booked', action: 'Așteaptă confirmare finală' },
-            { client: 'EMEA Sales Team', event: 'Conferință', venue: 'Villa Lac', date: formatDate(addDays(28)), guests: 220, status: 'confirmed', action: 'Coordonați furnizori' },
-            { client: 'Digital Nomads', event: 'Eveniment Corporate', venue: 'Urban Loft', date: formatDate(addDays(12)), guests: 40, status: 'viewing_scheduled', action: 'Pregătire tur' },
-            { 
-                client: 'Art Gallery', 
-                event: 'Petrecere Privată', 
-                venue: 'Hub Creativ', 
-                date: formatDate(addDays(35)), 
-                guests: 100, 
-                status: 'manual', 
-                action: 'Adăugat manual',
-                email: 'contact@artgallery.ro', phone: '0744555666', details: 'Necesită sistem de sunet pentru muzică ambientală și un proiector.'
-                , id: 999 // Adăugăm un ID unic pentru a-l putea identifica
-            },
-            { client: 'Familia Ionescu', event: 'Cununie Civilă', venue: 'Forest Lodge', date: formatDate(addDays(60)), guests: 30, status: 'cancelled', action: 'Anulat de client' }
-        ];
-
-        const viewings = [
-            { client: 'Ioana Matei', venue: 'Villa Lac', date: formatDate(addDays(2)), hour: '11:00', host: 'Andreea', status: 'confirmed' },
-            { client: 'Căsătorim.ro', venue: 'Forest Lodge', date: formatDate(addDays(4)), hour: '09:30', host: 'Paul', status: 'pending' },
-            { client: 'Eventify', venue: 'Urban Loft', date: formatDate(addDays(4)), hour: '15:00', host: 'Alex', status: 'pending' },
-            { client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: formatDate(addDays(6)), hour: '17:00', host: 'Ioana', status: 'confirmed' },
-            { client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', host: 'Vlad', status: 'pending' }
-        ];
-
-        const overviewBookings = bookings.slice(0, 3).map(b => ({
-            client: b.client,
-            venue: b.venue,
-            status: b.status,
-            note: b.action
-        }));
-
-        const eventsUpcoming = bookings
-            .filter(b => b.status === 'confirmed')
-            .slice(0, 3)
-            .map(b => ({
-                client: b.client, // NOU: Adăugăm clientul pentru identificare
-                venue: b.venue,
-                title: b.event,
-                date: b.date,
-                owner: 'Echipa'
-            }));
-
-        const overviewViewings = viewings
-            .slice(0, 3)
-            .map(v => ({
-                client: v.client,
-                venue: v.venue,
-                date: v.date,
-                status: v.status
-            }));
-        const venues = [
-            {
-                name: 'Villa Lac',
-                city: 'Snagov',
-                status: 'activ',
-                capacity: '200 persoane',
-                image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=60',
-                price: 180
-            },
-            {
-                name: 'Forest Lodge',
-                city: 'Brașov',
-                status: 'activ',
-                capacity: '150 persoane',
-                image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=60',
-                price: 145
-            },
-            {
-                name: 'Urban Loft',
-                city: 'București',
-                status: 'activ',
-                capacity: '120 persoane',
-                image: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?auto=format&fit=crop&w=900&q=60',
-                price: 160
-            },
-            {
-                name: 'Casa Miraval',
-                city: 'Cluj-Napoca',
-                status: 'în onboarding',
-                capacity: '90 persoane',
-                image: 'https://images.unsplash.com/photo-1590490359854-dfba19688d97?auto=format&fit=crop&w=900&q=60',
-                price: 120
-            }
-        ];
-
-        const monthlyOccupancyData = Array.from({ length: 12 }).map((_, i) => {
-            const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
-            const month = monthNames[date.getMonth()];
-            const year = date.getFullYear().toString().slice(-2);
-            return { month: `${month.charAt(0).toUpperCase() + month.slice(1)} '${year}`, occupancy: Math.floor(Math.random() * 71) + 20 };
-        });
-
-        const eventTypeDistributionData = [
-            { type: 'Nuntă', count: 45, color: '#8b5cf6' },
-            { type: 'Eveniment Corporate', count: 25, color: '#22c55e' },
-            { type: 'Botez', count: 18, color: '#f59e0b' },
-            { type: 'Petrecere Privată', count: 12, color: '#f43f5e' }
-        ];
-
-        // NOU: Matrice de disponibilitate generată dinamic
-        let availabilityMatrix = [];
-        function generateAvailabilityMatrix() {
-            const statuses = ['booked', 'hold', 'open', 'open', 'open'];
-            availabilityMatrix = venues.slice(0, 5).map(venue => {
-                const days = Array.from({ length: 7 }, () => statuses[Math.floor(Math.random() * statuses.length)]);
-                return {
-                    venue: venue.name,
-                    days: days
-                };
-            });
-        }
-
-
-        const bookingStatusMeta = {
-            pending: { label: 'Confirmă disponibilitatea', className: 'pending', color: '#b45309', description: 'Cerere de confirmare disponibilitate dată' },
-            offer_sent: { label: 'Ofertă trimisă', className: 'offer_sent', color: '#7c3aed', description: 'Ofertă expediată clientului' },
-            pre_booked: { label: 'Pre-rezervat', className: 'pre_booked', color: '#0d9488', description: 'Blocaj temporar în calendar, în așteptarea confirmării finale' },
-            manual: { label: 'Rezervat manual', className: 'manual', color: '#a855f7', description: 'Rezervare adăugată manual de proprietar' },
-            viewing_scheduled: { label: 'Vizionare programată', className: 'viewing_scheduled', color: '#2563eb', description: 'Vizionare confirmată cu echipa' },
-            confirmed: { label: 'Rezervat', className: 'confirmed', color: '#15803d', description: 'Rezervare finală/avans încasat' },
-            rejected: { label: 'Respins', className: 'rejected', color: '#b91c1c', description: 'Cerere refuzată' },
-            cancelled: { label: 'Anulat', className: 'cancelled', color: '#dc2626', description: 'Clientul a renunțat' }
-        };
-
-        const viewingStatusMeta = {
-            pending: { label: 'În confirmare', className: 'pending', color: '#b45309', description: 'Așteaptă confirmarea clientului sau a gazdei' },
-            confirmed: { label: 'Vizionare programată', className: 'confirmed', color: '#15803d', description: 'Vizionare confirmată în calendar' },
-            viewing_scheduled: { label: 'Programată', className: 'viewing_scheduled', color: '#2563eb', description: 'Vizionare programată la o dată stabilită' },
-            cancelled: { label: 'Anulată', className: 'cancelled', color: '#dc2626', description: 'Vizionare anulată de client sau proprietar' }
-        };
-
-        const statusCatalog = {
-            booking: bookingStatusMeta,
-            viewing: viewingStatusMeta
-        };
-
-        const venuesSelect = new Set(bookings.map(item => item.venue));
-        viewings.forEach(item => venuesSelect.add(item.venue));
-
-        function populateSelect(selectEl, options, includeAll = true, allText = 'Toate locațiile') {
-            if (!selectEl) {
-                return;
-            }
-            selectEl.innerHTML = '';
-            if (includeAll) {
-                const opt = document.createElement('option');
-                opt.value = 'all';
-                opt.textContent = allText;
-                selectEl.appendChild(opt);
-            }
-            options.forEach(option => {
-                const opt = document.createElement('option');
-                opt.value = option;
-                opt.textContent = option;
-                selectEl.appendChild(opt);
-            });
-        }
-
-        populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort(), true, 'Toate');
-        populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
-        populateSelect(document.getElementById('viewings-calendar-venue-filter'), Array.from(venuesSelect).sort(), true); // NOU: Populează filtrul noului calendar
-        populateSelect(document.getElementById('availability-venue-filter'), Array.from(venuesSelect).sort(), true); // MODIFICAT: Permite "Toate locațiile"
-        document.getElementById('availability-venue-filter')?.addEventListener('change', renderMonthlyCalendar);
-        
-        // NOU: Populează filtrul de status pentru bookings
-        const bookingStatusFilter = document.getElementById('bookings-status-filter');
-        if (bookingStatusFilter) {
-            const statusOptions = Object.entries(bookingStatusMeta).map(([key, value]) => ({ value: key, text: value.label }));
-            populateSelect(bookingStatusFilter, statusOptions.map(s => s.value).sort((a, b) => bookingStatusMeta[a].label.localeCompare(bookingStatusMeta[b].label)), true, 'Toate');
-            // Înlocuiește valorile cu textul corespunzător
-            Array.from(bookingStatusFilter.options).forEach(option => {
-                if (option.value !== 'all') {
-                    option.textContent = bookingStatusMeta[option.value].label;
-                }
-            });
-        }
-
-        function hexToRgba(hex, alpha = 1) {
-            if (typeof hex !== 'string') {
-                return null;
-            }
-            const normalized = hex.replace('#', '');
-            if (![3, 6].includes(normalized.length)) {
-                return null;
-            }
-            const full = normalized.length === 3
-                ? normalized.split('').map(char => char + char).join('')
-                : normalized;
-            const bigint = parseInt(full, 16);
-            if (Number.isNaN(bigint)) {
-                return null;
-            }
-            const r = (bigint >> 16) & 255;
-            const g = (bigint >> 8) & 255;
-            const b = bigint & 255;
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        function createStatusChip(status, category = 'booking') {
-            const catalogue = statusCatalog[category] || {};
-            const isStringStatus = typeof status === 'string';
-            const normalizedStatus = isStringStatus ? status : '';
-            const fallbackClass = normalizedStatus ? normalizedStatus.replace(/\s+/g, '-').toLowerCase() : 'pending';
-            const fallbackLabel = normalizedStatus || 'Necunoscut';
-            const meta = catalogue[normalizedStatus] || { label: fallbackLabel, className: fallbackClass };
-            const span = document.createElement('span');
-            span.className = 'status-chip';
-            span.dataset.status = meta.className || fallbackClass;
-            span.textContent = meta.label || fallbackLabel;
-            if (meta.color) {
-                const backgroundColor = hexToRgba(meta.color, 0.15);
-                if (backgroundColor) {
-                    span.style.backgroundColor = backgroundColor;
-                }
-                span.style.color = meta.color;
-            }
-            return span;
-        }
-        
-        // NOU: Funcție pentru a randa legenda statusurilor
-        function renderBookingStatusLegend() {
-            const container = document.getElementById('bookings-status-legend');
-            if (!container) return;
-
-            container.innerHTML = '';
-            Object.values(bookingStatusMeta).forEach(meta => {
-                const item = document.createElement('div');
-                item.className = 'bookings-legend-item';
-
-                const header = document.createElement('div');
-                header.className = 'bookings-legend-header';
-
-                const dot = document.createElement('span');
-                dot.className = 'legend-dot';
-                dot.style.borderRadius = '50%';
-                dot.style.backgroundColor = meta.color;
-                header.innerHTML = `<strong>${meta.label}</strong>`;
-                header.prepend(dot);
-
-                const description = document.createElement('p');
-                description.className = 'bookings-legend-description';
-                description.textContent = meta.description;
-
-                item.append(header, description);
-                container.appendChild(item);
-            });
-        }
-
-        function renderOverviewLists() {
-            const bookingsList = document.getElementById('overview-bookings-list');
-            const eventsList = document.getElementById('overview-events-list');
-            const viewingsList = document.getElementById('overview-viewings-list');
-
-            if (bookingsList) {
-                bookingsList.innerHTML = '';
-                overviewBookings.forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = 'list-item';
-
-                    const left = document.createElement('div');
-                    left.innerHTML = `<strong>${item.client}</strong> <span>${item.venue}</span>`;
-
-                    const chip = createStatusChip(item.status);
-                    row.append(left, chip);
-
-                    row.addEventListener('click', () => {
-                        navigateToBooking(item.client);
-                    });
-                    bookingsList.appendChild(row);
-                });
-            }
-
-            if (eventsList) {
-                eventsList.innerHTML = '';
-                eventsUpcoming.forEach(item => {
-                    const listItem = document.createElement('div');
-                    listItem.className = 'list-item';
-
-                    const detailsDiv = document.createElement('div');
-                    detailsDiv.innerHTML = `<strong>${item.title}</strong> <span>${item.venue} · ${item.date}</span>`;                    
-                    // MODIFICAT: Navighează la booking-ul specific
-                    listItem.addEventListener('click', () => {
-                        navigateToBooking(item.client);
-                    });
-
-                    listItem.append(detailsDiv);
-                    eventsList.appendChild(listItem);
-                });
-            }
-
-            // NOU: Randare listă vizionări
-            if (viewingsList) {
-                viewingsList.innerHTML = '';
-                overviewViewings.forEach(item => {
-                    const listItem = document.createElement('div');
-                    listItem.className = 'list-item';
-
-                    const detailsDiv = document.createElement('div');
-                    detailsDiv.innerHTML = `<strong>${item.client}</strong> <span>${item.venue} · ${item.date}</span>`;
-
-                    const chip = createStatusChip(item.status, 'viewing');
-
-                    listItem.addEventListener('click', () => {
-                        navigateToViewing(item.client);
-                    });
-                    listItem.append(detailsDiv, chip);
-                    viewingsList.appendChild(listItem);
-                });
-            }
-        }
-
-        function renderBookingsTable() {
-            const body = document.getElementById('bookings-table-body');
-            if (!body) {
-                return;
-            }
-
-            const venueFilter = document.getElementById('bookings-venue-filter');
-            const statusFilter = document.getElementById('bookings-status-filter');
-            const venueValue = venueFilter ? venueFilter.value : 'all';
-            const statusValue = statusFilter ? statusFilter.value : 'all';
-
-            body.innerHTML = '';
-
-            bookings
-                .filter(item => venueValue === 'all' || item.venue === venueValue)
-                .filter(item => statusValue === 'all' || item.status === statusValue)
-                .forEach(item => {
-                    const row = body.insertRow();
-                    row.dataset.identifier = item.client; // NOU: Adaugă identificator pentru rând
-
-                    const clientCell = row.insertCell();
-                    clientCell.textContent = item.client;
-
-                    const eventCell = row.insertCell();
-                    eventCell.textContent = item.event;
-
-                    const venueCell = row.insertCell();
-                    venueCell.textContent = item.venue;
-
-                    const dateCell = row.insertCell();
-                    dateCell.textContent = item.date;
-
-                    const guestsCell = row.insertCell();
-                    guestsCell.textContent = item.guests;
-
-                    const statusCell = row.insertCell();
-                    const actionsCell = row.insertCell();
-
-                    statusCell.appendChild(createStatusChip(item.status));
-
-                    const actions = document.createElement('div');
-                    actions.className = 'table-actions';
-                    const detailsBtn = document.createElement('button');
-                    detailsBtn.textContent = 'Vezi detalii';
-                    const confirmAvailabilityBtn = document.createElement('button');
-                    confirmAvailabilityBtn.textContent = 'Confirma disponibilitatea';
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.textContent = 'Respinge';
-                    const confirmedBtn = document.createElement('button');
-                    confirmedBtn.textContent = 'Confirmat';
-                    actions.append(detailsBtn, confirmAvailabilityBtn, confirmedBtn, cancelBtn);
-                    actionsCell.appendChild(actions);
-                });
-        }
-
-        function renderBookingsStatusCards() {
-            const container = document.getElementById('bookings-status-cards');
-            if (!container) {
-                return;
-            }
-            const counts = bookings.reduce((acc, booking) => {
-                acc[booking.status] = (acc[booking.status] || 0) + 1;
-                return acc;
-            }, {});
-
-            container.innerHTML = '';
-            const orderedStatuses = Object.entries(bookingStatusMeta).sort((a, b) => {
-                const countDiff = (counts[b[0]] || 0) - (counts[a[0]] || 0);
-                return countDiff !== 0 ? countDiff : a[1].label.localeCompare(b[1].label);
-            });
-
-            let hasContent = false;
-            orderedStatuses.forEach(([status, meta]) => {
-                const value = counts[status] || 0;
-                if (!value) {
-                    return; // ascunde statusurile fără activitate pentru compactare
-                }
-                hasContent = true;
-                const card = document.createElement('article');
-                card.className = 'metric-card';
-                card.innerHTML = `
-                    <span>${meta.label}</span>
-                    <strong>${value}</strong>
-                `;
-                container.appendChild(card);
-            });
-
-            if (!hasContent) {
-                const card = document.createElement('article');
-                card.className = 'metric-card';
-                card.innerHTML = `<span>Nicio rezervare activă</span><strong>0</strong>`;
-                container.appendChild(card);
-            }
-        }
-
-        function renderViewingsTable() {
-            const body = document.getElementById('viewings-table-body');
-            if (!body) {
-                return;
-            }
-
-            const venueFilter = document.getElementById('viewings-venue-filter');
-            const venueValue = venueFilter ? venueFilter.value : 'all';
-
-            body.innerHTML = '';
-
-            viewings
-                .filter(item => venueValue === 'all' || item.venue === venueValue)
-                .forEach(item => {
-                    const row = body.insertRow();
-                    row.dataset.identifier = item.client; // NOU: Adaugă identificator
-                    
-                    const clientCell = row.insertCell();
-                    clientCell.textContent = item.client;
-
-                    const venueCell = row.insertCell();
-                    venueCell.textContent = item.venue;
-
-                    const dateCell = row.insertCell();
-                    dateCell.textContent = item.date;
-
-                    const hourCell = row.insertCell();
-                    hourCell.textContent = item.hour;
-
-                    const statusCell = row.insertCell();
-                    const actionsCell = row.insertCell();
-
-                    statusCell.appendChild(createStatusChip(item.status, 'viewing'));
-
-                    const actions = document.createElement('div');
-                    actions.className = 'table-actions';
-                    const confirmBtn = document.createElement('button');
-                    confirmBtn.textContent = 'Confirmă prezența';
-                    const rescheduleBtn = document.createElement('button');
-                    rescheduleBtn.textContent = 'Reprogramează';
-                    actions.append(confirmBtn, rescheduleBtn);
-                    actionsCell.appendChild(actions);
-                });
-        }
-
-        // NOU: Funcție pentru a parsa data din formatul "zi luna an"
-        const monthMap = { 'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5, 'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'noi': 10, 'dec': 11 };
-        function parseBookingDate(dateString) {
-            const parts = dateString.split(' ');
-            if (parts.length < 3) return null;
-            const day = parseInt(parts[0], 10);
-            const month = monthMap[parts[1].toLowerCase()];
-            const year = parseInt(parts[2], 10);
-            if (isNaN(day) || month === undefined || isNaN(year)) return null;
-            return new Date(year, month, day);
-        }
-
-        // MODIFICAT: Funcție complet refactorizată pentru calendarul lunar
-        let currentMonthOffset = 0;
-        function renderMonthlyCalendar() {
-            const grid = document.getElementById('availability-calendar-grid');
-            const monthYearEl = document.getElementById('availability-month-year');
-            const venueFilter = document.getElementById('availability-venue-filter');
-            if (!grid || !monthYearEl || !venueFilter) return;
-
-            grid.innerHTML = ''; // Golește grila
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const currentDate = new Date();
-            currentDate.setDate(1); // Mergem la prima zi a lunii curente
-            currentDate.setMonth(currentDate.getMonth() + currentMonthOffset);
-
-            const selectedVenue = venueFilter.value;
-            const month = currentDate.getMonth();
-            const year = currentDate.getFullYear();
-            
-            const monthName = currentDate.toLocaleString('ro-RO', { month: 'long' });
-            monthYearEl.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
-
-            // Adaugă headerele pentru zilele săptămânii
-            const dayNames = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
-            dayNames.forEach(dayName => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-day-header';
-                dayHeader.textContent = dayName;
-                grid.appendChild(dayHeader);
-            });
-
-            const firstDayOfMonth = new Date(year, month, 1);
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            // 0 = Duminică, 1 = Luni, etc. Ajustăm pentru a începe cu Luni.
-            const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; 
-
-            // Adaugă zilele goale de la începutul lunii
-            for (let i = 0; i < startDayOfWeek; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'calendar-day is-other-month';
-                grid.appendChild(emptyCell);
-            }
-
-            // Adaugă zilele lunii curente
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day';
-                const thisDate = new Date(year, month, day);
-
-                if (thisDate.getTime() === today.getTime()) {
-                    dayCell.classList.add('is-today');
-                }
-
-                dayCell.innerHTML = `<span class="day-number">${day}</span>`;
-
-                // MODIFICAT: Caută evenimente reale în `bookings`
-                const eventsForDay = bookings.filter(booking => {
-                    const venueMatch = (selectedVenue === 'all') || (booking.venue === selectedVenue);
-                    const bookingDate = parseBookingDate(booking.date);
-                    // MODIFICAT: Afișează evenimentele confirmate, pre-rezervate și adăugate manual
-                    return (booking.status === 'confirmed' || booking.status === 'pre_booked' || booking.status === 'manual') &&
-                           venueMatch &&
-                           bookingDate &&
-                           bookingDate.getFullYear() === year &&
-                           bookingDate.getMonth() === month &&
-                           bookingDate.getDate() === day;
-                });
-
-                eventsForDay.forEach(event => {
-                    let eventStatus = 'hold';
-                    if (event.status === 'confirmed') {
-                        eventStatus = 'booked';
-                    } else if (event.status === 'pre_booked') {
-                        eventStatus = 'pre_booked';
-                    } else if (event.status === 'manual') {
-                        eventStatus = 'manual_booking';
-                    }
-
-                    const eventDiv = document.createElement('div');
-                    eventDiv.className = 'calendar-event';
-                    eventDiv.dataset.status = eventStatus;
-                    
-                    // MODIFICAT: Afișează tip eveniment și locație
-                    if (selectedVenue === 'all') {
-                        eventDiv.textContent = `${event.event} - ${event.venue}`;
-                    } else {
-                        eventDiv.textContent = event.event;
-                    }
-
-                    eventDiv.title = `Click pentru a vedea detaliile booking-ului pentru "${event.client}"`;
-
-                    // MODIFICAT: Adaugă event listener pentru a naviga la booking
-                    eventDiv.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (event.status === 'manual') {
-                            // NOU: Deschide modalul cu detalii pentru evenimentele manuale
-                            openEditBookingModal(event);
-                        } else {
-                            // Păstrează funcționalitatea veche pentru celelalte
-                            navigateToBooking(event.client);
-                        }
-                    });
-                    dayCell.appendChild(eventDiv);
-                });
-
-                grid.appendChild(dayCell);
-            }
-        }
-
-        // NOU: Funcție pentru a randa calendarul de vizionări
-        let currentViewingsMonthOffset = 0;
-        function renderViewingsCalendar() {
-            const grid = document.getElementById('viewings-calendar-grid');
-            const monthYearEl = document.getElementById('viewings-month-year');
-            const venueFilter = document.getElementById('viewings-calendar-venue-filter');
-            if (!grid || !monthYearEl || !venueFilter) return;
-
-            grid.innerHTML = '';
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const currentDate = new Date();
-            currentDate.setDate(1);
-            currentDate.setMonth(currentDate.getMonth() + currentViewingsMonthOffset);
-
-            const selectedVenue = venueFilter.value;
-            const month = currentDate.getMonth();
-            const year = currentDate.getFullYear();
-            
-            const monthName = currentDate.toLocaleString('ro-RO', { month: 'long' });
-            monthYearEl.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
-
-            const dayNames = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
-            dayNames.forEach(dayName => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-day-header';
-                dayHeader.textContent = dayName;
-                grid.appendChild(dayHeader);
-            });
-
-            const firstDayOfMonth = new Date(year, month, 1);
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7;
-
-            for (let i = 0; i < startDayOfWeek; i++) {
-                grid.appendChild(document.createElement('div')).className = 'calendar-day is-other-month';
-            }
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day';
-                const thisDate = new Date(year, month, day);
-
-                if (thisDate.getTime() === today.getTime()) {
-                    dayCell.classList.add('is-today');
-                }
-
-                dayCell.innerHTML = `<span class="day-number">${day}</span>`;
-
-                const viewingsForDay = viewings.filter(viewing => {
-                    const venueMatch = (selectedVenue === 'all') || (viewing.venue === selectedVenue);
-                    const viewingDate = parseBookingDate(viewing.date);
-                    return venueMatch && viewingDate &&
-                           viewingDate.getFullYear() === year &&
-                           viewingDate.getMonth() === month &&
-                           viewingDate.getDate() === day;
-                });
-
-                viewingsForDay.forEach(viewing => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.className = 'calendar-event';
-                    eventDiv.dataset.status = viewing.status === 'confirmed' ? 'booked' : 'pending';
-                    eventDiv.textContent = `${viewing.client} - ${viewing.hour}`;
-                    eventDiv.title = `Click pentru a vedea detalii pentru ${viewing.client}`;
-                    eventDiv.style.backgroundColor = viewing.status === 'confirmed' ? 'rgba(21, 128, 61, 0.15)' : 'rgba(245, 158, 11, 0.15)';
-                    eventDiv.style.color = viewing.status === 'confirmed' ? '#15803d' : '#b45309';
-
-                    eventDiv.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        navigateToViewing(viewing.client);
-                    });
-                    dayCell.appendChild(eventDiv);
-                });
-
-                grid.appendChild(dayCell);
-            }
-        }
-
-        // NOU: Funcționalitate pentru modal
-        function setupBookingModal() {
-            const modal = document.getElementById('add-booking-modal');
-            const openButtons = Array.from(document.querySelectorAll('[data-open-booking-modal]'));
-            const closeBtns = modal?.querySelectorAll('.modal-close-btn') || [];
-            const form = document.getElementById('add-booking-form');
-            const venueSelect = document.getElementById('booking-venue');
-
-            if (!modal || openButtons.length === 0 || !form || !venueSelect) {
-                return;
-            }
-
-            modal.classList.remove('is-visible');
-
-            // Populează select-ul de locații din modal
-            populateSelect(venueSelect, Array.from(venuesSelect).sort(), false);
-
-            // NOU: Inițializează flatpickr pentru câmpul de dată
-            if (typeof flatpickr === 'function') {
-                const dateInput = document.getElementById('booking-date');
-                flatpickr(dateInput, { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "ro" });
-            }
-
-            const openModal = () => modal.classList.add('is-visible');
-            const closeModal = () => modal.classList.remove('is-visible');
-
-            openButtons.forEach(btn => btn.addEventListener('click', openModal));
-            closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const dateValue = formData.get('date');
-                // NOU: Verificare dacă data este validă
-                if (!dateValue) {
-                    alert('Te rugăm să selectezi o dată.');
-                    return;
-                }
-                const dateObject = new Date(dateValue);
-                const newBooking = {
-                    client: formData.get('client'),
-                    event: formData.get('event'),
-                    venue: formData.get('venue'),
-                    id: Date.now(), // NOU: Adaugă un ID unic la creare
-                    date: formatDate(dateObject), // MODIFICAT: Folosește obiectul Date creat
-                    guests: parseInt(formData.get('guests'), 10) || 0, // MODIFICAT: Preia numărul de invitați
-                    status: 'manual', // MODIFICAT: Setează statusul ca fiind adăugat manual
-                    action: 'Adăugat manual',
-                    // NOU: Adaugă și celelalte câmpuri în obiect, chiar dacă nu sunt afișate în tabel
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    details: formData.get('details')
-                };
-                bookings.push(newBooking);
-                renderMonthlyCalendar(); // Re-randează calendarul
-                renderBookingsTable(); // Re-randează și tabelul de bookings
-                form.reset();
-                closeModal();
-            });
-        }
-
-        // MODIFICAT: Funcționalitate pentru modalul de editare
-        function setupEditModal() {
-            const modal = document.getElementById('view-booking-modal');
-            const form = document.getElementById('edit-booking-form');
-            if (!modal) return;
-
-            const closeBtns = modal.querySelectorAll('.modal-close-btn');
-            const closeModal = () => modal.classList.remove('is-visible');
-
-            closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
-            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const bookingId = parseInt(document.getElementById('edit-booking-id').value, 10);
-                const bookingIndex = bookings.findIndex(b => b.id === bookingId);
-
-                if (bookingIndex > -1) {
-                    const formData = new FormData(form);
-                    bookings[bookingIndex].client = formData.get('client');
-                    bookings[bookingIndex].email = formData.get('email');
-                    bookings[bookingIndex].phone = formData.get('phone');
-                    bookings[bookingIndex].event = formData.get('event');
-                    bookings[bookingIndex].venue = formData.get('venue');
-                    bookings[bookingIndex].guests = parseInt(formData.get('guests'), 10) || 0;
-                    bookings[bookingIndex].details = formData.get('details');
-
-                    renderMonthlyCalendar();
-                    renderBookingsTable();
-                }
-                closeModal();
-            });
-        }
-
-        // NOU: Funcție pentru a deschide și popula modalul de editare
-        function openEditBookingModal(booking) {
-            const modal = document.getElementById('view-booking-modal');
-            if (!modal) return;
-
-            // Populează câmpurile formularului
-            document.getElementById('edit-booking-id').value = booking.id;
-            document.getElementById('edit-booking-client').value = booking.client || '';
-            document.getElementById('edit-booking-email').value = booking.email || '';
-            document.getElementById('edit-booking-phone').value = booking.phone || '';
-            document.getElementById('edit-booking-guests').value = booking.guests || '';
-            document.getElementById('edit-booking-details').value = booking.details || '';
-
-            // Populează și selectează opțiunile corecte pentru dropdown-uri
-            const eventTypeSelect = document.getElementById('edit-booking-event-type');
-            eventTypeSelect.innerHTML = document.getElementById('booking-event-type').innerHTML;
-            eventTypeSelect.value = booking.event;
-
-            const venueSelect = document.getElementById('edit-booking-venue');
-            venueSelect.innerHTML = document.getElementById('booking-venue').innerHTML;
-            venueSelect.value = booking.venue;
-
-            modal.classList.add('is-visible');
-        }
-
-
-        function renderVenueCards() {
-            const container = document.getElementById('venue-cards');
-            if (!container) {
-                return;
-            }
-
-            container.innerHTML = '';
-            venues.forEach(venue => {
-                const card = document.createElement('article');
-                card.className = 'venue-card';
-
-                const image = document.createElement('div');
-                image.className = 'venue-card-image';
-                if (venue.image) {
-                    image.style.backgroundImage = `url('${venue.image}')`;
-                }
-
-                const content = document.createElement('div');
-                content.className = 'venue-card-content';
-
-                const header = document.createElement('div');
-                header.className = 'venue-card-header';
-
-                const titleWrapper = document.createElement('div');
-                const title = document.createElement('h3');
-                title.textContent = venue.name;
-                const location = document.createElement('p');
-                location.className = 'venue-card-location';
-                location.textContent = `${venue.city}, România`;
-                titleWrapper.append(title, location);
-
-                const statusKey = venue.status === 'activ' ? 'confirmed' : 'awaiting';
-                const statusChip = createStatusChip(statusKey);
-                statusChip.textContent = venue.status;
-                statusChip.dataset.status = statusKey;
-
-                header.append(titleWrapper, statusChip);
-
-                const meta = document.createElement('div');
-                meta.className = 'venue-card-meta';
-                const capacityItem = document.createElement('span');
-                capacityItem.className = 'venue-meta-item';
-                capacityItem.innerHTML = `
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                    <span>Capacitate: ${venue.capacity}</span>
-                `;
-                meta.appendChild(capacityItem);
-
-                const footer = document.createElement('div');
-                footer.className = 'venue-card-footer';
-
-                if (typeof venue.price === 'number') {
-                    const price = document.createElement('span');
-                    price.className = 'venue-card-price';
-                    price.innerHTML = `de la <strong>${venue.price}€</strong>/pers`;
-                    footer.appendChild(price);
-                }
-
-                const actions = document.createElement('div');
-                actions.className = 'venue-card-actions';
-
-                const editBtn = document.createElement('button');
-                editBtn.type = 'button';
-                editBtn.className = 'crm-button ghost';
-                editBtn.textContent = 'Editează detalii';
-
-                const availabilityBtn = document.createElement('button');
-                availabilityBtn.type = 'button';
-                availabilityBtn.className = 'crm-button primary';
-                availabilityBtn.textContent = 'Actualizează disponibilitate';
-
-                actions.append(editBtn, availabilityBtn);
-                footer.appendChild(actions);
-
-                content.append(header, meta, footer);
-                card.append(image, content);
-                container.appendChild(card);
-            });
-        }
-
-        // MODIFICAT: Funcție refăcută pentru a genera un line chart SVG
-        function renderMonthlyOccupancyChart() {
-            const container = document.getElementById('monthly-occupancy-chart');
-            if (!container) return;
-
-            container.innerHTML = '';
-            const svgNs = 'http://www.w3.org/2000/svg';
-            const svg = document.createElementNS(svgNs, 'svg');
-            const width = container.clientWidth || 800;
-            const height = 280;
-            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-            // NOU: Setează o lățime maximă pentru a-l face mai îngust și centrează-l
-            svg.style.maxWidth = '900px';
-
-            const padding = { top: 20, right: 20, bottom: 40, left: 40 };
-            const chartWidth = width - padding.left - padding.right;
-            const chartHeight = height - padding.top - padding.bottom;
-
-            // Axe Y (procente)
-            const yAxis = document.createElementNS(svgNs, 'g');
-            const yTicks = [0, 25, 50, 75, 100];
-            yTicks.forEach(tick => {
-                const y = padding.top + chartHeight - (tick / 100) * chartHeight;
-                const line = document.createElementNS(svgNs, 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', width - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('stroke', '#e5eaf1');
-                line.setAttribute('stroke-dasharray', '3,3');
-                yAxis.appendChild(line);
-
-                const text = document.createElementNS(svgNs, 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 4);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', '10');
-                text.setAttribute('fill', '#7a7f87');
-                text.textContent = `${tick}%`;
-                yAxis.appendChild(text);
-            });
-            svg.appendChild(yAxis);
-
-            // Calculează punctele și axa X
-            const points = monthlyOccupancyData.map((item, i) => {
-                const x = padding.left + i * (chartWidth / (monthlyOccupancyData.length - 1));
-                const y = padding.top + chartHeight - (item.occupancy / 100) * chartHeight;
-                return { x, y, data: item };
-            });
-
-            points.forEach((point, i) => {
-                const text = document.createElementNS(svgNs, 'text');
-                text.setAttribute('x', point.x);
-                text.setAttribute('y', height - padding.bottom + 15);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '10');
-                text.setAttribute('fill', '#7a7f87');
-                text.textContent = point.data.month;
-                svg.appendChild(text);
-            });
-
-            // Desenează linia
-            const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-            const linePath = document.createElementNS(svgNs, 'path');
-            linePath.setAttribute('d', pathData);
-            linePath.setAttribute('fill', 'none');
-            linePath.setAttribute('stroke', 'var(--primary-color)');
-            linePath.setAttribute('stroke-width', '2.5');
-            linePath.setAttribute('stroke-linejoin', 'round');
-            linePath.setAttribute('stroke-linecap', 'round');
-            svg.appendChild(linePath);
-
-            // Adaugă punctele pe linie
-            points.forEach(point => {
-                const group = document.createElementNS(svgNs, 'g');
-                group.classList.add('chart-point');
-
-                const circle = document.createElementNS(svgNs, 'circle');
-                circle.setAttribute('cx', point.x);
-                circle.setAttribute('cy', point.y);
-                circle.setAttribute('r', '4');
-                circle.setAttribute('fill', 'var(--primary-color)');
-
-                const tooltip = document.createElementNS(svgNs, 'text');
-                tooltip.setAttribute('x', point.x);
-                tooltip.setAttribute('y', point.y - 12);
-                tooltip.classList.add('chart-tooltip');
-                tooltip.textContent = `${point.data.occupancy}%`;
-
-                group.appendChild(circle);
-                group.appendChild(tooltip);
-                svg.appendChild(group);
-            });
-
-            container.appendChild(svg);
-        }
-
-        function renderEventTypeDistributionChart() {
-            const container = document.getElementById('event-type-distribution-chart');
-            if (!container) return;
-
-            container.innerHTML = '';
-            const chartContainer = document.createElement('div');
-            chartContainer.className = 'pie-chart-container';
-
-            const svgNs = 'http://www.w3.org/2000/svg';
-            const svg = document.createElementNS(svgNs, 'svg');
-            svg.setAttribute('viewBox', '0 0 36 36');
-            svg.classList.add('pie-chart-svg');
-
-            const legendContainer = document.createElement('div');
-            legendContainer.className = 'pie-chart-legend';
-
-            const total = eventTypeDistributionData.reduce((sum, item) => sum + item.count, 0);
-            let accumulatedPercentage = 0;
-
-            eventTypeDistributionData.forEach(item => {
-                const percentage = (item.count / total) * 100;
-
-                // Create pie slice
-                const slice = document.createElementNS(svgNs, 'circle');
-                slice.classList.add('pie-slice');
-                slice.setAttribute('cx', '18');
-                slice.setAttribute('cy', '18');
-                slice.setAttribute('r', '15.9154943092'); // (100 / (2 * PI))
-                slice.setAttribute('fill', 'transparent');
-                slice.setAttribute('stroke', item.color);
-                slice.setAttribute('stroke-width', '3.8');
-                slice.setAttribute('stroke-dasharray', `${percentage} ${100 - percentage}`);
-                slice.setAttribute('stroke-dashoffset', `-${accumulatedPercentage}`);
-
-                const title = document.createElementNS(svgNs, 'title');
-                title.textContent = `${item.type}: ${percentage.toFixed(1)}%`;
-                slice.appendChild(title);
-
-                svg.appendChild(slice);
-
-                // Create legend item
-                const legendItem = document.createElement('div');
-                legendItem.className = 'legend-item';
-
-                const dot = document.createElement('div');
-                dot.className = 'legend-dot';
-                dot.style.backgroundColor = item.color;
-
-                const label = document.createElement('span');
-                label.textContent = `${item.type} (${percentage.toFixed(0)}%)`;
-
-                legendItem.append(dot, label);
-                legendContainer.appendChild(legendItem);
-
-                // Add hover effect
-                legendItem.addEventListener('mouseenter', () => {
-                    slice.style.transform = 'scale(1.05)';
-                });
-                legendItem.addEventListener('mouseleave', () => { 
-                    slice.style.transform = 'scale(1)';
-                });
-                slice.addEventListener('mouseenter', () => {
-                    legendItem.style.fontWeight = '600';
-                });
-                slice.addEventListener('mouseleave', () => {
-                    legendItem.style.fontWeight = 'normal';
-                });
-
-
-                accumulatedPercentage += percentage;
-            });
-
-            chartContainer.appendChild(svg);
-            chartContainer.appendChild(legendContainer);
-            container.appendChild(chartContainer);
-        }
-
-        function renderViewingsStatusChart() {
-            const container = document.getElementById('viewings-status-chart');
-            if (!container) return;
-
-            // Procesare date
-            const now = new Date();
-            const sevenDaysFromNow = new Date();
-            sevenDaysFromNow.setDate(now.getDate() + 8); // Include today + 7 days
-            now.setHours(0, 0, 0, 0);
-
-            const monthMap = { 'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5, 'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'noi': 10, 'dec': 11 };
-
-            const viewingsInNext7Days = viewings.filter(viewing => {
-                const parts = viewing.date.split(' ');
-                if (parts.length < 3) return false;
-                const day = parseInt(parts[0], 10);
-                const month = monthMap[parts[1].toLowerCase()];
-                const year = parseInt(parts[2], 10);
-                if (isNaN(day) || month === undefined || isNaN(year)) return false;
-                const visitDate = new Date(year, month, day);
-                return visitDate >= now && visitDate <= sevenDaysFromNow;
-            });
-
-            const statusCounts = viewingsInNext7Days.reduce((acc, viewing) => {
-                acc[viewing.status] = (acc[viewing.status] || 0) + 1;
-                return acc;
-            }, {});
-
-            const chartData = Object.entries(statusCounts).map(([status, count]) => {
-                const meta = viewingStatusMeta[status];
-                return {
-                    type: meta?.label || status,
-                    count,
-                    color: meta?.color || '#cccccc'
-                };
-            });
-
-            container.innerHTML = '';
-            if (chartData.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color: var(--muted-color); padding: 20px 0;">Nicio vizionare în următoarele 7 zile.</p>';
-                return;
-            }
-
-            const chartContainer = document.createElement('div');
-            chartContainer.className = 'pie-chart-container';
-
-            const svgNs = 'http://www.w3.org/2000/svg';
-            const svg = document.createElementNS(svgNs, 'svg');
-            svg.setAttribute('viewBox', '0 0 36 36');
-            svg.classList.add('pie-chart-svg');
-
-            const legendContainer = document.createElement('div');
-            legendContainer.className = 'pie-chart-legend';
-
-            const total = chartData.reduce((sum, item) => sum + item.count, 0);
-            let accumulatedPercentage = 0;
-
-            chartData.forEach(item => {
-                const percentage = (item.count / total) * 100;
-
-                const slice = document.createElementNS(svgNs, 'circle');
-                slice.classList.add('pie-slice');
-                slice.setAttribute('cx', '18');
-                slice.setAttribute('cy', '18');
-                slice.setAttribute('r', '15.9154943092');
-                slice.setAttribute('fill', 'transparent');
-                slice.setAttribute('stroke', item.color);
-                slice.setAttribute('stroke-width', '3.8');
-                slice.setAttribute('stroke-dasharray', `${percentage} ${100 - percentage}`);
-                slice.setAttribute('stroke-dashoffset', `-${accumulatedPercentage}`);
-
-                const title = document.createElementNS(svgNs, 'title');
-                title.textContent = `${item.type}: ${item.count} (${percentage.toFixed(1)}%)`;
-                slice.appendChild(title);
-                svg.appendChild(slice);
-
-                const legendItem = document.createElement('div');
-                legendItem.className = 'legend-item';
-                const dot = document.createElement('div');
-                dot.className = 'legend-dot';
-                dot.style.backgroundColor = item.color;
-                const label = document.createElement('span');
-                label.textContent = `${item.type} (${item.count})`;
-                legendItem.append(dot, label);
-                legendContainer.appendChild(legendItem);
-
-                legendItem.addEventListener('mouseenter', () => slice.style.transform = 'scale(1.05)');
-                legendItem.addEventListener('mouseleave', () => slice.style.transform = 'scale(1)');
-                slice.addEventListener('mouseenter', () => legendItem.style.fontWeight = '600');
-                slice.addEventListener('mouseleave', () => legendItem.style.fontWeight = 'normal');
-
-                accumulatedPercentage += percentage;
-            });
-
-            chartContainer.appendChild(svg);
-            chartContainer.appendChild(legendContainer);
-            container.appendChild(chartContainer);
-        }
-
-        // NOU: Funcție pentru a naviga la un booking specific și a-l evidenția
-        function navigateToBooking(clientIdentifier) {
-            activatePage('bookings');
-
-            // Așteaptă ca pagina să fie vizibilă, apoi evidențiază rândul
-            setTimeout(() => {
-                const tableBody = document.getElementById('bookings-table-body');
-                if (!tableBody) return;
-
-                const targetRow = tableBody.querySelector(`tr[data-identifier="${clientIdentifier}"]`);
-                if (targetRow) {
-                    // Elimină highlight-ul de la alte rânduri, dacă există
-                    tableBody.querySelectorAll('.is-highlighted').forEach(row => row.classList.remove('is-highlighted'));
-
-                    targetRow.classList.add('is-highlighted');
-                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100); // Mic delay pentru a asigura randarea
-        }
-
-        // NOU: Funcție pentru a naviga la o vizionare specifică
-        function navigateToViewing(clientIdentifier) {
-            activatePage('viewings');
-
-            setTimeout(() => {
-                const tableBody = document.getElementById('viewings-table-body');
-                if (!tableBody) return;
-
-                const targetRow = tableBody.querySelector(`tr[data-identifier="${clientIdentifier}"]`);
-                if (targetRow) {
-                    tableBody.querySelectorAll('.is-highlighted').forEach(row => row.classList.remove('is-highlighted'));
-
-                    targetRow.classList.add('is-highlighted');
-                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
-        }
-
-
-        function initializeDynamicContent() {
-            const availabilityWeekEl = document.getElementById('availability-week-range');
-            if (availabilityWeekEl) {
-                availabilityWeekEl.textContent = `Intervale pentru ${formatDate(today)} - ${formatDate(addDays(6))}`;
-            }
-        }
-
-        initializeDynamicContent();
-        renderOverviewLists();
-        renderBookingsStatusCards();
-        renderBookingStatusLegend();
-        renderBookingsTable();
-        renderViewingsTable();
-        renderMonthlyCalendar();
-        renderViewingsCalendar(); // NOU: Randează calendarul de vizionări
-        setupBookingModal(); // NOU: Inițializează modal-ul
-        setupEditModal(); // MODIFICAT: Inițializează modal-ul de editare
-        renderVenueCards();
-        renderMonthlyOccupancyChart();
-        renderEventTypeDistributionChart();
-        renderViewingsStatusChart();
-
-        document.getElementById('bookings-venue-filter')?.addEventListener('change', renderBookingsTable);
-        document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
-        document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
-        document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar); // NOU
-
-        // NOU: Event listeners pentru calendarul de vizionări
-        document.getElementById('prev-viewings-month-btn')?.addEventListener('click', () => {
-            currentViewingsMonthOffset--;
-            renderViewingsCalendar();
-        });
-        document.getElementById('next-viewings-month-btn')?.addEventListener('click', () => {
-            currentViewingsMonthOffset++;
-            renderViewingsCalendar();
-        });
-
-        // NOU: Buton pentru a reveni la luna curentă în calendarul de disponibilitate
-        document.getElementById('today-availability-btn')?.addEventListener('click', () => {
-            currentMonthOffset = 0;
-            renderMonthlyCalendar();
-        });
-
-        // NOU: Inițializează selectorul de lună/an pentru calendarul de disponibilitate
-        const monthYearPickerEl = document.getElementById('availability-month-year');
-        if (monthYearPickerEl && typeof flatpickr === 'function') {
-            flatpickr(monthYearPickerEl, {
-                plugins: [
-                    new monthSelectPlugin({
-                        shorthand: true,
-                        dateFormat: "F Y",
-                        altFormat: "F Y",
-                    })
-                ],
-                onChange: function(selectedDates, dateStr, instance) {
-                    const today = new Date();
-                    const selectedDate = selectedDates[0];
-                    const monthDiff = (selectedDate.getFullYear() - today.getFullYear()) * 12 + (selectedDate.getMonth() - today.getMonth());
-                    currentMonthOffset = monthDiff;
-                    renderMonthlyCalendar();
-                },
-            });
-        }
-
-        // MODIFICAT: Event listeners pentru noul calendar lunar
-        document.getElementById('prev-month-btn')?.addEventListener('click', () => {
-            currentMonthOffset--;
-            renderMonthlyCalendar();
-        });
-        document.getElementById('next-month-btn')?.addEventListener('click', () => {
-            currentMonthOffset++;
-            renderMonthlyCalendar();
-        });
-    });
-    </script>
+    <script src="owner-crm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
 </body>
 </html>
