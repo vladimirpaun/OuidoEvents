@@ -711,7 +711,7 @@
             color: var(--muted-color);
         }
 
-        .status-menu-trigger {
+        .actions-menu-trigger {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -725,9 +725,9 @@
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
         }
 
-        .status-menu-trigger:hover,
-        .status-menu-trigger:focus-visible,
-        .status-menu-trigger[aria-expanded="true"] {
+        .actions-menu-trigger:hover,
+        .actions-menu-trigger:focus-visible,
+        .actions-menu-trigger[aria-expanded="true"] {
             color: var(--primary-color);
             border-color: rgba(0, 82, 212, 0.35);
             background-color: rgba(0, 82, 212, 0.08);
@@ -735,7 +735,7 @@
             outline: none;
         }
 
-        .status-menu {
+        .actions-menu {
             position: absolute;
             top: calc(100% + 8px);
             right: 0;
@@ -750,11 +750,11 @@
             z-index: 20;
         }
 
-        .status-menu.is-open {
+        .actions-menu.is-open {
             display: flex;
         }
 
-        .status-menu button {
+        .actions-menu button {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -770,20 +770,19 @@
             transition: background-color 0.18s ease;
         }
 
-        .status-menu button:hover,
-        .status-menu button:focus-visible {
+        .actions-menu button:hover,
+        .actions-menu button:focus-visible {
             background-color: rgba(67, 100, 247, 0.08);
             outline: none;
         }
 
-        .status-menu button:disabled,
-        .status-menu button[data-current="true"] {
+        .actions-menu button[data-current="true"] {
             background-color: rgba(67, 100, 247, 0.12);
             cursor: default;
             opacity: 0.7;
         }
 
-        .status-menu-option-meta {
+        .actions-menu-option-meta {
             font-size: 0.72rem;
             color: var(--muted-color);
         }

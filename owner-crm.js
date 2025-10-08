@@ -372,11 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const bookingStatusOptions = Array.from(new Set([
-        ...bookingStatusOrder,
-        ...Object.keys(bookingStatusMeta)
-    ]));
-
     const bookingActionLibrary = {
         confirm_availability: {
             key: 'confirm_availability',
@@ -1147,75 +1142,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let activeManualStatusMenu = null;
+    const allQuickActions = Object.values(bookingActionLibrary)
+        .filter(action => action?.key)
+        .sort((a, b) => a.label.localeCompare(b.label));
+    let activeActionsMenu = null;
 
-    function closeActiveStatusMenu() {
-        if (!activeManualStatusMenu) {
+    function closeActiveActionsMenu() {
+        if (!activeActionsMenu) {
             return;
         }
-        const { trigger, menu } = activeManualStatusMenu;
+        const { trigger, menu } = activeActionsMenu;
         if (trigger) {
             trigger.setAttribute('aria-expanded', 'false');
         }
         if (menu) {
             menu.classList.remove('is-open');
         }
-        activeManualStatusMenu = null;
+        activeActionsMenu = null;
     }
 
-    function createManualStatusMenu(booking, hostElement) {
+    function createOverflowActionsMenu(booking, hostElement) {
         if (!booking || !hostElement) {
             return null;
         }
         const trigger = document.createElement('button');
         trigger.type = 'button';
-        trigger.className = 'status-menu-trigger';
+        trigger.className = 'actions-menu-trigger';
         trigger.setAttribute('aria-haspopup', 'menu');
         trigger.setAttribute('aria-expanded', 'false');
-        trigger.title = 'Schimbă manual statusul';
-        trigger.innerHTML = '<span aria-hidden="true">⋯</span><span class="sr-only">Schimbă manual statusul</span>';
+        trigger.title = 'Mai multe actiuni';
+        trigger.innerHTML = '<span aria-hidden="true">⋯</span><span class="sr-only">Mai multe actiuni</span>';
 
         const menu = document.createElement('div');
-        menu.className = 'status-menu';
+        menu.className = 'actions-menu';
         menu.setAttribute('role', 'menu');
         menu.dataset.bookingId = String(booking.id);
 
         trigger.addEventListener('click', (event) => {
             event.stopPropagation();
-            if (activeManualStatusMenu && activeManualStatusMenu.menu !== menu) {
-                closeActiveStatusMenu();
+            if (activeActionsMenu && activeActionsMenu.menu !== menu) {
+                closeActiveActionsMenu();
             }
             const isOpen = menu.classList.contains('is-open');
             if (isOpen) {
-                closeActiveStatusMenu();
+                closeActiveActionsMenu();
             } else {
                 menu.classList.add('is-open');
                 trigger.setAttribute('aria-expanded', 'true');
-                activeManualStatusMenu = { trigger, menu, container: hostElement };
+                activeActionsMenu = { trigger, menu, container: hostElement };
             }
         });
 
         menu.addEventListener('click', (event) => event.stopPropagation());
 
-        bookingStatusOptions.forEach(statusKey => {
-            const statusMeta = bookingStatusMeta[statusKey];
-            if (!statusMeta) {
+        allQuickActions.forEach(definition => {
+            if (!definition) {
                 return;
             }
             const optionBtn = document.createElement('button');
             optionBtn.type = 'button';
             optionBtn.setAttribute('role', 'menuitem');
-            optionBtn.dataset.status = statusKey;
-            optionBtn.innerHTML = statusMeta.client?.label
-                ? `<span>${statusMeta.label}</span><span class="status-menu-option-meta">Client CRM: ${statusMeta.client.label}</span>`
-                : `<span>${statusMeta.label}</span>`;
-            if (statusKey === booking.status) {
-                optionBtn.dataset.current = 'true';
-                optionBtn.disabled = true;
-            }
+            optionBtn.dataset.action = definition.key;
+            const meta = definition.title ? `<span class="actions-menu-option-meta">${definition.title}</span>` : '';
+            optionBtn.innerHTML = `<span>${definition.label}</span>${meta}`;
             optionBtn.addEventListener('click', (event) => {
                 event.stopPropagation();
-                handleManualStatusChange(booking.id, statusKey);
+                closeActiveActionsMenu();
+                handleBookingAction(booking.id, definition.key);
             });
             menu.appendChild(optionBtn);
         });
@@ -1226,75 +1219,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return { trigger, menu };
     }
 
-    function handleManualStatusChange(bookingId, targetStatus) {
-        const booking = bookings.find(item => item.id === bookingId);
-        if (!booking || !targetStatus) {
-            closeActiveStatusMenu();
-            return;
-        }
-        if (booking.status === targetStatus) {
-            closeActiveStatusMenu();
-            return;
-        }
-        const statusLabel = bookingStatusMeta[targetStatus]?.label || targetStatus;
-        const confirmChange = window.confirm(`Ești sigur(ă) că vrei să schimbi statusul acestei rezervări în ${statusLabel}?`);
-        if (!confirmChange) {
-            closeActiveStatusMenu();
-            return;
-        }
-        let reason = window.prompt('Motiv schimbare (opțional):', '');
-        if (typeof reason !== 'string') {
-            reason = '';
-        } else {
-            reason = reason.trim();
-        }
-        applyManualStatusChange(booking, targetStatus, reason);
-        closeActiveStatusMenu();
-    }
-
-    function applyManualStatusChange(booking, nextStatus, reason) {
-        if (!booking || !nextStatus) {
-            return;
-        }
-        const previousStatus = booking.status;
-        booking.status = nextStatus;
-        booking.autoGenerated = false;
-        booking.lastUpdate = new Date();
-        booking.clientStatus = getClientStatusLabel(nextStatus);
-        logBookingStatusChange(booking, {
-            status: nextStatus,
-            user: 'Owner CRM',
-            reason,
-            manual: true,
-            previousStatus
-        });
-
-        const requiresViewingSync = nextStatus === 'viewing_scheduled' || nextStatus === 'viewing_rescheduled';
-        if (requiresViewingSync) {
-            ensureViewingEntry(booking, { rescheduled: nextStatus === 'viewing_rescheduled' });
-            renderViewingsTable();
-            renderViewingsCalendar();
-            renderViewingsStatusChart();
-        }
-
-        renderBookingsTable();
-        renderOverviewLists();
-        renderMonthlyCalendar();
-        selectedBookingId = booking.id;
-        highlightBookingRow(booking.id);
-        if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
-            showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
-        }
-        const statusLabel = bookingStatusMeta[nextStatus]?.label || nextStatus;
-        showAutomationToast(`Status actualizat manual la „${statusLabel}”.`);
-    }
-
     function renderBookingsTable() {
         const body = document.getElementById('bookings-table-body');
         if (!body) {
             return;
         }
-        closeActiveStatusMenu();
+        closeActiveActionsMenu();
         const venueFilter = document.getElementById('bookings-venue-filter');
         const statusFilter = document.getElementById('bookings-status-filter');
         const clientFilter = document.getElementById('bookings-client-filter');
@@ -1392,7 +1322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (actionsWrapper.children.length) {
                 controlsWrapper.appendChild(actionsWrapper);
             }
-            createManualStatusMenu(item, controlsWrapper);
+            createOverflowActionsMenu(item, controlsWrapper);
             bottomRow.appendChild(controlsWrapper);
 
             wrapper.appendChild(bottomRow);
@@ -1715,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         hideAutomationToast();
-        closeActiveStatusMenu();
+        closeActiveActionsMenu();
 
         const previousStatus = booking.status;
         let didMutate = false;
@@ -1814,7 +1744,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 logBookingStatusChange(booking, {
                     status: booking.status,
                     user: 'Owner CRM',
-                    previousStatus
+                    previousStatus,
+                    manual: true
                 });
                 if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
                     showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
@@ -2333,18 +2264,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (event) => {
-        if (!activeManualStatusMenu) {
+        if (!activeActionsMenu) {
             return;
         }
-        const { container } = activeManualStatusMenu;
+        const { container } = activeActionsMenu;
         if (!container || !container.contains(event.target)) {
-            closeActiveStatusMenu();
+            closeActiveActionsMenu();
         }
     });
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-            closeActiveStatusMenu();
+            closeActiveActionsMenu();
         }
     });
 
