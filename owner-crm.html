@@ -1427,46 +1427,8 @@
             justify-content: center;
         }
 
-        .calendar-day.is-blocked-reserved {
-            background: rgba(37, 99, 235, 0.12);
-            box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.2);
-        }
-
-        .calendar-day.is-blocked-prereserved {
-            background: rgba(245, 158, 11, 0.14);
-            box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.24);
-        }
-
         .calendar-day.is-menu-open {
             box-shadow: inset 0 0 0 2px rgba(67, 100, 247, 0.45);
-        }
-
-        .calendar-day.is-blocked-reserved .day-number {
-            background: #1d4ed8;
-            color: var(--white-color);
-        }
-
-        .calendar-day.is-blocked-prereserved .day-number {
-            background: #b45309;
-            color: var(--white-color);
-        }
-
-        .calendar-day-blocked-badge {
-            align-self: flex-start;
-            font-size: 0.68rem;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 999px;
-        }
-
-        .calendar-day.is-blocked-reserved .calendar-day-blocked-badge {
-            background: rgba(37, 99, 235, 0.18);
-            color: #1d4ed8;
-        }
-
-        .calendar-day.is-blocked-prereserved .calendar-day-blocked-badge {
-            background: rgba(245, 158, 11, 0.2);
-            color: #b45309;
         }
 
         .availability-quick-menu {
@@ -1529,27 +1491,65 @@
         .calendar-event {
             font-size: 0.75rem;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 999px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            cursor: pointer; /* NOU: Indică interactivitate */
+            cursor: default;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .calendar-event[data-status="booked"] { background-color: rgba(0, 82, 212, 0.15); color: var(--primary-color); }
-        .calendar-event[data-status="hold"] { background-color: rgba(245, 158, 11, 0.15); color: #b45309; }
-        .calendar-event[data-status="pre_booked"] { background-color: rgba(245, 158, 11, 0.18); color: #9a3412; }
-        .calendar-event[data-status="manual_booking"] { background-color: rgba(180, 83, 9, 0.16); color: #9a3412; }
 
-        .availability-legend-dot-reserved {
+        .calendar-event::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .calendar-event[data-status="booked"] {
+            background-color: rgba(34, 197, 94, 0.16);
+            color: #15803d;
+        }
+
+        .calendar-event[data-status="pre_booked"] {
+            background-color: rgba(14, 165, 233, 0.16);
+            color: #0e7490;
+        }
+
+        .calendar-event[data-status="manual_reserved"] {
+            background-color: rgba(37, 99, 235, 0.2);
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        .calendar-event[data-status="manual_pre_reserved"] {
+            background-color: rgba(245, 158, 11, 0.22);
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        .calendar-event[data-status="manual_reserved"]::before,
+        .calendar-event[data-status="manual_pre_reserved"]::before {
+            display: none;
+        }
+
+        .availability-legend-dot-reserved-ouido {
+            background-color: #16a34a;
+        }
+
+        .availability-legend-dot-prereserve-ouido {
+            background-color: #0ea5e9;
+        }
+
+        .availability-legend-dot-manual-reserved {
             background-color: #1d4ed8;
         }
 
-        .availability-legend-dot-prereserve {
+        .availability-legend-dot-manual-prereserved {
             background-color: #b45309;
-        }
-
-        .availability-legend-dot-manual {
-            background: linear-gradient(135deg, rgba(29, 78, 216, 0.3) 0%, rgba(180, 83, 9, 0.3) 100%);
         }
 
         /* NOU: Stiluri pentru modal */
@@ -2125,8 +2125,10 @@
                         <!-- Zilele săptămânii vor fi adăugate aici de JS -->
                     </div>
                     <div class="availability-legend" style="margin-top: 10px;">
-                        <span class="legend-item"><span class="legend-dot availability-legend-dot-reserved"></span> Rezervat</span>
-                        <span class="legend-item"><span class="legend-dot availability-legend-dot-prereserve"></span> Pre-rezervat</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-reserved-ouido"></span> Rezervat prin Ouido</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-prereserve-ouido"></span> Pre-rezervat prin Ouido</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-manual-reserved"></span> Rezervat manual</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-manual-prereserved"></span> Pre-rezervat manual</span>
                     </div>
                 </div>
 

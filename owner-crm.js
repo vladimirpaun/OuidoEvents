@@ -790,18 +790,22 @@ document.addEventListener('DOMContentLoaded', () => {
             renderMonthlyCalendar();
             return;
         }
+        if (status === 'manual_free') {
+            manualAvailabilityBlocks.delete(dateISO);
+            saveAvailabilityBlocks();
+            const friendlyDate = formatFriendlyDateFromISO(dateISO);
+            showAutomationToast(`Data ${friendlyDate} este din nou liberă.`);
+            renderMonthlyCalendar();
+            return;
+        }
         manualAvailabilityBlocks.set(dateISO, status);
         saveAvailabilityBlocks();
         const friendlyDate = formatFriendlyDateFromISO(dateISO);
-        let message = '';
         if (status === 'manual_reserved') {
-            message = `Data ${friendlyDate} a fost marcată ca rezervată manual ✅`;
+            showAutomationToast(`Data ${friendlyDate} a fost marcată ca rezervată manual ✅`);
         } else if (status === 'manual_pre_reserved') {
-            message = `Data ${friendlyDate} a fost trecută în pre-rezervă manual 🔖`;
-        } else {
-            message = `Data ${friendlyDate} a fost actualizată.`;
+            showAutomationToast(`Data ${friendlyDate} a fost trecută în pre-rezervă manual 🔖`);
         }
-        showAutomationToast(message);
         renderMonthlyCalendar();
     }
 
@@ -833,6 +837,9 @@ document.addEventListener('DOMContentLoaded', () => {
         subtitle.className = 'availability-quick-menu-date';
         subtitle.textContent = formatFriendlyDateFromISO(dateISO);
 
+        const hasManualBlock = manualAvailabilityBlocks.has(dateISO);
+        const hasAutoBooking = dayCell.dataset.hasAuto === 'true';
+
         const reserveBtn = document.createElement('button');
         reserveBtn.type = 'button';
         reserveBtn.dataset.action = 'reserve';
@@ -843,12 +850,21 @@ document.addEventListener('DOMContentLoaded', () => {
         preReserveBtn.dataset.action = 'pre-reserve';
         preReserveBtn.textContent = 'Marchează pre-rezervat';
 
+        const freeBtn = document.createElement('button');
+        freeBtn.type = 'button';
+        freeBtn.dataset.action = 'free';
+        freeBtn.textContent = 'Marchează liber';
+        if (hasAutoBooking && !hasManualBlock) {
+            freeBtn.disabled = true;
+            freeBtn.title = 'Ziua are rezervări confirmate din CRM.';
+        }
+
         const viewBtn = document.createElement('button');
         viewBtn.type = 'button';
         viewBtn.dataset.action = 'view';
         viewBtn.textContent = 'Vezi cererile zilei';
 
-        menu.append(title, subtitle, reserveBtn, preReserveBtn, viewBtn);
+        menu.append(title, subtitle, reserveBtn, preReserveBtn, freeBtn, viewBtn);
         document.body.appendChild(menu);
 
         const rect = dayCell.getBoundingClientRect();
@@ -876,12 +892,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const handleAction = (action) => {
             hideAvailabilityQuickMenu();
             switch (action) {
-            case 'reserve':
-                setAvailabilityStatus(dateISO, 'manual_reserved');
-                break;
-            case 'pre-reserve':
-                setAvailabilityStatus(dateISO, 'manual_pre_reserved');
-                break;
+                case 'reserve':
+                    setAvailabilityStatus(dateISO, 'manual_reserved');
+                    break;
+                case 'pre-reserve':
+                    setAvailabilityStatus(dateISO, 'manual_pre_reserved');
+                    break;
+                case 'free':
+                    if (!manualAvailabilityBlocks.has(dateISO)) {
+                        if (dayCell.dataset.hasAuto === 'true') {
+                            showAutomationToast('Ziua conține deja rezervări sincronizate din CRM. Actualizează statusul din pagina „Rezervări”.');
+                        } else {
+                            showAutomationToast('Ziua este deja liberă.');
+                        }
+                        break;
+                    }
+                    setAvailabilityStatus(dateISO, 'manual_free');
+                    break;
                 case 'view':
                     navigateToBookingsForDate(dateISO);
                     break;
@@ -892,6 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         reserveBtn.addEventListener('click', () => handleAction('reserve'));
         preReserveBtn.addEventListener('click', () => handleAction('pre-reserve'));
+        freeBtn.addEventListener('click', () => handleAction('free'));
         viewBtn.addEventListener('click', () => handleAction('view'));
         menu.addEventListener('click', (event) => event.stopPropagation());
 
@@ -1734,16 +1762,15 @@ document.addEventListener('DOMContentLoaded', () => {
             dayCell.setAttribute('tabindex', '0');
 
             const manualStatus = manualAvailabilityBlocks.get(dateKey);
-            if (manualStatus === 'manual_reserved') {
-                dayCell.classList.add('is-blocked-reserved', 'is-blocked-manual');
-            } else if (manualStatus === 'manual_pre_reserved') {
-                dayCell.classList.add('is-blocked-prereserved', 'is-blocked-manual');
-            }
             if (manualStatus) {
-                const badge = document.createElement('span');
-                badge.className = 'calendar-day-blocked-badge';
-                badge.textContent = manualStatus === 'manual_reserved' ? 'Rezervat manual' : 'Pre-rezervat manual';
-                dayCell.appendChild(badge);
+                const manualEvent = document.createElement('div');
+                manualEvent.className = 'calendar-event';
+                manualEvent.dataset.status = manualStatus;
+                manualEvent.textContent = manualStatus === 'manual_reserved' ? 'Rezervat manual' : 'Pre-rezervă manuală';
+                dayCell.appendChild(manualEvent);
+                dayCell.dataset.hasManual = 'true';
+            } else {
+                dayCell.dataset.hasManual = 'false';
             }
 
             const eventsForDay = bookings.filter(booking => {
@@ -1769,6 +1796,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 eventDiv.title = `${event.client} · ${event.event}`;
                 dayCell.appendChild(eventDiv);
             });
+
+            if (eventsForDay.length > 0) {
+                dayCell.dataset.hasAuto = 'true';
+            } else {
+                dayCell.dataset.hasAuto = 'false';
+            }
 
             grid.appendChild(dayCell);
         }
