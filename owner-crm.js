@@ -1159,14 +1159,17 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '';
         const svgNs = 'http://www.w3.org/2000/svg';
         const svg = document.createElementNS(svgNs, 'svg');
-        const width = container.clientWidth || 800;
-        const height = 280;
-        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        svg.style.maxWidth = '900px';
-
-        const padding = { top: 20, right: 20, bottom: 40, left: 40 };
+        const width = container.clientWidth || 900;
+        const height = Math.max(container.clientHeight || 320, 280);
+        const padding = { top: 24, right: 28, bottom: 48, left: 48 };
         const chartWidth = width - padding.left - padding.right;
         const chartHeight = height - padding.top - padding.bottom;
+
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.maxWidth = 'none';
 
         const yAxis = document.createElementNS(svgNs, 'g');
         [0, 25, 50, 75, 100].forEach(tick => {

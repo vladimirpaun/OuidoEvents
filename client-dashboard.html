@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         :root {
             --primary-color: #0052D4;
@@ -115,6 +116,154 @@
         table.crm-table tr.is-highlighted { background: rgba(0, 180, 216, 0.08); outline: 2px solid rgba(0, 180, 216, 0.35); }
         .table-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; }
         .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 4px 10px; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .favorites-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(26, 32, 44, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1400;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .favorites-modal-overlay.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .favorites-modal {
+            width: min(520px, 94vw);
+            background: #fff;
+            border-radius: 18px;
+            padding: 28px 32px;
+            box-shadow: 0 32px 60px -40px rgba(15, 23, 42, 0.45);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .favorites-modal header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .favorites-modal header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .favorites-modal-close {
+            border: none;
+            background: transparent;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--muted-color);
+        }
+        .favorites-modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .favorites-modal .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .favorites-modal .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .favorites-modal label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .availability-calendar-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        #availability-month-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--dark-color);
+            text-transform: capitalize;
+        }
+        .availability-legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--muted-color);
+        }
+        .availability-legend-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+        .availability-legend-dot--available { background: rgba(59, 130, 246, 0.18); }
+        .availability-legend-dot--hold { background: rgba(245, 158, 11, 0.25); }
+        .availability-legend-dot--booked { background: rgba(239, 68, 68, 0.3); }
+        .favorites-modal input,
+        .favorites-modal select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            font-size: 0.9rem;
+        }
+        .favorites-calendar-wrapper {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 16px;
+            padding: 8px;
+            position: relative;
+        }
+        .favorites-calendar-wrapper .flatpickr-calendar {
+            width: 100%;
+            box-shadow: none;
+            border: none;
+        }
+        .favorites-calendar-wrapper input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .favorites-calendar-wrapper .flatpickr-weekdays {
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .favorites-calendar-wrapper .flatpickr-day {
+            border-radius: 10px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+        .favorites-calendar-wrapper .flatpickr-day.availability-day-available {
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .favorites-calendar-wrapper .flatpickr-day.availability-day-available:hover {
+            background: rgba(59, 130, 246, 0.18);
+        }
+        .favorites-calendar-wrapper .flatpickr-day.availability-day-hold {
+            background: rgba(245, 158, 11, 0.25);
+            color: #b45309;
+        }
+        .favorites-calendar-wrapper .flatpickr-day.availability-day-booked {
+            background: rgba(239, 68, 68, 0.3);
+            color: #b91c1c;
+        }
+        .favorites-calendar-wrapper .flatpickr-day.flatpickr-disabled {
+            cursor: not-allowed;
+        }
+        .favorites-modal footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
         .filter-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
         .filter-bar label { font-weight: 600; font-size: 0.9rem; }
         .filter-bar select { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); font: inherit; font-size: 0.9rem; background: var(--white-color); }
@@ -303,7 +452,6 @@
                                     <th>Locație</th>
                                     <th>Dată</th>
                                     <th>Ora</th>
-                                    <th>Gazdă</th>
                                     <th>Status</th>
                                     <th>Acțiuni</th>
                                 </tr>
@@ -317,6 +465,50 @@
         </section>
     </main>
 
+    <div class="favorites-modal-overlay" id="availability-modal">
+        <div class="favorites-modal" role="dialog" aria-modal="true" aria-labelledby="availability-modal-title">
+            <header>
+                <div>
+                    <h3 id="availability-modal-title">Cere disponibilitatea</h3>
+                    <p id="availability-modal-subtitle" class="panel-meta">Selectează data dorită și detaliile evenimentului.</p>
+                </div>
+                <button type="button" class="favorites-modal-close" id="availability-modal-close" aria-label="Închide">×</button>
+            </header>
+            <form id="availability-form">
+                <div class="form-section">
+                    <label for="availability-date-picker">Data dorită</label>
+                    <div class="availability-calendar-meta">
+                        <span id="availability-month-label"></span>
+                        <div class="availability-legend">
+                            <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
+                            <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
+                            <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
+                        </div>
+                    </div>
+                    <div class="favorites-calendar-wrapper">
+                        <input type="text" id="availability-date-picker" readonly>
+                    </div>
+                </div>
+                <p class="panel-meta" id="availability-selected-date">Selectează o dată disponibilă din calendar.</p>
+                <div class="form-row">
+                    <div>
+                        <label for="availability-event-type">Tip eveniment</label>
+                        <select id="availability-event-type" required></select>
+                    </div>
+                    <div>
+                        <label for="availability-guests">Număr invitați</label>
+                        <input type="number" id="availability-guests" min="10" max="600" required>
+                    </div>
+                </div>
+                <footer>
+                    <button type="button" class="crm-button ghost" id="availability-cancel-btn">Renunță</button>
+                    <button type="submit" class="crm-button primary">Trimite cererea</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ro.js"></script>
     <script src="main.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -362,10 +554,23 @@
             { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400' },
             { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?w=400' },
             { id: 4, name: 'Casa Miraval', city: 'Cluj-Napoca', price: 130, imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400' },
+            { id: 5, name: 'Heritage Gardens', city: 'Oradea', price: 105, imageUrl: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?w=400' },
+            { id: 6, name: 'Urban Art Loft', city: 'Timișoara', price: 115, imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400' },
             { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400' }
         ];
 
-        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [2, 7, 3];
+        const defaultFavoriteIds = [2, 3, 5, 7];
+        let storedFavorites = [];
+        try {
+            const rawFavorites = localStorage.getItem('favoriteIds');
+            storedFavorites = rawFavorites ? JSON.parse(rawFavorites) : [];
+        } catch (error) {
+            storedFavorites = [];
+        }
+        let favoriteIds = Array.isArray(storedFavorites) && storedFavorites.length ? storedFavorites : defaultFavoriteIds.slice();
+        if (!Array.isArray(storedFavorites) || storedFavorites.length === 0) {
+            localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+        }
 
         const requestStatusMeta = {
             availability_request: {
@@ -644,7 +849,6 @@
                     <div>
                         ${location?.name || 'Locație necunoscută'}
                         <span class="panel-meta">${formatDate(view.date)} · ${view.hour}</span>
-                        <span style="color: var(--muted-color);">Gazdă: ${view.host}</span>
                     </div>
                 `;
                 item.appendChild(chip);
@@ -717,7 +921,10 @@
                         <p>${loc.city}, România</p>
                         <div class="location-card-footer">
                             <span class="location-price">de la <strong>${loc.price}€</strong>/pers</span>
-                            <a href="venue-details.html?id=${loc.id}" class="crm-button ghost" style="padding: 6px 14px; font-size: 0.85rem;">Vezi detalii</a>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <a href="venue-details.html?id=${loc.id}" class="crm-button ghost" style="padding: 6px 14px; font-size: 0.85rem;">Vezi detalii</a>
+                                <button type="button" class="crm-button primary request-availability-btn" data-location-id="${loc.id}" style="padding: 6px 14px; font-size: 0.85rem;">Cere disponibilitatea</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -734,7 +941,245 @@
                 });
             });
 
+            favoritesGrid.querySelectorAll('.request-availability-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const locationId = parseInt(button.dataset.locationId, 10);
+                    const location = getLocationById(locationId);
+                    openAvailabilityModal(location);
+                });
+            });
+
             renderOverviewMetrics();
+        }
+
+        const availabilityModal = document.getElementById('availability-modal');
+        const availabilityModalCloseBtn = document.getElementById('availability-modal-close');
+        const availabilityMonthLabel = document.getElementById('availability-month-label');
+        const availabilityForm = document.getElementById('availability-form');
+        const availabilityEventTypeSelect = document.getElementById('availability-event-type');
+        const availabilityGuestsInput = document.getElementById('availability-guests');
+        const availabilitySelectedDateLabel = document.getElementById('availability-selected-date');
+        const availabilityModalSubtitle = document.getElementById('availability-modal-subtitle');
+        const availabilityCancelBtn = document.getElementById('availability-cancel-btn');
+
+        const eventTypeOptions = ['Nuntă', 'Botez', 'Cununie Civilă', 'Eveniment Corporate', 'Petrecere Privată', 'Aniversare'];
+        const availabilityDateInput = document.getElementById('availability-date-picker');
+        let availabilityDatePicker = null;
+
+        const availabilityState = {
+            locationId: null,
+            locationName: '',
+            selectedDate: null
+        };
+
+        function openAvailabilityModal(location) {
+            if (!availabilityModal || !location) {
+                return;
+            }
+            availabilityState.locationId = location.id;
+            availabilityState.locationName = location.name;
+            availabilityState.selectedDate = null;
+
+            if (availabilityModalSubtitle) {
+                availabilityModalSubtitle.textContent = `Selectează data pentru ${location.name}`;
+            }
+            if (availabilityEventTypeSelect && !availabilityEventTypeSelect.options.length) {
+                eventTypeOptions.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    availabilityEventTypeSelect.appendChild(opt);
+                });
+            }
+            if (availabilityEventTypeSelect) {
+                availabilityEventTypeSelect.value = eventTypeOptions[0];
+            }
+            if (availabilityGuestsInput) {
+                availabilityGuestsInput.value = '';
+            }
+            availabilityModal.classList.add('is-visible');
+            ensureAvailabilityDatePicker();
+            updateAvailabilitySelectedDate();
+            updateAvailabilityMonthLabel();
+        }
+
+        function closeAvailabilityModal() {
+            availabilityModal?.classList.remove('is-visible');
+            availabilityState.selectedDate = null;
+            availabilityDatePicker?.clear(false);
+            updateAvailabilitySelectedDate();
+            updateAvailabilityMonthLabel(new Date());
+        }
+
+        function ensureAvailabilityDatePicker() {
+            if (!availabilityDateInput || typeof flatpickr !== 'function') {
+                return null;
+            }
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear(), today.getMonth() + 6, today.getDate());
+            if (!availabilityDatePicker) {
+                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
+                    flatpickr.localize(flatpickr.l10ns.ro);
+                }
+                availabilityDatePicker = flatpickr(availabilityDateInput, {
+                    inline: true,
+                    minDate: 'today',
+                    maxDate,
+                    locale: flatpickr.l10ns?.ro || 'default',
+                    disableMobile: true,
+                    monthSelectorType: 'dropdown',
+                    yearSelectorType: 'dropdown',
+                    showMonths: 1,
+                    onChange(selectedDates, dateStr, instance) {
+                        availabilityState.selectedDate = selectedDates[0] || null;
+                        updateAvailabilitySelectedDate();
+                        if (availabilityState.selectedDate) {
+                            instance.jumpToDate(availabilityState.selectedDate);
+                        }
+                        updateAvailabilityMonthLabel(new Date(instance.currentYear, instance.currentMonth, 1));
+                    },
+                    onMonthChange(selectedDates, dateStr, instance) {
+                        updateAvailabilityMonthLabel(new Date(instance.currentYear, instance.currentMonth, 1));
+                    },
+                    onYearChange(selectedDates, dateStr, instance) {
+                        updateAvailabilityMonthLabel(new Date(instance.currentYear, instance.currentMonth, 1));
+                    },
+                    onDayCreate: decorateAvailabilityDay
+                });
+            }
+            const referenceDate = availabilityState.selectedDate || today;
+            availabilityDatePicker.clear(false);
+            availabilityDatePicker.set('disable', [
+                function(date) {
+                    return getAvailabilityStatus(availabilityState.locationId, date) === 'booked';
+                }
+            ]);
+            availabilityDatePicker.set('maxDate', maxDate);
+            availabilityDatePicker.redraw();
+            availabilityDatePicker.jumpToDate(referenceDate);
+            updateAvailabilityMonthLabel(referenceDate);
+            availabilityState.selectedDate = null;
+            updateAvailabilitySelectedDate();
+            return availabilityDatePicker;
+        }
+
+        function decorateAvailabilityDay(selectedDates, dateStr, instance, dayElem) {
+            const date = dayElem.dateObj;
+            if (!date) {
+                return;
+            }
+            const status = getAvailabilityStatus(availabilityState.locationId, date);
+            dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
+            if (status === 'hold') {
+                dayElem.classList.add('availability-day-hold');
+            } else if (status === 'booked') {
+                dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
+            } else {
+                dayElem.classList.add('availability-day-available');
+            }
+        }
+
+        function updateAvailabilitySelectedDate() {
+            if (!availabilitySelectedDateLabel) {
+                return;
+            }
+            if (!availabilityState.selectedDate) {
+                availabilitySelectedDateLabel.textContent = 'Selectează o dată disponibilă din calendar.';
+            } else {
+                availabilitySelectedDateLabel.textContent = `Data selectată: ${formatDate(availabilityState.selectedDate)}`;
+            }
+        }
+
+        function updateAvailabilityMonthLabel(date) {
+            if (!availabilityMonthLabel) {
+                return;
+            }
+            const base = date ? new Date(date) : availabilityDatePicker
+                ? new Date(availabilityDatePicker.currentYear, availabilityDatePicker.currentMonth, 1)
+                : new Date();
+            const label = base.toLocaleString('ro-RO', { month: 'long', year: 'numeric' });
+            availabilityMonthLabel.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        }
+
+        function getAvailabilityStatus(locationId, date) {
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek === 0) {
+                return 'booked';
+            }
+            const hash = (date.getDate() + (locationId || 1) * 3 + dayOfWeek) % 6;
+            if (hash === 0) {
+                return 'booked';
+            }
+            if (hash === 1) {
+                return 'hold';
+            }
+            return 'available';
+        }
+
+        availabilityModal?.addEventListener('click', (event) => {
+            if (event.target === availabilityModal) {
+                closeAvailabilityModal();
+            }
+        });
+        availabilityModalCloseBtn?.addEventListener('click', closeAvailabilityModal);
+        availabilityCancelBtn?.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeAvailabilityModal();
+        });
+
+        availabilityForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (!availabilityState.locationId) {
+                return;
+            }
+            if (!availabilityState.selectedDate) {
+                window.alert('Selectează o dată disponibilă înainte de a continua.');
+                return;
+            }
+            const guestsValue = availabilityGuestsInput?.value?.trim() || '';
+            const guests = parseInt(guestsValue, 10);
+            if (!guestsValue || Number.isNaN(guests) || guests < 10) {
+                window.alert('Introdu un număr de invitați (minim 10).');
+                return;
+            }
+            const eventType = availabilityEventTypeSelect?.value || eventTypeOptions[0];
+            createRequestFromModal({
+                locationId: availabilityState.locationId,
+                eventDate: new Date(availabilityState.selectedDate),
+                guests,
+                eventType
+            });
+            closeAvailabilityModal();
+        });
+
+        function createRequestFromModal({ locationId, eventDate, guests, eventType }) {
+            const location = getLocationById(locationId);
+            if (!location) {
+                return;
+            }
+            const nextRequestId = clientRequests.reduce((max, req) => Math.max(max, req.id), 0) + 1;
+            const newRequest = {
+                id: nextRequestId,
+                locationId,
+                eventDate,
+                guests,
+                eventType,
+                status: 'availability_request',
+                lastUpdate: new Date()
+            };
+            clientRequests.unshift(newRequest);
+
+            const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+            requestHistory.unshift({
+                id: nextHistoryId,
+                message: `Ai trimis o cerere pentru ${location.name}`,
+                timestamp: new Date()
+            });
+
+            renderRequests();
+            renderOverviewMetrics();
+            renderOverviewRecentActivity();
+            navigateToItem('request', newRequest.id);
         }
 
         function populateRequestFilters() {
@@ -1014,7 +1459,7 @@
             if (!filtered.length) {
                 const emptyRow = viewingsTableBody.insertRow();
                 const emptyCell = emptyRow.insertCell();
-                emptyCell.colSpan = 6;
+                emptyCell.colSpan = 5;
                 emptyCell.innerHTML = '<div class="empty-state">Nu ai vizionări care să corespundă filtrului selectat.</div>';
                 renderOverviewViewingsList();
                 return;
@@ -1027,7 +1472,6 @@
                 row.insertCell().textContent = location?.name || 'Locație necunoscută';
                 row.insertCell().textContent = formatDate(view.date);
                 row.insertCell().textContent = view.hour;
-                row.insertCell().textContent = view.host;
                 const statusCell = row.insertCell();
                 statusCell.appendChild(createStatusChip(view.status, viewingStatusMeta));
 
