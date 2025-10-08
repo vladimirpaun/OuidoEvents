@@ -514,6 +514,39 @@
             </form>
         </div>
     </div>
+    <div class="favorites-modal-overlay" id="viewing-modal">
+        <div class="favorites-modal" role="dialog" aria-modal="true" aria-labelledby="viewing-modal-title">
+            <header>
+                <div>
+                    <h3 id="viewing-modal-title">Programează o vizionare</h3>
+                    <p id="viewing-modal-subtitle" class="panel-meta">Selectează data și ora preferată pentru vizionarea locației.</p>
+                </div>
+                <button type="button" class="favorites-modal-close" id="viewing-modal-close" aria-label="Închide">×</button>
+            </header>
+            <form id="viewing-form">
+                <div class="form-section">
+                    <input type="hidden" id="viewing-date-picker">
+                    <div id="viewing-calendar" class="availability-calendar"></div>
+                    <div class="availability-legend">
+                        <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
+                        <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
+                        <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label for="viewing-time">Ora preferată</label>
+                        <input type="time" id="viewing-time" required>
+                    </div>
+                </div>
+                <p class="panel-meta" id="viewing-selected-date">Selectează data și ora pentru vizionare.</p>
+                <footer>
+                    <button type="button" class="crm-button ghost" id="viewing-cancel-btn">Renunță</button>
+                    <button type="submit" class="crm-button primary">Trimite solicitarea</button>
+                </footer>
+            </form>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ro.js"></script>
     <script src="main.js"></script>
@@ -979,6 +1012,26 @@
             selectedDate: null
         };
 
+        const viewingModal = document.getElementById('viewing-modal');
+        const viewingModalCloseBtn = document.getElementById('viewing-modal-close');
+        const viewingForm = document.getElementById('viewing-form');
+        const viewingCalendarContainer = document.getElementById('viewing-calendar');
+        const viewingDateInput = document.getElementById('viewing-date-picker');
+        const viewingTimeInput = document.getElementById('viewing-time');
+        const viewingSelectedDateLabel = document.getElementById('viewing-selected-date');
+        const viewingModalSubtitle = document.getElementById('viewing-modal-subtitle');
+        const viewingModalTitle = document.getElementById('viewing-modal-title');
+        const viewingCancelBtn = document.getElementById('viewing-cancel-btn');
+        let viewingDatePicker = null;
+
+        const viewingState = {
+            requestId: null,
+            locationId: null,
+            locationName: '',
+            selectedDate: null,
+            selectedTime: ''
+        };
+
         function openAvailabilityModal(location) {
             if (!availabilityModal || !location) {
                 return;
@@ -1083,6 +1136,119 @@
             }
         }
 
+        function openViewingModal(request) {
+            if (!viewingModal || !request) {
+                return;
+            }
+            viewingState.requestId = request.id;
+            viewingState.locationId = request.locationId;
+            viewingState.locationName = getLocationById(request.locationId)?.name || '';
+            viewingState.selectedDate = null;
+            viewingState.selectedTime = '';
+
+            if (viewingModalTitle) {
+                viewingModalTitle.textContent = viewingState.locationName
+                    ? `Programează o vizionare la ${viewingState.locationName}`
+                    : 'Programează o vizionare';
+            }
+            if (viewingModalSubtitle) {
+                viewingModalSubtitle.textContent = viewingState.locationName
+                    ? `Alege data și ora potrivită pentru ${viewingState.locationName}.`
+                    : 'Selectează data și ora preferată pentru vizionare.';
+            }
+            if (viewingTimeInput) {
+                viewingTimeInput.value = '';
+            }
+            viewingModal.classList.add('is-visible');
+            ensureViewingDatePicker();
+            updateViewingSelectedDate();
+        }
+
+        function closeViewingModal() {
+            viewingModal?.classList.remove('is-visible');
+            viewingState.requestId = null;
+            viewingState.locationId = null;
+            viewingState.locationName = '';
+            viewingState.selectedDate = null;
+            viewingState.selectedTime = '';
+            if (viewingTimeInput) {
+                viewingTimeInput.value = '';
+            }
+            viewingDatePicker?.clear(false);
+            updateViewingSelectedDate();
+        }
+
+        function ensureViewingDatePicker() {
+            if (!viewingCalendarContainer || !viewingDateInput || typeof flatpickr !== 'function') {
+                return null;
+            }
+            const today = new Date();
+            if (!viewingDatePicker) {
+                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
+                    flatpickr.localize(flatpickr.l10ns.ro);
+                }
+                viewingDatePicker = flatpickr(viewingDateInput, {
+                    minDate: 'today',
+                    locale: flatpickr.l10ns?.ro || 'default',
+                    disableMobile: true,
+                    monthSelectorType: 'dropdown',
+                    yearSelectorType: 'dropdown',
+                    showMonths: 1,
+                    inline: true,
+                    appendTo: viewingCalendarContainer,
+                    onChange(selectedDates) {
+                        viewingState.selectedDate = selectedDates[0] || null;
+                        updateViewingSelectedDate();
+                    },
+                    onDayCreate: decorateViewingDay
+                });
+            }
+            const referenceDate = viewingState.selectedDate || today;
+            viewingDatePicker.clear(false);
+            viewingDatePicker.set('disable', [
+                function(date) {
+                    return getAvailabilityStatus(viewingState.locationId, date) === 'booked';
+                }
+            ]);
+            viewingDatePicker.redraw();
+            viewingDatePicker.jumpToDate(referenceDate);
+            viewingState.selectedDate = null;
+            updateViewingSelectedDate();
+            return viewingDatePicker;
+        }
+
+        function decorateViewingDay(selectedDates, dateStr, instance, dayElem) {
+            const date = dayElem.dateObj;
+            if (!date) {
+                return;
+            }
+            const status = getAvailabilityStatus(viewingState.locationId, date);
+            dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
+            if (status === 'hold') {
+                dayElem.classList.add('availability-day-hold');
+            } else if (status === 'booked') {
+                dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
+            } else {
+                dayElem.classList.add('availability-day-available');
+            }
+        }
+
+        function updateViewingSelectedDate() {
+            if (!viewingSelectedDateLabel) {
+                return;
+            }
+            if (!viewingState.selectedDate) {
+                viewingSelectedDateLabel.textContent = 'Selectează data și ora pentru vizionare.';
+                return;
+            }
+            const formattedDate = formatDate(viewingState.selectedDate);
+            if (viewingState.selectedTime) {
+                viewingSelectedDateLabel.textContent = `Vizionare: ${formattedDate} · ${viewingState.selectedTime}`;
+            } else {
+                viewingSelectedDateLabel.textContent = `Data selectată: ${formattedDate}. Adaugă și ora preferată.`;
+            }
+        }
+
         function getAvailabilityStatus(locationId, date) {
             const dayOfWeek = date.getDay();
             if (dayOfWeek === 0) {
@@ -1132,6 +1298,79 @@
                 eventType
             });
             closeAvailabilityModal();
+        });
+
+        viewingModal?.addEventListener('click', (event) => {
+            if (event.target === viewingModal) {
+                closeViewingModal();
+            }
+        });
+        viewingModalCloseBtn?.addEventListener('click', closeViewingModal);
+        viewingCancelBtn?.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeViewingModal();
+        });
+        viewingTimeInput?.addEventListener('input', () => {
+            viewingState.selectedTime = viewingTimeInput.value || '';
+            updateViewingSelectedDate();
+        });
+        viewingForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (!viewingState.requestId || !viewingState.locationId) {
+                return;
+            }
+            if (!viewingState.selectedDate) {
+                window.alert('Selectează data vizionării.');
+                return;
+            }
+            const timeValue = viewingTimeInput?.value?.trim() || '';
+            if (!timeValue) {
+                window.alert('Introdu ora preferată pentru vizionare.');
+                return;
+            }
+            viewingState.selectedTime = timeValue;
+            const [hoursPart, minutesPart] = timeValue.split(':').map(Number);
+            const scheduledDate = new Date(viewingState.selectedDate);
+            if (!Number.isNaN(hoursPart)) {
+                scheduledDate.setHours(hoursPart, Number.isNaN(minutesPart) ? 0 : minutesPart, 0, 0);
+            }
+
+            const request = clientRequests.find(req => req.id === viewingState.requestId);
+            if (!request) {
+                closeViewingModal();
+                return;
+            }
+
+            request.status = 'viewing_request';
+            request.lastUpdate = new Date();
+            delete request.holdExpiresAt;
+
+            const nextViewingId = clientViewings.reduce((max, view) => Math.max(max, view.id), 0) + 1;
+            const newViewing = {
+                id: nextViewingId,
+                locationId: viewingState.locationId,
+                date: scheduledDate,
+                hour: timeValue,
+                status: 'awaiting_confirmation',
+                lastUpdate: new Date(),
+                host: 'Echipa locației',
+                note: 'Așteptăm confirmarea locației pentru această vizionare.'
+            };
+            clientViewings.push(newViewing);
+
+            const location = getLocationById(viewingState.locationId);
+            const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+            requestHistory.unshift({
+                id: nextHistoryId,
+                message: `Ai solicitat o vizionare la ${location?.name || 'locație'} pe ${formatDate(scheduledDate)}.`,
+                timestamp: new Date()
+            });
+
+            closeViewingModal();
+            renderRequests();
+            renderViewingsTable();
+            renderOverview();
+            navigateToItem('viewing', newViewing.id);
         });
 
         function createRequestFromModal({ locationId, eventDate, guests, eventType }) {
@@ -1275,7 +1514,6 @@
                         actionsDiv.innerHTML = `
                             <button data-request-action="view_offer" data-request-id="${req.id}">👁️ Vezi ofertă</button>
                             <button data-request-action="send_message" data-request-id="${req.id}">💬 Pune întrebări</button>
-                            <button data-request-action="request_viewing" data-request-id="${req.id}">👀 Cere vizionare</button>
                             <button data-request-action="accept_offer" data-request-id="${req.id}">✅ Confirmă prin pre-rezervare</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
                         `;
@@ -1352,10 +1590,12 @@
                     delete request.holdExpiresAt;
                     break;
                 case 'request_viewing':
-                    request.status = 'viewing_request';
-                    request.lastUpdate = new Date();
-                    delete request.holdExpiresAt;
-                    break;
+                    if (request.status !== 'availability_confirmed') {
+                        window.alert('Poți solicita o vizionare doar după confirmarea disponibilității.');
+                        return;
+                    }
+                    openViewingModal(request);
+                    return;
                 case 'cancel_request':
                     request.status = 'cancelled';
                     request.lastUpdate = new Date();
