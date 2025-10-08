@@ -1763,11 +1763,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const calendarStatus = event.status === 'confirmed' ? 'booked' : 'pre_booked';
                 eventDiv.dataset.status = calendarStatus;
                 eventDiv.textContent = selectedVenue === 'all' ? `${event.event} - ${event.venue}` : event.event;
-                eventDiv.title = `Click pentru a vedea detaliile booking-ului pentru "${event.client}"`;
-                eventDiv.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    navigateToBooking(event.id);
-                });
+                eventDiv.title = `${event.client} · ${event.event}`;
                 dayCell.appendChild(eventDiv);
             });
 
