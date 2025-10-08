@@ -602,21 +602,22 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 4px 17px;
             border-radius: 16px;
             font-size: 0.8rem;
             font-weight: 600;
             background: rgba(0, 82, 212, 0.1);
             color: var(--primary-color);
-            width: clamp(180px, 47%, 336px);
             box-sizing: border-box;
             text-align: center;
             white-space: nowrap;
+            padding: 4px var(--status-chip-padding-inline, 17px);
+            width: var(--status-chip-width, clamp(180px, 47%, 336px));
         }
 
         .status-chip.status-chip--compact {
-            padding: 4px 14px;
-            width: clamp(140px, 36%, 260px);
+            --status-chip-padding-inline: 10px;
+            --status-chip-width: auto;
+            font-size: 0.75rem;
         }
 
         /* Culori sincronizate cu logica JS */
@@ -633,6 +634,27 @@
         .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
         .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.22); color: #1d4ed8; }
+
+        .crm-page[data-page="overview"] {
+            --status-chip-padding-inline: 12px;
+            --status-chip-width: clamp(150px, 55%, 260px);
+        }
+
+        .crm-page[data-page="bookings"],
+        .crm-page[data-page="record-detail"] {
+            --status-chip-padding-inline: 17px;
+            --status-chip-width: clamp(180px, 47%, 336px);
+        }
+
+        .crm-page[data-page="viewings"] {
+            --status-chip-padding-inline: 15px;
+            --status-chip-width: clamp(160px, 47%, 300px);
+        }
+
+        .crm-page[data-page="venues"] {
+            --status-chip-padding-inline: 8px;
+            --status-chip-width: auto;
+        }
 
         .status-secondary {
             display: block;
