@@ -95,6 +95,33 @@
         .crm-button { border-radius: 999px; padding: 10px 22px; border: 1px solid transparent; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
         .crm-button.primary { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); }
         .crm-button.ghost { background: transparent; border-color: rgba(0, 82, 212, 0.2); color: var(--primary-color); }
+        .crm-button.danger { background: linear-gradient(135deg, #f56565, #c53030); color: var(--white-color); }
+
+        .settings-overview { display: flex; flex-direction: column; gap: 18px; }
+        .settings-overview header { display: flex; flex-direction: column; gap: 12px; }
+        .settings-overview h1 { margin: 0; font-size: 1.6rem; }
+        .settings-overview p { margin: 0; color: var(--muted-color); max-width: 560px; }
+        .settings-overview-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .settings-section-label { font-size: 0.78rem; font-weight: 600; color: var(--muted-color); text-transform: uppercase; letter-spacing: 0.12em; }
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .settings-card { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 26px 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.75); }
+        .settings-card header { display: flex; flex-direction: column; gap: 6px; }
+        .settings-card header h2 { margin: 0; font-size: 1.15rem; }
+        .settings-card header .panel-meta { font-size: 0.85rem; }
+        .settings-fields { display: grid; gap: 16px; }
+        .settings-field { display: flex; flex-direction: column; gap: 6px; }
+        .settings-field label { font-weight: 600; font-size: 0.88rem; color: var(--dark-color); }
+        .settings-field input, .settings-field select { border-radius: 10px; border: 1px solid rgba(0, 82, 212, 0.16); padding: 10px 12px; font: inherit; font-size: 0.92rem; background: var(--white-color); }
+        .settings-field input::placeholder { color: var(--muted-color); }
+        .settings-toggles { display: flex; flex-direction: column; gap: 14px; }
+        .settings-toggle { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid rgba(0, 82, 212, 0.08); border-radius: 14px; padding: 14px 16px; background: rgba(67, 100, 247, 0.04); }
+        .settings-toggle span { font-size: 0.92rem; font-weight: 500; color: var(--dark-color); }
+        .settings-toggle small { display: block; font-size: 0.78rem; color: var(--muted-color); font-weight: 400; }
+        .settings-toggle input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary-color); }
+        .settings-card--full { grid-column: 1 / -1; }
+        .settings-card-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .settings-card-actions .crm-button { flex: 1 1 180px; justify-content: center; display: inline-flex; }
 
         /* --- Stiluri specifice paginii de client --- */
         .favorites-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
@@ -343,6 +370,15 @@
                         </button>
                     </div>
                 </div>
+                <div class="crm-nav-section">
+                    <label>Comunicare & control</label>
+                    <div class="crm-nav-links">
+                        <button class="crm-nav-link" type="button" data-page-target="settings">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+                            Setări
+                        </button>
+                    </div>
+                </div>
             </nav>
 
             <div class="crm-sidebar-footer">
@@ -400,6 +436,111 @@
                 </div>
                 <div class="favorites-grid" id="favorites-grid">
                     <!-- Cardurile cu locații favorite vor fi generate aici -->
+                </div>
+            </section>
+
+            <!-- Pagina Setări -->
+            <section class="crm-page" data-page="settings">
+                <article class="panel settings-overview">
+                    <header>
+                        <h1>Setări și preferințe</h1>
+                        <p>Actualizează informațiile de contact și personalizează notificările pentru a rămâne conectat cu echipa OuidoEvents.</p>
+                    </header>
+                    <div class="settings-overview-actions">
+                        <button class="crm-button ghost" type="button">Resetează</button>
+                        <button class="crm-button primary" type="button">Salvează modificări</button>
+                    </div>
+                </article>
+
+                <span class="settings-section-label">Comunicare & control</span>
+                <div class="settings-grid">
+                    <section class="settings-card">
+                        <header>
+                            <h2>Detalii cont</h2>
+                            <span class="panel-meta">Actualizează informațiile personale</span>
+                        </header>
+                        <div class="settings-fields">
+                            <div class="settings-field">
+                                <label for="settings-first-name">Prenume</label>
+                                <input type="text" id="settings-first-name" name="first_name" placeholder="Alex">
+                            </div>
+                            <div class="settings-field">
+                                <label for="settings-last-name">Nume</label>
+                                <input type="text" id="settings-last-name" name="last_name" placeholder="Popescu">
+                            </div>
+                            <div class="settings-field">
+                                <label for="settings-phone">Număr de telefon</label>
+                                <input type="tel" id="settings-phone" name="phone" placeholder="07xx xxx xxx">
+                            </div>
+                            <div class="settings-field">
+                                <label for="settings-gender">Gen <span class="panel-meta">(opțional)</span></label>
+                                <select id="settings-gender" name="gender">
+                                    <option value="">Selectează</option>
+                                    <option value="feminin">Feminin</option>
+                                    <option value="masculin">Masculin</option>
+                                    <option value="altul">Altul</option>
+                                    <option value="nu_spun">Prefer să nu spun</option>
+                                </select>
+                            </div>
+                            <div class="settings-field">
+                                <label for="settings-age">Vârstă <span class="panel-meta">(opțional)</span></label>
+                                <input type="number" id="settings-age" name="age" min="18" max="120" placeholder="34">
+                            </div>
+                            <div class="settings-field">
+                                <label for="settings-city">Oraș <span class="panel-meta">(opțional)</span></label>
+                                <input type="text" id="settings-city" name="city" placeholder="București">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="settings-card">
+                        <header>
+                            <h2>Notificări</h2>
+                            <span class="panel-meta">Primește update-urile relevante</span>
+                        </header>
+                        <div class="settings-toggles">
+                            <label class="settings-toggle" for="notif-viewings">
+                                <span>
+                                    Confirmări vizionări prin email
+                                    <small>Te anunțăm imediat ce o locație confirmă sau repropune vizionarea.</small>
+                                </span>
+                                <input type="checkbox" id="notif-viewings" checked>
+                            </label>
+                            <label class="settings-toggle" for="notif-bookings">
+                                <span>
+                                    Confirmări booking prin email
+                                    <small>Primești detalii despre rezervările aprobate și pașii următori.</small>
+                                </span>
+                                <input type="checkbox" id="notif-bookings" checked>
+                            </label>
+                            <label class="settings-toggle" for="notif-weekly">
+                                <span>
+                                    Rezumat săptămânal
+                                    <small>Un digest cu cererile active, vizionările și ofertele primite.</small>
+                                </span>
+                                <input type="checkbox" id="notif-weekly">
+                            </label>
+                            <label class="settings-toggle" for="notif-insights">
+                                <span>
+                                    Recomandări personalizate
+                                    <small>Primești sugestii de locații pe baza preferințelor salvate.</small>
+                                </span>
+                                <input type="checkbox" id="notif-insights" checked>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="settings-card settings-card--full">
+                        <header>
+                            <h2>Administrare cont</h2>
+                            <span class="panel-meta">Controlează vizibilitatea și statusul contului tău</span>
+                        </header>
+                        <p class="panel-meta">Poți pune pauză contului pentru a opri temporar notificările sau îl poți șterge definitiv împreună cu toate datele asociate.</p>
+                        <div class="settings-card-actions">
+                            <button class="crm-button ghost" type="button">Pauză cont</button>
+                            <button class="crm-button danger" type="button">Șterge contul</button>
+                        </div>
+                    </section>
                 </div>
             </section>
 
