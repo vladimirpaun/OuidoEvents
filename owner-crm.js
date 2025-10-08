@@ -372,6 +372,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const bookingStatusOptions = Array.from(new Set([
+        ...bookingStatusOrder,
+        ...Object.keys(bookingStatusMeta)
+    ]));
+
     const bookingActionLibrary = {
         confirm_availability: {
             key: 'confirm_availability',
@@ -485,6 +490,71 @@ document.addEventListener('DOMContentLoaded', () => {
         booking: bookingStatusMeta,
         viewing: viewingStatusMeta
     };
+
+    function getClientStatusLabel(statusKey) {
+        return bookingStatusMeta[statusKey]?.client?.label || '';
+    }
+
+    function ensureBookingTimelineStructure(booking) {
+        if (!booking) {
+            return [];
+        }
+        if (!Array.isArray(booking.timeline)) {
+            booking.timeline = [];
+        }
+        return booking.timeline;
+    }
+
+    function initializeBookingTimelines() {
+        bookings.forEach(booking => {
+            const timeline = ensureBookingTimelineStructure(booking);
+            booking.clientStatus = booking.clientStatus || getClientStatusLabel(booking.status);
+            const hasInitialEntry = timeline.some(entry => entry?.initial);
+            if (!hasInitialEntry) {
+                const timestamp = booking.lastUpdate instanceof Date ? booking.lastUpdate : new Date();
+                timeline.push({
+                    id: `init-${booking.id}`,
+                    status: booking.status,
+                    statusLabel: bookingStatusMeta[booking.status]?.label || booking.status,
+                    clientStatusLabel: booking.clientStatus || '',
+                    user: 'Sistem CRM',
+                    timestamp,
+                    reason: 'Status inițial sincronizat',
+                    initial: true
+                });
+            }
+        });
+    }
+
+    initializeBookingTimelines();
+
+    function logBookingStatusChange(booking, {
+        status,
+        user,
+        reason,
+        manual = false,
+        previousStatus
+    } = {}) {
+        if (!booking || !status) {
+            return;
+        }
+        const timeline = ensureBookingTimelineStructure(booking);
+        const timestamp = new Date();
+        const statusMeta = bookingStatusMeta[status] || {};
+        const previousMeta = previousStatus ? bookingStatusMeta[previousStatus] : null;
+        timeline.push({
+            id: `${booking.id}-${timestamp.getTime()}`,
+            status,
+            statusLabel: statusMeta.label || status,
+            clientStatusLabel: getClientStatusLabel(status),
+            user: user || (manual ? 'Owner CRM' : 'Sistem CRM'),
+            timestamp,
+            reason: reason || '',
+            manual,
+            previousStatus: previousStatus || null,
+            previousStatusLabel: previousMeta?.label || previousStatus || null
+        });
+    }
 
     const venues = [
         {
@@ -738,6 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordDetailDateLabel = document.querySelector('[data-detail-date-label]');
     const recordDetailViewingDateWrapper = document.querySelector('[data-detail-viewing-date-wrapper]');
     const recordDetailViewingTimeWrapper = document.querySelector('[data-detail-viewing-time-wrapper]');
+    const recordDetailTimelineList = document.querySelector('[data-detail-timeline]');
+    const recordDetailTimelineEmpty = document.querySelector('[data-detail-timeline-empty]');
     const recordDetailHeading = document.getElementById('record-detail-heading');
     const recordDetailSubtitle = document.getElementById('record-detail-subtitle');
     const recordDetailNoteInput = document.getElementById('record-detail-note');
@@ -754,6 +826,86 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target) {
             target.textContent = value || fallback;
         }
+    }
+
+    function renderRecordTimeline(type, record) {
+        if (!recordDetailTimelineList || !recordDetailTimelineEmpty) {
+            return;
+        }
+        recordDetailTimelineList.innerHTML = '';
+
+        if (type !== 'booking' || !record) {
+            recordDetailTimelineList.hidden = true;
+            recordDetailTimelineEmpty.hidden = false;
+            recordDetailTimelineEmpty.textContent = 'Timeline-ul este disponibil doar pentru rezervări.';
+            return;
+        }
+
+        const timeline = ensureBookingTimelineStructure(record);
+        if (!timeline.length) {
+            recordDetailTimelineList.hidden = true;
+            recordDetailTimelineEmpty.hidden = false;
+            recordDetailTimelineEmpty.textContent = 'Nu există acțiuni înregistrate încă.';
+            return;
+        }
+
+        const sortedEntries = timeline.slice().sort((a, b) => {
+            const timeA = a.timestamp instanceof Date ? a.timestamp.getTime() : new Date(a.timestamp).getTime();
+            const timeB = b.timestamp instanceof Date ? b.timestamp.getTime() : new Date(b.timestamp).getTime();
+            return timeB - timeA;
+        });
+
+        sortedEntries.forEach(entry => {
+            const itemEl = document.createElement('li');
+            itemEl.className = 'detail-timeline-entry';
+
+            const statusEl = document.createElement('div');
+            statusEl.className = 'detail-timeline-status';
+            statusEl.textContent = entry.statusLabel || entry.status || '—';
+
+            const metaEl = document.createElement('div');
+            metaEl.className = 'detail-timeline-meta';
+            const metaParts = [];
+            const timestamp = entry.timestamp instanceof Date
+                ? entry.timestamp
+                : (entry.timestamp ? new Date(entry.timestamp) : null);
+            if (timestamp && !Number.isNaN(timestamp.getTime())) {
+                metaParts.push(`${formatDate(timestamp)} · ${formatTime(timestamp)}`);
+            }
+            if (entry.user) {
+                metaParts.push(entry.user);
+            }
+            if (entry.clientStatusLabel) {
+                metaParts.push(`Client CRM: ${entry.clientStatusLabel}`);
+            }
+            if (entry.manual) {
+                metaParts.push('Manual');
+            } else if (entry.initial) {
+                metaParts.push('Inițial');
+            }
+            metaEl.textContent = metaParts.join(' • ');
+
+            itemEl.append(statusEl, metaEl);
+
+            if (entry.previousStatusLabel && !entry.initial) {
+                const transitionEl = document.createElement('div');
+                transitionEl.className = 'detail-timeline-meta';
+                transitionEl.textContent = `Din: ${entry.previousStatusLabel}`;
+                itemEl.appendChild(transitionEl);
+            }
+
+            if (entry.reason) {
+                const reasonEl = document.createElement('div');
+                reasonEl.className = 'detail-timeline-reason';
+                reasonEl.textContent = entry.reason;
+                itemEl.appendChild(reasonEl);
+            }
+
+            recordDetailTimelineList.appendChild(itemEl);
+        });
+
+        recordDetailTimelineList.hidden = false;
+        recordDetailTimelineEmpty.hidden = true;
     }
 
     function showRecordDetailPage(type, record, sourcePage = 'bookings') {
@@ -871,6 +1023,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const noteValue = type === 'viewing' ? record.notes : record.details;
             recordDetailNoteInput.value = noteValue || '';
         }
+
+        renderRecordTimeline(type, record);
 
         activatePage('record-detail');
     }
@@ -993,11 +1147,154 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let activeManualStatusMenu = null;
+
+    function closeActiveStatusMenu() {
+        if (!activeManualStatusMenu) {
+            return;
+        }
+        const { trigger, menu } = activeManualStatusMenu;
+        if (trigger) {
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+        if (menu) {
+            menu.classList.remove('is-open');
+        }
+        activeManualStatusMenu = null;
+    }
+
+    function createManualStatusMenu(booking, hostElement) {
+        if (!booking || !hostElement) {
+            return null;
+        }
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'status-menu-trigger';
+        trigger.setAttribute('aria-haspopup', 'menu');
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.title = 'Schimbă manual statusul';
+        trigger.innerHTML = '<span aria-hidden="true">⋯</span><span class="sr-only">Schimbă manual statusul</span>';
+
+        const menu = document.createElement('div');
+        menu.className = 'status-menu';
+        menu.setAttribute('role', 'menu');
+        menu.dataset.bookingId = String(booking.id);
+
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (activeManualStatusMenu && activeManualStatusMenu.menu !== menu) {
+                closeActiveStatusMenu();
+            }
+            const isOpen = menu.classList.contains('is-open');
+            if (isOpen) {
+                closeActiveStatusMenu();
+            } else {
+                menu.classList.add('is-open');
+                trigger.setAttribute('aria-expanded', 'true');
+                activeManualStatusMenu = { trigger, menu, container: hostElement };
+            }
+        });
+
+        menu.addEventListener('click', (event) => event.stopPropagation());
+
+        bookingStatusOptions.forEach(statusKey => {
+            const statusMeta = bookingStatusMeta[statusKey];
+            if (!statusMeta) {
+                return;
+            }
+            const optionBtn = document.createElement('button');
+            optionBtn.type = 'button';
+            optionBtn.setAttribute('role', 'menuitem');
+            optionBtn.dataset.status = statusKey;
+            optionBtn.innerHTML = statusMeta.client?.label
+                ? `<span>${statusMeta.label}</span><span class="status-menu-option-meta">Client CRM: ${statusMeta.client.label}</span>`
+                : `<span>${statusMeta.label}</span>`;
+            if (statusKey === booking.status) {
+                optionBtn.dataset.current = 'true';
+                optionBtn.disabled = true;
+            }
+            optionBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                handleManualStatusChange(booking.id, statusKey);
+            });
+            menu.appendChild(optionBtn);
+        });
+
+        hostElement.appendChild(trigger);
+        hostElement.appendChild(menu);
+
+        return { trigger, menu };
+    }
+
+    function handleManualStatusChange(bookingId, targetStatus) {
+        const booking = bookings.find(item => item.id === bookingId);
+        if (!booking || !targetStatus) {
+            closeActiveStatusMenu();
+            return;
+        }
+        if (booking.status === targetStatus) {
+            closeActiveStatusMenu();
+            return;
+        }
+        const statusLabel = bookingStatusMeta[targetStatus]?.label || targetStatus;
+        const confirmChange = window.confirm(`Ești sigur(ă) că vrei să schimbi statusul acestei rezervări în ${statusLabel}?`);
+        if (!confirmChange) {
+            closeActiveStatusMenu();
+            return;
+        }
+        let reason = window.prompt('Motiv schimbare (opțional):', '');
+        if (typeof reason !== 'string') {
+            reason = '';
+        } else {
+            reason = reason.trim();
+        }
+        applyManualStatusChange(booking, targetStatus, reason);
+        closeActiveStatusMenu();
+    }
+
+    function applyManualStatusChange(booking, nextStatus, reason) {
+        if (!booking || !nextStatus) {
+            return;
+        }
+        const previousStatus = booking.status;
+        booking.status = nextStatus;
+        booking.autoGenerated = false;
+        booking.lastUpdate = new Date();
+        booking.clientStatus = getClientStatusLabel(nextStatus);
+        logBookingStatusChange(booking, {
+            status: nextStatus,
+            user: 'Owner CRM',
+            reason,
+            manual: true,
+            previousStatus
+        });
+
+        const requiresViewingSync = nextStatus === 'viewing_scheduled' || nextStatus === 'viewing_rescheduled';
+        if (requiresViewingSync) {
+            ensureViewingEntry(booking, { rescheduled: nextStatus === 'viewing_rescheduled' });
+            renderViewingsTable();
+            renderViewingsCalendar();
+            renderViewingsStatusChart();
+        }
+
+        renderBookingsTable();
+        renderOverviewLists();
+        renderMonthlyCalendar();
+        selectedBookingId = booking.id;
+        highlightBookingRow(booking.id);
+        if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
+            showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
+        }
+        const statusLabel = bookingStatusMeta[nextStatus]?.label || nextStatus;
+        showAutomationToast(`Status actualizat manual la „${statusLabel}”.`);
+    }
+
     function renderBookingsTable() {
         const body = document.getElementById('bookings-table-body');
         if (!body) {
             return;
         }
+        closeActiveStatusMenu();
         const venueFilter = document.getElementById('bookings-venue-filter');
         const statusFilter = document.getElementById('bookings-status-filter');
         const clientFilter = document.getElementById('bookings-client-filter');
@@ -1090,9 +1387,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.textContent = definition.label;
                 actionsWrapper.appendChild(button);
             });
+            const controlsWrapper = document.createElement('div');
+            controlsWrapper.className = 'booking-row-controls';
             if (actionsWrapper.children.length) {
-                bottomRow.appendChild(actionsWrapper);
+                controlsWrapper.appendChild(actionsWrapper);
             }
+            createManualStatusMenu(item, controlsWrapper);
+            bottomRow.appendChild(controlsWrapper);
 
             wrapper.appendChild(bottomRow);
             cell.appendChild(wrapper);
@@ -1414,7 +1715,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         hideAutomationToast();
+        closeActiveStatusMenu();
 
+        const previousStatus = booking.status;
         let didMutate = false;
 
         switch (actionKey) {
@@ -1505,6 +1808,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (didMutate) {
             booking.lastUpdate = new Date();
+            selectedBookingId = booking.id;
+            if (booking.status !== previousStatus) {
+                booking.clientStatus = getClientStatusLabel(booking.status);
+                logBookingStatusChange(booking, {
+                    status: booking.status,
+                    user: 'Owner CRM',
+                    previousStatus
+                });
+                if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
+                    showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
+                }
+            }
         }
 
         renderBookingsTable();
@@ -2015,6 +2330,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('next-month-btn')?.addEventListener('click', () => {
         currentMonthOffset += 1;
         renderMonthlyCalendar();
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!activeManualStatusMenu) {
+            return;
+        }
+        const { container } = activeManualStatusMenu;
+        if (!container || !container.contains(event.target)) {
+            closeActiveStatusMenu();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeActiveStatusMenu();
+        }
     });
 
     const bookingsTableBody = document.getElementById('bookings-table-body');
