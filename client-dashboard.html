@@ -96,16 +96,19 @@
         .crm-button.primary { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); }
         .crm-button.ghost { background: transparent; border-color: rgba(0, 82, 212, 0.2); color: var(--primary-color); }
         .crm-button.danger { background: linear-gradient(135deg, #f56565, #c53030); color: var(--white-color); }
+        .crm-button--sm { padding: 8px 18px; font-size: 0.85rem; }
 
-        .settings-overview { display: flex; flex-direction: column; gap: 18px; }
-        .settings-overview header { display: flex; flex-direction: column; gap: 12px; }
-        .settings-overview h1 { margin: 0; font-size: 1.6rem; }
-        .settings-overview p { margin: 0; color: var(--muted-color); max-width: 560px; }
-        .settings-overview-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .settings-overview { display: flex; flex-direction: column; gap: 0; padding: 20px 24px; }
+        .settings-overview-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .settings-overview-copy { flex: 1 1 260px; display: flex; flex-direction: column; gap: 8px; }
+        .settings-overview h1 { margin: 0; font-size: 1.55rem; }
+        .settings-overview p { margin: 0; color: var(--muted-color); max-width: 620px; }
+        .settings-overview-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
+        .settings-overview-actions .crm-button { flex: 0 0 auto; }
 
         .settings-section-label { font-size: 0.78rem; font-weight: 600; color: var(--muted-color); text-transform: uppercase; letter-spacing: 0.12em; }
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .settings-card { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 26px 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.75); }
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; align-items: stretch; }
+        .settings-card { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 24px 26px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.75); height: 100%; }
         .settings-card header { display: flex; flex-direction: column; gap: 6px; }
         .settings-card header h2 { margin: 0; font-size: 1.15rem; }
         .settings-card header .panel-meta { font-size: 0.85rem; }
@@ -114,14 +117,28 @@
         .settings-field label { font-weight: 600; font-size: 0.88rem; color: var(--dark-color); }
         .settings-field input, .settings-field select { border-radius: 10px; border: 1px solid rgba(0, 82, 212, 0.16); padding: 10px 12px; font: inherit; font-size: 0.92rem; background: var(--white-color); }
         .settings-field input::placeholder { color: var(--muted-color); }
+        .settings-field--static { gap: 8px; }
+        .settings-static-value { border-radius: 10px; border: 1px dashed rgba(0, 82, 212, 0.25); background: rgba(67, 100, 247, 0.05); padding: 10px 12px; font-weight: 600; font-size: 0.93rem; color: var(--dark-color); }
         .settings-toggles { display: flex; flex-direction: column; gap: 14px; }
         .settings-toggle { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid rgba(0, 82, 212, 0.08); border-radius: 14px; padding: 14px 16px; background: rgba(67, 100, 247, 0.04); }
         .settings-toggle span { font-size: 0.92rem; font-weight: 500; color: var(--dark-color); }
         .settings-toggle small { display: block; font-size: 0.78rem; color: var(--muted-color); font-weight: 400; }
         .settings-toggle input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary-color); }
         .settings-card--full { grid-column: 1 / -1; }
-        .settings-card-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-        .settings-card-actions .crm-button { flex: 1 1 180px; justify-content: center; display: inline-flex; }
+        .settings-card-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+        .settings-card-actions .crm-button { flex: 0 0 auto; justify-content: center; display: inline-flex; }
+        .settings-card-footer { margin-top: auto; display: flex; justify-content: flex-end; }
+        .settings-card-footer .crm-button { flex: 0 0 auto; }
+        .account-confirmation-modal { gap: 18px; }
+        .account-confirmation-content { font-size: 0.92rem; color: var(--dark-color); line-height: 1.5; }
+        .account-confirmation-footer { display: flex; justify-content: flex-end; gap: 12px; }
+
+        @media (max-width: 768px) {
+            .settings-overview { padding: 18px 20px; }
+            .settings-overview-header { align-items: flex-start; }
+            .settings-overview-actions { width: 100%; justify-content: flex-start; }
+            .settings-grid { grid-template-columns: 1fr; }
+        }
 
         /* --- Stiluri specifice paginii de client --- */
         .favorites-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
@@ -442,14 +459,16 @@
             <!-- Pagina Setări -->
             <section class="crm-page" data-page="settings">
                 <article class="panel settings-overview">
-                    <header>
-                        <h1>Setări și preferințe</h1>
-                        <p>Actualizează informațiile de contact și personalizează notificările pentru a rămâne conectat cu echipa OuidoEvents.</p>
+                    <header class="settings-overview-header">
+                        <div class="settings-overview-copy">
+                            <h1>Setări și preferințe</h1>
+                            <p>Actualizează informațiile de contact și personalizează notificările pentru a rămâne conectat cu echipa OuidoEvents.</p>
+                        </div>
+                        <div class="settings-overview-actions">
+                            <button class="crm-button ghost" type="button">Resetează</button>
+                            <button class="crm-button primary" type="button">Salvează modificări</button>
+                        </div>
                     </header>
-                    <div class="settings-overview-actions">
-                        <button class="crm-button ghost" type="button">Resetează</button>
-                        <button class="crm-button primary" type="button">Salvează modificări</button>
-                    </div>
                 </article>
 
                 <span class="settings-section-label">Comunicare & control</span>
@@ -460,6 +479,10 @@
                             <span class="panel-meta">Actualizează informațiile personale</span>
                         </header>
                         <div class="settings-fields">
+                            <div class="settings-field settings-field--static">
+                                <label for="settings-email">Adresă email</label>
+                                <p id="settings-email" class="settings-static-value">alex.popescu@email.com</p>
+                            </div>
                             <div class="settings-field">
                                 <label for="settings-first-name">Prenume</label>
                                 <input type="text" id="settings-first-name" name="first_name" placeholder="Alex">
@@ -490,6 +513,9 @@
                                 <label for="settings-city">Oraș <span class="panel-meta">(opțional)</span></label>
                                 <input type="text" id="settings-city" name="city" placeholder="București">
                             </div>
+                        </div>
+                        <div class="settings-card-footer">
+                            <button class="crm-button primary" type="button">Salvează</button>
                         </div>
                     </section>
 
@@ -528,6 +554,9 @@
                                 <input type="checkbox" id="notif-insights" checked>
                             </label>
                         </div>
+                        <div class="settings-card-footer">
+                            <button class="crm-button primary" type="button">Salvează</button>
+                        </div>
                     </section>
 
                     <section class="settings-card settings-card--full">
@@ -537,8 +566,8 @@
                         </header>
                         <p class="panel-meta">Poți pune pauză contului pentru a opri temporar notificările sau îl poți șterge definitiv împreună cu toate datele asociate.</p>
                         <div class="settings-card-actions">
-                            <button class="crm-button ghost" type="button">Pauză cont</button>
-                            <button class="crm-button danger" type="button">Șterge contul</button>
+                            <button class="crm-button ghost crm-button--sm" type="button" data-confirm-target="pause-account">Pauză cont</button>
+                            <button class="crm-button danger crm-button--sm" type="button" data-confirm-target="delete-account">Șterge contul</button>
                         </div>
                     </section>
                 </div>
@@ -688,6 +717,24 @@
             </form>
         </div>
     </div>
+    <div class="favorites-modal-overlay" id="account-confirmation-overlay">
+        <div class="favorites-modal account-confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="account-confirmation-title">
+            <header>
+                <div>
+                    <h3 id="account-confirmation-title">Confirmă acțiunea</h3>
+                    <p id="account-confirmation-description" class="panel-meta">Asigură-te că dorești să continui.</p>
+                </div>
+                <button type="button" class="favorites-modal-close" id="account-confirmation-close" aria-label="Închide">×</button>
+            </header>
+            <div class="account-confirmation-content">
+                <p id="account-confirmation-message">Ești pe cale să aplici o schimbare importantă asupra contului tău.</p>
+            </div>
+            <footer class="account-confirmation-footer">
+                <button type="button" class="crm-button ghost crm-button--sm" id="account-confirmation-cancel">Renunță</button>
+                <button type="button" class="crm-button crm-button--sm" id="account-confirmation-confirm">Confirmă acțiunea</button>
+            </footer>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ro.js"></script>
     <script src="main.js"></script>
@@ -716,6 +763,115 @@
         });
 
         window.addEventListener('hashchange', () => activatePage(window.location.hash.replace('#', '')));
+
+        const accountConfirmationOverlay = document.getElementById('account-confirmation-overlay');
+        const accountConfirmationModal = accountConfirmationOverlay?.querySelector('.account-confirmation-modal');
+        const accountConfirmationTitle = document.getElementById('account-confirmation-title');
+        const accountConfirmationDescription = document.getElementById('account-confirmation-description');
+        const accountConfirmationMessage = document.getElementById('account-confirmation-message');
+        const accountConfirmationCloseBtn = document.getElementById('account-confirmation-close');
+        const accountConfirmationCancelBtn = document.getElementById('account-confirmation-cancel');
+        const accountConfirmationConfirmBtn = document.getElementById('account-confirmation-confirm');
+        const accountActionButtons = document.querySelectorAll('[data-confirm-target]');
+        const accountConfirmationConfigs = {
+            'pause-account': {
+                title: 'Pui contul pe pauză?',
+                description: 'Notificările și invitațiile vor fi suspendate temporar.',
+                message: 'Poți reveni oricând prin reactivarea contului din această secțiune. Continuăm?',
+                confirmLabel: 'Confirmă pauza',
+                confirmVariant: 'ghost'
+            },
+            'delete-account': {
+                title: 'Ștergi definitiv contul?',
+                description: 'Această acțiune este ireversibilă.',
+                message: 'Toate locațiile favorite, solicitările și datele asociate vor fi eliminate. Confirmă dacă dorești să continui.',
+                confirmLabel: 'Șterge contul',
+                confirmVariant: 'danger'
+            }
+        };
+        const accountConfirmationState = {
+            action: null
+        };
+
+        function applyConfirmVariant(variant) {
+            if (!accountConfirmationConfirmBtn) {
+                return;
+            }
+            const baseClasses = ['crm-button', 'crm-button--sm'];
+            accountConfirmationConfirmBtn.className = baseClasses.join(' ');
+            if (variant === 'primary' || variant === 'danger' || variant === 'ghost') {
+                accountConfirmationConfirmBtn.classList.add(variant);
+            } else if (variant) {
+                accountConfirmationConfirmBtn.classList.add(variant);
+            }
+        }
+
+        function openAccountConfirmation(action) {
+            if (!accountConfirmationOverlay || !accountConfirmationModal) {
+                return;
+            }
+            const config = accountConfirmationConfigs[action] || accountConfirmationConfigs['pause-account'];
+            accountConfirmationState.action = action;
+
+            if (accountConfirmationTitle) {
+                accountConfirmationTitle.textContent = config.title;
+            }
+            if (accountConfirmationDescription) {
+                accountConfirmationDescription.textContent = config.description;
+            }
+            if (accountConfirmationMessage) {
+                accountConfirmationMessage.textContent = config.message;
+            }
+            if (accountConfirmationConfirmBtn) {
+                accountConfirmationConfirmBtn.textContent = config.confirmLabel;
+            }
+            applyConfirmVariant(config.confirmVariant || 'primary');
+
+            accountConfirmationOverlay.classList.add('is-visible');
+            const focusableButtons = accountConfirmationModal.querySelectorAll('button:not([disabled])');
+            if (focusableButtons.length) {
+                focusableButtons[focusableButtons.length - 1].focus();
+            }
+        }
+
+        function closeAccountConfirmation() {
+            if (!accountConfirmationOverlay) {
+                return;
+            }
+            accountConfirmationOverlay.classList.remove('is-visible');
+            accountConfirmationState.action = null;
+        }
+
+        accountActionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.confirmTarget;
+                openAccountConfirmation(action);
+            });
+        });
+
+        accountConfirmationCloseBtn?.addEventListener('click', closeAccountConfirmation);
+        accountConfirmationCancelBtn?.addEventListener('click', closeAccountConfirmation);
+        accountConfirmationOverlay?.addEventListener('click', (event) => {
+            if (event.target === accountConfirmationOverlay) {
+                closeAccountConfirmation();
+            }
+        });
+
+        accountConfirmationConfirmBtn?.addEventListener('click', () => {
+            const action = accountConfirmationState.action;
+            closeAccountConfirmation();
+            if (action === 'pause-account') {
+                console.info('Contul a fost setat pe pauză (simulare).');
+            } else if (action === 'delete-account') {
+                console.warn('Contul a fost marcat pentru ștergere (simulare).');
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && accountConfirmationOverlay?.classList.contains('is-visible')) {
+                closeAccountConfirmation();
+            }
+        });
 
         const today = new Date();
         const addDays = (days) => {
