@@ -298,6 +298,30 @@
             font-weight: 500;
         }
 
+        .context-tag.is-interactive {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-tag-clear {
+            border: none;
+            background: rgba(0, 82, 212, 0.15);
+            color: var(--primary-color);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.78rem;
+            line-height: 1;
+        }
+
+        .context-tag-clear:hover {
+            background: rgba(0, 82, 212, 0.25);
+        }
+
         /* NOU: Stil pentru rândul evidențiat în tabel */
         @keyframes highlight-fade {
             from { box-shadow: 0 0 0 4px rgba(67, 100, 247, 0.32); }
@@ -1374,6 +1398,9 @@
             overflow: hidden;
             position: relative;
         }
+        #availability-calendar-grid .calendar-day {
+            cursor: pointer;
+        }
         /* NOU: Efect de fade-out pentru conținutul care depășește spațiul */
         .calendar-day::after {
             content: '';
@@ -1399,6 +1426,106 @@
             align-items: center;
             justify-content: center;
         }
+
+        .calendar-day.is-blocked-reserved {
+            background: rgba(37, 99, 235, 0.12);
+            box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .calendar-day.is-blocked-prereserved {
+            background: rgba(245, 158, 11, 0.14);
+            box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.24);
+        }
+
+        .calendar-day.is-menu-open {
+            box-shadow: inset 0 0 0 2px rgba(67, 100, 247, 0.45);
+        }
+
+        .calendar-day.is-blocked-reserved .day-number {
+            background: #1d4ed8;
+            color: var(--white-color);
+        }
+
+        .calendar-day.is-blocked-prereserved .day-number {
+            background: #b45309;
+            color: var(--white-color);
+        }
+
+        .calendar-day-blocked-badge {
+            align-self: flex-start;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 999px;
+        }
+
+        .calendar-day.is-blocked-reserved .calendar-day-blocked-badge {
+            background: rgba(37, 99, 235, 0.18);
+            color: #1d4ed8;
+        }
+
+        .calendar-day.is-blocked-prereserved .calendar-day-blocked-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: #b45309;
+        }
+
+        .availability-quick-menu {
+            position: fixed;
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 20px 48px -26px rgba(15, 23, 42, 0.45);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 210px;
+            z-index: 1400;
+            animation: fadeIn 0.18s ease;
+        }
+
+        .availability-quick-menu h4 {
+            margin: 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted-color);
+        }
+
+        .availability-quick-menu-date {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .availability-quick-menu button {
+            border: none;
+            background: rgba(67, 100, 247, 0.08);
+            color: var(--primary-color);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .availability-quick-menu button[data-action="view"] {
+            background: rgba(15, 23, 42, 0.06);
+            color: var(--dark-color);
+        }
+
+        .availability-quick-menu button:hover {
+            background: rgba(67, 100, 247, 0.16);
+            transform: translateY(-1px);
+        }
+
+        .availability-quick-menu button[data-action="view"]:hover {
+            background: rgba(15, 23, 42, 0.12);
+        }
         .calendar-event {
             font-size: 0.75rem;
             padding: 2px 6px;
@@ -1410,8 +1537,20 @@
         }
         .calendar-event[data-status="booked"] { background-color: rgba(0, 82, 212, 0.15); color: var(--primary-color); }
         .calendar-event[data-status="hold"] { background-color: rgba(245, 158, 11, 0.15); color: #b45309; }
-        .calendar-event[data-status="pre_booked"] { background-color: rgba(20, 184, 166, 0.15); color: #0d9488; } /* NOU: Culoare pentru pre-rezervat */
-        .calendar-event[data-status="manual_booking"] { background-color: rgba(139, 92, 246, 0.15); color: #7c3aed; } /* NOU: Culoare pentru adăugat manual */
+        .calendar-event[data-status="pre_booked"] { background-color: rgba(245, 158, 11, 0.18); color: #9a3412; }
+        .calendar-event[data-status="manual_booking"] { background-color: rgba(180, 83, 9, 0.16); color: #9a3412; }
+
+        .availability-legend-dot-reserved {
+            background-color: #1d4ed8;
+        }
+
+        .availability-legend-dot-prereserve {
+            background-color: #b45309;
+        }
+
+        .availability-legend-dot-manual {
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.3) 0%, rgba(180, 83, 9, 0.3) 100%);
+        }
 
         /* NOU: Stiluri pentru modal */
         .modal-overlay {
@@ -1857,6 +1996,10 @@
                     </div>
                     <div class="context-tags">
                         <span class="context-tag">Cererile noi se sincronizează la 5 minute</span>
+                        <span class="context-tag is-interactive" id="bookings-date-filter-tag" hidden>
+                            <span id="bookings-date-filter-label"></span>
+                            <button type="button" class="context-tag-clear" id="bookings-date-filter-clear" aria-label="Elimină filtrul de dată">&times;</button>
+                        </span>
                     </div>
                 </div>
 
@@ -1961,6 +2104,7 @@
                         <span class="context-tag">Integrare Google Calendar activă</span>
                         <span class="context-tag">Sincronizare iCal disponibilă</span>
                     </div>
+                    <div id="availability-toast" class="automation-toast" role="status" aria-live="polite"></div>
                 </div>
 
                 <div class="panel">
@@ -1981,9 +2125,9 @@
                         <!-- Zilele săptămânii vor fi adăugate aici de JS -->
                     </div>
                     <div class="availability-legend" style="margin-top: 10px;">
-                        <span class="legend-item"><span class="legend-dot" style="background-color: #0052D4;"></span> Rezervat</span>
-                        <span class="legend-item"><span class="legend-dot" style="background-color: #0d9488;"></span> Pre-rezervat</span>
-                        <span class="legend-item"><span class="legend-dot" style="background-color: #7c3aed;"></span> Creat manual</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-reserved"></span> Rezervat</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-prereserve"></span> Pre-rezervat</span>
+                        <span class="legend-item"><span class="legend-dot availability-legend-dot-manual"></span> Creat manual</span>
                     </div>
                 </div>
 

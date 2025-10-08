@@ -55,6 +55,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatDate = (date) => `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
     const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
+    const availabilityStorageKey = 'owner-crm-availability-blocks';
+    const manualAvailabilityBlocks = new Map();
+    let activeAvailabilityMenu = null;
+    let activeBookingsDateFilter = null;
+
+    const buildIsoDate = (year, monthIndex, day) => `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const createDateFromISO = (iso) => {
+        const [year, month, day] = iso.split('-').map(Number);
+        return new Date(year, (month || 1) - 1, day || 1);
+    };
+
+    try {
+        const storedBlocks = JSON.parse(localStorage.getItem(availabilityStorageKey) || '[]');
+        storedBlocks.forEach(([dateKey, status]) => {
+            if (typeof dateKey === 'string' && typeof status === 'string') {
+                manualAvailabilityBlocks.set(dateKey, status);
+            }
+        });
+    } catch (error) {
+        console.warn('Nu s-au putut încărca blocările de disponibilitate.', error);
+    }
+
     const bookings = [
         {
             id: 1,
@@ -701,7 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showAutomationToast(message) {
-        const toast = document.getElementById('automation-toast');
+        const toast = document.getElementById('automation-toast') || document.getElementById('availability-toast');
         if (!toast) {
             return;
         }
@@ -726,6 +748,165 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(automationToastTimeout);
             automationToastTimeout = null;
         }
+    }
+
+    function saveAvailabilityBlocks() {
+        try {
+            const serialized = JSON.stringify(Array.from(manualAvailabilityBlocks.entries()));
+            localStorage.setItem(availabilityStorageKey, serialized);
+        } catch (error) {
+            console.warn('Nu s-au putut salva blocările de disponibilitate.', error);
+        }
+    }
+
+    function hideAvailabilityQuickMenu() {
+        if (!activeAvailabilityMenu) {
+            return;
+        }
+        const { menu, dayCell } = activeAvailabilityMenu;
+        menu.remove();
+        dayCell.classList.remove('is-menu-open');
+        activeAvailabilityMenu = null;
+    }
+
+    function formatFriendlyDateFromISO(dateISO) {
+        const date = createDateFromISO(dateISO);
+        if (Number.isNaN(date.getTime())) {
+            return dateISO;
+        }
+        return formatDate(date);
+    }
+
+    function setAvailabilityStatus(dateISO, status) {
+        if (!dateISO || !status) {
+            return;
+        }
+        const previousStatus = manualAvailabilityBlocks.get(dateISO);
+        if (previousStatus === status) {
+            manualAvailabilityBlocks.delete(dateISO);
+            saveAvailabilityBlocks();
+            const friendlyDate = formatFriendlyDateFromISO(dateISO);
+            showAutomationToast(`Blocarea pentru ${friendlyDate} a fost eliberată.`);
+            renderMonthlyCalendar();
+            return;
+        }
+        manualAvailabilityBlocks.set(dateISO, status);
+        saveAvailabilityBlocks();
+        const friendlyDate = formatFriendlyDateFromISO(dateISO);
+        let message = '';
+        if (status === 'manual_reserved') {
+            message = `Data ${friendlyDate} a fost marcată ca rezervată manual ✅`;
+        } else if (status === 'manual_pre_reserved') {
+            message = `Data ${friendlyDate} a fost trecută în pre-rezervă manual 🔖`;
+        } else {
+            message = `Data ${friendlyDate} a fost actualizată.`;
+        }
+        showAutomationToast(message);
+        renderMonthlyCalendar();
+    }
+
+    function navigateToBookingsForDate(dateISO) {
+        activeBookingsDateFilter = dateISO;
+        const friendlyDate = formatFriendlyDateFromISO(dateISO);
+        activatePage('bookings');
+        renderBookingsTable();
+        showAutomationToast(`Cererile pentru ${friendlyDate} sunt afișate în pagină.`);
+    }
+
+    function showAvailabilityQuickMenu(dayCell, { dateISO }) {
+        if (!(dayCell instanceof HTMLElement)) {
+            return;
+        }
+        if (activeAvailabilityMenu?.dayCell === dayCell) {
+            hideAvailabilityQuickMenu();
+            return;
+        }
+        hideAvailabilityQuickMenu();
+
+        const menu = document.createElement('div');
+        menu.className = 'availability-quick-menu';
+        menu.setAttribute('role', 'menu');
+
+        const title = document.createElement('h4');
+        title.textContent = 'Blocare rapidă';
+        const subtitle = document.createElement('span');
+        subtitle.className = 'availability-quick-menu-date';
+        subtitle.textContent = formatFriendlyDateFromISO(dateISO);
+
+        const reserveBtn = document.createElement('button');
+        reserveBtn.type = 'button';
+        reserveBtn.dataset.action = 'reserve';
+        reserveBtn.textContent = 'Marchează rezervat';
+
+        const preReserveBtn = document.createElement('button');
+        preReserveBtn.type = 'button';
+        preReserveBtn.dataset.action = 'pre-reserve';
+        preReserveBtn.textContent = 'Marchează pre-rezervat';
+
+        const viewBtn = document.createElement('button');
+        viewBtn.type = 'button';
+        viewBtn.dataset.action = 'view';
+        viewBtn.textContent = 'Vezi cererile zilei';
+
+        menu.append(title, subtitle, reserveBtn, preReserveBtn, viewBtn);
+        document.body.appendChild(menu);
+
+        const rect = dayCell.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+
+        let top = rect.bottom + 8;
+        if (top + menuRect.height > window.innerHeight - 8) {
+            top = rect.top - menuRect.height - 8;
+        }
+        if (top < 8) {
+            top = 8;
+        }
+
+        let left = rect.left + (rect.width / 2) - (menuRect.width / 2);
+        if (left + menuRect.width > window.innerWidth - 8) {
+            left = window.innerWidth - menuRect.width - 8;
+        }
+        if (left < 8) {
+            left = 8;
+        }
+
+        menu.style.top = `${top}px`;
+        menu.style.left = `${left}px`;
+
+        const handleAction = (action) => {
+            hideAvailabilityQuickMenu();
+            switch (action) {
+            case 'reserve':
+                setAvailabilityStatus(dateISO, 'manual_reserved');
+                break;
+            case 'pre-reserve':
+                setAvailabilityStatus(dateISO, 'manual_pre_reserved');
+                break;
+                case 'view':
+                    navigateToBookingsForDate(dateISO);
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        reserveBtn.addEventListener('click', () => handleAction('reserve'));
+        preReserveBtn.addEventListener('click', () => handleAction('pre-reserve'));
+        viewBtn.addEventListener('click', () => handleAction('view'));
+        menu.addEventListener('click', (event) => event.stopPropagation());
+
+        dayCell.classList.add('is-menu-open');
+        activeAvailabilityMenu = { menu, dayCell, dateISO };
+        reserveBtn.focus();
+    }
+
+    function clearBookingsDateFilter() {
+        if (!activeBookingsDateFilter) {
+            return;
+        }
+        activeBookingsDateFilter = null;
+        renderBookingsTable();
+        showAutomationToast('Filtrul după dată a fost eliminat.');
     }
 
     function highlightBookingRow(bookingId, { scroll = false } = {}) {
@@ -1268,6 +1449,23 @@ document.addEventListener('DOMContentLoaded', () => {
         body.innerHTML = '';
 
         const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
+        const filterTag = document.getElementById('bookings-date-filter-tag');
+        const filterLabel = document.getElementById('bookings-date-filter-label');
+        let activeDateDisplay = null;
+        if (activeBookingsDateFilter) {
+            const filterDate = createDateFromISO(activeBookingsDateFilter);
+            if (!Number.isNaN(filterDate.getTime())) {
+                activeDateDisplay = formatDate(filterDate);
+            }
+        }
+        if (filterTag && filterLabel) {
+            if (activeDateDisplay) {
+                filterLabel.textContent = `Filtru dată: ${activeDateDisplay}`;
+                filterTag.hidden = false;
+            } else {
+                filterTag.hidden = true;
+            }
+        }
 
         const filteredBookings = bookings
             .filter(item => venueValue === 'all' || item.venue === venueValue)
@@ -1277,6 +1475,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return true;
                 }
                 return item.client.toLowerCase().includes(clientQuery);
+            })
+            .filter(item => {
+                if (!activeDateDisplay) {
+                    return true;
+                }
+                return item.date === activeDateDisplay;
             })
             .slice()
             .sort((a, b) => {
@@ -1484,6 +1688,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         grid.innerHTML = '';
+        hideAvailabilityQuickMenu();
         const currentDate = new Date();
         currentDate.setDate(1);
         currentDate.setMonth(currentDate.getMonth() + currentMonthOffset);
@@ -1521,6 +1726,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayCell.classList.add('is-today');
             }
             dayCell.innerHTML = `<span class="day-number">${day}</span>`;
+            const dateKey = buildIsoDate(year, month, day);
+            dayCell.dataset.dateIso = dateKey;
+            dayCell.setAttribute('tabindex', '0');
+
+            const manualStatus = manualAvailabilityBlocks.get(dateKey);
+            if (manualStatus === 'manual_reserved') {
+                dayCell.classList.add('is-blocked-reserved', 'is-blocked-manual');
+            } else if (manualStatus === 'manual_pre_reserved') {
+                dayCell.classList.add('is-blocked-prereserved', 'is-blocked-manual');
+            }
+            if (manualStatus) {
+                const badge = document.createElement('span');
+                badge.className = 'calendar-day-blocked-badge';
+                badge.textContent = manualStatus === 'manual_reserved' ? 'Rezervat manual' : 'Pre-rezervat manual';
+                dayCell.appendChild(badge);
+            }
 
             const eventsForDay = bookings.filter(booking => {
                 if (!['confirmed', 'pre_booked'].includes(booking.status)) {
@@ -2250,8 +2471,46 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bookings-client-filter')?.addEventListener('input', () => {
         renderBookingsTable();
     });
+    document.getElementById('bookings-date-filter-clear')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        clearBookingsDateFilter();
+    });
     document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
     document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar);
+
+    const availabilityCalendarGrid = document.getElementById('availability-calendar-grid');
+    availabilityCalendarGrid?.addEventListener('click', (event) => {
+        const dayCell = event.target.closest('.calendar-day');
+        if (!dayCell || !availabilityCalendarGrid.contains(dayCell) || dayCell.classList.contains('is-other-month')) {
+            return;
+        }
+        if (event.target.closest('.calendar-event')) {
+            return;
+        }
+        const dateISO = dayCell.dataset.dateIso;
+        if (!dateISO) {
+            return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        showAvailabilityQuickMenu(dayCell, { dateISO });
+    });
+
+    availabilityCalendarGrid?.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+        const dayCell = event.target.closest('.calendar-day');
+        if (!dayCell || dayCell.classList.contains('is-other-month')) {
+            return;
+        }
+        const dateISO = dayCell.dataset.dateIso;
+        if (!dateISO) {
+            return;
+        }
+        event.preventDefault();
+        showAvailabilityQuickMenu(dayCell, { dateISO });
+    });
 
     document.getElementById('prev-viewings-month-btn')?.addEventListener('click', () => {
         currentViewingsMonthOffset -= 1;
@@ -2299,21 +2558,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (event) => {
-        if (!activeActionsMenu) {
-            return;
+        if (activeAvailabilityMenu) {
+            const { menu, dayCell } = activeAvailabilityMenu;
+            if (!menu.contains(event.target) && !dayCell.contains(event.target)) {
+                hideAvailabilityQuickMenu();
+            }
         }
-        const { container } = activeActionsMenu;
-        const isWithinActiveMenu = container && container.contains(event.target);
-        if (!isWithinActiveMenu) {
-            event.preventDefault();
-            event.stopPropagation();
-            closeActiveActionsMenu();
+        if (activeActionsMenu) {
+            const { container } = activeActionsMenu;
+            const isWithinActiveMenu = container && container.contains(event.target);
+            if (!isWithinActiveMenu) {
+                event.preventDefault();
+                event.stopPropagation();
+                closeActiveActionsMenu();
+            }
         }
     }, true);
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
             closeActiveActionsMenu();
+            hideAvailabilityQuickMenu();
         }
     });
 
