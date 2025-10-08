@@ -178,20 +178,6 @@
             font-weight: 600;
             font-size: 0.85rem;
         }
-        .availability-calendar-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        #availability-month-label {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--dark-color);
-            text-transform: capitalize;
-        }
         .availability-legend {
             display: flex;
             gap: 16px;
@@ -217,45 +203,38 @@
             border: 1px solid rgba(15, 23, 42, 0.12);
             font-size: 0.9rem;
         }
-        .favorites-calendar-wrapper {
-            border: 1px solid rgba(15, 23, 42, 0.08);
+        .flatpickr-calendar {
+            box-shadow: 0 24px 60px -34px rgba(15, 23, 42, 0.35);
             border-radius: 16px;
-            padding: 8px;
-            position: relative;
         }
-        .favorites-calendar-wrapper .flatpickr-calendar {
-            width: 100%;
-            box-shadow: none;
-            border: none;
+        .flatpickr-calendar {
+            box-shadow: 0 24px 60px -34px rgba(15, 23, 42, 0.35);
+            border-radius: 16px;
+            background: #fff;
         }
-        .favorites-calendar-wrapper input {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
+        .flatpickr-calendar .flatpickr-months,
+        .flatpickr-calendar .flatpickr-weekdays {
+            background: #fff;
         }
-        .favorites-calendar-wrapper .flatpickr-weekdays {
-            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-        }
-        .favorites-calendar-wrapper .flatpickr-day {
-            border-radius: 10px;
+        .flatpickr-calendar .flatpickr-monthDropdown-months,
+        .flatpickr-calendar .numInputWrapper {
             font-size: 0.85rem;
-            position: relative;
         }
-        .favorites-calendar-wrapper .flatpickr-day.availability-day-available {
-            background: rgba(59, 130, 246, 0.08);
+        .flatpickr-day {
+            border-radius: 10px;
         }
-        .favorites-calendar-wrapper .flatpickr-day.availability-day-available:hover {
-            background: rgba(59, 130, 246, 0.18);
+        .flatpickr-day.availability-day-available:hover {
+            background: rgba(59, 130, 246, 0.12);
         }
-        .favorites-calendar-wrapper .flatpickr-day.availability-day-hold {
+        .flatpickr-day.availability-day-hold {
             background: rgba(245, 158, 11, 0.25);
             color: #b45309;
         }
-        .favorites-calendar-wrapper .flatpickr-day.availability-day-booked {
+        .flatpickr-day.availability-day-booked {
             background: rgba(239, 68, 68, 0.3);
             color: #b91c1c;
         }
-        .favorites-calendar-wrapper .flatpickr-day.flatpickr-disabled {
+        .flatpickr-day.flatpickr-disabled {
             cursor: not-allowed;
         }
         .favorites-modal footer {
@@ -477,16 +456,11 @@
             <form id="availability-form">
                 <div class="form-section">
                     <label for="availability-date-picker">Data dorită</label>
-                    <div class="availability-calendar-meta">
-                        <span id="availability-month-label"></span>
-                        <div class="availability-legend">
-                            <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
-                            <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
-                            <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
-                        </div>
-                    </div>
-                    <div class="favorites-calendar-wrapper">
-                        <input type="text" id="availability-date-picker" readonly>
+                    <input type="text" id="availability-date-picker" placeholder="Selectează data evenimentului" readonly>
+                    <div class="availability-legend">
+                        <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
+                        <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
+                        <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
                     </div>
                 </div>
                 <p class="panel-meta" id="availability-selected-date">Selectează o dată disponibilă din calendar.</p>
@@ -954,7 +928,6 @@
 
         const availabilityModal = document.getElementById('availability-modal');
         const availabilityModalCloseBtn = document.getElementById('availability-modal-close');
-        const availabilityMonthLabel = document.getElementById('availability-month-label');
         const availabilityForm = document.getElementById('availability-form');
         const availabilityEventTypeSelect = document.getElementById('availability-event-type');
         const availabilityGuestsInput = document.getElementById('availability-guests');
@@ -1000,7 +973,6 @@
             availabilityModal.classList.add('is-visible');
             ensureAvailabilityDatePicker();
             updateAvailabilitySelectedDate();
-            updateAvailabilityMonthLabel();
         }
 
         function closeAvailabilityModal() {
@@ -1008,7 +980,7 @@
             availabilityState.selectedDate = null;
             availabilityDatePicker?.clear(false);
             updateAvailabilitySelectedDate();
-            updateAvailabilityMonthLabel(new Date());
+            availabilityDatePicker?.close();
         }
 
         function ensureAvailabilityDatePicker() {
@@ -1016,48 +988,38 @@
                 return null;
             }
             const today = new Date();
-            const maxDate = new Date(today.getFullYear(), today.getMonth() + 6, today.getDate());
+            const maxDate = null;
             if (!availabilityDatePicker) {
                 if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
                     flatpickr.localize(flatpickr.l10ns.ro);
                 }
                 availabilityDatePicker = flatpickr(availabilityDateInput, {
-                    inline: true,
                     minDate: 'today',
-                    maxDate,
                     locale: flatpickr.l10ns?.ro || 'default',
                     disableMobile: true,
                     monthSelectorType: 'dropdown',
                     yearSelectorType: 'dropdown',
                     showMonths: 1,
+                    onOpen() {
+                        availabilityDateInput.blur();
+                    },
                     onChange(selectedDates, dateStr, instance) {
                         availabilityState.selectedDate = selectedDates[0] || null;
                         updateAvailabilitySelectedDate();
-                        if (availabilityState.selectedDate) {
-                            instance.jumpToDate(availabilityState.selectedDate);
-                        }
-                        updateAvailabilityMonthLabel(new Date(instance.currentYear, instance.currentMonth, 1));
-                    },
-                    onMonthChange(selectedDates, dateStr, instance) {
-                        updateAvailabilityMonthLabel(new Date(instance.currentYear, instance.currentMonth, 1));
-                    },
-                    onYearChange(selectedDates, dateStr, instance) {
-                        updateAvailabilityMonthLabel(new Date(instance.currentYear, instance.currentMonth, 1));
                     },
                     onDayCreate: decorateAvailabilityDay
                 });
             }
             const referenceDate = availabilityState.selectedDate || today;
             availabilityDatePicker.clear(false);
+            availabilityDateInput.blur();
             availabilityDatePicker.set('disable', [
                 function(date) {
                     return getAvailabilityStatus(availabilityState.locationId, date) === 'booked';
                 }
             ]);
-            availabilityDatePicker.set('maxDate', maxDate);
             availabilityDatePicker.redraw();
             availabilityDatePicker.jumpToDate(referenceDate);
-            updateAvailabilityMonthLabel(referenceDate);
             availabilityState.selectedDate = null;
             updateAvailabilitySelectedDate();
             return availabilityDatePicker;
@@ -1088,17 +1050,6 @@
             } else {
                 availabilitySelectedDateLabel.textContent = `Data selectată: ${formatDate(availabilityState.selectedDate)}`;
             }
-        }
-
-        function updateAvailabilityMonthLabel(date) {
-            if (!availabilityMonthLabel) {
-                return;
-            }
-            const base = date ? new Date(date) : availabilityDatePicker
-                ? new Date(availabilityDatePicker.currentYear, availabilityDatePicker.currentMonth, 1)
-                : new Date();
-            const label = base.toLocaleString('ro-RO', { month: 'long', year: 'numeric' });
-            availabilityMonthLabel.textContent = label.charAt(0).toUpperCase() + label.slice(1);
         }
 
         function getAvailabilityStatus(locationId, date) {
