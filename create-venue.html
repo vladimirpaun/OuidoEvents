@@ -15,6 +15,7 @@
             --header-bg: #ffffff;
             --dark-color: #1a202c;
             --gray-color: #555;
+            --muted-color: #7a7f87;
             --light-gray-color: #f0f2f5;
             --bg-color: #f8f9fa;
             --white-color: #ffffff;
@@ -213,6 +214,70 @@
             padding: 40px; text-align: center; color: var(--muted-color); cursor: pointer; transition: background-color 0.2s ease;
         }
         .upload-area:hover { background-color: var(--light-gray-color); }
+
+        .document-upload {
+            border: 1px dashed rgba(0, 82, 212, 0.25);
+            border-radius: var(--border-radius);
+            background: rgba(0, 82, 212, 0.04);
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+            color: var(--muted-color);
+        }
+        .document-upload p {
+            margin: 0;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        .document-upload-hint {
+            font-size: 0.85rem;
+        }
+        .document-upload-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .document-upload-list li {
+            background: var(--white-color);
+            border: 1px solid rgba(0, 82, 212, 0.12);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .document-upload-list li span {
+            flex: 1;
+            text-align: left;
+        }
+        .document-upload .upload-trigger {
+            border-radius: 999px;
+            padding: 10px 22px;
+            border: 1px solid rgba(0, 82, 212, 0.2);
+            background: var(--white-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .document-upload .upload-trigger:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 82, 212, 0.45);
+            box-shadow: 0 16px 26px -24px rgba(67, 100, 247, 0.5);
+        }
+        #venue-menu-pdfs {
+            display: none;
+        }
         
         /* Hero Section */
         .hero-section {
@@ -815,6 +880,20 @@
 
                     <div class="form-section">
                         <header>
+                            <h2>Meniuri & Documente PDF</h2>
+                            <span class="panel-meta">Adaugă meniurile pe care vrei să le primească automat clienții atunci când confirmi disponibilitatea.</span>
+                        </header>
+                        <div class="document-upload">
+                            <p>Încarcă fișiere PDF (maxim 10)</p>
+                            <label for="venue-menu-pdfs" class="upload-trigger">Selectează PDF-uri</label>
+                            <input type="file" id="venue-menu-pdfs" accept="application/pdf" multiple>
+                            <ul class="document-upload-list" id="venue-menu-pdfs-list"></ul>
+                            <span class="document-upload-hint">Recomandare: Meniu standard, opțiuni vegetariene, listă băuturi, pachete premium.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <header>
                             <h2>Detalii & Capacitate</h2>
                             <span class="panel-meta">Specifică intervalul de invitați și prețul de pornire.</span>
                         </header>
@@ -1081,6 +1160,28 @@
             const prevButton = document.querySelector('.lightbox-nav.prev');
             const nextButton = document.querySelector('.lightbox-nav.next');
             const showAllButton = document.querySelector('.show-all-photos-btn');
+            const pdfInput = document.getElementById('venue-menu-pdfs');
+            const pdfList = document.getElementById('venue-menu-pdfs-list');
+
+            if (pdfInput && pdfList) {
+                pdfInput.addEventListener('change', (event) => {
+                    const files = Array.from(event.target.files || []).slice(0, 10);
+                    pdfList.innerHTML = '';
+                    if (!files.length) {
+                        return;
+                    }
+                    files.forEach(file => {
+                        const item = document.createElement('li');
+                        const nameSpan = document.createElement('span');
+                        nameSpan.textContent = file.name;
+                        const sizeSpan = document.createElement('small');
+                        const sizeKb = file.size ? (file.size / 1024).toFixed(1) : null;
+                        sizeSpan.textContent = sizeKb ? `${sizeKb} KB` : '';
+                        item.append(nameSpan, sizeSpan);
+                        pdfList.appendChild(item);
+                    });
+                });
+            }
 
             let allImages = [];
             let currentImageIndex = 0;
