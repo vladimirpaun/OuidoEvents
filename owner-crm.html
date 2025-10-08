@@ -278,6 +278,80 @@
         table.crm-table tbody tr.is-highlighted {
             animation: highlight-fade 2s ease-out forwards;
         }
+        table.crm-table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        table.crm-table tbody tr:hover {
+            background-color: rgba(67, 100, 247, 0.08);
+        }
+        .detail-layout {
+            display: grid;
+            gap: 24px;
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .detail-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+        .detail-card {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 24px 48px -44px rgba(15, 23, 42, 0.45);
+        }
+        .detail-card h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .detail-list {
+            display: grid;
+            gap: 12px;
+        }
+        .detail-list-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .detail-list-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted-color);
+        }
+        .detail-list-value {
+            font-size: 0.96rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            word-break: break-word;
+        }
+        .detail-note-area {
+            background: rgba(67, 100, 247, 0.06);
+            border-radius: 14px;
+            border: 1px dashed rgba(0, 82, 212, 0.2);
+            padding: 16px 18px;
+            font-size: 0.92rem;
+            color: var(--dark-color);
+        }
+        .detail-note-area span {
+            display: block;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted-color);
+            margin-bottom: 8px;
+        }
 
 
         .metrics-grid {
@@ -1823,6 +1897,72 @@
                         <label for="company-contact">Persoană de contact</label>
                         <input id="company-contact" type="text" placeholder="Ex: Andreea Marin">
                     </section>
+                </div>
+            </section>
+
+            <section class="crm-page" data-page="record-detail" id="record-detail">
+                <div class="page-header">
+                    <div class="detail-header">
+                        <div>
+                            <h1 id="record-detail-heading">Detalii înregistrare</h1>
+                            <p class="panel-meta" id="record-detail-subtitle">Consultă informațiile partajate de client pentru această solicitare.</p>
+                        </div>
+                        <button type="button" class="crm-button ghost" id="record-detail-back">Înapoi la listă</button>
+                    </div>
+                </div>
+                <div class="detail-layout">
+                    <div class="detail-sections">
+                        <article class="detail-card">
+                            <h3>Informații client</h3>
+                            <div class="detail-list">
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Client</span>
+                                    <span class="detail-list-value" data-detail-field="client">—</span>
+                                </div>
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Status</span>
+                                    <span class="detail-list-value" data-detail-field="status">—</span>
+                                </div>
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Tip eveniment</span>
+                                    <span class="detail-list-value" data-detail-field="event">—</span>
+                                </div>
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Număr invitați</span>
+                                    <span class="detail-list-value" data-detail-field="guests">—</span>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="detail-card">
+                            <h3>Logistică</h3>
+                            <div class="detail-list">
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Locație</span>
+                                    <span class="detail-list-value" data-detail-field="venue">—</span>
+                                </div>
+                                <div class="detail-list-item">
+                                    <span class="detail-list-label">Dată</span>
+                                    <span class="detail-list-value" data-detail-field="date">—</span>
+                                </div>
+                                <div class="detail-list-item" data-detail-time-wrapper hidden>
+                                    <span class="detail-list-label">Ora</span>
+                                    <span class="detail-list-value" data-detail-field="time">—</span>
+                                </div>
+                                <div class="detail-list-item" data-detail-host-wrapper hidden>
+                                    <span class="detail-list-label">Gazdă vizionare</span>
+                                    <span class="detail-list-value" data-detail-field="host">—</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <article class="detail-card">
+                        <h3>Notă internă</h3>
+                        <p class="panel-meta" style="margin:0;">Folosește această secțiune pentru follow-up și contextul discutat cu clientul.</p>
+                        <div class="detail-note-area">
+                            <span>Înregistrare</span>
+                            <p id="record-detail-note">Nu există notițe salvate pentru această solicitare.</p>
+                        </div>
+                    </article>
                 </div>
             </section>
         </section>

@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
             page.classList.toggle('is-active', isMatch);
             if (isMatch) {
                 pageFound = true;
-                localStorage.setItem(storageKey, pageId);
+                if (pageId !== 'record-detail') {
+                    localStorage.setItem(storageKey, pageId);
+                }
             }
         });
         navLinks.forEach(link => {
@@ -36,7 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
         activatePage(pageId);
     });
 
-    const initialPage = window.location.hash.replace('#', '') || localStorage.getItem(storageKey) || 'overview';
+    let storedPage = localStorage.getItem(storageKey);
+    if (storedPage === 'record-detail') {
+        storedPage = 'overview';
+    }
+    const initialPage = window.location.hash.replace('#', '') || storedPage || 'overview';
     activatePage(initialPage);
 
     const today = new Date();
@@ -141,6 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 4, client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: formatDate(addDays(6)), hour: '17:00', host: 'Ioana', status: 'viewing_scheduled' },
         { id: 5, client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', host: 'Vlad', status: 'viewing_request' }
     ];
+
+    let selectedBookingId = null;
+    let selectedViewingId = null;
 
     let autoOfferEnabled = true;
     let automationToastTimeout = null;
@@ -645,6 +654,109 @@ document.addEventListener('DOMContentLoaded', () => {
         return targetRow;
     }
 
+    const recordDetailFields = {
+        client: document.querySelector('[data-detail-field="client"]'),
+        status: document.querySelector('[data-detail-field="status"]'),
+        event: document.querySelector('[data-detail-field="event"]'),
+        guests: document.querySelector('[data-detail-field="guests"]'),
+        venue: document.querySelector('[data-detail-field="venue"]'),
+        date: document.querySelector('[data-detail-field="date"]'),
+        time: document.querySelector('[data-detail-field="time"]'),
+        host: document.querySelector('[data-detail-field="host"]')
+    };
+    const recordDetailTimeWrapper = document.querySelector('[data-detail-time-wrapper]');
+    const recordDetailHostWrapper = document.querySelector('[data-detail-host-wrapper]');
+    const recordDetailHeading = document.getElementById('record-detail-heading');
+    const recordDetailSubtitle = document.getElementById('record-detail-subtitle');
+    const recordDetailNote = document.getElementById('record-detail-note');
+    const recordDetailBackBtn = document.getElementById('record-detail-back');
+    const recordDetailState = {
+        type: null,
+        id: null,
+        sourcePage: 'bookings'
+    };
+
+    function populateDetailField(field, value, fallback = '—') {
+        const target = recordDetailFields[field];
+        if (target) {
+            target.textContent = value || fallback;
+        }
+    }
+
+    function showRecordDetailPage(type, record, sourcePage = 'bookings') {
+        if (!record) {
+            return;
+        }
+        recordDetailState.type = type;
+        recordDetailState.id = record.id;
+        recordDetailState.sourcePage = sourcePage;
+        if (type === 'viewing') {
+            selectedViewingId = record.id;
+        } else {
+            selectedBookingId = record.id;
+        }
+
+        if (recordDetailHeading) {
+            recordDetailHeading.textContent = type === 'viewing' ? 'Detalii vizionare' : 'Detalii rezervare';
+        }
+        if (recordDetailSubtitle) {
+            recordDetailSubtitle.textContent = type === 'viewing'
+                ? 'Confirmă informațiile despre vizionare și notează următorii pași pentru echipă.'
+                : 'Revizuiește detaliile cererii și ține evidența discuțiilor interne.';
+        }
+
+        populateDetailField('client', record.client || '—');
+        const statusMeta = type === 'viewing' ? viewingStatusMeta[record.status] : bookingStatusMeta[record.status];
+        populateDetailField('status', statusMeta?.label || record.status || '—');
+        populateDetailField('event', record.event || '—');
+        populateDetailField('guests', Number.isFinite(record.guests) ? String(record.guests) : 'Nu este specificat');
+        populateDetailField('venue', record.venue || '—');
+        populateDetailField('date', record.date || '—');
+
+        if (recordDetailTimeWrapper) {
+            recordDetailTimeWrapper.hidden = type !== 'viewing';
+        }
+        if (type === 'viewing') {
+            populateDetailField('time', record.hour || 'Nu este stabilită');
+        } else {
+            populateDetailField('time', '—');
+        }
+
+        if (recordDetailHostWrapper) {
+            recordDetailHostWrapper.hidden = type !== 'viewing';
+        }
+        if (type === 'viewing') {
+            populateDetailField('host', record.host || 'Nu este asignat');
+        } else {
+            populateDetailField('host', '—');
+        }
+
+        if (recordDetailNote) {
+            const noteValue = type === 'viewing' ? record.notes : record.details;
+            recordDetailNote.textContent = noteValue && noteValue.trim().length
+                ? noteValue
+                : 'Nu există notițe salvate pentru această solicitare.';
+        }
+
+        activatePage('record-detail');
+    }
+
+    function returnToListPage({ scroll = false } = {}) {
+        const targetPage = recordDetailState.sourcePage || (recordDetailState.type === 'viewing' ? 'viewings' : 'bookings');
+        const recordId = recordDetailState.id;
+        activatePage(targetPage);
+        if (!recordId) {
+            return;
+        }
+        requestAnimationFrame(() => {
+            if (recordDetailState.type === 'viewing') {
+                highlightViewingRow(recordId, { scroll });
+            } else {
+                highlightBookingRow(recordId, { scroll });
+            }
+        });
+    }
+
     function renderOverviewLists() {
         const bookingsList = document.getElementById('overview-bookings-list');
         const eventsList = document.getElementById('overview-events-list');
@@ -737,6 +849,9 @@ document.addEventListener('DOMContentLoaded', () => {
         filteredBookings.forEach(item => {
             const row = body.insertRow();
             row.dataset.identifier = String(item.id);
+            if (selectedBookingId === item.id) {
+                row.classList.add('is-highlighted');
+            }
 
             const clientCell = row.insertCell();
             clientCell.textContent = item.client;
@@ -753,14 +868,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const guestsCell = row.insertCell();
             guestsCell.textContent = item.guests;
 
-        const statusCell = row.insertCell();
-        const statusMeta = bookingStatusMeta[item.status];
-        statusCell.appendChild(createStatusChip(item.status));
-        if (item.autoGenerated && item.status === 'offer_sent') {
-            const autoBadge = document.createElement('span');
-            autoBadge.className = 'status-secondary';
-            autoBadge.textContent = 'Ofertă trimisă automat după confirmare';
-            statusCell.appendChild(autoBadge);
+            const statusCell = row.insertCell();
+            const statusMeta = bookingStatusMeta[item.status];
+            statusCell.appendChild(createStatusChip(item.status));
+            if (item.autoGenerated && item.status === 'offer_sent') {
+                const autoBadge = document.createElement('span');
+                autoBadge.className = 'status-secondary';
+                autoBadge.textContent = 'Ofertă trimisă automat după confirmare';
+                statusCell.appendChild(autoBadge);
             }
 
             const nextStepCell = row.insertCell();
@@ -795,6 +910,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionsWrapper.appendChild(button);
             });
             actionsCell.appendChild(actionsWrapper);
+
+            row.addEventListener('click', (event) => {
+                if (event.target.closest('button')) {
+                    return;
+                }
+                selectedBookingId = item.id;
+                showRecordDetailPage('booking', item, 'bookings');
+            });
         });
     }
 
@@ -845,6 +968,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .forEach(item => {
                 const row = body.insertRow();
                 row.dataset.identifier = String(item.id);
+                if (selectedViewingId === item.id) {
+                    row.classList.add('is-highlighted');
+                }
 
                 row.insertCell().textContent = item.client;
                 row.insertCell().textContent = item.venue;
@@ -865,6 +991,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 rescheduleBtn.textContent = 'Reprogramează';
                 actions.append(confirmBtn, rescheduleBtn);
                 actionsCell.appendChild(actions);
+
+                row.addEventListener('click', (event) => {
+                    if (event.target.closest('button')) {
+                        return;
+                    }
+                    selectedViewingId = item.id;
+                    showRecordDetailPage('viewing', item, 'viewings');
+                });
             });
     }
 
@@ -1669,4 +1803,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showAutomationToast(message);
         });
     }
+
+    recordDetailBackBtn?.addEventListener('click', () => returnToListPage({ scroll: true }));
 });
