@@ -281,19 +281,8 @@
 
         /* NOU: Stil pentru rândul evidențiat în tabel */
         @keyframes highlight-fade {
-            from { background-color: rgba(67, 100, 247, 0.2); }
-            to { background-color: transparent; }
-        }
-
-        table.crm-table tbody tr.is-highlighted {
-            animation: highlight-fade 2s ease-out forwards;
-        }
-        table.crm-table tbody tr {
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-        table.crm-table tbody tr:hover {
-            background-color: rgba(67, 100, 247, 0.08);
+            from { box-shadow: 0 0 0 4px rgba(67, 100, 247, 0.32); }
+            to { box-shadow: 0 0 0 0 rgba(67, 100, 247, 0); }
         }
         .detail-layout {
             display: grid;
@@ -583,16 +572,86 @@
             margin-top: 6px;
         }
 
-        .next-step-cell {
-            font-weight: 500;
+        .booking-row,
+        .viewing-row {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: 0 26px 48px -46px rgba(15, 23, 42, 0.45);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .booking-row-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px 20px;
+        }
+
+        .booking-row-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .booking-row-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-color);
+            font-weight: 600;
+        }
+
+        .booking-row-value {
+            font-size: 0.95rem;
+            font-weight: 600;
             color: var(--dark-color);
         }
 
-        .next-step-actions {
-            display: block;
-            font-size: 0.75rem;
+        .booking-row-meta {
+            font-size: 0.78rem;
             color: var(--muted-color);
-            margin-top: 4px;
+        }
+
+        .booking-row-bottom {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .booking-row-status {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .booking-row-next-step {
+            font-size: 0.78rem;
+            color: var(--muted-color);
+        }
+
+        .booking-row-actions {
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .booking-row-top {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+            .booking-row-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .booking-row-actions {
+                margin-left: 0;
+                width: 100%;
+            }
         }
 
 
@@ -610,64 +669,82 @@
 
         table.crm-table {
             width: 100%;
-            border-collapse: collapse;
-            min-width: 760px;
+            border-collapse: separate;
+            border-spacing: 0 16px;
+            min-width: 0;
         }
 
         table.crm-table thead {
-            background: rgba(0, 82, 212, 0.06);
+            background: transparent;
         }
 
-        table.crm-table th,
-        table.crm-table td {
-            padding: 10px 14px;
+        table.crm-table thead th {
+            padding: 12px 18px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.82rem;
-        }
-
-        table.crm-table th {
             font-size: 0.74rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--muted-color);
+            background: rgba(0, 82, 212, 0.06);
+            border-radius: 14px;
+            font-weight: 600;
+        }
+
+        table.crm-table tbody tr {
+            cursor: pointer;
+        }
+
+        table.crm-table tbody td {
+            padding: 0;
+            border: none;
+        }
+
+        table.crm-table tbody tr:hover .booking-row,
+        table.crm-table tbody tr:hover .viewing-row {
+            border-color: rgba(0, 82, 212, 0.45);
+            box-shadow: 0 38px 64px -38px rgba(67, 100, 247, 0.55);
+            background-color: rgba(0, 82, 212, 0.04);
+            transform: translateY(-3px);
+        }
+
+        table.crm-table tbody tr.is-highlighted .booking-row,
+        table.crm-table tbody tr.is-highlighted .viewing-row {
+            border-color: rgba(0, 82, 212, 0.55);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.18);
+            animation: highlight-fade 1.8s ease-out forwards;
         }
 
         .table-actions {
             display: flex;
-            flex-direction: column;
             gap: 6px;
-            width: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         .table-actions button {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: flex-start;
-            border-radius: 14px;
-            border: 1px solid rgba(0, 82, 212, 0.16);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(67, 100, 247, 0.08));
-            color: var(--dark-color);
-            padding: 6px 14px;
-            font-size: 0.8rem;
+            gap: 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 82, 212, 0.2);
+            background: transparent;
+            color: var(--primary-color);
+            padding: 4px 12px;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 10px 24px -22px rgba(0, 82, 212, 0.6);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            text-align: left;
-            width: 100%;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
 
         .table-actions button:hover {
-            transform: translateY(-2px);
-            border-color: rgba(0, 82, 212, 0.32);
-            box-shadow: 0 18px 28px -22px rgba(67, 100, 247, 0.4);
+            background-color: rgba(0, 82, 212, 0.08);
+            border-color: rgba(0, 82, 212, 0.3);
         }
 
         .table-actions button:focus-visible {
             outline: none;
-            border-color: rgba(0, 82, 212, 0.55);
-            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.18);
+            border-color: rgba(0, 82, 212, 0.5);
+            box-shadow: 0 0 0 2px rgba(0, 82, 212, 0.15);
         }
 
 
@@ -1583,14 +1660,7 @@
                             <caption id="bookings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0; font-size: 1rem; white-space: nowrap;">Rezervări pentru toate locațiile administrate</caption>
                             <thead>
                                 <tr>
-                                    <th>Client</th>
-                                    <th>Eveniment</th>
-                                    <th>Locație</th>
-                                    <th>Dată</th>
-                                    <th>Invitați</th>
-                                    <th>Status</th>
-                                    <th>Pas următor</th>
-                                    <th>Acțiuni rapide</th>
+                                    <th>Rezervare · Status & acțiuni</th>
                                 </tr>
                             </thead>
                             <tbody id="bookings-table-body"></tbody>
@@ -1628,12 +1698,7 @@
                             <caption id="viewings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Detalii vizionări și responsabil</caption>
                             <thead>
                                 <tr>
-                                    <th>Client</th>
-                                    <th>Locație</th>
-                                    <th>Data</th>
-                                    <th>Ora</th>
-                                    <th>Status</th>
-                                    <th>Acțiuni</th>
+                                    <th>Vizionare · Status & acțiuni</th>
                                 </tr>
                             </thead>
                             <tbody id="viewings-table-body"></tbody>
