@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('popstate', (event) => {
-        const pageId = event.state ? event.state.page : (window.location.hash.replace('#', '') || 'overview');
+        const pageId = event.state ? event.state.page : (window.location.hash.replace('#', '') || 'venues');
         activatePage(pageId);
     });
 
     let storedPage = localStorage.getItem(storageKey);
     if (storedPage === 'record-detail') {
-        storedPage = 'overview';
+        storedPage = 'venues';
     }
-    const initialPage = window.location.hash.replace('#', '') || storedPage || 'overview';
+    const initialPage = window.location.hash.replace('#', '') || storedPage || 'venues';
     activatePage(initialPage);
 
     const today = new Date();

@@ -218,14 +218,22 @@
         }
 
         .page-header h1 {
-            font-size: 1.8rem;
-            margin: 0 0 4px;
+            font-size: 1.5rem;
+            margin: 0 0 2px;
         }
 
         .page-header p {
             margin: 0;
             color: var(--muted-color);
-            max-width: 520px;
+            max-width: 460px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .page-header-subtitle--compact {
+            font-size: 0.78rem;
+            max-width: 320px;
+            line-height: 1.35;
         }
 
         .page-header-actions {
@@ -576,7 +584,7 @@
             transition: background-color 0.2s ease;
             border-radius: 8px;
             margin: -4px;
-            padding: 4px;
+            padding: 2px;
         }
         #overview-bookings-list .list-item:hover,
         #overview-events-list .list-item:hover,
@@ -595,13 +603,13 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 4px 22px;
+            padding: 4px 14px;
             border-radius: 16px;
             font-size: 0.8rem;
             font-weight: 600;
             background: rgba(0, 82, 212, 0.1);
             color: var(--primary-color);
-            width: clamp(220px, 60%, 420px);
+            width: clamp(150px, 39%, 280px);
             box-sizing: border-box;
             text-align: center;
             white-space: nowrap;
@@ -1677,7 +1685,11 @@
                 <div class="crm-nav-section">
                     <label>Panou general</label>
                     <div class="crm-nav-links">
-                        <button class="crm-nav-link is-active" type="button" data-page-target="overview">
+                        <button class="crm-nav-link is-active" type="button" data-page-target="venues">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            Administrare locații
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="overview">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
                             Overview
                         </button>
@@ -1692,10 +1704,6 @@
                         <button class="crm-nav-link" type="button" data-page-target="availability">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             Disponibilitate
-                        </button>
-                        <button class="crm-nav-link" type="button" data-page-target="venues">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            Locațiile mele
                         </button>
                     </div>
                 </div>
@@ -1720,7 +1728,7 @@
         </aside>
 
         <section class="crm-pages">
-            <section class="crm-page is-active" data-page="overview" id="overview">
+            <section class="crm-page" data-page="overview" id="overview">
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
@@ -2068,12 +2076,12 @@
 
             </section>
 
-            <section class="crm-page" data-page="venues" id="venues">
+            <section class="crm-page is-active" data-page="venues" id="venues">
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
                             <h1>Administrare locații</h1>
-                            <p>Actualizează detalii, capacități și echipe de contact pentru spațiile din portofoliu.</p>
+                            <p class="page-header-subtitle--compact">Actualizează detalii, capacități și echipe de contact pentru spațiile din portofoliu.</p>
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button ghost" type="button">Importă din fișier</button>
