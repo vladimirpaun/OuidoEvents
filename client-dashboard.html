@@ -81,17 +81,37 @@
         .list-item > div {
             font-size: 0.9rem;
         }
-        .status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
-        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-        .status-chip[data-status="confirmed"] { background: rgba(22, 163, 74, 0.15); color: #15803d; }
-        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
-        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-        .status-chip[data-status="awaiting_confirmation"] { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-        .status-chip[data-status="reschedule_pending"] { background: rgba(249, 115, 22, 0.15); color: #c2410c; }
-        .status-chip[data-status="due"] { background: rgba(248, 113, 113, 0.18); color: #b91c1c; }
-        .status-chip[data-status="upcoming"] { background: rgba(45, 212, 191, 0.18); color: #0f766e; }
-        .status-chip[data-status="completed"] { background: rgba(129, 199, 132, 0.2); color: #166534; }
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 4px 22px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-sizing: border-box;
+            text-align: center;
+            width: 300px;
+            white-space: nowrap;
+        }
+        .status-chip[data-status="availability_request"],
+        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
+        .status-chip[data-status="availability_confirmed"] { background: rgba(59, 130, 246, 0.22); color: #2563eb; }
+        .status-chip[data-status="offer_requested"] { background: rgba(168, 85, 247, 0.22); color: #7c3aed; }
+        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.22); color: #6c2bd9; }
+        .status-chip[data-status="viewing_request"],
+        .status-chip[data-status="awaiting_confirmation"] { background: rgba(14, 165, 233, 0.22); color: #0c7ab5; }
+        .status-chip[data-status="viewing_rescheduled"],
+        .status-chip[data-status="reschedule_pending"] { background: rgba(249, 115, 22, 0.22); color: #c2410c; }
+        .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.22); color: #1d4ed8; }
+        .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.22); color: #0f766e; }
+        .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.22); color: #166534; }
+        .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
+        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
+        .status-chip[data-status="due"] { background: rgba(248, 113, 113, 0.22); color: #b91c1c; }
+        .status-chip[data-status="upcoming"] { background: rgba(45, 212, 191, 0.22); color: #0f766e; }
+        .status-chip[data-status="completed"] { background: rgba(129, 199, 132, 0.22); color: #166534; }
         .crm-button { border-radius: 999px; padding: 10px 22px; border: 1px solid transparent; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
         .crm-button.primary { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); }
         .crm-button.ghost { background: transparent; border-color: rgba(0, 82, 212, 0.2); color: var(--primary-color); }
@@ -154,12 +174,169 @@
         .location-price { font-weight: 600; }
 
         .table-wrapper { width: 100%; overflow-x: auto; }
-        table.crm-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        table.crm-table th, table.crm-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; }
-        table.crm-table th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-color); }
-        table.crm-table tr.is-highlighted { background: rgba(0, 180, 216, 0.08); outline: 2px solid rgba(0, 180, 216, 0.35); }
-        .table-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; }
-        .table-actions button { border-radius: 999px; border: 1px solid rgba(0, 82, 212, 0.2); background: transparent; color: var(--primary-color); padding: 4px 10px; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        table.crm-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 16px;
+            min-width: 0;
+        }
+        table.crm-table thead {
+            background: transparent;
+        }
+        table.crm-table thead th {
+            padding: 12px 18px;
+            text-align: left;
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-color);
+            background: rgba(0, 82, 212, 0.06);
+            border-radius: 14px;
+            font-weight: 600;
+        }
+        table.crm-table tbody tr {
+            cursor: pointer;
+        }
+        table.crm-table tbody td {
+            padding: 0;
+            border: none;
+        }
+        .table-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+        .table-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 82, 212, 0.2);
+            background: transparent;
+            color: var(--primary-color);
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        .table-actions button:hover {
+            background-color: rgba(0, 82, 212, 0.08);
+            border-color: rgba(0, 82, 212, 0.3);
+        }
+        .table-actions button:focus-visible {
+            outline: none;
+            border-color: rgba(0, 82, 212, 0.5);
+            box-shadow: 0 0 0 2px rgba(0, 82, 212, 0.15);
+        }
+
+        table.crm-table tbody tr {
+            cursor: pointer;
+        }
+
+        @keyframes highlight-fade {
+            from { box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.3); }
+            to { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0); }
+        }
+
+        .booking-row {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: 0 26px 48px -46px rgba(15, 23, 42, 0.45);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .booking-row-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px 20px;
+        }
+
+        .booking-row-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .booking-row-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-color);
+            font-weight: 600;
+        }
+
+        .booking-row-value {
+            font-size: 0.94rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .booking-row-meta {
+            font-size: 0.78rem;
+            color: var(--muted-color);
+        }
+
+        .booking-row-bottom {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .booking-row-status {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .booking-row-next-step {
+            font-size: 0.78rem;
+            color: var(--muted-color);
+        }
+
+        .booking-row-actions {
+            margin-left: auto;
+        }
+
+        table.crm-table tbody tr:hover .booking-row {
+            border-color: rgba(0, 82, 212, 0.45);
+            box-shadow: 0 38px 64px -38px rgba(67, 100, 247, 0.55);
+            background-color: rgba(0, 82, 212, 0.04);
+            transform: translateY(-3px);
+        }
+
+        table.crm-table tbody tr.is-highlighted .booking-row {
+            border-color: rgba(0, 82, 212, 0.55);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.18);
+            animation: highlight-fade 1.8s ease-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .booking-row-top {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+            .booking-row-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .booking-row-actions {
+                margin-left: 0;
+                width: 100%;
+            }
+            .booking-row-status .status-chip {
+                width: 100%;
+            }
+        }
         .favorites-modal-overlay {
             position: fixed;
             inset: 0;
@@ -342,6 +519,18 @@
             transition: background-color 0.2s ease;
         }
         .list-item.is-interactive:hover { background-color: rgba(0, 82, 212, 0.04); }
+
+        .message-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: rgba(245, 158, 11, 0.18);
+            color: #b45309;
+        }
 
         /* Responsive */
         @media (max-width: 1180px) {
@@ -597,12 +786,7 @@
                         <table class="crm-table">
                             <thead>
                                 <tr>
-                                    <th>Locație</th>
-                                    <th>Dată eveniment</th>
-                                    <th>Invitați</th>
-                                    <th>Status</th>
-                                    <th>Următorul pas</th>
-                                    <th>Acțiuni</th>
+                                    <th>Cerere · Status & acțiuni</th>
                                 </tr>
                             </thead>
                             <tbody id="requests-table-body"></tbody>
@@ -631,11 +815,7 @@
                         <table class="crm-table">
                             <thead>
                                 <tr>
-                                    <th>Locație</th>
-                                    <th>Dată</th>
-                                    <th>Ora</th>
-                                    <th>Status</th>
-                                    <th>Acțiuni</th>
+                                    <th>Vizionare · Status & acțiuni</th>
                                 </tr>
                             </thead>
                             <tbody id="viewings-table-body"></tbody>
@@ -1061,11 +1241,35 @@
             span.dataset.status = status;
             const meta = metaSource[status] || { label: status, color: '#1f2937' };
             span.textContent = meta.label || status;
-            if (meta.color) {
-                span.style.color = meta.color;
-                span.style.backgroundColor = `${meta.color}26`;
-            }
             return span;
+        }
+
+        function createInfoItem(label, value, options = {}) {
+            const { meta, isMissing = false } = options;
+            const item = document.createElement('div');
+            item.className = 'booking-row-item';
+
+            const labelEl = document.createElement('span');
+            labelEl.className = 'booking-row-label';
+            labelEl.textContent = label;
+
+            const valueEl = document.createElement('span');
+            valueEl.className = 'booking-row-value';
+            valueEl.textContent = value ?? '—';
+            if (isMissing) {
+                valueEl.classList.add('is-missing-value');
+            }
+
+            item.append(labelEl, valueEl);
+
+            if (meta) {
+                const metaEl = document.createElement('span');
+                metaEl.className = 'booking-row-meta';
+                metaEl.textContent = meta;
+                item.appendChild(metaEl);
+            }
+
+            return item;
         }
 
         function getRequestNextStep(request) {
@@ -1760,7 +1964,7 @@
             if (!filtered.length) {
                 const emptyRow = requestsTableBody.insertRow();
                 const emptyCell = emptyRow.insertCell();
-                emptyCell.colSpan = 6;
+                emptyCell.colSpan = 1;
                 emptyCell.innerHTML = '<div class="empty-state">Nu există cereri care să corespundă filtrului selectat.</div>';
                 renderOverviewMetrics();
                 return;
@@ -1769,97 +1973,115 @@
             filtered.forEach(req => {
                 const location = getLocationById(req.locationId);
                 const row = requestsTableBody.insertRow();
-                row.dataset.id = req.id; // NOU: Adaugă ID pentru identificare
-                row.insertCell().textContent = location?.name || 'Locație necunoscută';
-                row.insertCell().textContent = formatDate(req.eventDate);
-                row.insertCell().textContent = req.guests;
-                const statusCell = row.insertCell();
-                statusCell.appendChild(createStatusChip(req.status, requestStatusMeta));
+                row.dataset.id = req.id;
 
-                const nextCell = row.insertCell();
+                const cell = row.insertCell();
+                const wrapper = document.createElement('div');
+                wrapper.className = 'booking-row';
+
+                const topRow = document.createElement('div');
+                topRow.className = 'booking-row-top';
+                topRow.appendChild(createInfoItem('Locație', location?.name || 'Locație necunoscută'));
+                topRow.appendChild(createInfoItem('Tip eveniment', req.eventType || '—'));
+                topRow.appendChild(createInfoItem('Dată eveniment', formatDate(req.eventDate)));
+                const hasGuests = Number.isFinite(req.guests) && req.guests > 0;
+                topRow.appendChild(createInfoItem('Invitați', hasGuests ? `${req.guests} invitați` : 'Necesită completare', { isMissing: !hasGuests }));
+                topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(req.lastUpdate)));
+                wrapper.appendChild(topRow);
+
+                const bottomRow = document.createElement('div');
+                bottomRow.className = 'booking-row-bottom';
+
+                const statusContainer = document.createElement('div');
+                statusContainer.className = 'booking-row-status';
+                statusContainer.appendChild(createStatusChip(req.status, requestStatusMeta));
+
                 const next = getRequestNextStep(req);
-                const nextContainer = document.createElement('div');
-                nextContainer.className = 'next-step-cell';
-                nextContainer.innerHTML = `<strong>${next.title}</strong><span>${next.detail}</span>`;
-                nextCell.appendChild(nextContainer);
+                const nextStep = document.createElement('span');
+                nextStep.className = 'booking-row-next-step';
+                nextStep.textContent = next.detail || next.title || '—';
+                statusContainer.appendChild(nextStep);
+                bottomRow.appendChild(statusContainer);
 
-                const actionsCell = row.insertCell();
                 const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'table-actions';
+                actionsDiv.className = 'table-actions booking-row-actions';
 
                 switch (req.status) {
                     case 'availability_request':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
-                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'availability_confirmed':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="request_offer" data-request-id="${req.id}">📄 Cere ofertă</button>
-                            <button data-request-action="request_viewing" data-request-id="${req.id}">👀 Cere vizionare</button>
-                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                            <button data-request-action="request_offer" data-request-id="${req.id}">Cere ofertă</button>
+                            <button data-request-action="request_viewing" data-request-id="${req.id}">Cere vizionare</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'offer_requested':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
-                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'offer_sent':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="view_offer" data-request-id="${req.id}">👁️ Vezi ofertă</button>
-                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Pune întrebări</button>
-                            <button data-request-action="accept_offer" data-request-id="${req.id}">✅ Confirmă prin pre-rezervare</button>
-                            <button data-request-action="cancel_request" data-request-id="${req.id}">🚫 Anulează cererea</button>
+                            <button data-request-action="view_offer" data-request-id="${req.id}">Vezi oferta</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">Pune întrebări</button>
+                            <button data-request-action="accept_offer" data-request-id="${req.id}">Confirmă prin pre-rezervare</button>
+                            <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'viewing_request':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
-                            <button data-request-action="cancel_viewing_request" data-request-id="${req.id}">🚫 Anulează vizionarea</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
+                            <button data-request-action="cancel_viewing_request" data-request-id="${req.id}">Anulează vizionarea</button>
                         `;
                         break;
                     case 'viewing_rescheduled':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="accept_reschedule" data-request-id="${req.id}">✅ Acceptă noua dată</button>
-                            <button data-request-action="decline_reschedule" data-request-id="${req.id}">🚫 Refuză vizionarea</button>
+                            <button data-request-action="accept_reschedule" data-request-id="${req.id}">Acceptă noua dată</button>
+                            <button data-request-action="decline_reschedule" data-request-id="${req.id}">Refuză vizionarea</button>
                         `;
                         break;
                     case 'viewing_scheduled':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="add_to_calendar" data-request-id="${req.id}">📅 Adaugă în calendar</button>
-                            <button data-request-action="cancel_viewing" data-request-id="${req.id}">🚫 Anulează vizionarea</button>
+                            <button data-request-action="add_to_calendar" data-request-id="${req.id}">Adaugă în calendar</button>
+                            <button data-request-action="cancel_viewing" data-request-id="${req.id}">Anulează vizionarea</button>
                         `;
                         break;
                     case 'pre_booked':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="release_hold" data-request-id="${req.id}">🚫 Renunță la rezervare</button>
-                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj</button>
+                            <button data-request-action="release_hold" data-request-id="${req.id}">Renunță la rezervare</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                         `;
                         break;
                     case 'confirmed':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">💬 Trimite mesaj locației</button>
-                            <button data-request-action="leave_feedback" data-request-id="${req.id}">⭐ Lasă feedback</button>
+                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj locației</button>
+                            <button data-request-action="leave_feedback" data-request-id="${req.id}">Lasă feedback</button>
                         `;
                         break;
                     case 'rejected':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="view_details" data-request-id="${req.id}">ℹ️ Vezi mesajul locației</button>
-                            <button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Trimite o nouă cerere</button>
+                            <button data-request-action="view_details" data-request-id="${req.id}">Vezi mesajul locației</button>
+                            <button data-request-action="reopen_request" data-request-id="${req.id}">Trimite o nouă cerere</button>
                         `;
                         break;
                     case 'cancelled':
-                        actionsDiv.innerHTML = `<button data-request-action="reopen_request" data-request-id="${req.id}">🔄 Retrimite cererea</button>`;
+                        actionsDiv.innerHTML = `<button data-request-action="reopen_request" data-request-id="${req.id}">Retrimite cererea</button>`;
                         break;
                     default:
                         actionsDiv.innerHTML = `<button data-request-action="view_details" data-request-id="${req.id}">Vezi detalii</button>`;
                         break;
                 }
 
-                actionsCell.appendChild(actionsDiv);
+                bottomRow.appendChild(actionsDiv);
+
+                wrapper.appendChild(bottomRow);
+                cell.appendChild(wrapper);
             });
 
             renderOverviewMetrics();
@@ -1978,7 +2200,7 @@
             if (!filtered.length) {
                 const emptyRow = viewingsTableBody.insertRow();
                 const emptyCell = emptyRow.insertCell();
-                emptyCell.colSpan = 5;
+                emptyCell.colSpan = 1;
                 emptyCell.innerHTML = '<div class="empty-state">Nu ai vizionări care să corespundă filtrului selectat.</div>';
                 renderOverviewViewingsList();
                 return;
@@ -1987,17 +2209,36 @@
             filtered.forEach(view => {
                 const location = getLocationById(view.locationId);
                 const row = viewingsTableBody.insertRow();
-                row.dataset.id = view.id; // NOU: Adaugă ID pentru identificare
-                row.insertCell().textContent = location?.name || 'Locație necunoscută';
-                row.insertCell().textContent = formatDate(view.date);
-                row.insertCell().textContent = view.hour;
-                const statusCell = row.insertCell();
-                statusCell.appendChild(createStatusChip(view.status, viewingStatusMeta));
+                row.dataset.id = view.id;
 
-                const actionsCell = row.insertCell();
+                const cell = row.insertCell();
+                const wrapper = document.createElement('div');
+                wrapper.className = 'booking-row viewing-row';
+
+                const topRow = document.createElement('div');
+                topRow.className = 'booking-row-top';
+                topRow.appendChild(createInfoItem('Locație', location?.name || 'Locație necunoscută'));
+                topRow.appendChild(createInfoItem('Dată', formatDate(view.date)));
+                topRow.appendChild(createInfoItem('Ora', view.hour || '—'));
+                topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(view.lastUpdate)));
+                wrapper.appendChild(topRow);
+
+                const bottomRow = document.createElement('div');
+                bottomRow.className = 'booking-row-bottom';
+
+                const statusContainer = document.createElement('div');
+                statusContainer.className = 'booking-row-status';
+                statusContainer.appendChild(createStatusChip(view.status, viewingStatusMeta));
+                if (view.note) {
+                    const noteEl = document.createElement('span');
+                    noteEl.className = 'booking-row-meta';
+                    noteEl.textContent = view.note;
+                    statusContainer.appendChild(noteEl);
+                }
+                bottomRow.appendChild(statusContainer);
+
                 const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'table-actions';
-
+                actionsDiv.className = 'table-actions booking-row-actions';
                 if (view.status === 'awaiting_confirmation') {
                     actionsDiv.innerHTML = `
                         <button data-viewing-action="confirm_viewing" data-viewing-id="${view.id}">Confirmă prezența</button>
@@ -2019,8 +2260,10 @@
                         <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Propune altă dată</button>
                     `;
                 }
+                bottomRow.appendChild(actionsDiv);
 
-                actionsCell.appendChild(actionsDiv);
+                wrapper.appendChild(bottomRow);
+                cell.appendChild(wrapper);
             });
 
             renderOverviewViewingsList();
@@ -2083,7 +2326,7 @@
                     </div>
                     <div style="text-align: right;">
                         <span class="panel-meta">${msg.time}</span>
-                        ${msg.unread ? '<span class="status-chip" data-status="pending" style="margin-top: 8px;">Nou</span>' : ''}
+                        ${msg.unread ? '<span class="message-badge">Nou</span>' : ''}
                     </div>
                 `;
                 messagesList.appendChild(item);
