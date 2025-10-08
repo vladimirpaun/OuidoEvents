@@ -1146,18 +1146,42 @@ document.addEventListener('DOMContentLoaded', () => {
         .filter(action => action?.key)
         .sort((a, b) => a.label.localeCompare(b.label));
     let activeActionsMenu = null;
+    let actionsMenuBackdrop = null;
+
+    function ensureActionsMenuBackdrop() {
+        if (actionsMenuBackdrop) {
+            return actionsMenuBackdrop;
+        }
+        actionsMenuBackdrop = document.createElement('div');
+        actionsMenuBackdrop.className = 'actions-menu-backdrop';
+        actionsMenuBackdrop.addEventListener('click', () => {
+            closeActiveActionsMenu();
+        });
+        document.body.appendChild(actionsMenuBackdrop);
+        return actionsMenuBackdrop;
+    }
 
     function closeActiveActionsMenu() {
         if (!activeActionsMenu) {
             return;
         }
-        const { trigger, menu } = activeActionsMenu;
+        const { trigger, menu, container, rowWrapper, rowElement } = activeActionsMenu;
         if (trigger) {
             trigger.setAttribute('aria-expanded', 'false');
         }
         if (menu) {
             menu.classList.remove('is-open');
         }
+        if (container) {
+            container.classList.remove('has-open-menu');
+        }
+        if (rowWrapper) {
+            rowWrapper.classList.remove('has-open-menu');
+        }
+        if (rowElement) {
+            rowElement.classList.remove('has-open-menu');
+        }
+        ensureActionsMenuBackdrop().classList.remove('is-visible');
         activeActionsMenu = null;
     }
 
@@ -1189,7 +1213,17 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 menu.classList.add('is-open');
                 trigger.setAttribute('aria-expanded', 'true');
-                activeActionsMenu = { trigger, menu, container: hostElement };
+                hostElement.classList.add('has-open-menu');
+                const rowWrapper = hostElement.closest('.booking-row');
+                const rowElement = hostElement.closest('tr');
+                if (rowWrapper) {
+                    rowWrapper.classList.add('has-open-menu');
+                }
+                if (rowElement) {
+                    rowElement.classList.add('has-open-menu');
+                }
+                ensureActionsMenuBackdrop().classList.add('is-visible');
+                activeActionsMenu = { trigger, menu, container: hostElement, rowWrapper, rowElement };
             }
         });
 
@@ -2268,10 +2302,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const { container } = activeActionsMenu;
-        if (!container || !container.contains(event.target)) {
+        const isWithinActiveMenu = container && container.contains(event.target);
+        if (!isWithinActiveMenu) {
+            event.preventDefault();
+            event.stopPropagation();
             closeActiveActionsMenu();
         }
-    });
+    }, true);
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {

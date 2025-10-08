@@ -695,8 +695,33 @@
             position: relative;
         }
 
+        .booking-row-actions {
+            margin-left: auto;
+        }
+
         .booking-row-controls .booking-row-actions {
             margin-left: 0;
+        }
+
+        .booking-row-controls.has-open-menu .booking-row-actions {
+            pointer-events: none;
+        }
+
+        .booking-row.has-open-menu .table-actions button {
+            pointer-events: none;
+        }
+
+        .actions-menu-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.04);
+            z-index: 900;
+            display: none;
+            pointer-events: auto;
+        }
+
+        .actions-menu-backdrop.is-visible {
+            display: block;
         }
 
         .booking-row-status {
@@ -743,11 +768,12 @@
             padding: 6px 0;
             border-radius: 12px;
             border: 1px solid var(--border-color);
-            background: var(--white-color);
-            box-shadow: 0 16px 40px -22px rgba(15, 23, 42, 0.35);
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 16px 40px -22px rgba(15, 23, 42, 0.45);
             display: none;
             flex-direction: column;
-            z-index: 20;
+            z-index: 910;
+            pointer-events: auto;
         }
 
         .actions-menu.is-open {
@@ -780,6 +806,14 @@
             background-color: rgba(67, 100, 247, 0.12);
             cursor: default;
             opacity: 0.7;
+        }
+
+        table.crm-table tbody tr.has-open-menu:hover .booking-row,
+        table.crm-table tbody tr.has-open-menu:hover .viewing-row {
+            border-color: var(--border-color);
+            box-shadow: 0 26px 48px -46px rgba(15, 23, 42, 0.45);
+            background-color: var(--white-color);
+            transform: none;
         }
 
         .actions-menu-option-meta {
