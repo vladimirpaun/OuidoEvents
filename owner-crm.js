@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bookingStatusMeta = {
         availability_request: {
-            label: 'Cerere disponibilitate primită',
+            label: 'Cerere disponibilitate',
             className: 'availability_request',
             color: '#b45309',
             owner: {
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             client: {
                 label: 'Cerere disponibilitate trimisă',
                 description: 'Locația a primit cererea ta și verifică disponibilitatea pentru data selectată.',
-                actions: ['Trimite mesaj locației', 'Anulează cererea']
+                actions: ['Anulează cererea']
             }
         },
         availability_confirmed: {
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             client: {
                 label: 'Ofertă cerută',
                 description: 'Ai solicitat o ofertă personalizată, așteptând răspunsul locației.',
-                actions: ['Trimite mesaj locației', 'Anulează cererea']
+                actions: ['Anulează cererea']
             }
         },
         offer_sent: {
@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
             color: '#7c3aed',
             owner: {
                 description: 'Oferta a fost transmisă clientului.',
-                actions: ['Răspunde la întrebări', 'Pre-rezervă data (la cererea clientului)', 'Respinge'],
-                nextStep: 'Răspunde la întrebări'
+                actions: ['Pre-rezervă data (la cererea clientului)', 'Respinge'],
+                nextStep: 'Pre-rezervă data (la cererea clientului)'
             },
             client: {
                 label: 'Ofertă primită',
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         viewing_request: {
-            label: 'Cerere vizionare primită',
+            label: 'Cerere vizionare',
             className: 'viewing_request',
             color: '#0ea5e9',
             owner: {
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
             client: {
                 label: 'Cerere vizionare trimisă',
                 description: 'Ai cerut o vizionare a locației.',
-                actions: ['Trimite mesaj locației', 'Anulează vizionarea']
+                actions: ['Anulează vizionarea']
             }
         },
         viewing_rescheduled: {
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             client: {
                 label: 'Rezervat',
                 description: 'Rezervarea a fost confirmată de locație (după avans).',
-                actions: ['Trimite mesaj locației', 'Lasă feedback după eveniment']
+                actions: ['Lasă feedback după eveniment']
             }
         },
         rejected: {
@@ -399,16 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
             label: 'Confirmă rezervarea',
             title: 'Marchează rezervarea ca fiind confirmată după avans.'
         },
-        send_message: {
-            key: 'send_message',
-            label: 'Trimite mesaj',
-            title: 'Trimite un mesaj rapid către client.'
-        },
-        send_message_owner: {
-            key: 'send_message_owner',
-            label: 'Răspunde la întrebări',
-            title: 'Răspunde rapid întrebărilor clientului.'
-        },
         reject: {
             key: 'reject',
             label: 'Respinge',
@@ -437,10 +427,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const bookingActionsByStatus = {
-        availability_request: ['confirm_availability', 'send_message', 'reject'],
+        availability_request: ['confirm_availability', 'reject'],
         availability_confirmed: ['send_offer', 'schedule_viewing', 'open_details'],
-        offer_requested: ['send_offer', 'send_message', 'reject'],
-        offer_sent: ['send_message_owner', 'pre_reserve', 'reject'],
+        offer_requested: ['send_offer', 'reject'],
+        offer_sent: ['pre_reserve', 'reject'],
         viewing_request: ['schedule_viewing', 'propose_new_date', 'reject'],
         viewing_rescheduled: ['schedule_viewing', 'cancel_viewing'],
         viewing_scheduled: ['send_updated_offer', 'pre_reserve'],
@@ -1309,12 +1299,6 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'open_details':
                 openEditBookingModal(booking);
                 return;
-            case 'send_message':
-                window.alert(`Mesaj rapid către ${booking.client}: funcționalitate în dezvoltare.`);
-                break;
-            case 'send_message_owner':
-                window.alert('Deschide thread-ul de mesagerie – funcționalitate în dezvoltare.');
-                break;
             case 'log_viewing':
                 window.alert('Notează feedback-ul după tur – funcționalitate în dezvoltare.');
                 break;
