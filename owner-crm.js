@@ -1462,8 +1462,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeDateDisplay) {
                 filterLabel.textContent = `Filtru dată: ${activeDateDisplay}`;
                 filterTag.hidden = false;
+                filterTag.style.display = 'inline-flex';
             } else {
+                filterLabel.textContent = '';
                 filterTag.hidden = true;
+                filterTag.style.display = 'none';
             }
         }
 
@@ -2469,6 +2472,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('bookings-date-filter-clear')?.addEventListener('click', (event) => {
         event.preventDefault();
+        event.stopPropagation();
         clearBookingsDateFilter();
     });
     document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
