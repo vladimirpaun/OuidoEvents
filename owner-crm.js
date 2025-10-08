@@ -1142,9 +1142,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const allQuickActions = Object.values(bookingActionLibrary)
-        .filter(action => action?.key)
-        .sort((a, b) => a.label.localeCompare(b.label));
+    const overflowActionKeys = ['mark_confirmed', 'pre_reserve'];
+    const allQuickActions = overflowActionKeys
+        .map(key => bookingActionLibrary[key])
+        .filter(action => action?.key);
     let activeActionsMenu = null;
     let actionsMenuBackdrop = null;
 
