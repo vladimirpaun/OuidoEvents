@@ -830,13 +830,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const venueFilter = document.getElementById('bookings-venue-filter');
         const statusFilter = document.getElementById('bookings-status-filter');
+        const clientFilter = document.getElementById('bookings-client-filter');
         const venueValue = venueFilter ? venueFilter.value : 'all';
         const statusValue = statusFilter ? statusFilter.value : 'all';
         body.innerHTML = '';
 
+        const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
+
         const filteredBookings = bookings
             .filter(item => venueValue === 'all' || item.venue === venueValue)
             .filter(item => statusValue === 'all' || item.status === statusValue)
+            .filter(item => {
+                if (!clientQuery) {
+                    return true;
+                }
+                return item.client.toLowerCase().includes(clientQuery);
+            })
             .slice()
             .sort((a, b) => {
                 const dateA = parseBookingDate(a.date);
@@ -1727,6 +1736,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('bookings-venue-filter')?.addEventListener('change', renderBookingsTable);
     document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
+    document.getElementById('bookings-client-filter')?.addEventListener('input', () => {
+        renderBookingsTable();
+    });
     document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
     document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar);
 
