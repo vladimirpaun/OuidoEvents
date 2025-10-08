@@ -540,30 +540,34 @@
         .status-chip {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.78rem;
+            padding: 4px 22px;
+            border-radius: 16px;
+            font-size: 0.8rem;
             font-weight: 600;
-            background: rgba(0, 82, 212, 0.08);
+            background: rgba(0, 82, 212, 0.1);
             color: var(--primary-color);
+            width: clamp(220px, 60%, 420px);
+            box-sizing: border-box;
+            text-align: center;
             white-space: nowrap;
         }
 
         /* Culori sincronizate cu logica JS */
-        .status-chip[data-status="availability_request"] { background: rgba(245, 158, 11, 0.18); color: #b45309; }
-        .status-chip[data-status="availability_confirmed"] { background: rgba(59, 130, 246, 0.18); color: #2563eb; }
-        .status-chip[data-status="offer_requested"] { background: rgba(168, 85, 247, 0.18); color: #a855f7; }
-        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.18); color: #7c3aed; }
-        .status-chip[data-status="viewing_request"] { background: rgba(14, 165, 233, 0.18); color: #0ea5e9; }
-        .status-chip[data-status="viewing_rescheduled"] { background: rgba(56, 189, 248, 0.18); color: #0284c7; }
-        .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.18); color: #2563eb; }
-        .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.18); color: #0d9488; }
-        .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.18); color: #15803d; }
-        .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.18); color: #b91c1c; }
-        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.18); color: #dc2626; }
-        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-        .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+        .status-chip[data-status="availability_request"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
+        .status-chip[data-status="availability_confirmed"] { background: rgba(59, 130, 246, 0.22); color: #2563eb; }
+        .status-chip[data-status="offer_requested"] { background: rgba(168, 85, 247, 0.22); color: #7c3aed; }
+        .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.22); color: #6c2bd9; }
+        .status-chip[data-status="viewing_request"] { background: rgba(14, 165, 233, 0.22); color: #0c7ab5; }
+        .status-chip[data-status="viewing_rescheduled"] { background: rgba(56, 189, 248, 0.22); color: #0369a1; }
+        .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.22); color: #1d4ed8; }
+        .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.22); color: #0f766e; }
+        .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.22); color: #166534; }
+        .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
+        .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
+        .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
+        .status-chip[data-status="awaiting"] { background: rgba(59, 130, 246, 0.22); color: #1d4ed8; }
 
         .status-secondary {
             display: block;
@@ -629,6 +633,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            align-items: flex-start;
         }
 
         .booking-row-next-step {
@@ -650,6 +655,9 @@
             }
             .booking-row-actions {
                 margin-left: 0;
+                width: 100%;
+            }
+            .booking-row-status .status-chip {
                 width: 100%;
             }
         }
