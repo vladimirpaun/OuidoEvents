@@ -168,11 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const viewings = [
-        { id: 1, client: 'Ioana Matei', venue: 'Villa Lac', date: formatDate(addDays(2)), hour: '11:00', host: 'Andreea', status: 'viewing_scheduled', email: 'ioana.matei@gmail.com', phone: '+40 726 456 789', notes: '' },
-        { id: 2, client: 'Căsătorim.ro', venue: 'Forest Lodge', date: formatDate(addDays(4)), hour: '09:30', host: 'Paul', status: 'viewing_request', email: 'contact@casatorim.ro', phone: '+40 723 111 222', notes: '' },
-        { id: 3, client: 'Eventify', venue: 'Urban Loft', date: formatDate(addDays(4)), hour: '15:00', host: 'Alex', status: 'viewing_rescheduled', email: 'hello@eventify.ro', phone: '+40 735 222 111', notes: '' },
-        { id: 4, client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: formatDate(addDays(6)), hour: '17:00', host: 'Ioana', status: 'viewing_scheduled', email: 'alexandrux@gmail.com', phone: '+40 725 888 654', notes: '' },
-        { id: 5, client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', host: 'Vlad', status: 'viewing_request', email: 'team@artexpo.ro', phone: '+40 733 654 987', notes: '' }
+        { id: 1, client: 'Ioana Matei', venue: 'Villa Lac', date: formatDate(addDays(2)), hour: '11:00', status: 'viewing_scheduled', email: 'ioana.matei@gmail.com', phone: '+40 726 456 789', notes: '' },
+        { id: 2, client: 'Căsătorim.ro', venue: 'Forest Lodge', date: formatDate(addDays(4)), hour: '09:30', status: 'viewing_request', email: 'contact@casatorim.ro', phone: '+40 723 111 222', notes: '' },
+        { id: 3, client: 'Eventify', venue: 'Urban Loft', date: formatDate(addDays(4)), hour: '15:00', status: 'viewing_rescheduled', email: 'hello@eventify.ro', phone: '+40 735 222 111', notes: '' },
+        { id: 4, client: 'Alex & Ruxandra', venue: 'Casa Miraval', date: formatDate(addDays(6)), hour: '17:00', status: 'viewing_scheduled', email: 'alexandrux@gmail.com', phone: '+40 725 888 654', notes: '' },
+        { id: 5, client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', status: 'viewing_request', email: 'team@artexpo.ro', phone: '+40 733 654 987', notes: '' }
     ];
 
     let selectedBookingId = null;
@@ -697,11 +697,9 @@ document.addEventListener('DOMContentLoaded', () => {
         guests: document.querySelector('[data-detail-field="guests"]'),
         venue: document.querySelector('[data-detail-field="venue"]'),
         date: document.querySelector('[data-detail-field="date"]'),
-        time: document.querySelector('[data-detail-field="time"]'),
-        host: document.querySelector('[data-detail-field="host"]')
+        time: document.querySelector('[data-detail-field="time"]')
     };
     const recordDetailTimeWrapper = document.querySelector('[data-detail-time-wrapper]');
-    const recordDetailHostWrapper = document.querySelector('[data-detail-host-wrapper]');
     const recordDetailHeading = document.getElementById('record-detail-heading');
     const recordDetailSubtitle = document.getElementById('record-detail-subtitle');
     const recordDetailNoteInput = document.getElementById('record-detail-note');
@@ -748,9 +746,20 @@ document.addEventListener('DOMContentLoaded', () => {
         populateDetailField('email', record.email || 'Nu a fost furnizat');
         populateDetailField('phone', record.phone || 'Nu a fost furnizat');
         populateDetailField('event', record.event || '—');
-        populateDetailField('guests', Number.isFinite(record.guests) ? String(record.guests) : 'Nu este specificat');
         populateDetailField('venue', record.venue || '—');
         populateDetailField('date', record.date || '—');
+
+        const guestsField = recordDetailFields.guests;
+        if (guestsField) {
+            const hasGuests = Number.isFinite(record.guests) && record.guests > 0;
+            if (type === 'viewing') {
+                guestsField.textContent = hasGuests ? `${record.guests} invitați` : '—';
+                guestsField.classList.remove('is-missing-value');
+            } else {
+                guestsField.textContent = hasGuests ? `${record.guests} invitați` : 'Necesită completare';
+                guestsField.classList.toggle('is-missing-value', !hasGuests);
+            }
+        }
 
         if (recordDetailTimeWrapper) {
             recordDetailTimeWrapper.hidden = type !== 'viewing';
@@ -759,15 +768,6 @@ document.addEventListener('DOMContentLoaded', () => {
             populateDetailField('time', record.hour || 'Nu este stabilită');
         } else {
             populateDetailField('time', '—');
-        }
-
-        if (recordDetailHostWrapper) {
-            recordDetailHostWrapper.hidden = type !== 'viewing';
-        }
-        if (type === 'viewing') {
-            populateDetailField('host', record.host || 'Nu este asignat');
-        } else {
-            populateDetailField('host', '—');
         }
 
         if (recordDetailNoteInput) {
@@ -949,7 +949,11 @@ document.addEventListener('DOMContentLoaded', () => {
             dateCell.textContent = item.date;
 
             const guestsCell = row.insertCell();
-            guestsCell.textContent = item.guests;
+            const hasGuests = Number.isFinite(item.guests) && item.guests > 0;
+            guestsCell.textContent = hasGuests ? `${item.guests} invitați` : 'Necesită completare';
+            if (!hasGuests) {
+                guestsCell.classList.add('is-missing-value');
+            }
 
             const statusCell = row.insertCell();
             const statusMeta = bookingStatusMeta[item.status];
@@ -1014,6 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return acc;
         }, {});
         container.innerHTML = '';
+        const totalBookings = bookings.length;
         let hasContent = false;
         bookingStatusOrder.forEach(status => {
             const meta = bookingStatusMeta[status];
@@ -1026,14 +1031,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             hasContent = true;
             const card = document.createElement('article');
-            card.className = 'metric-card';
-            card.innerHTML = `<span>${meta.label}</span><strong>${value}</strong>`;
+            card.className = 'status-card';
+            const baseColor = meta.color || '#2563eb';
+            const gradientTop = hexToRgba(baseColor, 0.2) || 'rgba(67, 100, 247, 0.2)';
+            const gradientBottom = hexToRgba(baseColor, 0.05) || 'rgba(67, 100, 247, 0.05)';
+            card.style.setProperty('--status-card-color', baseColor);
+            card.style.background = `linear-gradient(140deg, ${gradientTop}, ${gradientBottom})`;
+            card.style.borderColor = hexToRgba(baseColor, 0.25) || 'rgba(67, 100, 247, 0.25)';
+            const shadowColor = hexToRgba(baseColor, 0.45) || 'rgba(67, 100, 247, 0.45)';
+            card.style.boxShadow = `0 18px 36px -30px ${shadowColor}`;
+            const percentage = totalBookings > 0 ? Math.round((value / totalBookings) * 100) : 0;
+            const nextStep = meta.owner?.nextStep || 'Verifică detaliile cererilor';
+            card.innerHTML = `
+                <div class="status-card__header">
+                    <span class="status-card__label">${meta.label}</span>
+                    <span class="status-card__count">${value}</span>
+                </div>
+                <div class="status-card__progress" aria-hidden="true">
+                    <span class="status-card__progress-fill" style="width:${percentage}%"></span>
+                </div>
+                <div class="status-card__meta">
+                    <span class="status-card__hint">${nextStep}</span>
+                    <span class="status-card__percent">${percentage}% din total</span>
+                </div>
+            `;
             container.appendChild(card);
         });
         if (!hasContent) {
             const card = document.createElement('article');
-            card.className = 'metric-card';
-            card.innerHTML = '<span>Nicio rezervare activă</span><strong>0</strong>';
+            card.className = 'status-card status-card--empty';
+            card.innerHTML = '<strong>0</strong><span>Nu există rezervări înregistrate încă.</span><span class="status-card__hint">Adaugă prima rezervare pentru a vedea rezumatul.</span>';
             container.appendChild(card);
         }
     }
@@ -1288,7 +1315,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 venue: booking.venue,
                 date: formattedDate,
                 hour: '12:00',
-                host: 'Echipa Ouido',
                 status: targetStatus,
                 email: booking.email || '',
                 phone: booking.phone || '',
@@ -1699,6 +1725,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             const dateObject = new Date(dateValue);
+            const guestsValue = parseInt(formData.get('guests'), 10);
+            if (!Number.isFinite(guestsValue) || guestsValue < 1) {
+                window.alert('Numărul de invitați este obligatoriu și trebuie să fie mai mare decât zero.');
+                return;
+            }
             const nextId = bookings.reduce((max, booking) => Math.max(max, booking.id), 0) + 1;
             const newBooking = {
                 id: nextId,
@@ -1706,7 +1737,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 event: formData.get('event'),
                 venue: formData.get('venue'),
                 date: formatDate(dateObject),
-                guests: parseInt(formData.get('guests'), 10) || 0,
+                guests: guestsValue,
                 status: 'confirmed',
                 autoGenerated: false,
                 email: formData.get('email'),
@@ -1747,12 +1778,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             const formData = new FormData(form);
+            const guestsValue = parseInt(formData.get('guests'), 10);
+            if (!Number.isFinite(guestsValue) || guestsValue < 1) {
+                window.alert('Numărul de invitați este obligatoriu și trebuie să fie mai mare decât zero.');
+                return;
+            }
             bookings[bookingIndex].client = formData.get('client');
             bookings[bookingIndex].email = formData.get('email');
             bookings[bookingIndex].phone = formData.get('phone');
             bookings[bookingIndex].event = formData.get('event');
             bookings[bookingIndex].venue = formData.get('venue');
-            bookings[bookingIndex].guests = parseInt(formData.get('guests'), 10) || 0;
+            bookings[bookingIndex].guests = guestsValue;
             bookings[bookingIndex].details = formData.get('details');
             renderBookingsTable();
             renderOverviewLists();

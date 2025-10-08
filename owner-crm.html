@@ -393,6 +393,119 @@
             gap: 12px;
         }
 
+        .status-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .status-card {
+            position: relative;
+            border-radius: 18px;
+            padding: 18px 20px;
+            background: linear-gradient(140deg, rgba(67, 100, 247, 0.12), rgba(67, 100, 247, 0.02));
+            border: 1px solid rgba(67, 100, 247, 0.16);
+            box-shadow: 0 18px 36px -34px rgba(67, 100, 247, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow: hidden;
+            color: var(--dark-color);
+        }
+
+        .status-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.75), transparent 60%);
+            pointer-events: none;
+        }
+
+        .status-card__header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .status-card__label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .status-card__count {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .status-card__progress {
+            position: relative;
+            z-index: 1;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+        }
+
+        .status-card__progress-fill {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: var(--status-card-color, var(--primary-color));
+        }
+
+        .status-card__meta {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.78rem;
+            flex-wrap: wrap;
+        }
+
+        .status-card__hint {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .status-card__percent {
+            color: var(--muted-color);
+            white-space: nowrap;
+        }
+
+        .status-card--empty {
+            background: var(--light-gray-color);
+            border: 1px dashed rgba(0, 82, 212, 0.3);
+            box-shadow: none;
+            align-items: center;
+            text-align: center;
+            color: var(--muted-color);
+        }
+
+        .status-card--empty::after {
+            display: none;
+        }
+
+        .status-card--empty strong {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+        }
+
+        .status-card--empty .status-card__hint {
+            font-weight: 500;
+            color: var(--muted-color);
+        }
+
+        .is-missing-value {
+            color: #b91c1c;
+            font-weight: 600;
+        }
+
         .metric-card {
             background: var(--white-color);
             border-radius: var(--border-radius);
@@ -1545,8 +1658,9 @@
                 <div class="panel">
                     <header>
                         <h2>Rezumat status</h2>
+                        <span class="panel-meta">Situația actuală a rezervărilor active</span>
                     </header>
-                    <div class="metrics-grid metrics-grid--compact" id="bookings-status-cards"></div>
+                    <div class="status-summary-grid" id="bookings-status-cards"></div>
                 </div>
 
                 <div class="panel">
@@ -1985,10 +2099,6 @@
                                 <div class="detail-list-item" data-detail-time-wrapper hidden>
                                     <span class="detail-list-label">Ora</span>
                                     <span class="detail-list-value" data-detail-field="time">—</span>
-                                </div>
-                                <div class="detail-list-item" data-detail-host-wrapper hidden>
-                                    <span class="detail-list-label">Gazdă vizionare</span>
-                                    <span class="detail-list-value" data-detail-field="host">—</span>
                                 </div>
                             </div>
                         </article>
