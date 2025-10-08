@@ -635,14 +635,15 @@
 
         .table-actions {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
         }
 
         .table-actions button {
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: flex-start;
             border-radius: 14px;
             border: 1px solid rgba(0, 82, 212, 0.16);
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(67, 100, 247, 0.08));
@@ -653,6 +654,8 @@
             cursor: pointer;
             box-shadow: 0 10px 24px -22px rgba(0, 82, 212, 0.6);
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            text-align: left;
+            width: 100%;
         }
 
         .table-actions button:hover {
