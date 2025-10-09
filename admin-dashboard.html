@@ -436,6 +436,7 @@
             gap: 10px;
             margin-top: 6px;
             flex-wrap: wrap;
+            font-size: 0.78rem;
         }
         .table-link {
             border: none;
@@ -452,7 +453,6 @@
         .table-link:focus-visible {
             color: var(--secondary-color);
         }
-        .table-cell-stack--tight { gap: 2px; }
         .table-label {
             font-size: 0.72rem;
             color: var(--muted-color);
@@ -485,6 +485,90 @@
         }
         .table-actions--compact .crm-button {
             min-width: 0;
+        }
+        .venue-card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .venue-card {
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 24px 28px;
+            box-shadow: 0 24px 60px -48px rgba(67, 100, 247, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .venue-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 28px 60px -44px rgba(67, 100, 247, 0.55);
+        }
+        .venue-card__header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .venue-card__section {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
+        }
+        .venue-card__muted {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+        }
+        .venue-card__metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        .venue-card__divider {
+            margin: 18px 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+        .venue-card__footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .venue-card__status {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 280px;
+        }
+        .venue-card__status-text {
+            color: var(--muted-color);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .venue-card__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: flex-start;
+        }
+        .venue-card__actions-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 200px;
+        }
+        .venue-card__actions-group .table-value {
+            font-size: 0.85rem;
+        }
+        .venue-card--empty {
+            text-align: center;
+            padding: 42px 20px;
+            color: var(--muted-color);
         }
         .link-muted {
             color: var(--primary-color);
@@ -819,49 +903,23 @@
                         </div>
                         <span class="badge" id="manage-venues-summary">Portofoliu complet</span>
                     </header>
-                    <div class="table-wrapper">
-                        <table class="crm-table" aria-describedby="manage-venues-summary">
-                            <thead>
-                                <tr>
-                                    <th>Locație</th>
-                                    <th>Proprietar</th>
-                                    <th>Gestiune</th>
-                                    <th>Oraș</th>
-                                    <th>Cereri vizionări</th>
-                                    <th>Cereri Dispo.</th>
-                                    <th>Status</th>
-                                    <th>Ultima activitate</th>
-                                    <th>Publicare</th>
-                                    <th>Claim</th>
-                                </tr>
-                                <tr class="filter-row">
-                                    <th><input type="search" class="filter-input" id="filter-venue-name" placeholder="Filtru nume locație" aria-label="Filtru nume locație"></th>
-                                    <th>
-                                        <select class="filter-select" id="filter-owner" aria-label="Filtru proprietar"></select>
-                                    </th>
-                                    <th></th>
-                                    <th>
-                                        <select class="filter-select" id="filter-city" aria-label="Filtru oraș"></select>
-                                    </th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>
-                                        <select class="filter-select" id="filter-status" aria-label="Filtru status locație">
-                                            <option value="all">Toate statusurile</option>
-                                            <option value="approved">Activă</option>
-                                            <option value="pending">În așteptare</option>
-                                            <option value="inactive">Dezactivată</option>
-                                            <option value="rejected">Respinsă</option>
-                                        </select>
-                                    </th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="manage-venues-body"></tbody>
-                        </table>
+                    <div class="filter-bar table-filter-bar" aria-label="Filtre locații">
+                        <label for="filter-venue-name">Căutare:</label>
+                        <input type="search" id="filter-venue-name" placeholder="Caută după nume locație">
+                        <label for="filter-owner">Proprietar:</label>
+                        <select id="filter-owner"></select>
+                        <label for="filter-city">Oraș:</label>
+                        <select id="filter-city"></select>
+                        <label for="filter-status">Status:</label>
+                        <select id="filter-status">
+                            <option value="all">Toate statusurile</option>
+                            <option value="approved">Activă</option>
+                            <option value="pending">În așteptare</option>
+                            <option value="inactive">Dezactivată</option>
+                            <option value="rejected">Respinsă</option>
+                        </select>
                     </div>
+                    <div id="manage-venues-body" class="venue-card-list"></div>
                     <div class="smart-table-footer">
                         <span id="manage-venues-count"></span>
                         <span id="manage-venues-status"></span>
@@ -1685,7 +1743,7 @@
 
         function formatCount(value) {
             if (typeof value !== 'number' || Number.isNaN(value)) {
-                return '—';
+                return '0';
             }
             return value.toLocaleString('ro-RO');
         }
@@ -1697,30 +1755,86 @@
             return 'owner';
         }
 
-        function renderManagementChip(venue) {
+        function getManagementSummary(venue) {
             const state = getVenueManagementState(venue);
-            let managerName;
+            let value;
+            let sub = '';
             switch (state) {
                 case 'owner':
-                    managerName = venue.claimOwnerName || venue.ownerContact || venue.ownerCompany || venue.owner || 'Proprietar';
+                    value = venue.ownerCompany || venue.owner || 'Proprietar';
+                    sub = venue.ownerContact ? `Contact: ${venue.ownerContact}` : '';
                     break;
                 case 'pending':
-                    managerName = venue.claimOwnerName || venue.claimOwnerCompany || 'Proprietar';
+                    value = venue.claimOwnerName || venue.claimOwnerCompany || 'Claim în așteptare';
+                    sub = 'Necesită aprobare';
                     break;
                 case 'rejected':
-                    managerName = 'Ouido';
+                    value = 'Ouido';
+                    sub = 'Claim respins';
                     break;
                 case 'ouido':
                 default:
-                    managerName = 'Ouido';
+                    value = 'Ouido';
+                    sub = 'Administrat intern';
                     break;
             }
-            return `
-                <div class="table-cell-stack table-cell-stack--tight">
-                    <span class="table-label">Gestionat de</span>
-                    <span class="table-value" data-management="${state}">${managerName}</span>
-                </div>
-            `;
+            return { state, value, sub };
+        }
+
+        function getClaimSummary(venue) {
+            const status = venue.claimStatus || 'none';
+            switch (status) {
+                case 'pending':
+                    return {
+                        label: 'Claim în așteptare',
+                        value: venue.claimOwnerName || venue.claimOwnerCompany || 'Proprietar',
+                        sub: 'Aprobă sau respinge solicitarea',
+                        state: 'pending',
+                    };
+                case 'accepted':
+                    return {
+                        label: 'Claim acceptat',
+                        value: venue.claimOwnerName || venue.ownerContact || venue.ownerCompany || venue.owner || 'Confirmat',
+                        sub: venue.ownerCompany ? `Administrat de ${venue.ownerCompany}` : '',
+                        state: 'accepted',
+                    };
+                case 'rejected':
+                    return {
+                        label: 'Claim respins',
+                        value: venue.claimOwnerCompany || 'Ouido',
+                        sub: 'Ultima acțiune: respins',
+                        state: 'rejected',
+                    };
+                default:
+                    return { label: 'Claim', value: '—', sub: '', state: 'none' };
+            }
+        }
+
+        function renderClaimActions(venue) {
+            if (venue.claimStatus === 'pending') {
+                return `
+                    <div class="table-actions table-actions--compact">
+                        <button class="crm-button small primary" data-claim="accept" data-venue-id="${venue.id}">Acceptă</button>
+                        <button class="crm-button small danger" data-claim="reject" data-venue-id="${venue.id}">Respinge</button>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function describeVenueStatus(venue) {
+            switch (venue.status) {
+                case 'approved':
+                    return 'Locația este publicată și vizibilă în platformă.';
+                case 'pending':
+                    return 'Listarea este în moderare. Confirmă publicarea sau respinge cu feedback.';
+                case 'inactive':
+                    return 'Locația este dezactivată. Reactivarea o va repune în platformă.';
+                case 'rejected':
+                    return 'Listarea a fost respinsă. Trimite din nou spre moderare după actualizări.';
+                default:
+                    return '';
+            }
         }
 
         function renderPublishControls(venue) {
@@ -1739,47 +1853,6 @@
             return actions.length
                 ? `<div class="table-actions table-actions--compact">${actions.join('')}</div>`
                 : '<span class="table-subtext">Nu sunt acțiuni disponibile</span>';
-        }
-
-        function renderClaimControls(venue) {
-            const state = venue.claimStatus || 'none';
-            if (state === 'pending') {
-                const claimant = venue.claimOwnerName || venue.claimOwnerCompany || 'Proprietar';
-                return `
-                    <div class="table-cell-stack table-cell-stack--tight">
-                        <span class="table-label">Claim în așteptare</span>
-                        <span class="table-value" data-claim-state="pending">${claimant}</span>
-                    </div>
-                    <div class="table-actions table-actions--compact">
-                        <button class="crm-button small primary" data-claim="accept" data-venue-id="${venue.id}">Acceptă</button>
-                        <button class="crm-button small danger" data-claim="reject" data-venue-id="${venue.id}">Respinge</button>
-                    </div>
-                `;
-            }
-            if (state === 'accepted') {
-                const claimant = venue.claimOwnerName || venue.ownerContact || venue.ownerCompany || venue.owner || 'Confirmat';
-                return `
-                    <div class="table-cell-stack table-cell-stack--tight">
-                        <span class="table-label">Claim acceptat</span>
-                        <span class="table-value" data-claim-state="accepted">${claimant}</span>
-                    </div>
-                `;
-            }
-            if (state === 'rejected') {
-                const claimant = venue.claimOwnerCompany || 'Ouido';
-                return `
-                    <div class="table-cell-stack table-cell-stack--tight">
-                        <span class="table-label">Claim respins</span>
-                        <span class="table-value" data-claim-state="rejected">${claimant}</span>
-                    </div>
-                `;
-            }
-            return `
-                <div class="table-cell-stack table-cell-stack--tight">
-                    <span class="table-label">Claim</span>
-                    <span class="table-value" data-claim-state="none">—</span>
-                </div>
-            `;
         }
 
         function syncPendingVenuesAfterUpdate(venue) {
@@ -2289,42 +2362,73 @@
             }
 
             if (!filtered.length) {
-                manageVenuesElements.tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Nu există rezultate pentru filtrele selectate.</td></tr>';
+                manageVenuesElements.tableBody.innerHTML = '<div class="venue-card venue-card--empty">Nu există rezultate pentru filtrele selectate.</div>';
                 return;
             }
 
-            manageVenuesElements.tableBody.innerHTML = filtered.map(venue => `
-                <tr data-id="${venue.id}">
-                    <td>
-                        <div class="venue-meta">
-                            <strong>${venue.name}</strong>
-                            <span>Capacitate: ${venue.capacity}</span>
+            manageVenuesElements.tableBody.innerHTML = filtered.map(venue => {
+                const managementSummary = getManagementSummary(venue);
+                const claimSummary = getClaimSummary(venue);
+                const publishControls = renderPublishControls(venue);
+                const claimActions = renderClaimActions(venue);
+                const statusMessage = describeVenueStatus(venue);
+                return `
+                    <article class="venue-card" data-id="${venue.id}">
+                        <div class="venue-card__header">
+                            <div class="venue-card__section">
+                                <span class="table-label">Locație</span>
+                                <span class="table-value">${venue.name}</span>
+                                <span class="venue-card__muted">Capacitate: ${venue.capacity}</span>
+                                <div class="table-subactions">
+                                    <button class="table-link" type="button" data-venue-action="view" data-venue-id="${venue.id}">Vezi fișa</button>
+                                    <button class="table-link" type="button" data-venue-action="manage" data-venue-id="${venue.id}">CRM proprietar</button>
+                                </div>
+                            </div>
+                            <div class="venue-card__section">
+                                <span class="table-label">Proprietar</span>
+                                <span class="table-value">${venue.owner || UNCLAIMED_OWNER_LABEL}</span>
+                                ${venue.ownerContact ? `<span class="venue-card__muted">Contact: ${venue.ownerContact}</span>` : ''}
+                            </div>
+                            <div class="venue-card__section">
+                                <span class="table-label">Gestiune</span>
+                                <span class="table-value" data-management="${managementSummary.state}">${managementSummary.value}</span>
+                                ${managementSummary.sub ? `<span class="venue-card__muted">${managementSummary.sub}</span>` : ''}
+                            </div>
+                            <div class="venue-card__section">
+                                <span class="table-label">Cereri</span>
+                                <div class="venue-card__metrics">
+                                    <span>${formatCount(venue.viewingsRequests)} vizionări</span>
+                                    <span>${formatCount(venue.availabilityRequests)} dispo.</span>
+                                </div>
+                            </div>
+                            <div class="venue-card__section">
+                                <span class="table-label">Ultima actualizare</span>
+                                <span class="table-value">${venue.lastActivity}</span>
+                            </div>
                         </div>
-                        <div class="table-subactions">
-                            <button class="table-link" type="button" data-venue-action="view" data-venue-id="${venue.id}">Vezi fișa</button>
-                            <button class="table-link" type="button" data-venue-action="manage" data-venue-id="${venue.id}">CRM proprietar</button>
+                        <div class="venue-card__divider"></div>
+                        <div class="venue-card__footer">
+                            <div class="venue-card__status">
+                                <span class="status-chip" data-status="${venue.status}">${formatVenueStatus(venue.status)}</span>
+                                <span class="venue-card__status-text">${statusMessage}</span>
+                                ${claimSummary.state === 'pending' ? '<span class="venue-card__muted">Există un claim în așteptare pentru această locație.</span>' : ''}
+                            </div>
+                            <div class="venue-card__actions">
+                                <div class="venue-card__actions-group">
+                                    <span class="table-label">Publicare</span>
+                                    ${publishControls}
+                                </div>
+                                <div class="venue-card__actions-group">
+                                    <span class="table-label">${claimSummary.label}</span>
+                                    <span class="table-value" data-claim-state="${claimSummary.state}">${claimSummary.value}</span>
+                                    ${claimSummary.sub ? `<span class="venue-card__muted">${claimSummary.sub}</span>` : ''}
+                                    ${claimActions}
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                    <td>
-                        <div class="table-cell-stack">
-                            <strong>${venue.owner || UNCLAIMED_OWNER_LABEL}</strong>
-                            ${venue.ownerContact ? `<span class="table-subtext">${venue.ownerContact}</span>` : ''}
-                        </div>
-                    </td>
-                    <td>${renderManagementChip(venue)}</td>
-                    <td>${venue.city}</td>
-                    <td><strong>${formatCount(venue.viewingsRequests)}</strong></td>
-                    <td><strong>${formatCount(venue.availabilityRequests)}</strong></td>
-                    <td><span class="status-chip" data-status="${venue.status}">${formatVenueStatus(venue.status)}</span></td>
-                    <td>
-                        <div class="table-cell-stack">
-                            <span>${venue.lastActivity}</span>
-                        </div>
-                    </td>
-                    <td>${renderPublishControls(venue)}</td>
-                    <td>${renderClaimControls(venue)}</td>
-                </tr>
-            `).join('');
+                    </article>
+                `;
+            }).join('');
         }
 
         function adjustVenueMetrics(previousStatus, newStatus) {
@@ -2530,9 +2634,9 @@
                 const publishButton = event.target.closest('[data-publish]');
                 if (publishButton) {
                     const action = publishButton.getAttribute('data-publish');
-                    const row = publishButton.closest('tr');
-                    if (!row) return;
-                    const venueId = Number(row.dataset.id);
+                    const card = publishButton.closest('[data-id]');
+                    if (!card) return;
+                    const venueId = Number(card.dataset.id);
                     const venue = adminState.venues.find(v => v.id === venueId);
                     if (!venue) return;
                     handlePublishAction(venue, action);
@@ -2542,9 +2646,9 @@
                 const claimButton = event.target.closest('[data-claim]');
                 if (claimButton) {
                     const action = claimButton.getAttribute('data-claim');
-                    const row = claimButton.closest('tr');
-                    if (!row) return;
-                    const venueId = Number(row.dataset.id);
+                    const card = claimButton.closest('[data-id]');
+                    if (!card) return;
+                    const venueId = Number(card.dataset.id);
                     const venue = adminState.venues.find(v => v.id === venueId);
                     if (!venue) return;
                     const owner = venue.claimOwnerId ? adminState.owners.find(o => o.id === venue.claimOwnerId) : null;
