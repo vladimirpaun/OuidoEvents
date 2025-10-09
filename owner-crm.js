@@ -710,7 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const venueCityInput = document.getElementById('venue-city');
     const venueAddressInput = document.getElementById('venue-address');
     const venueStatusSelect = document.getElementById('venue-status');
-    const venueImageInput = document.getElementById('venue-image');
     const venueDescriptionInput = document.getElementById('venue-description');
     const capacityMinInput = document.getElementById('capacity-min');
     const capacityMaxInput = document.getElementById('capacity-max');
@@ -783,9 +782,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (venueStatusSelect) {
                 venueStatusSelect.value = venue.status || 'activ';
-            }
-            if (venueImageInput) {
-                venueImageInput.value = venue.image || '';
             }
             if (venueDescriptionInput) {
                 venueDescriptionInput.value = venue.description || '';
@@ -926,7 +922,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const addressValue = (formData.get('venue-address') || '').toString().trim();
         const descriptionValue = (formData.get('venue-description') || '').toString().trim();
         const statusValue = (formData.get('venue-status') || 'activ').toString();
-        const imageValue = (formData.get('venue-image') || '').toString().trim();
         const minCapacityValue = Number.parseInt(formData.get('capacity-min'), 10);
         const maxCapacityValue = Number.parseInt(formData.get('capacity-max'), 10);
         const priceValue = Number.parseFloat(formData.get('price-start'));
@@ -952,7 +947,6 @@ document.addEventListener('DOMContentLoaded', () => {
             minCapacity: normalizedMin,
             maxCapacity: normalizedMax,
             pricePerGuest: normalizedPrice,
-            image: imageValue,
             menuPdfs: [...venueMenuPdfNames],
             styles: Array.from(new Set(styles)),
             eventTypes: Array.from(new Set(eventTypes)),
