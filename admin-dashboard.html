@@ -431,6 +431,61 @@
         .claim-chip[data-claim="accepted"] { background: rgba(20, 164, 77, 0.16); color: #15803d; }
         .claim-chip[data-claim="rejected"] { background: rgba(224, 36, 36, 0.16); color: #b91c1c; }
         .claim-chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.2); }
+        .table-subactions {
+            display: inline-flex;
+            gap: 10px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .table-link {
+            border: none;
+            background: none;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+        }
+        .table-link:hover,
+        .table-link:focus-visible {
+            color: var(--secondary-color);
+        }
+        .table-cell-stack--tight { gap: 2px; }
+        .table-label {
+            font-size: 0.72rem;
+            color: var(--muted-color);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .table-value {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--dark-color);
+        }
+        .table-value[data-management="ouido"] {
+            color: #1d4ed8;
+        }
+        .table-value[data-management="owner"],
+        .table-value[data-claim-state="accepted"] {
+            color: #047857;
+        }
+        .table-value[data-management="pending"],
+        .table-value[data-claim-state="pending"] {
+            color: #b45309;
+        }
+        .table-value[data-management="rejected"],
+        .table-value[data-claim-state="rejected"] {
+            color: #b91c1c;
+        }
+        .table-actions--compact {
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .table-actions--compact .crm-button {
+            min-width: 0;
+        }
         .link-muted {
             color: var(--primary-color);
             font-weight: 600;
@@ -770,18 +825,34 @@
                                 <tr>
                                     <th>Locație</th>
                                     <th>Proprietar</th>
+                                    <th>Gestiune</th>
                                     <th>Oraș</th>
+                                    <th>Cereri vizionări</th>
+                                    <th>Cereri Dispo.</th>
                                     <th>Status</th>
                                     <th>Ultima activitate</th>
-                                    <th></th>
+                                    <th>Publicare</th>
+                                    <th>Claim</th>
                                 </tr>
                                 <tr class="filter-row">
                                     <th><input type="search" class="filter-input" id="filter-venue-name" placeholder="Filtru nume locație" aria-label="Filtru nume locație"></th>
                                     <th>
                                         <select class="filter-select" id="filter-owner" aria-label="Filtru proprietar"></select>
                                     </th>
+                                    <th></th>
                                     <th>
                                         <select class="filter-select" id="filter-city" aria-label="Filtru oraș"></select>
+                                    </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>
+                                        <select class="filter-select" id="filter-status" aria-label="Filtru status locație">
+                                            <option value="all">Toate statusurile</option>
+                                            <option value="approved">Activă</option>
+                                            <option value="pending">În așteptare</option>
+                                            <option value="inactive">Dezactivată</option>
+                                            <option value="rejected">Respinsă</option>
+                                        </select>
                                     </th>
                                     <th></th>
                                     <th></th>
@@ -1174,15 +1245,188 @@
                 },
             ],
             venues: [
-                { id: 401, name: 'Grand Palais Ballroom', owner: 'Eventique SRL', city: 'București', capacity: '150-320', status: 'approved', lastActivity: 'Ofertă actualizată acum 2h' },
-                { id: 402, name: 'Casa Hellen', owner: 'Casa Alba Events', city: 'Cluj-Napoca', capacity: '80-180', status: 'pending', lastActivity: 'În verificare documente - acum 30m' },
-                { id: 403, name: 'Ambience Lake Resort', owner: 'Ambience Group', city: 'Snagov', capacity: '120-400', status: 'approved', lastActivity: 'A răspuns la cereri azi 09:30' },
-                { id: 404, name: 'Urban Yard', owner: 'Urban Spaces', city: 'București', capacity: '100-220', status: 'inactive', lastActivity: 'Dezactivat pentru mentenanță - ieri' },
-                { id: 405, name: 'Skyline Events Terrace', owner: 'Skyline Holdings', city: 'București', capacity: '90-200', status: 'approved', lastActivity: 'Dashboard actualizat acum 1h' },
-                { id: 406, name: 'Forest Retreat & Spa', owner: 'GreenStay', city: 'Brașov', capacity: '60-150', status: 'approved', lastActivity: 'Tur virtual încărcat acum 3h' },
-                { id: 302, name: 'Domaine Verde', owner: 'Marius Bălan', city: 'Sinaia', capacity: '120-300', status: 'pending', lastActivity: 'Așteaptă confirmare contract - azi 11:00' },
-                { id: 303, name: 'Mare Nostrum Terrace', owner: 'Iulia Iancu', city: 'Constanța', capacity: '60-220', status: 'pending', lastActivity: 'Solicitare clarificări trimisă - azi 10:10' },
-                { id: 301, name: 'The Ivy Loft', owner: 'Evelin Pop', city: 'București', capacity: '80-150', status: 'pending', lastActivity: 'În curs de aprobare - azi 08:45' },
+                {
+                    id: 401,
+                    name: 'Grand Palais Ballroom',
+                    owner: 'Eventique SRL',
+                    ownerCompany: 'Eventique SRL',
+                    ownerContact: 'Ioana Pătrașcu',
+                    ownerId: 1,
+                    managementMode: 'owner',
+                    claimStatus: 'accepted',
+                    claimOwnerId: 1,
+                    claimOwnerName: 'Ioana Pătrașcu',
+                    city: 'București',
+                    capacity: '150-320',
+                    viewingsRequests: 14,
+                    availabilityRequests: 28,
+                    status: 'approved',
+                    lastActivity: 'Ofertă actualizată acum 2h',
+                    detailsUrl: 'venue-details.html#grand-palais-ballroom',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 402,
+                    name: 'Casa Hellen',
+                    owner: 'Nealocat · Ouido',
+                    ownerCompany: null,
+                    ownerContact: 'Echipa Ouido',
+                    ownerId: null,
+                    managementMode: 'ouido',
+                    claimStatus: 'pending',
+                    claimOwnerId: 3,
+                    claimOwnerName: 'Lavinia Neagu',
+                    claimOwnerCompany: 'Casa Alba Events',
+                    city: 'Cluj-Napoca',
+                    capacity: '80-180',
+                    viewingsRequests: 6,
+                    availabilityRequests: 11,
+                    status: 'pending',
+                    lastActivity: 'În verificare documente - acum 30m',
+                    detailsUrl: 'venue-details.html#casa-hellen',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 403,
+                    name: 'Ambience Lake Resort',
+                    owner: 'Ambience Group',
+                    ownerCompany: 'Ambience Group',
+                    ownerContact: 'Elisabeta Antonescu',
+                    ownerId: null,
+                    managementMode: 'owner',
+                    claimStatus: 'accepted',
+                    claimOwnerId: null,
+                    claimOwnerName: null,
+                    city: 'Snagov',
+                    capacity: '120-400',
+                    viewingsRequests: 18,
+                    availabilityRequests: 32,
+                    status: 'approved',
+                    lastActivity: 'A răspuns la cereri azi 09:30',
+                    detailsUrl: 'venue-details.html#ambience-lake-resort',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 404,
+                    name: 'Urban Yard',
+                    owner: 'Nealocat · Ouido',
+                    ownerCompany: null,
+                    ownerContact: 'Coordonator Ouido',
+                    ownerId: null,
+                    managementMode: 'ouido',
+                    claimStatus: 'rejected',
+                    claimOwnerId: 6,
+                    claimOwnerName: 'Coordonator Ouido',
+                    claimOwnerCompany: 'Heritage Halls',
+                    city: 'București',
+                    capacity: '100-220',
+                    viewingsRequests: 4,
+                    availabilityRequests: 7,
+                    status: 'inactive',
+                    lastActivity: 'Dezactivat pentru mentenanță - ieri',
+                    detailsUrl: 'venue-details.html#urban-yard',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 405,
+                    name: 'Skyline Events Terrace',
+                    owner: 'Nealocat · Ouido',
+                    ownerCompany: null,
+                    ownerContact: 'Echipa Ouido',
+                    ownerId: null,
+                    managementMode: 'ouido',
+                    claimStatus: 'none',
+                    claimOwnerId: null,
+                    claimOwnerName: null,
+                    city: 'București',
+                    capacity: '90-200',
+                    viewingsRequests: 11,
+                    availabilityRequests: 19,
+                    status: 'approved',
+                    lastActivity: 'Dashboard actualizat acum 1h',
+                    detailsUrl: 'venue-details.html#skyline-events-terrace',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 406,
+                    name: 'Forest Retreat & Spa',
+                    owner: 'GreenStay',
+                    ownerCompany: 'GreenStay',
+                    ownerContact: 'Mihai Radu',
+                    ownerId: 4,
+                    managementMode: 'owner',
+                    claimStatus: 'accepted',
+                    claimOwnerId: 4,
+                    claimOwnerName: 'Mihai Radu',
+                    city: 'Brașov',
+                    capacity: '60-150',
+                    viewingsRequests: 9,
+                    availabilityRequests: 15,
+                    status: 'approved',
+                    lastActivity: 'Tur virtual încărcat acum 3h',
+                    detailsUrl: 'venue-details.html#forest-retreat',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 302,
+                    name: 'Domaine Verde',
+                    owner: 'Nealocat · Ouido',
+                    ownerCompany: null,
+                    ownerContact: 'Echipa Ouido',
+                    ownerId: null,
+                    managementMode: 'ouido',
+                    claimStatus: 'none',
+                    claimOwnerId: null,
+                    claimOwnerName: null,
+                    city: 'Sinaia',
+                    capacity: '120-300',
+                    viewingsRequests: 5,
+                    availabilityRequests: 8,
+                    status: 'pending',
+                    lastActivity: 'Așteaptă confirmare contract - azi 11:00',
+                    detailsUrl: 'venue-details.html#domaine-verde',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 303,
+                    name: 'Mare Nostrum Terrace',
+                    owner: 'Nealocat · Ouido',
+                    ownerCompany: null,
+                    ownerContact: 'Echipa Ouido',
+                    ownerId: null,
+                    managementMode: 'ouido',
+                    claimStatus: 'none',
+                    claimOwnerId: null,
+                    claimOwnerName: null,
+                    city: 'Constanța',
+                    capacity: '60-220',
+                    viewingsRequests: 7,
+                    availabilityRequests: 12,
+                    status: 'pending',
+                    lastActivity: 'Solicitare clarificări trimisă - azi 10:10',
+                    detailsUrl: 'venue-details.html#mare-nostrum-terrace',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 301,
+                    name: 'The Ivy Loft',
+                    owner: 'Nealocat · Ouido',
+                    ownerCompany: null,
+                    ownerContact: 'Echipa Ouido',
+                    ownerId: null,
+                    managementMode: 'ouido',
+                    claimStatus: 'none',
+                    claimOwnerId: null,
+                    claimOwnerName: null,
+                    city: 'București',
+                    capacity: '80-150',
+                    viewingsRequests: 3,
+                    availabilityRequests: 5,
+                    status: 'pending',
+                    lastActivity: 'În curs de aprobare - azi 08:45',
+                    detailsUrl: 'venue-details.html#ivy-loft',
+                    crmUrl: 'owner-crm.html#venues',
+                },
             ],
             activity: [
                 { id: 501, initials: 'MP', title: 'Listare aprobată', detail: '"Luna Ballroom" a fost publicată', time: 'acum 2h' },
@@ -1197,6 +1441,7 @@
             owner: 'all',
             city: 'all',
             name: '',
+            status: 'all',
         };
 
         const manageVenuesElements = {
@@ -1207,6 +1452,7 @@
             tableBody: document.getElementById('manage-venues-body'),
             count: document.getElementById('manage-venues-count'),
             status: document.getElementById('manage-venues-status'),
+            statusFilter: document.getElementById('filter-status'),
             summary: document.getElementById('manage-venues-summary'),
         };
 
@@ -1240,6 +1486,8 @@
             },
         };
 
+        const UNCLAIMED_OWNER_LABEL = 'Nealocat · Ouido';
+
         const claimModalElements = {
             backdrop: document.getElementById('claim-modal'),
             title: document.getElementById('claim-modal-title'),
@@ -1251,6 +1499,7 @@
         };
         let claimModalOwnerId = null;
         let claimModalTriggerElement = null;
+        let claimModalVenueId = null;
         let claimModalVenueUrl = '';
         let claimModalVenueName = '';
 
@@ -1434,24 +1683,278 @@
             }
         }
 
-        function openClaimModal(owner, triggerElement) {
-            if (!claimModalElements.backdrop) {
-                const venueName = owner.claimedVenue && owner.claimedVenue.name ? owner.claimedVenue.name : owner.business;
-                const accepts = window.confirm(`Acceptă claim-ul pentru ${venueName} (${owner.business})?`); // fallback minimal
-                if (accepts) {
+        function formatCount(value) {
+            if (typeof value !== 'number' || Number.isNaN(value)) {
+                return '—';
+            }
+            return value.toLocaleString('ro-RO');
+        }
+
+        function getVenueManagementState(venue) {
+            if (venue.claimStatus === 'pending') return 'pending';
+            if (venue.claimStatus === 'rejected') return 'rejected';
+            if (venue.managementMode === 'ouido') return 'ouido';
+            return 'owner';
+        }
+
+        function renderManagementChip(venue) {
+            const state = getVenueManagementState(venue);
+            let managerName;
+            switch (state) {
+                case 'owner':
+                    managerName = venue.claimOwnerName || venue.ownerContact || venue.ownerCompany || venue.owner || 'Proprietar';
+                    break;
+                case 'pending':
+                    managerName = venue.claimOwnerName || venue.claimOwnerCompany || 'Proprietar';
+                    break;
+                case 'rejected':
+                    managerName = 'Ouido';
+                    break;
+                case 'ouido':
+                default:
+                    managerName = 'Ouido';
+                    break;
+            }
+            return `
+                <div class="table-cell-stack table-cell-stack--tight">
+                    <span class="table-label">Gestionat de</span>
+                    <span class="table-value" data-management="${state}">${managerName}</span>
+                </div>
+            `;
+        }
+
+        function renderPublishControls(venue) {
+            const actions = [];
+            if (venue.status === 'pending') {
+                actions.push(`<button class="crm-button small primary" data-publish="approve" data-venue-id="${venue.id}">Publică</button>`);
+                actions.push(`<button class="crm-button small danger" data-publish="reject" data-venue-id="${venue.id}">Respinge</button>`);
+            } else if (venue.status === 'approved') {
+                actions.push(`<button class="crm-button small danger" data-publish="deactivate" data-venue-id="${venue.id}">Dezactivează</button>`);
+            } else if (venue.status === 'inactive') {
+                actions.push(`<button class="crm-button small primary" data-publish="reactivate" data-venue-id="${venue.id}">Reactivează</button>`);
+            } else if (venue.status === 'rejected') {
+                actions.push(`<button class="crm-button small ghost" data-publish="reopen" data-venue-id="${venue.id}">Retrimite spre moderare</button>`);
+            }
+
+            return actions.length
+                ? `<div class="table-actions table-actions--compact">${actions.join('')}</div>`
+                : '<span class="table-subtext">Nu sunt acțiuni disponibile</span>';
+        }
+
+        function renderClaimControls(venue) {
+            const state = venue.claimStatus || 'none';
+            if (state === 'pending') {
+                const claimant = venue.claimOwnerName || venue.claimOwnerCompany || 'Proprietar';
+                return `
+                    <div class="table-cell-stack table-cell-stack--tight">
+                        <span class="table-label">Claim în așteptare</span>
+                        <span class="table-value" data-claim-state="pending">${claimant}</span>
+                    </div>
+                    <div class="table-actions table-actions--compact">
+                        <button class="crm-button small primary" data-claim="accept" data-venue-id="${venue.id}">Acceptă</button>
+                        <button class="crm-button small danger" data-claim="reject" data-venue-id="${venue.id}">Respinge</button>
+                    </div>
+                `;
+            }
+            if (state === 'accepted') {
+                const claimant = venue.claimOwnerName || venue.ownerContact || venue.ownerCompany || venue.owner || 'Confirmat';
+                return `
+                    <div class="table-cell-stack table-cell-stack--tight">
+                        <span class="table-label">Claim acceptat</span>
+                        <span class="table-value" data-claim-state="accepted">${claimant}</span>
+                    </div>
+                `;
+            }
+            if (state === 'rejected') {
+                const claimant = venue.claimOwnerCompany || 'Ouido';
+                return `
+                    <div class="table-cell-stack table-cell-stack--tight">
+                        <span class="table-label">Claim respins</span>
+                        <span class="table-value" data-claim-state="rejected">${claimant}</span>
+                    </div>
+                `;
+            }
+            return `
+                <div class="table-cell-stack table-cell-stack--tight">
+                    <span class="table-label">Claim</span>
+                    <span class="table-value" data-claim-state="none">—</span>
+                </div>
+            `;
+        }
+
+        function syncPendingVenuesAfterUpdate(venue) {
+            const existing = adminState.pendingVenues.find(item => item.id === venue.id);
+            if (venue.status === 'pending') {
+                if (existing) {
+                    existing.submittedAt = 'chiar acum';
+                } else {
+                    adminState.pendingVenues.unshift({
+                        id: venue.id,
+                        name: venue.name,
+                        owner: venue.ownerCompany || venue.owner,
+                        city: venue.city,
+                        capacity: venue.capacity,
+                        submittedAt: 'chiar acum',
+                    });
+                    adminState.pendingVenues = adminState.pendingVenues.slice(0, 8);
+                }
+            } else if (existing) {
+                adminState.pendingVenues = adminState.pendingVenues.filter(item => item.id !== venue.id);
+            }
+        }
+
+        function appendDecisionRecord(venue, status, notes) {
+            adminState.recentDecisions.unshift({
+                id: Date.now(),
+                name: venue.name,
+                owner: venue.ownerCompany || venue.owner,
+                status,
+                notes,
+                time: 'chiar acum',
+            });
+            adminState.recentDecisions = adminState.recentDecisions.slice(0, 8);
+        }
+
+        function handlePublishAction(venue, action) {
+            const previousStatus = venue.status;
+
+            if (action === 'approve') {
+                venue.status = 'approved';
+                venue.lastActivity = 'Publicată - chiar acum';
+                adjustVenueMetrics(previousStatus, venue.status);
+                syncPendingVenuesAfterUpdate(venue);
+                appendDecisionRecord(venue, 'approved', 'Aprobată din portofoliu');
+                logAdminActionFromManage('Publicare locație', `${venue.name} a fost publicată.`);
+            } else if (action === 'reject') {
+                venue.status = 'rejected';
+                venue.lastActivity = 'Respinsă - chiar acum';
+                adjustVenueMetrics(previousStatus, venue.status);
+                syncPendingVenuesAfterUpdate(venue);
+                appendDecisionRecord(venue, 'rejected', 'Respinsă din portofoliu');
+                logAdminActionFromManage('Respinge locație', `${venue.name} a fost respinsă pentru completări.`);
+            } else if (action === 'deactivate') {
+                venue.status = 'inactive';
+                venue.lastActivity = 'Dezactivată - chiar acum';
+                adjustVenueMetrics(previousStatus, venue.status);
+                logAdminActionFromManage('Dezactivare locație', `${venue.name} a fost dezactivată temporar.`);
+            } else if (action === 'reactivate') {
+                venue.status = 'approved';
+                venue.lastActivity = 'Reactivată - chiar acum';
+                adjustVenueMetrics(previousStatus, venue.status);
+                logAdminActionFromManage('Reactivare locație', `${venue.name} a fost reactivată.`);
+            } else if (action === 'reopen') {
+                venue.status = 'pending';
+                venue.lastActivity = 'Retrimisă spre moderare - chiar acum';
+                adjustVenueMetrics(previousStatus, venue.status);
+                syncPendingVenuesAfterUpdate(venue);
+                logAdminActionFromManage('Re-evaluare locație', `${venue.name} a fost retrimisă spre moderare.`);
+            } else {
+                return;
+            }
+
+            renderPendingVenues();
+            renderRecentDecisions();
+            renderManageVenues();
+        }
+
+        function applyClaimDecision(owner, venue, decision, source = 'manage') {
+            const venueName = venue ? venue.name : claimModalVenueName || (owner ? owner.business : 'locație');
+
+            if (decision === 'accept') {
+                if (venue) {
+                    venue.claimStatus = 'accepted';
+                    venue.managementMode = 'owner';
+                    if (owner) {
+                        venue.owner = owner.business;
+                        venue.ownerCompany = owner.business;
+                        venue.ownerContact = owner.contact;
+                        venue.ownerId = owner.id;
+                        venue.claimOwnerId = owner.id;
+                        venue.claimOwnerName = owner.contact;
+                        venue.claimOwnerCompany = owner.business;
+                    } else if (venue.claimOwnerCompany) {
+                        venue.owner = venue.claimOwnerCompany;
+                        venue.ownerCompany = venue.claimOwnerCompany;
+                        venue.ownerContact = venue.claimOwnerName || venue.ownerContact;
+                    }
+                    venue.lastActivity = 'Claim acceptat - chiar acum';
+                }
+                if (owner) {
                     owner.claimStatus = 'accepted';
                     owner.claimDetails = `Claim acceptat pentru ${venueName}`;
                     owner.lastUpdate = 'Claim acceptat chiar acum';
                     owner.locations = Math.max(owner.locations, 1);
-                    renderAccounts();
+                    owner.claimedVenue = {
+                        id: venue ? venue.id : owner.claimedVenue ? owner.claimedVenue.id : undefined,
+                        name: venueName,
+                        url: venue && venue.detailsUrl ? venue.detailsUrl : (owner.claimedVenue && owner.claimedVenue.url) || '',
+                    };
+                }
+                logAdminActionFromManage('Claim aprobat', `Claim aprobat pentru ${venueName}.`);
+            } else if (decision === 'reject') {
+                if (venue) {
+                    venue.claimStatus = 'rejected';
+                    venue.managementMode = 'ouido';
+                    venue.owner = UNCLAIMED_OWNER_LABEL;
+                    venue.ownerCompany = null;
+                    venue.ownerContact = 'Echipa Ouido';
+                    venue.ownerId = null;
+                    venue.claimOwnerId = null;
+                    venue.claimOwnerName = null;
+                    venue.claimOwnerCompany = null;
+                    venue.lastActivity = 'Claim respins - chiar acum';
+                }
+                if (owner) {
+                    owner.claimStatus = 'rejected';
+                    owner.claimDetails = `Claim respins pentru ${venueName}`;
+                    owner.lastUpdate = 'Claim respins chiar acum';
+                    owner.claimedVenue = {
+                        id: venue ? venue.id : owner.claimedVenue ? owner.claimedVenue.id : undefined,
+                        name: venueName,
+                        url: venue && venue.detailsUrl ? venue.detailsUrl : (owner.claimedVenue && owner.claimedVenue.url) || '',
+                    };
+                }
+                logAdminActionFromManage('Claim respins', `Claim respins pentru ${venueName}.`);
+            } else {
+                return;
+            }
+
+            populateManageVenueFilters();
+            renderAccounts();
+            renderManageVenues();
+        }
+
+        function openClaimModal(owner, triggerElement) {
+            const linkedVenue = adminState.venues.find(
+                venue => venue.claimStatus === 'pending' && venue.claimOwnerId === owner.id,
+            );
+            const fallbackVenue = owner.claimedVenue && owner.claimedVenue.name ? owner.claimedVenue : null;
+            const targetVenueName = linkedVenue ? linkedVenue.name : fallbackVenue ? fallbackVenue.name : owner.business;
+            const targetVenueUrl = linkedVenue && linkedVenue.detailsUrl
+                ? linkedVenue.detailsUrl
+                : fallbackVenue && fallbackVenue.url
+                    ? fallbackVenue.url
+                    : '';
+
+            if (!claimModalElements.backdrop) {
+                const accepts = window.confirm(`Acceptă claim-ul pentru ${targetVenueName} (${owner.business})?`); // fallback minimal
+                if (accepts) {
+                    applyClaimDecision(
+                        owner,
+                        linkedVenue || (fallbackVenue ? adminState.venues.find(v => v.id === fallbackVenue.id) : null),
+                        'accept',
+                        'fallback',
+                    );
                 }
                 return;
             }
 
             claimModalOwnerId = owner.id;
             claimModalTriggerElement = triggerElement;
-            claimModalVenueUrl = owner.claimedVenue && owner.claimedVenue.url ? owner.claimedVenue.url : '';
-            claimModalVenueName = owner.claimedVenue && owner.claimedVenue.name ? owner.claimedVenue.name : owner.business;
+            claimModalVenueId = linkedVenue ? linkedVenue.id : fallbackVenue ? fallbackVenue.id : null;
+            claimModalVenueUrl = targetVenueUrl;
+            claimModalVenueName = targetVenueName;
+
             if (claimModalElements.title) {
                 claimModalElements.title.textContent = `Procesare claim – ${owner.business}`;
             }
@@ -1459,9 +1962,11 @@
                 const detail = owner.claimDetails
                     ? `Detalii: ${owner.claimDetails}`
                     : 'Revizuiește documentele înainte de a confirma.';
-                const venueLine = owner.claimedVenue && owner.claimedVenue.name
-                    ? `Solicită preluarea locației „${owner.claimedVenue.name}”. `
-                    : '';
+                const venueLine = linkedVenue
+                    ? `Solicită preluarea locației „${linkedVenue.name}”. `
+                    : fallbackVenue
+                        ? `Solicită preluarea locației „${fallbackVenue.name}”. `
+                        : '';
                 claimModalElements.description.textContent = `${owner.contact} (${owner.contactEmail}) ${venueLine}${detail}`;
             }
             if (claimModalElements.location) {
@@ -1494,6 +1999,7 @@
             }
             claimModalOwnerId = null;
             claimModalTriggerElement = null;
+            claimModalVenueId = null;
             claimModalVenueUrl = '';
             claimModalVenueName = '';
         }
@@ -1508,25 +2014,12 @@
                 closeClaimModal();
                 return;
             }
+            const venue = claimModalVenueId
+                ? adminState.venues.find(v => v.id === claimModalVenueId)
+                : adminState.venues.find(v => v.claimStatus === 'pending' && v.claimOwnerId === owner.id);
 
-            if (decision === 'accept') {
-                owner.claimStatus = 'accepted';
-                owner.claimDetails = claimModalVenueName
-                    ? `Claim acceptat pentru ${claimModalVenueName}`
-                    : 'Claim acceptat · proprietar confirmat';
-                owner.lastUpdate = 'Claim acceptat chiar acum';
-                owner.locations = Math.max(owner.locations, 1);
-            } else if (decision === 'reject') {
-                owner.claimStatus = 'rejected';
-                owner.claimDetails = claimModalVenueName
-                    ? `Claim respins pentru ${claimModalVenueName}`
-                    : 'Claim respins · proprietar notificat';
-                owner.lastUpdate = 'Claim respins chiar acum';
-                owner.locations = Math.max(0, owner.locations);
-            }
-
+            applyClaimDecision(owner, venue || null, decision, 'modal');
             closeClaimModal({ restore: false });
-            renderAccounts();
             if (accountElements.owners.search) {
                 accountElements.owners.search.focus();
             }
@@ -1703,9 +2196,15 @@
 
             manageVenuesElements.owner.value = owners.includes(ownerValue) ? ownerValue : 'all';
             manageVenuesElements.city.value = cities.includes(cityValue) ? cityValue : 'all';
+            if (manageVenuesElements.statusFilter) {
+                manageVenuesElements.statusFilter.value = manageVenuesFilters.status;
+            }
 
             manageVenuesFilters.owner = manageVenuesElements.owner.value;
             manageVenuesFilters.city = manageVenuesElements.city.value;
+            if (manageVenuesElements.statusFilter) {
+                manageVenuesFilters.status = manageVenuesElements.statusFilter.value;
+            }
         }
 
         function formatVenueStatus(status) {
@@ -1728,6 +2227,7 @@
             const owner = manageVenuesFilters.owner;
             const city = manageVenuesFilters.city;
             const nameFilter = manageVenuesFilters.name.trim().toLowerCase();
+            const statusFilter = manageVenuesFilters.status;
 
             return adminState.venues.filter(venue => {
                 const matchesSearch = !query || [
@@ -1737,12 +2237,17 @@
                     venue.status,
                     venue.lastActivity,
                     venue.capacity,
-                ].some(value => value.toLowerCase().includes(query));
+                    venue.managementMode,
+                    venue.claimStatus,
+                    venue.claimOwnerName || '',
+                    venue.claimOwnerCompany || '',
+                ].some(value => String(value || '').toLowerCase().includes(query));
                 const matchesOwner = owner === 'all' || venue.owner === owner;
                 const matchesCity = city === 'all' || venue.city === city;
                 const matchesName = !nameFilter || venue.name.toLowerCase().includes(nameFilter);
+                const matchesStatus = statusFilter === 'all' || venue.status === statusFilter;
 
-                return matchesSearch && matchesOwner && matchesCity && matchesName;
+                return matchesSearch && matchesOwner && matchesCity && matchesName && matchesStatus;
             });
         }
 
@@ -1753,19 +2258,21 @@
             const total = adminState.venues.length;
 
             if (manageVenuesElements.summary) {
-                manageVenuesElements.summary.textContent = `${total} locații`;
+                manageVenuesElements.summary.textContent = `${total} locații în portofoliu`;
             }
 
             const statusAggregate = filtered.reduce((acc, venue) => {
                 acc[venue.status] = (acc[venue.status] || 0) + 1;
                 return acc;
             }, {});
+            const pendingClaims = filtered.filter(venue => venue.claimStatus === 'pending').length;
 
             const statusParts = [];
             if (statusAggregate.approved) statusParts.push(`Active: ${statusAggregate.approved}`);
             if (statusAggregate.pending) statusParts.push(`În așteptare: ${statusAggregate.pending}`);
             if (statusAggregate.inactive) statusParts.push(`Dezactivate: ${statusAggregate.inactive}`);
             if (statusAggregate.rejected) statusParts.push(`Respinsă: ${statusAggregate.rejected}`);
+            if (pendingClaims) statusParts.push(`Claim-uri în așteptare: ${pendingClaims}`);
 
             if (manageVenuesElements.status) {
                 manageVenuesElements.status.textContent = statusParts.length
@@ -1777,12 +2284,12 @@
 
             if (manageVenuesElements.count) {
                 manageVenuesElements.count.textContent = filtered.length
-                    ? `${filtered.length} locații afișate din ${total}`
+                    ? `${filtered.length} locații afișate (din ${total})`
                     : 'Nicio locație nu corespunde filtrării curente.';
             }
 
             if (!filtered.length) {
-                manageVenuesElements.tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Nu există rezultate pentru filtrele selectate.</td></tr>';
+                manageVenuesElements.tableBody.innerHTML = '<tr><td colspan="10" class="empty-state">Nu există rezultate pentru filtrele selectate.</td></tr>';
                 return;
             }
 
@@ -1793,24 +2300,29 @@
                             <strong>${venue.name}</strong>
                             <span>Capacitate: ${venue.capacity}</span>
                         </div>
+                        <div class="table-subactions">
+                            <button class="table-link" type="button" data-venue-action="view" data-venue-id="${venue.id}">Vezi fișa</button>
+                            <button class="table-link" type="button" data-venue-action="manage" data-venue-id="${venue.id}">CRM proprietar</button>
+                        </div>
                     </td>
-                    <td>${venue.owner}</td>
+                    <td>
+                        <div class="table-cell-stack">
+                            <strong>${venue.owner || UNCLAIMED_OWNER_LABEL}</strong>
+                            ${venue.ownerContact ? `<span class="table-subtext">${venue.ownerContact}</span>` : ''}
+                        </div>
+                    </td>
+                    <td>${renderManagementChip(venue)}</td>
                     <td>${venue.city}</td>
+                    <td><strong>${formatCount(venue.viewingsRequests)}</strong></td>
+                    <td><strong>${formatCount(venue.availabilityRequests)}</strong></td>
                     <td><span class="status-chip" data-status="${venue.status}">${formatVenueStatus(venue.status)}</span></td>
                     <td>
-                        <div class="venue-meta">
+                        <div class="table-cell-stack">
                             <span>${venue.lastActivity}</span>
                         </div>
                     </td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="crm-button small primary" data-action="approve">Aprobă</button>
-                            <button class="crm-button small danger" data-action="reject">Respinge</button>
-                            <button class="crm-button small ghost" data-action="deactivate">Dezactivează</button>
-                            <button class="crm-button small ghost" data-action="view">Vezi</button>
-                            <button class="crm-button small primary" data-action="manage">Gerează</button>
-                        </div>
-                    </td>
+                    <td>${renderPublishControls(venue)}</td>
+                    <td>${renderClaimControls(venue)}</td>
                 </tr>
             `).join('');
         }
@@ -1949,6 +2461,13 @@
             });
         }
 
+        if (manageVenuesElements.statusFilter) {
+            manageVenuesElements.statusFilter.addEventListener('change', (event) => {
+                manageVenuesFilters.status = event.target.value;
+                renderManageVenues();
+            });
+        }
+
         if (accountElements.clients.search) {
             accountElements.clients.search.addEventListener('input', (event) => {
                 accountFilters.clients.search = event.target.value;
@@ -2008,47 +2527,46 @@
 
         if (manageVenuesElements.tableBody) {
             manageVenuesElements.tableBody.addEventListener('click', (event) => {
-                const action = event.target.getAttribute('data-action');
-                if (!action) return;
-
-                const row = event.target.closest('tr');
-                if (!row) return;
-                const venueId = Number(row.dataset.id);
-                const venue = adminState.venues.find(v => v.id === venueId);
-                if (!venue) return;
-
-                if (action === 'view') {
-                    window.open('venue-details.html', '_blank');
-                    logAdminActionFromManage('Vizualizare locație', `Fișa ${venue.name} a fost deschisă`);
+                const publishButton = event.target.closest('[data-publish]');
+                if (publishButton) {
+                    const action = publishButton.getAttribute('data-publish');
+                    const row = publishButton.closest('tr');
+                    if (!row) return;
+                    const venueId = Number(row.dataset.id);
+                    const venue = adminState.venues.find(v => v.id === venueId);
+                    if (!venue) return;
+                    handlePublishAction(venue, action);
                     return;
                 }
 
-                if (action === 'manage') {
-                    window.open('owner-crm.html#venues', '_blank');
-                    logAdminActionFromManage('Gerează locație', `CRM proprietar deschis pentru ${venue.name}`);
+                const claimButton = event.target.closest('[data-claim]');
+                if (claimButton) {
+                    const action = claimButton.getAttribute('data-claim');
+                    const row = claimButton.closest('tr');
+                    if (!row) return;
+                    const venueId = Number(row.dataset.id);
+                    const venue = adminState.venues.find(v => v.id === venueId);
+                    if (!venue) return;
+                    const owner = venue.claimOwnerId ? adminState.owners.find(o => o.id === venue.claimOwnerId) : null;
+                    applyClaimDecision(owner || null, venue, action, 'manage');
                     return;
                 }
 
-                const previousStatus = venue.status;
+                const quickAction = event.target.closest('[data-venue-action]');
+                if (quickAction) {
+                    const action = quickAction.getAttribute('data-venue-action');
+                    const venueId = Number(quickAction.getAttribute('data-venue-id'));
+                    const venue = adminState.venues.find(v => v.id === venueId);
+                    if (!venue) return;
 
-                if (action === 'approve') {
-                    venue.status = 'approved';
-                    venue.lastActivity = 'Aprobată chiar acum';
-                    adjustVenueMetrics(previousStatus, venue.status);
-                    logAdminActionFromManage('Locație aprobată', `${venue.name} marcată ca activă.`);
-                } else if (action === 'reject') {
-                    venue.status = 'rejected';
-                    venue.lastActivity = 'Respinsă pentru completări - chiar acum';
-                    adjustVenueMetrics(previousStatus, venue.status);
-                    logAdminActionFromManage('Locație respinsă', `${venue.name} necesită completări suplimentare.`);
-                } else if (action === 'deactivate') {
-                    venue.status = 'inactive';
-                    venue.lastActivity = 'Dezactivată chiar acum';
-                    adjustVenueMetrics(previousStatus, venue.status);
-                    logAdminActionFromManage('Locație dezactivată', `${venue.name} a fost scoasă temporar din listare.`);
+                    if (action === 'view') {
+                        window.open(venue.detailsUrl || 'venue-details.html', '_blank');
+                        logAdminActionFromManage('Vizualizare locație', `Fișa ${venue.name} a fost deschisă`);
+                    } else if (action === 'manage') {
+                        window.open(venue.crmUrl || 'owner-crm.html#venues', '_blank');
+                        logAdminActionFromManage('Gerează locație', `CRM proprietar deschis pentru ${venue.name}`);
+                    }
                 }
-
-                renderManageVenues();
             });
         }
 
