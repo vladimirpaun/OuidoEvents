@@ -167,6 +167,11 @@
             gap: 16px;
             flex-wrap: wrap;
         }
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .panel header h2 { margin: 0; font-size: 1.15rem; }
         .panel-meta { color: var(--muted-color); font-size: 0.85rem; }
 
@@ -216,6 +221,16 @@
             color: var(--muted-color);
         }
         table.crm-table tbody tr:last-child td { border-bottom: none; }
+
+        .table-cell-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .table-subtext {
+            font-size: 0.78rem;
+            color: var(--muted-color);
+        }
 
         .status-chip {
             display: inline-flex;
@@ -339,6 +354,24 @@
             border-color: rgba(0, 82, 212, 0.4);
             box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.12);
         }
+        .pill-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(67, 100, 247, 0.12);
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .pill-chip[data-variant="corporate"] { background: rgba(0, 82, 212, 0.12); color: var(--primary-color); }
+        .pill-chip[data-variant="private"] { background: rgba(236, 72, 153, 0.15); color: #be185d; }
+        .pill-chip[data-variant="planner"] { background: rgba(16, 185, 129, 0.16); color: #047857; }
+        .pill-chip[data-variant="agency"] { background: rgba(59, 130, 246, 0.16); color: #1d4ed8; }
+        .pill-chip[data-variant="admin"] { background: rgba(14, 165, 233, 0.16); color: #0369a1; }
+        .pill-chip[data-variant="owner"] { background: rgba(245, 158, 11, 0.16); color: #b45309; }
         .crm-table .empty-state {
             text-align: center;
             padding: 26px;
@@ -700,8 +733,14 @@
                 </div>
                 <div class="panel">
                     <header>
-                        <h2>Clienți</h2>
-                        <span class="panel-meta">Ultima sincronizare CRM acum 5 min</span>
+                        <div>
+                            <h2>Clienți</h2>
+                            <span class="panel-meta">Ultima sincronizare CRM acum 5 min</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="crm-button small ghost" type="button" data-action="invite-client">Invită client</button>
+                            <button class="crm-button small primary" type="button" data-action="export-clients">Exportă CSV</button>
+                        </div>
                     </header>
                     <div class="table-wrapper">
                         <table class="crm-table">
@@ -709,33 +748,99 @@
                                 <tr>
                                     <th>Nume</th>
                                     <th>Email</th>
+                                    <th>Tip cont</th>
                                     <th>Ultima activitate</th>
                                     <th>Status</th>
                                     <th></th>
+                                </tr>
+                                <tr class="filter-row">
+                                    <th>
+                                        <input type="search" class="filter-input" id="clients-search" placeholder="Caută după nume sau email" aria-label="Filtru căutare clienți">
+                                    </th>
+                                    <th></th>
+                                    <th>
+                                        <select class="filter-select" id="clients-type-filter" aria-label="Filtru tip cont">
+                                            <option value="all">Toate tipurile</option>
+                                            <option value="corporate">Corporate</option>
+                                            <option value="private">Privat</option>
+                                            <option value="planner">Wedding planner</option>
+                                            <option value="agency">Agenție</option>
+                                        </select>
+                                    </th>
+                                    <th></th>
+                                    <th>
+                                        <select class="filter-select" id="clients-status-filter" aria-label="Filtru status clienți">
+                                            <option value="all">Toate statusurile</option>
+                                            <option value="active">Activ</option>
+                                            <option value="inactive">Inactiv</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <button class="crm-button small ghost" type="button" id="clients-reset-filters">Reset</button>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="clients-table-body"></tbody>
                         </table>
                     </div>
+                    <div class="smart-table-footer">
+                        <span id="clients-table-count"></span>
+                        <span id="clients-table-meta"></span>
+                    </div>
                 </div>
                 <div class="panel">
                     <header>
-                        <h2>Proprietari de locații</h2>
-                        <span class="panel-meta">Monitorizare contracte active</span>
+                        <div>
+                            <h2>Proprietari de locații</h2>
+                            <span class="panel-meta">Monitorizare contracte active</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="crm-button small ghost" type="button" data-action="owners-export">Export parteneri</button>
+                            <button class="crm-button small primary" type="button" data-action="create-owner">Adaugă business</button>
+                        </div>
                     </header>
                     <div class="table-wrapper">
                         <table class="crm-table">
                             <thead>
                                 <tr>
                                     <th>Nume business</th>
+                                    <th>Administrare</th>
                                     <th>Contact</th>
                                     <th>Locații active</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
+                                <tr class="filter-row">
+                                    <th>
+                                        <input type="search" class="filter-input" id="owners-search" placeholder="Caută business sau contact" aria-label="Filtru căutare proprietari">
+                                    </th>
+                                    <th>
+                                        <select class="filter-select" id="owners-management-filter" aria-label="Filtru administrare">
+                                            <option value="all">Toate modurile</option>
+                                            <option value="owner">Gestionat de proprietar</option>
+                                            <option value="admin">Gestionat de Ouido</option>
+                                        </select>
+                                    </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>
+                                        <select class="filter-select" id="owners-status-filter" aria-label="Filtru status proprietari">
+                                            <option value="all">Toate statusurile</option>
+                                            <option value="active">Activ</option>
+                                            <option value="inactive">Inactiv</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <button class="crm-button small ghost" type="button" id="owners-reset-filters">Reset</button>
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody id="owners-table-body"></tbody>
                         </table>
+                    </div>
+                    <div class="smart-table-footer">
+                        <span id="owners-table-count"></span>
+                        <span id="owners-table-meta"></span>
                     </div>
                 </div>
             </section>
@@ -823,16 +928,128 @@
                 { name: 'Forest Retreat & Spa', owner: 'GreenStay', confirmations: '84%', responseTime: '5h' },
             ],
             clients: [
-                { id: 1, name: 'Alex Marin', email: 'alex.marin@email.com', lastActive: 'ieri', status: 'active' },
-                { id: 2, name: 'Bianca Vasile', email: 'bianca.vasile@email.com', lastActive: 'acum 3 zile', status: 'active' },
-                { id: 3, name: 'Corina Andrei', email: 'corina.andrei@email.com', lastActive: 'acum 14 zile', status: 'inactive' },
-                { id: 4, name: 'David Popescu', email: 'david.popescu@email.com', lastActive: 'azi', status: 'active' },
+                {
+                    id: 1,
+                    name: 'Alex Marin',
+                    email: 'alex.marin@email.com',
+                    phone: '+40 723 111 890',
+                    type: 'corporate',
+                    lastActive: 'ieri',
+                    activityNote: '11 cereri confirmate YTD',
+                    status: 'active',
+                },
+                {
+                    id: 2,
+                    name: 'Bianca Vasile',
+                    email: 'bianca.vasile@email.com',
+                    phone: '+40 746 220 110',
+                    type: 'private',
+                    lastActive: 'acum 3 zile',
+                    activityNote: 'Planifică nuntă · 2 locații favorite',
+                    status: 'active',
+                },
+                {
+                    id: 3,
+                    name: 'Corina Andrei',
+                    email: 'corina.andrei@email.com',
+                    phone: '+40 744 998 331',
+                    type: 'planner',
+                    lastActive: 'acum 14 zile',
+                    activityNote: 'Necesită follow-up cont inactiv',
+                    status: 'inactive',
+                },
+                {
+                    id: 4,
+                    name: 'David Popescu',
+                    email: 'david.popescu@email.com',
+                    phone: '+40 726 880 412',
+                    type: 'corporate',
+                    lastActive: 'azi',
+                    activityNote: 'Eveniment corporate confirmat',
+                    status: 'active',
+                },
+                {
+                    id: 5,
+                    name: 'Elena Dumitru',
+                    email: 'elena.dumitru@email.com',
+                    phone: '+40 742 667 905',
+                    type: 'agency',
+                    lastActive: 'acum 5 zile',
+                    activityNote: 'Agentie MICE · 4 cereri deschise',
+                    status: 'active',
+                },
+                {
+                    id: 6,
+                    name: 'Florin Negrea',
+                    email: 'florin.negrea@email.com',
+                    phone: '+40 721 305 776',
+                    type: 'private',
+                    lastActive: 'acum 21 zile',
+                    activityNote: 'În așteptarea confirmării pentru ofertă',
+                    status: 'inactive',
+                },
             ],
             owners: [
-                { id: 1, business: 'Eventique SRL', contact: 'Ioana Pătrașcu', locations: 4, status: 'active' },
-                { id: 2, business: 'Nymphaea Events', contact: 'Rareș Ioniță', locations: 2, status: 'active' },
-                { id: 3, business: 'Casa Alba Events', contact: 'Lavinia Neagu', locations: 1, status: 'inactive' },
-                { id: 4, business: 'GreenStay', contact: 'Mihai Radu', locations: 3, status: 'active' },
+                {
+                    id: 1,
+                    business: 'Eventique SRL',
+                    contact: 'Ioana Pătrașcu',
+                    contactEmail: 'ioana.patrascu@eventique.ro',
+                    management: 'owner',
+                    locations: 4,
+                    lastUpdate: 'Contract revizuit acum 2 zile',
+                    status: 'active',
+                },
+                {
+                    id: 2,
+                    business: 'Nymphaea Events',
+                    contact: 'Rareș Ioniță',
+                    contactEmail: 'rares@nymphaeaevents.ro',
+                    management: 'owner',
+                    locations: 2,
+                    lastUpdate: 'Dashboard actualizat ieri',
+                    status: 'active',
+                },
+                {
+                    id: 3,
+                    business: 'Casa Alba Events',
+                    contact: 'Lavinia Neagu',
+                    contactEmail: 'lavinia@casaalbaevents.ro',
+                    management: 'owner',
+                    locations: 1,
+                    lastUpdate: 'Necesită follow-up documente',
+                    status: 'inactive',
+                },
+                {
+                    id: 4,
+                    business: 'GreenStay',
+                    contact: 'Mihai Radu',
+                    contactEmail: 'mihai@greenstay.ro',
+                    management: 'owner',
+                    locations: 3,
+                    lastUpdate: 'Raport performanță trimis azi',
+                    status: 'active',
+                },
+                {
+                    id: 5,
+                    business: 'CityLights Venues',
+                    contact: 'Echipa Ouido',
+                    contactEmail: 'partners@ouidoevents.com',
+                    management: 'admin',
+                    locations: 3,
+                    lastUpdate: 'Administrat intern · sync azi 08:00',
+                    status: 'active',
+                },
+                {
+                    id: 6,
+                    business: 'Heritage Halls',
+                    contact: 'Coordonator Ouido',
+                    contactEmail: 'heritage@ouidoevents.com',
+                    management: 'admin',
+                    locations: 2,
+                    lastUpdate: 'Preluat de Ouido · contract în revizie',
+                    status: 'inactive',
+                },
             ],
             venues: [
                 { id: 401, name: 'Grand Palais Ballroom', owner: 'Eventique SRL', city: 'București', capacity: '150-320', status: 'approved', lastActivity: 'Ofertă actualizată acum 2h' },
@@ -869,6 +1086,38 @@
             count: document.getElementById('manage-venues-count'),
             status: document.getElementById('manage-venues-status'),
             summary: document.getElementById('manage-venues-summary'),
+        };
+
+        const accountFilters = {
+            clients: {
+                search: '',
+                status: 'all',
+                type: 'all',
+            },
+            owners: {
+                search: '',
+                status: 'all',
+                management: 'all',
+            },
+        };
+
+        const accountElements = {
+            clients: {
+                search: document.getElementById('clients-search'),
+                type: document.getElementById('clients-type-filter'),
+                status: document.getElementById('clients-status-filter'),
+                reset: document.getElementById('clients-reset-filters'),
+                count: document.getElementById('clients-table-count'),
+                meta: document.getElementById('clients-table-meta'),
+            },
+            owners: {
+                search: document.getElementById('owners-search'),
+                management: document.getElementById('owners-management-filter'),
+                status: document.getElementById('owners-status-filter'),
+                reset: document.getElementById('owners-reset-filters'),
+                count: document.getElementById('owners-table-count'),
+                meta: document.getElementById('owners-table-meta'),
+            },
         };
 
         function renderMetrics() {
@@ -1037,36 +1286,155 @@
             `).join('');
         }
 
+        function formatClientType(type) {
+            switch (type) {
+                case 'corporate':
+                    return 'Corporate';
+                case 'private':
+                    return 'Privat';
+                case 'planner':
+                    return 'Wedding planner';
+                case 'agency':
+                    return 'Agenție';
+                default:
+                    return type;
+            }
+        }
+
+        function formatOwnerManagement(mode) {
+            return mode === 'admin' ? 'Gestionat de Ouido' : 'Gestionat de proprietar';
+        }
+
+        function describeFiltersSummary(filters) {
+            const summary = [];
+            const searchTerm = (filters.search || '').trim();
+            if (searchTerm) {
+                summary.push(`căutare „${searchTerm}”`);
+            }
+            if (filters.type && filters.type !== 'all') {
+                summary.push(`tip ${formatClientType(filters.type).toLowerCase()}`);
+            }
+            if (filters.management && filters.management !== 'all') {
+                summary.push(filters.management === 'admin' ? 'administrare Ouido' : 'administrare proprietar');
+            }
+            if (filters.status && filters.status !== 'all') {
+                summary.push(`status ${filters.status === 'active' ? 'activ' : 'inactiv'}`);
+            }
+            return summary.length ? `Filtre: ${summary.join(', ')}` : 'Fără filtre active';
+        }
+
         function renderAccounts() {
             const clientsBody = document.getElementById('clients-table-body');
-            clientsBody.innerHTML = adminState.clients.map(client => `
-                <tr data-id="client-${client.id}">
-                    <td><strong>${client.name}</strong></td>
-                    <td>${client.email}</td>
-                    <td>${client.lastActive}</td>
-                    <td><span class="status-chip" data-status="${client.status}">${client.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
-                    <td>
-                        <button class="crm-button small ${client.status === 'active' ? 'danger' : 'primary'}" data-toggle-client="${client.id}">
-                            ${client.status === 'active' ? 'Dezactivează' : 'Reactivează'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-
             const ownersBody = document.getElementById('owners-table-body');
-            ownersBody.innerHTML = adminState.owners.map(owner => `
-                <tr data-id="owner-${owner.id}">
-                    <td><strong>${owner.business}</strong></td>
-                    <td>${owner.contact}</td>
-                    <td>${owner.locations}</td>
-                    <td><span class="status-chip" data-status="${owner.status}">${owner.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
-                    <td>
-                        <button class="crm-button small ${owner.status === 'active' ? 'danger' : 'primary'}" data-toggle-owner="${owner.id}">
-                            ${owner.status === 'active' ? 'Suspendă' : 'Reactivează'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            if (!clientsBody || !ownersBody) {
+                return;
+            }
+
+            const clientsFilters = accountFilters.clients;
+            const ownersFilters = accountFilters.owners;
+
+            const clientSearch = clientsFilters.search.trim().toLowerCase();
+            const filteredClients = adminState.clients.filter(client => {
+                const matchesSearch = !clientSearch
+                    || [client.name, client.email, client.phone || '']
+                        .some(field => field.toLowerCase().includes(clientSearch));
+                const matchesStatus = clientsFilters.status === 'all' || client.status === clientsFilters.status;
+                const matchesType = clientsFilters.type === 'all' || client.type === clientsFilters.type;
+                return matchesSearch && matchesStatus && matchesType;
+            });
+
+            clientsBody.innerHTML = filteredClients.length
+                ? filteredClients.map(client => `
+                    <tr data-id="client-${client.id}">
+                        <td>
+                            <div class="table-cell-stack">
+                                <strong>${client.name}</strong>
+                                <span class="table-subtext">${client.phone}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-cell-stack">
+                                <span>${client.email}</span>
+                            </div>
+                        </td>
+                        <td><span class="pill-chip" data-variant="${client.type}">${formatClientType(client.type)}</span></td>
+                        <td>
+                            <div class="table-cell-stack">
+                                <span>${client.lastActive}</span>
+                                <span class="table-subtext">${client.activityNote}</span>
+                            </div>
+                        </td>
+                        <td><span class="status-chip" data-status="${client.status}">${client.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="crm-button small ${client.status === 'active' ? 'danger' : 'primary'}" data-toggle-client="${client.id}">
+                                    ${client.status === 'active' ? 'Dezactivează' : 'Reactivează'}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="6" class="empty-state">Niciun client găsit după filtrele curente.</td></tr>';
+
+            if (accountElements.clients.count) {
+                const label = filteredClients.length === 1 ? 'cont' : 'conturi';
+                accountElements.clients.count.textContent = `${filteredClients.length} ${label} afișate`;
+            }
+            if (accountElements.clients.meta) {
+                accountElements.clients.meta.textContent = describeFiltersSummary(clientsFilters);
+            }
+
+            const ownerSearch = ownersFilters.search.trim().toLowerCase();
+            const filteredOwners = adminState.owners.filter(owner => {
+                const matchesSearch = !ownerSearch
+                    || [owner.business, owner.contact, owner.contactEmail || '']
+                        .some(field => field.toLowerCase().includes(ownerSearch));
+                const matchesStatus = ownersFilters.status === 'all' || owner.status === ownersFilters.status;
+                const matchesManagement = ownersFilters.management === 'all' || owner.management === ownersFilters.management;
+                return matchesSearch && matchesStatus && matchesManagement;
+            });
+
+            ownersBody.innerHTML = filteredOwners.length
+                ? filteredOwners.map(owner => `
+                    <tr data-id="owner-${owner.id}">
+                        <td>
+                            <div class="table-cell-stack">
+                                <strong>${owner.business}</strong>
+                                <span class="table-subtext">${owner.lastUpdate}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-cell-stack">
+                                <span class="pill-chip" data-variant="${owner.management}">${formatOwnerManagement(owner.management)}</span>
+                                <span class="table-subtext">${owner.management === 'admin' ? 'Portofoliu fără proprietar dedicat' : 'Administrat direct de partener'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-cell-stack">
+                                <span>${owner.contact}</span>
+                                <span class="table-subtext">${owner.contactEmail}</span>
+                            </div>
+                        </td>
+                        <td>${owner.locations}</td>
+                        <td><span class="status-chip" data-status="${owner.status}">${owner.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="crm-button small ${owner.status === 'active' ? 'danger' : 'primary'}" data-toggle-owner="${owner.id}">
+                                    ${owner.status === 'active' ? 'Suspendă' : 'Reactivează'}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="6" class="empty-state">Nu există parteneri care să corespundă filtrelor.</td></tr>';
+
+            if (accountElements.owners.count) {
+                const label = filteredOwners.length === 1 ? 'partener' : 'parteneri';
+                accountElements.owners.count.textContent = `${filteredOwners.length} ${label} afișați`;
+            }
+            if (accountElements.owners.meta) {
+                accountElements.owners.meta.textContent = describeFiltersSummary(ownersFilters);
+            }
         }
 
         function renderActivity() {
@@ -1318,6 +1686,72 @@
             manageVenuesElements.city.addEventListener('change', (event) => {
                 manageVenuesFilters.city = event.target.value;
                 renderManageVenues();
+            });
+        }
+
+        if (accountElements.clients.search) {
+            accountElements.clients.search.addEventListener('input', (event) => {
+                accountFilters.clients.search = event.target.value;
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.clients.type) {
+            accountElements.clients.type.addEventListener('change', (event) => {
+                accountFilters.clients.type = event.target.value;
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.clients.status) {
+            accountElements.clients.status.addEventListener('change', (event) => {
+                accountFilters.clients.status = event.target.value;
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.clients.reset) {
+            accountElements.clients.reset.addEventListener('click', () => {
+                accountFilters.clients.search = '';
+                accountFilters.clients.type = 'all';
+                accountFilters.clients.status = 'all';
+                if (accountElements.clients.search) accountElements.clients.search.value = '';
+                if (accountElements.clients.type) accountElements.clients.type.value = 'all';
+                if (accountElements.clients.status) accountElements.clients.status.value = 'all';
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.owners.search) {
+            accountElements.owners.search.addEventListener('input', (event) => {
+                accountFilters.owners.search = event.target.value;
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.owners.management) {
+            accountElements.owners.management.addEventListener('change', (event) => {
+                accountFilters.owners.management = event.target.value;
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.owners.status) {
+            accountElements.owners.status.addEventListener('change', (event) => {
+                accountFilters.owners.status = event.target.value;
+                renderAccounts();
+            });
+        }
+
+        if (accountElements.owners.reset) {
+            accountElements.owners.reset.addEventListener('click', () => {
+                accountFilters.owners.search = '';
+                accountFilters.owners.management = 'all';
+                accountFilters.owners.status = 'all';
+                if (accountElements.owners.search) accountElements.owners.search.value = '';
+                if (accountElements.owners.management) accountElements.owners.management.value = 'all';
+                if (accountElements.owners.status) accountElements.owners.status.value = 'all';
+                renderAccounts();
             });
         }
 
