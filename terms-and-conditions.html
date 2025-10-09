@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ouidoEvents · Termeni și Condiții</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #0052d4;
+      --secondary-color: #4364f7;
+      --accent-color: #5ddcff;
+      --header-bg: linear-gradient(to right, #f8fbff, #eef5ff);
+      --dark-color: #1a202c;
+      --gray-color: #555555;
+      --muted-color: #7a7f87;
+      --light-gray-color: #f0f2f5;
+      --bg-color: #f8f9fa;
+      --white-color: #ffffff;
+      --border-color: #e5eaf1;
+      --shadow-color: rgba(0, 82, 212, 0.1);
+      --border-radius: 12px;
+      --transition-base: 0.3s ease;
+      --header-height: 74px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: var(--dark-color);
+      line-height: 1.7;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      padding: 80px 0 60px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .page-header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .page-header p {
+      color: var(--gray-color);
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1rem;
+    }
+
+    .terms-wrapper {
+      background-color: var(--white-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 25px var(--shadow-color);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .terms-section h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary-color);
+    }
+
+    .terms-section p,
+    .terms-section ul {
+      color: var(--gray-color);
+      font-size: 1rem;
+    }
+
+    .terms-section ul {
+      margin-top: 12px;
+      padding-left: 20px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .terms-section strong {
+      color: var(--dark-color);
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(67, 100, 247, 0.08), rgba(93, 220, 255, 0.1));
+      border: 1px solid rgba(67, 100, 247, 0.2);
+      padding: 24px;
+      border-radius: var(--border-radius);
+      color: var(--dark-color);
+      line-height: 1.6;
+    }
+
+    .last-update {
+      font-size: 0.95rem;
+      color: var(--muted-color);
+    }
+
+    @media (max-width: 992px) {
+      main {
+        padding: 60px 0 40px;
+      }
+
+      .terms-wrapper {
+        padding: 36px;
+        gap: 28px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 {
+        font-size: 2rem;
+      }
+
+      .terms-wrapper {
+        padding: 26px;
+        gap: 24px;
+      }
+
+      .terms-section h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body data-page="terms">
+  <div data-include="header.html"></div>
+  <div data-include="mobile-menu.html"></div>
+
+  <main>
+    <div class="container">
+      <header class="page-header">
+        <p class="last-update">Actualizat la 5 februarie 2025</p>
+        <h1>Termeni și Condiții ouidoEvents</h1>
+        <p>Prezentul document stabilește condițiile de utilizare a platformei ouidoEvents și reglementează relațiile dintre organizatorii de evenimente, proprietarii de locații și platformă.</p>
+      </header>
+
+      <div class="terms-wrapper">
+        <section class="terms-section" id="introducere">
+          <h2>1. Acceptarea termenilor</h2>
+          <p>Prin crearea unui cont sau utilizarea platformei ouidoEvents, confirmați că ați citit, înțeles și acceptat prezentii Termeni și Condiții. Dacă utilizați platforma în numele unei companii sau organizații, declarați că aveți autoritatea de a accepta termenii în numele acesteia.</p>
+        </section>
+
+        <section class="terms-section" id="definitii">
+          <h2>2. Definiții</h2>
+          <ul>
+            <li><strong>Platformă</strong> – aplicația web ouidoEvents prin care se facilitează listarea, descoperirea și rezervarea locațiilor pentru evenimente.</li>
+            <li><strong>Organizator</strong> – utilizatorul care caută, rezervă sau gestionează locații pentru evenimente.</li>
+            <li><strong>Proprietar</strong> – utilizatorul care publică și administrează una sau mai multe locații disponibile pentru rezervare.</li>
+            <li><strong>Rezervare</strong> – acordul stabilit între Organizator și Proprietar privind utilizarea unei locații pentru o anumită perioadă.</li>
+          </ul>
+        </section>
+
+        <section class="terms-section" id="cont-eligibilitate">
+          <h2>3. Cont și eligibilitate</h2>
+          <p>Pentru a utiliza funcționalitățile platformei, trebuie să aveți cel puțin 18 ani și capacitate deplină de exercițiu. Sunteți responsabil pentru informațiile furnizate la crearea contului și pentru confidențialitatea datelor de autentificare. Platforma își rezervă dreptul de a suspenda conturi în cazul încălcării termenilor.</p>
+        </section>
+
+        <section class="terms-section" id="rezervare">
+          <h2>4. Procesul de rezervare</h2>
+          <p>Rezervările se inițiază prin trimiterea unei solicitări din partea Organizatorului și sunt confirmate de Proprietar. Confirmarea scrisă transmisă prin platformă sau prin e-mail reprezintă acceptarea rezervării. Proprietarii sunt responsabili pentru actualizarea disponibilității și pentru furnizarea de informații complete și corecte despre locații.</p>
+        </section>
+
+        <section class="terms-section" id="plati">
+          <h2>5. Tarife și plăți</h2>
+          <ul>
+            <li>Tarifele afișate includ toate costurile obligatorii comunicate de Proprietar.</li>
+            <li>Plata se efectuează conform termenilor stabiliți între părți. Platforma poate oferi soluții de plată securizate, iar taxele de procesare vor fi comunicate în prealabil.</li>
+            <li>Este responsabilitatea Organizatorului să achite la timp sumele datorate. Neplata poate duce la anularea rezervării și la aplicarea unor penalități.</li>
+          </ul>
+        </section>
+
+        <section class="terms-section" id="anulare">
+          <h2>6. Politica de anulare</h2>
+          <p>Condițiile de anulare și rambursare sunt stabilite de fiecare Proprietar și prezentate în descrierea locației sau în contractul de rezervare. În lipsa unor condiții specifice, se aplică termenii agreați în corespondența dintre părți. Recomandăm confirmarea în scris a oricăror modificări.</p>
+        </section>
+
+        <section class="terms-section" id="responsabilitati-organizatori">
+          <h2>7. Obligațiile Organizatorilor</h2>
+          <ul>
+            <li>Să furnizeze informații exacte privind tipul evenimentului, numărul de participanți și cerințele speciale.</li>
+            <li>Să respecte regulile casei stabilite de Proprietar și legislația aplicabilă.</li>
+            <li>Să obțină toate autorizațiile necesare pentru eveniment (de ex. acorduri pentru muzică live, licențe pentru comercializare băuturi).</li>
+            <li>Să restituie locația în starea inițială și să acopere eventualele daune produse.</li>
+          </ul>
+        </section>
+
+        <section class="terms-section" id="responsabilitati-proprietari">
+          <h2>8. Obligațiile Proprietarilor</h2>
+          <ul>
+            <li>Să ofere descrieri corecte, actualizate și complete ale locației.</li>
+            <li>Să asigure că locația respectă normele de siguranță, sănătate și protecție la incendiu.</li>
+            <li>Să comunice prompt solicitările și să confirme rezervările într-un interval rezonabil.</li>
+            <li>Să furnizeze Organizatorului toate regulile interne și limitările legale aplicabile.</li>
+          </ul>
+        </section>
+
+        <section class="terms-section" id="utilizare-locatie">
+          <h2>9. Utilizarea locației și comportament</h2>
+          <p>Organizatorii și invitații lor trebuie să respecte regulile stabilite de Proprietar, precum și normele de conviețuire socială și reglementările locale. Este interzisă desfășurarea de activități ilegale sau care pot provoca daune proprietății, vecinilor sau mediului. Proprietarul poate solicita oprirea evenimentului în cazul încălcării regulilor.</p>
+        </section>
+
+        <section class="terms-section" id="raspundere">
+          <h2>10. Limitarea răspunderii</h2>
+          <p>Platforma ouidoEvents acționează ca intermediar între Organizatori și Proprietari. Nu garantăm calitatea locațiilor și nu suntem responsabili pentru neconformități, anulări sau pierderi cauzate de părți. Răspunderea noastră este limitată la comisioanele percepute conform legislației aplicabile.</p>
+        </section>
+
+        <section class="terms-section" id="proprietate-intelectuala">
+          <h2>11. Proprietate intelectuală</h2>
+          <p>Conținutul platformei, incluzând dar fără a se limita la text, grafică, logo-uri, pictograme și software, este proprietatea ouidoEvents sau a partenerilor săi și este protejat de legislația privind drepturile de autor. Reproducerea, distribuirea sau modificarea neautorizată este interzisă.</p>
+        </section>
+
+        <section class="terms-section" id="date-personale">
+          <h2>12. Protecția datelor</h2>
+          <p>Prelucrarea datelor cu caracter personal se realizează conform Politicii de Confidențialitate a platformei. Prin utilizarea serviciilor, acceptați colectarea și utilizarea datelor personale în scopul asigurării rezervărilor și comunicării între părți.</p>
+        </section>
+
+        <section class="terms-section" id="modificari">
+          <h2>13. Modificări ale termenilor</h2>
+          <p>Ne rezervăm dreptul de a modifica periodic Termenii și Condițiile. Actualizările vor fi publicate pe această pagină, iar data ultimei revizuiri va fi actualizată corespunzător. Continuarea utilizării platformei după modificări reprezintă acceptarea noilor termeni.</p>
+        </section>
+
+        <section class="terms-section" id="lege">
+          <h2>14. Legea aplicabilă și soluționarea litigiilor</h2>
+          <p>Prezentul document este guvernat de legislația din România. Orice dispută va fi soluționată pe cale amiabilă, iar în lipsa unui acord, litigiile vor fi înaintate instanțelor competente din București.</p>
+        </section>
+
+        <section class="terms-section" id="contact">
+          <h2>15. Contact</h2>
+          <div class="highlight-box">
+            Pentru orice întrebări legate de acești termeni, ne poți contacta la <strong>contact@ouidoevents.com</strong> sau la numărul <strong>+40 712 345 678</strong>.
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="footer.html"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>
