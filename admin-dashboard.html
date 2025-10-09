@@ -241,6 +241,11 @@
             font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
         }
         .crm-button.primary {
             background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
@@ -261,6 +266,116 @@
             font-size: 0.82rem;
         }
         .table-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .global-search-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .global-search-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .global-search-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .global-search-header p {
+            margin: 4px 0 0;
+            color: var(--muted-color);
+            font-size: 0.9rem;
+        }
+        .global-search-copy {
+            flex: 1 1 260px;
+        }
+        .global-search-control {
+            flex: 1 1 320px;
+            position: relative;
+        }
+        .global-search-control svg {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--muted-color);
+            opacity: 0.7;
+        }
+        .global-search-control input {
+            width: 100%;
+            padding: 14px 18px 14px 48px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 82, 212, 0.16);
+            background: rgba(67, 100, 247, 0.08);
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .global-search-control input:focus {
+            outline: none;
+            border-color: rgba(0, 82, 212, 0.4);
+            box-shadow: 0 0 0 4px rgba(0, 82, 212, 0.12);
+        }
+
+        .crm-table .filter-row th {
+            padding: 10px 12px 16px;
+            border-bottom: none;
+        }
+        .crm-table .filter-input,
+        .crm-table .filter-select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 82, 212, 0.18);
+            background: rgba(67, 100, 247, 0.06);
+            font-size: 0.85rem;
+        }
+        .crm-table .filter-input:focus,
+        .crm-table .filter-select:focus {
+            outline: none;
+            border-color: rgba(0, 82, 212, 0.4);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.12);
+        }
+        .crm-table .empty-state {
+            text-align: center;
+            padding: 26px;
+            color: var(--muted-color);
+        }
+
+        .venue-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .venue-meta span {
+            font-size: 0.82rem;
+            color: var(--muted-color);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(0, 82, 212, 0.08);
+            color: var(--primary-color);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .smart-table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: var(--muted-color);
+        }
 
         .two-column-layout {
             display: grid;
@@ -347,6 +462,8 @@
             .page-header { padding: 22px; }
             .panel { padding: 22px; }
             .table-wrapper { margin: 0 -10px; }
+            .global-search-header { align-items: flex-start; }
+            .global-search-control { width: 100%; }
         }
     </style>
 </head>
@@ -371,6 +488,10 @@
                         <button class="crm-nav-link" type="button" data-page-target="approvals">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                             Aprobări locații
+                        </button>
+                        <button class="crm-nav-link" type="button" data-page-target="manage-venues">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18"/><path d="M5 5h14a2 2 0 0 1 2 2v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2z"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>
+                            Gerează locații
                         </button>
                         <button class="crm-nav-link" type="button" data-page-target="analytics">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19V6"/><path d="M7 19v-4"/><path d="M15 19v-8"/><path d="M19 19V9"/></svg>
@@ -403,6 +524,7 @@
                     <div class="page-actions">
                         <button class="crm-button primary" type="button" data-action="export-report">Exportă raport zilnic</button>
                         <button class="crm-button ghost" type="button" data-action="schedule-sync">Programează sync cu echipa</button>
+                        <a class="crm-button ghost" href="owner-crm.html" target="_blank" rel="noopener">Deschide CRM proprietar</a>
                     </div>
                 </div>
 
@@ -476,6 +598,67 @@
                             </thead>
                             <tbody id="recent-decisions-body"></tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="crm-page" data-page="manage-venues">
+                <div class="page-header">
+                    <h1>Gerează portofoliul de locații</h1>
+                    <p>Monitorizează starea fiecărei locații publicate sau în așteptare și acționează rapid asupra celor care necesită atenție.</p>
+                </div>
+
+                <div class="panel global-search-panel">
+                    <div class="global-search-header">
+                        <div class="global-search-copy">
+                            <h2>Căutare rapidă în portofoliu</h2>
+                            <p>Filtrează simultan după nume, proprietar, oraș, status sau ultimele activități.</p>
+                        </div>
+                        <div class="global-search-control">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                            <input type="search" id="manage-venues-search" placeholder="Caută după orice câmp (nume, oraș, proprietar, status)" aria-label="Căutare generală locații">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <header>
+                        <div>
+                            <h2>Locații active & în lucru</h2>
+                            <span class="panel-meta">Vizualizare centralizată cu ultimele acțiuni și statusuri</span>
+                        </div>
+                        <span class="badge" id="manage-venues-summary">Portofoliu complet</span>
+                    </header>
+                    <div class="table-wrapper">
+                        <table class="crm-table" aria-describedby="manage-venues-summary">
+                            <thead>
+                                <tr>
+                                    <th>Locație</th>
+                                    <th>Proprietar</th>
+                                    <th>Oraș</th>
+                                    <th>Status</th>
+                                    <th>Ultima activitate</th>
+                                    <th></th>
+                                </tr>
+                                <tr class="filter-row">
+                                    <th><input type="search" class="filter-input" id="filter-venue-name" placeholder="Filtru nume locație" aria-label="Filtru nume locație"></th>
+                                    <th>
+                                        <select class="filter-select" id="filter-owner" aria-label="Filtru proprietar"></select>
+                                    </th>
+                                    <th>
+                                        <select class="filter-select" id="filter-city" aria-label="Filtru oraș"></select>
+                                    </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="manage-venues-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="smart-table-footer">
+                        <span id="manage-venues-count"></span>
+                        <span id="manage-venues-status"></span>
                     </div>
                 </div>
             </section>
@@ -651,12 +834,41 @@
                 { id: 3, business: 'Casa Alba Events', contact: 'Lavinia Neagu', locations: 1, status: 'inactive' },
                 { id: 4, business: 'GreenStay', contact: 'Mihai Radu', locations: 3, status: 'active' },
             ],
+            venues: [
+                { id: 401, name: 'Grand Palais Ballroom', owner: 'Eventique SRL', city: 'București', capacity: '150-320', status: 'approved', lastActivity: 'Ofertă actualizată acum 2h' },
+                { id: 402, name: 'Casa Hellen', owner: 'Casa Alba Events', city: 'Cluj-Napoca', capacity: '80-180', status: 'pending', lastActivity: 'În verificare documente - acum 30m' },
+                { id: 403, name: 'Ambience Lake Resort', owner: 'Ambience Group', city: 'Snagov', capacity: '120-400', status: 'approved', lastActivity: 'A răspuns la cereri azi 09:30' },
+                { id: 404, name: 'Urban Yard', owner: 'Urban Spaces', city: 'București', capacity: '100-220', status: 'inactive', lastActivity: 'Dezactivat pentru mentenanță - ieri' },
+                { id: 405, name: 'Skyline Events Terrace', owner: 'Skyline Holdings', city: 'București', capacity: '90-200', status: 'approved', lastActivity: 'Dashboard actualizat acum 1h' },
+                { id: 406, name: 'Forest Retreat & Spa', owner: 'GreenStay', city: 'Brașov', capacity: '60-150', status: 'approved', lastActivity: 'Tur virtual încărcat acum 3h' },
+                { id: 302, name: 'Domaine Verde', owner: 'Marius Bălan', city: 'Sinaia', capacity: '120-300', status: 'pending', lastActivity: 'Așteaptă confirmare contract - azi 11:00' },
+                { id: 303, name: 'Mare Nostrum Terrace', owner: 'Iulia Iancu', city: 'Constanța', capacity: '60-220', status: 'pending', lastActivity: 'Solicitare clarificări trimisă - azi 10:10' },
+                { id: 301, name: 'The Ivy Loft', owner: 'Evelin Pop', city: 'București', capacity: '80-150', status: 'pending', lastActivity: 'În curs de aprobare - azi 08:45' },
+            ],
             activity: [
                 { id: 501, initials: 'MP', title: 'Listare aprobată', detail: '"Luna Ballroom" a fost publicată', time: 'acum 2h' },
                 { id: 502, initials: 'AG', title: 'Cont client suspendat', detail: 'Clientul "Corina Andrei" marcat ca inactiv', time: 'acum 5h' },
                 { id: 503, initials: 'MP', title: 'Request escaladat', detail: 'Cerere #4589 transmisă spre suport premium', time: 'acum 11h' },
                 { id: 504, initials: 'DV', title: 'Raport exportat', detail: 'Raport zilnic în format CSV', time: 'ieri' },
             ],
+        };
+
+        const manageVenuesFilters = {
+            search: '',
+            owner: 'all',
+            city: 'all',
+            name: '',
+        };
+
+        const manageVenuesElements = {
+            search: document.getElementById('manage-venues-search'),
+            owner: document.getElementById('filter-owner'),
+            city: document.getElementById('filter-city'),
+            name: document.getElementById('filter-venue-name'),
+            tableBody: document.getElementById('manage-venues-body'),
+            count: document.getElementById('manage-venues-count'),
+            status: document.getElementById('manage-venues-status'),
+            summary: document.getElementById('manage-venues-summary'),
         };
 
         function renderMetrics() {
@@ -871,6 +1083,176 @@
             `).join('');
         }
 
+        function populateManageVenueFilters() {
+            if (!manageVenuesElements.owner || !manageVenuesElements.city) return;
+
+            const ownerValue = manageVenuesFilters.owner;
+            const cityValue = manageVenuesFilters.city;
+
+            const owners = Array.from(new Set(adminState.venues.map(venue => venue.owner)))
+                .sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
+            const cities = Array.from(new Set(adminState.venues.map(venue => venue.city)))
+                .sort((a, b) => a.localeCompare(b, 'ro', { sensitivity: 'base' }));
+
+            manageVenuesElements.owner.innerHTML = ['<option value="all">Toți proprietarii</option>',
+                ...owners.map(owner => `<option value="${owner}">${owner}</option>`)
+            ].join('');
+
+            manageVenuesElements.city.innerHTML = ['<option value="all">Toate orașele</option>',
+                ...cities.map(city => `<option value="${city}">${city}</option>`)
+            ].join('');
+
+            manageVenuesElements.owner.value = owners.includes(ownerValue) ? ownerValue : 'all';
+            manageVenuesElements.city.value = cities.includes(cityValue) ? cityValue : 'all';
+
+            manageVenuesFilters.owner = manageVenuesElements.owner.value;
+            manageVenuesFilters.city = manageVenuesElements.city.value;
+        }
+
+        function formatVenueStatus(status) {
+            switch (status) {
+                case 'approved':
+                    return 'Activă';
+                case 'pending':
+                    return 'În așteptare';
+                case 'inactive':
+                    return 'Dezactivată';
+                case 'rejected':
+                    return 'Respinsă';
+                default:
+                    return status;
+            }
+        }
+
+        function getFilteredVenues() {
+            const query = manageVenuesFilters.search.trim().toLowerCase();
+            const owner = manageVenuesFilters.owner;
+            const city = manageVenuesFilters.city;
+            const nameFilter = manageVenuesFilters.name.trim().toLowerCase();
+
+            return adminState.venues.filter(venue => {
+                const matchesSearch = !query || [
+                    venue.name,
+                    venue.owner,
+                    venue.city,
+                    venue.status,
+                    venue.lastActivity,
+                    venue.capacity,
+                ].some(value => value.toLowerCase().includes(query));
+                const matchesOwner = owner === 'all' || venue.owner === owner;
+                const matchesCity = city === 'all' || venue.city === city;
+                const matchesName = !nameFilter || venue.name.toLowerCase().includes(nameFilter);
+
+                return matchesSearch && matchesOwner && matchesCity && matchesName;
+            });
+        }
+
+        function renderManageVenues() {
+            if (!manageVenuesElements.tableBody) return;
+
+            const filtered = getFilteredVenues();
+            const total = adminState.venues.length;
+
+            if (manageVenuesElements.summary) {
+                manageVenuesElements.summary.textContent = `${total} locații`;
+            }
+
+            const statusAggregate = filtered.reduce((acc, venue) => {
+                acc[venue.status] = (acc[venue.status] || 0) + 1;
+                return acc;
+            }, {});
+
+            const statusParts = [];
+            if (statusAggregate.approved) statusParts.push(`Active: ${statusAggregate.approved}`);
+            if (statusAggregate.pending) statusParts.push(`În așteptare: ${statusAggregate.pending}`);
+            if (statusAggregate.inactive) statusParts.push(`Dezactivate: ${statusAggregate.inactive}`);
+            if (statusAggregate.rejected) statusParts.push(`Respinsă: ${statusAggregate.rejected}`);
+
+            if (manageVenuesElements.status) {
+                manageVenuesElements.status.textContent = statusParts.length
+                    ? statusParts.join(' · ')
+                    : filtered.length
+                        ? 'Selectează filtre pentru a rafina portofoliul'
+                        : 'Ajustează filtrele pentru a vedea rezultate';
+            }
+
+            if (manageVenuesElements.count) {
+                manageVenuesElements.count.textContent = filtered.length
+                    ? `${filtered.length} locații afișate din ${total}`
+                    : 'Nicio locație nu corespunde filtrării curente.';
+            }
+
+            if (!filtered.length) {
+                manageVenuesElements.tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Nu există rezultate pentru filtrele selectate.</td></tr>';
+                return;
+            }
+
+            manageVenuesElements.tableBody.innerHTML = filtered.map(venue => `
+                <tr data-id="${venue.id}">
+                    <td>
+                        <div class="venue-meta">
+                            <strong>${venue.name}</strong>
+                            <span>Capacitate: ${venue.capacity}</span>
+                        </div>
+                    </td>
+                    <td>${venue.owner}</td>
+                    <td>${venue.city}</td>
+                    <td><span class="status-chip" data-status="${venue.status}">${formatVenueStatus(venue.status)}</span></td>
+                    <td>
+                        <div class="venue-meta">
+                            <span>${venue.lastActivity}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="crm-button small primary" data-action="approve">Aprobă</button>
+                            <button class="crm-button small danger" data-action="reject">Respinge</button>
+                            <button class="crm-button small ghost" data-action="deactivate">Dezactivează</button>
+                            <button class="crm-button small ghost" data-action="view">Vezi</button>
+                            <button class="crm-button small primary" data-action="manage">Gerează</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function adjustVenueMetrics(previousStatus, newStatus) {
+            if (previousStatus === newStatus) {
+                return;
+            }
+
+            if (previousStatus === 'approved' && newStatus !== 'approved') {
+                adminState.metrics.publishedVenues = Math.max(0, adminState.metrics.publishedVenues - 1);
+            }
+
+            if (newStatus === 'approved' && previousStatus !== 'approved') {
+                adminState.metrics.publishedVenues += 1;
+            }
+
+            if (previousStatus === 'pending' && newStatus !== 'pending') {
+                adminState.metrics.pendingVenues = Math.max(0, adminState.metrics.pendingVenues - 1);
+            }
+
+            if (newStatus === 'pending' && previousStatus !== 'pending') {
+                adminState.metrics.pendingVenues += 1;
+            }
+
+            renderMetrics();
+            renderAnalytics();
+        }
+
+        function logAdminActionFromManage(title, detail) {
+            adminState.activity.unshift({
+                id: Date.now(),
+                initials: 'AD',
+                title,
+                detail,
+                time: 'chiar acum',
+            });
+            adminState.activity = adminState.activity.slice(0, 12);
+            renderActivity();
+        }
+
         function updateMetricsAfterDecision(status) {
             if (status === 'approved') {
                 adminState.metrics.publishedVenues += 1;
@@ -911,6 +1293,83 @@
             renderActivity();
         }
 
+        if (manageVenuesElements.search) {
+            manageVenuesElements.search.addEventListener('input', (event) => {
+                manageVenuesFilters.search = event.target.value;
+                renderManageVenues();
+            });
+        }
+
+        if (manageVenuesElements.name) {
+            manageVenuesElements.name.addEventListener('input', (event) => {
+                manageVenuesFilters.name = event.target.value;
+                renderManageVenues();
+            });
+        }
+
+        if (manageVenuesElements.owner) {
+            manageVenuesElements.owner.addEventListener('change', (event) => {
+                manageVenuesFilters.owner = event.target.value;
+                renderManageVenues();
+            });
+        }
+
+        if (manageVenuesElements.city) {
+            manageVenuesElements.city.addEventListener('change', (event) => {
+                manageVenuesFilters.city = event.target.value;
+                renderManageVenues();
+            });
+        }
+
+        if (manageVenuesElements.tableBody) {
+            manageVenuesElements.tableBody.addEventListener('click', (event) => {
+                const action = event.target.getAttribute('data-action');
+                if (!action) return;
+
+                const row = event.target.closest('tr');
+                if (!row) return;
+                const venueId = Number(row.dataset.id);
+                const venue = adminState.venues.find(v => v.id === venueId);
+                if (!venue) return;
+
+                if (action === 'view') {
+                    window.open('venue-details.html', '_blank');
+                    logAdminActionFromManage('Vizualizare locație', `Fișa ${venue.name} a fost deschisă`);
+                    return;
+                }
+
+                if (action === 'manage') {
+                    window.open('owner-crm.html#portfolio', '_blank');
+                    logAdminActionFromManage('Gerează locație', `CRM proprietar deschis pentru ${venue.name}`);
+                    return;
+                }
+
+                const previousStatus = venue.status;
+
+                if (action === 'approve') {
+                    venue.status = 'approved';
+                    venue.lastActivity = 'Aprobată chiar acum';
+                    adjustVenueMetrics(previousStatus, venue.status);
+                    logAdminActionFromManage('Locație aprobată', `${venue.name} marcată ca activă.`);
+                } else if (action === 'reject') {
+                    venue.status = 'rejected';
+                    venue.lastActivity = 'Respinsă pentru completări - chiar acum';
+                    adjustVenueMetrics(previousStatus, venue.status);
+                    logAdminActionFromManage('Locație respinsă', `${venue.name} necesită completări suplimentare.`);
+                } else if (action === 'deactivate') {
+                    venue.status = 'inactive';
+                    venue.lastActivity = 'Dezactivată chiar acum';
+                    adjustVenueMetrics(previousStatus, venue.status);
+                    logAdminActionFromManage('Locație dezactivată', `${venue.name} a fost scoasă temporar din listare.`);
+                }
+
+                renderManageVenues();
+            });
+        }
+
+        populateManageVenueFilters();
+        renderManageVenues();
+
         document.getElementById('pending-venues-body').addEventListener('click', (event) => {
             const approveId = event.target.getAttribute('data-approve');
             const rejectId = event.target.getAttribute('data-reject');
@@ -931,8 +1390,17 @@
             });
             adminState.recentDecisions = adminState.recentDecisions.slice(0, 8);
 
+            const managedVenue = adminState.venues.find(v => v.id === venueId);
+            if (managedVenue) {
+                managedVenue.status = approveId ? 'approved' : 'rejected';
+                managedVenue.lastActivity = approveId
+                    ? 'Aprobată în moderare - chiar acum'
+                    : 'Respinsă în moderare - chiar acum';
+            }
+
             renderPendingVenues();
             renderRecentDecisions();
+            renderManageVenues();
             updateMetricsAfterDecision(approveId ? 'approved' : 'rejected');
         });
 
