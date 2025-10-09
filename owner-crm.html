@@ -1691,6 +1691,21 @@
             box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
         }
 
+        .viewings-table-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .viewings-table-group:first-of-type {
+            margin-top: 0;
+        }
+        .viewings-table-group-header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .reschedule-actions {
             display: flex;
             align-items: center;
@@ -1946,6 +1961,50 @@
         .calendar-event[data-status="manual_reserved"]::before,
         .calendar-event[data-status="manual_pre_reserved"]::before {
             display: none;
+        }
+
+        .calendar-event[data-status="viewing_request"],
+        .calendar-event[data-status="viewing_rescheduled"] {
+            background-color: rgba(245, 158, 11, 0.22);
+            color: #b45309;
+        }
+        .calendar-event[data-status="viewing_scheduled"] {
+            background-color: rgba(59, 130, 246, 0.24);
+            color: #1d4ed8;
+        }
+        .calendar-event[data-status="viewing_cancelled"],
+        .calendar-event[data-status="viewing_rejected"] {
+            background-color: rgba(239, 68, 68, 0.22);
+            color: #b91c1c;
+        }
+
+        .viewings-calendar-legend {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            margin: 12px 0 18px;
+        }
+        .viewings-calendar-legend .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--muted-color);
+        }
+        .viewings-calendar-legend .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot-viewing-pending {
+            background-color: rgba(245, 158, 11, 0.85);
+        }
+        .legend-dot-viewing-confirmed {
+            background-color: rgba(59, 130, 246, 0.85);
+        }
+        .legend-dot-viewing-cancelled {
+            background-color: rgba(239, 68, 68, 0.85);
         }
 
         .availability-legend-dot-reserved-ouido {
@@ -2746,16 +2805,31 @@
                         <label for="viewings-client-filter">Client:</label>
                         <input type="text" id="viewings-client-filter" placeholder="Caută după nume client" style="max-width: 220px;">
                     </div>
-                    <div class="table-wrapper">
-                        <table class="crm-table" aria-describedby="viewings-table-caption">
-                            <caption id="viewings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Detalii vizionări și responsabil</caption>
-                            <thead>
-                                <tr>
-                                    <th>Vizionare · Status & acțiuni</th>
-                                </tr>
-                            </thead>
-                            <tbody id="viewings-table-body"></tbody>
-                        </table>
+                    <div class="viewings-table-group">
+                        <div class="table-wrapper">
+                            <table class="crm-table" aria-describedby="viewings-pending-caption">
+                                <caption id="viewings-pending-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Vizionări în curs de confirmare</caption>
+                                <thead>
+                                    <tr>
+                                        <th>Vizionare · Status & acțiuni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewings-table-pending" data-viewings-table="pending"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="viewings-table-group">
+                        <div class="table-wrapper">
+                            <table class="crm-table" aria-describedby="viewings-confirmed-caption">
+                                <caption id="viewings-confirmed-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Vizionări confirmate</caption>
+                                <thead>
+                                    <tr>
+                                        <th>Vizionare · Status & acțiuni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewings-table-confirmed" data-viewings-table="confirmed"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -2772,6 +2846,11 @@
                             <button id="next-viewings-month-btn" aria-label="Luna următoare">&gt;</button>
                         </div>
                     </header>
+                    <div class="viewings-calendar-legend">
+                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-pending"></span> În curs de confirmare</span>
+                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-confirmed"></span> Confirmată</span>
+                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-cancelled"></span> Anulată / Respinsă</span>
+                    </div>
                     <div class="monthly-calendar-grid" id="viewings-calendar-grid">
                         <!-- Calendarul vizionărilor va fi generat aici -->
                     </div>

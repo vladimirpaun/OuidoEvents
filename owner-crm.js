@@ -1902,12 +1902,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function highlightViewingRow(viewingId, { scroll = false } = {}) {
-        const tableBody = document.getElementById('viewings-table-body');
-        if (!tableBody) {
+        const tableBodies = document.querySelectorAll('[data-viewings-table]');
+        if (!tableBodies.length) {
             return null;
         }
-        tableBody.querySelectorAll('.is-highlighted').forEach(row => row.classList.remove('is-highlighted'));
-        const targetRow = tableBody.querySelector(`tr[data-identifier="${viewingId}"]`);
+        tableBodies.forEach(body => body.querySelectorAll('.is-highlighted').forEach(row => row.classList.remove('is-highlighted')));
+        let targetRow = null;
+        tableBodies.forEach(body => {
+            const row = body.querySelector(`tr[data-identifier="${viewingId}"]`);
+            if (row && !targetRow) {
+                targetRow = row;
+            }
+        });
         if (targetRow) {
             targetRow.classList.add('is-highlighted');
             if (scroll) {
@@ -1921,7 +1927,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let attempts = 0;
         const maxAttempts = 6;
         const tryFocus = () => {
-            const targetRow = document.querySelector(`#viewings-table-body tr[data-identifier="${viewingId}"]`);
+            const targetRow = document.querySelector(`[data-viewings-table] tr[data-identifier="${viewingId}"]`);
             if (targetRow) {
                 highlightViewingRow(viewingId, { scroll: true });
                 targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2596,15 +2602,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderViewingsTable() {
-        const body = document.getElementById('viewings-table-body');
-        if (!body) {
+        const pendingBody = document.getElementById('viewings-table-pending');
+        const confirmedBody = document.getElementById('viewings-table-confirmed');
+        if (!pendingBody || !confirmedBody) {
             return;
         }
         const venueFilter = document.getElementById('viewings-venue-filter');
         const clientFilter = document.getElementById('viewings-client-filter');
         const venueValue = venueFilter ? venueFilter.value : 'all';
         const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
-        body.innerHTML = '';
+        pendingBody.innerHTML = '';
+        confirmedBody.innerHTML = '';
 
         const createActionButton = (label, action, { title = '' } = {}) => {
             const btn = document.createElement('button');
@@ -2682,18 +2690,35 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .sort((a, b) => a.sortTime - b.sortTime);
 
-        if (!enhanced.length) {
-            const emptyRow = body.insertRow();
-            const emptyCell = emptyRow.insertCell();
-            emptyCell.colSpan = 1;
-            emptyCell.innerHTML = '<div class="empty-state">Nu există vizionări care să corespundă filtrului selectat.</div>';
-            const event = new Event('viewings:rendered');
-            document.dispatchEvent(event);
-            return;
-        }
+        const pendingStatuses = new Set(['viewing_request', 'viewing_rescheduled']);
+        const confirmedStatuses = new Set(['viewing_scheduled']);
+        const pendingItems = [];
+        const confirmedItems = [];
 
-        enhanced.forEach(({ viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, latestSlotGroup }) => {
-            const row = body.insertRow();
+        enhanced.forEach(item => {
+            if (confirmedStatuses.has(item.viewing.status)) {
+                confirmedItems.push(item);
+            } else if (pendingStatuses.has(item.viewing.status)) {
+                pendingItems.push(item);
+            } else {
+                pendingItems.push(item);
+            }
+        });
+
+        const renderCollection = (targetBody, items, emptyMessage, { showSlots = true } = {}) => {
+            targetBody.innerHTML = '';
+            if (!items.length) {
+                const emptyRow = targetBody.insertRow();
+                const emptyCell = emptyRow.insertCell();
+                emptyCell.colSpan = 1;
+                emptyCell.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
+                return;
+            }
+            items.forEach(item => renderRow(targetBody, item, { showSlots }));
+        };
+
+        const renderRow = (targetBody, { viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, latestSlotGroup }, { showSlots = true } = {}) => {
+            const row = targetBody.insertRow();
             row.dataset.identifier = String(viewing.id);
             if (selectedViewingId === viewing.id) {
                 row.classList.add('is-highlighted');
@@ -2711,7 +2736,7 @@ document.addEventListener('DOMContentLoaded', () => {
             topRow.appendChild(createRecordInfoItem('Ultima actualizare', formatDate(viewing.lastUpdate)));
             wrapper.appendChild(topRow);
 
-            if (latestSlotGroup && latestSlotGroup.slots.length) {
+            if (showSlots && latestSlotGroup && latestSlotGroup.slots.length) {
                 const slotGroups = document.createElement('div');
                 slotGroups.className = 'viewing-slot-groups';
                 const radioName = `viewing-${viewing.id}-slot`;
@@ -2745,7 +2770,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmedEl.className = 'booking-row-meta';
                 confirmedEl.textContent = `Interval confirmat: ${confirmedSlot.label}`;
                 statusContainer.appendChild(confirmedEl);
-            } else if (!latestSlotGroup) {
+            } else if (!latestSlotGroup && showSlots) {
                 const infoEl = document.createElement('span');
                 infoEl.className = 'booking-row-meta';
                 infoEl.textContent = 'Nu există intervale salvate pentru această vizionare.';
@@ -2755,7 +2780,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const actions = document.createElement('div');
             actions.className = 'table-actions booking-row-actions';
-            const actionDefs = viewingActionsByStatus[viewing.status] || [];
+            const actionDefs = (viewingActionsByStatus[viewing.status] || []).filter(def => {
+                if (def.key !== 'confirm-slot') {
+                    return true;
+                }
+                if (!showSlots) {
+                    return false;
+                }
+                return latestSlotGroup?.source !== 'owner';
+            });
             actionDefs.forEach(def => {
                 actions.appendChild(createActionButton(def.label, def.key));
             });
@@ -2773,7 +2806,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedViewingId = viewing.id;
                 showRecordDetailPage('viewing', viewing, 'viewings');
             });
-        });
+        };
+
+        renderCollection(pendingBody, pendingItems, 'Nu există vizionări în curs de confirmare pentru filtrele aplicate.', { showSlots: true });
+        renderCollection(confirmedBody, confirmedItems, 'Nu există vizionări confirmate pentru filtrele aplicate.', { showSlots: false });
 
         const event = new Event('viewings:rendered');
         document.dispatchEvent(event);
@@ -2974,17 +3010,12 @@ document.addEventListener('DOMContentLoaded', () => {
             viewingsForDay.forEach(viewing => {
                 const eventDiv = document.createElement('div');
                 eventDiv.className = 'calendar-event';
-                const statusMeta = viewingStatusMeta[viewing.status];
-                const baseColor = statusMeta?.color || '#2563eb';
-                const backgroundColor = typeof hexToRgba === 'function' ? hexToRgba(baseColor, 0.18) : null;
-                if (backgroundColor) {
-                    eventDiv.style.backgroundColor = backgroundColor;
-                } else {
-                    eventDiv.style.backgroundColor = 'rgba(37, 99, 235, 0.18)';
+                const titleParts = [viewing.client];
+                if (viewing.hour) {
+                    titleParts.push(viewing.hour);
                 }
-                eventDiv.style.color = baseColor;
                 eventDiv.dataset.status = viewing.status;
-                eventDiv.textContent = `${viewing.client} - ${viewing.hour}`;
+                eventDiv.textContent = titleParts.join(' - ');
                 eventDiv.title = `Click pentru a vedea detalii pentru ${viewing.client}`;
                 eventDiv.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -4301,8 +4332,7 @@ document.addEventListener('DOMContentLoaded', () => {
         handleBookingAction(bookingId, actionBtn.dataset.action);
     });
 
-    const viewingsTableBody = document.getElementById('viewings-table-body');
-    viewingsTableBody?.addEventListener('click', (event) => {
+    const handleViewingsTableClick = (event) => {
         const actionBtn = event.target.closest('button[data-action]');
         if (!actionBtn) {
             return;
@@ -4316,6 +4346,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         handleViewingAction(viewingId, actionBtn.dataset.action);
+    };
+    document.querySelectorAll('[data-viewings-table]').forEach(body => {
+        body.addEventListener('click', handleViewingsTableClick);
     });
 
     const autoOfferToggle = document.getElementById('auto-offer-toggle');
@@ -4338,7 +4371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         switch (action) {
             case 'confirm-slot': {
-                const tableRow = document.querySelector(`#viewings-table-body tr[data-identifier="${viewingId}"]`);
+                const tableRow = document.querySelector(`[data-viewings-table] tr[data-identifier="${viewingId}"]`);
                 const selectedInput = tableRow?.querySelector(`input[name="viewing-${viewingId}-slot"]:checked`);
                 if (!selectedInput) {
                     window.alert('Selectează un interval înainte de a confirma vizionarea.');
