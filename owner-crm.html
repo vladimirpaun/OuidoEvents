@@ -1270,24 +1270,25 @@
 
 
         .filter-bar {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: max-content;
+            gap: 10px;
             align-items: center;
+            justify-content: flex-start;
         }
-
         .filter-bar label {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.78rem;
+            white-space: nowrap;
         }
-
         .filter-bar select,
         .filter-bar input {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 10px;
             border: 1px solid var(--border-color);
             font: inherit;
-            font-size: 0.9rem;
+            font-size: 0.78rem;
             background: var(--white-color);
         }
 
@@ -2764,6 +2765,12 @@
                         <select id="bookings-status-filter"></select>
                         <label for="bookings-client-filter">Client:</label>
                         <input type="text" id="bookings-client-filter" placeholder="Caută după nume client" style="max-width: 220px;">
+                        <label for="bookings-sort">Sortare:</label>
+                        <select id="bookings-sort">
+                            <option value="event-date" selected>Dată eveniment</option>
+                            <option value="status-asc">Status A-Z</option>
+                            <option value="status-desc">Status Z-A</option>
+                        </select>
                     </div>
                     <div class="table-wrapper">
                         <table class="crm-table" aria-describedby="bookings-table-caption">
@@ -2813,6 +2820,12 @@
                         </select>
                         <label for="viewings-client-filter">Client:</label>
                         <input type="text" id="viewings-client-filter" placeholder="Caută după nume client" style="max-width: 220px;">
+                        <label for="viewings-sort">Sortare:</label>
+                        <select id="viewings-sort">
+                            <option value="primary-date" selected>Dată apropiată</option>
+                            <option value="status-asc">Status A-Z</option>
+                            <option value="status-desc">Status Z-A</option>
+                        </select>
                     </div>
                     <div class="viewings-table-group">
                         <div class="table-wrapper">
