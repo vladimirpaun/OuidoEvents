@@ -2064,7 +2064,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rescheduleBtn = document.createElement('button');
                 rescheduleBtn.type = 'button';
                 rescheduleBtn.dataset.action = 'reschedule';
-                rescheduleBtn.textContent = 'Reprogramează';
+                rescheduleBtn.textContent = 'Propune intervale';
+                rescheduleBtn.title = 'Deschide modalul de reprogramare';
                 actions.append(confirmBtn, rescheduleBtn);
                 if (actions.children.length) {
                     bottomRow.appendChild(actions);
@@ -3396,6 +3397,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         handleBookingAction(bookingId, actionBtn.dataset.action);
+    });
+
+    const viewingsTableBody = document.getElementById('viewings-table-body');
+    viewingsTableBody?.addEventListener('click', (event) => {
+        const actionBtn = event.target.closest('button[data-action]');
+        if (!actionBtn) {
+            return;
+        }
+        const row = actionBtn.closest('tr');
+        if (!row) {
+            return;
+        }
+        const viewingId = Number(row.dataset.identifier);
+        if (!viewingId) {
+            return;
+        }
+        handleViewingAction(viewingId, actionBtn.dataset.action);
     });
 
     const autoOfferToggle = document.getElementById('auto-offer-toggle');
