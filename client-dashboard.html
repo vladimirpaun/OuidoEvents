@@ -64,6 +64,8 @@
         .page-header { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 28px 32px; box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8); display: flex; flex-direction: column; gap: 18px; }
         .page-header h1 { font-size: 1.8rem; margin: 0 0 4px; }
         .page-header p { margin: 0; color: var(--muted-color); max-width: 520px; font-size: 0.95rem; }
+        .crm-page[data-page="requests"] .page-header h1 { font-size: 1.45rem; }
+        .crm-page[data-page="requests"] .page-header p { font-size: 0.8rem; }
         .panel { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 26px 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.85); }
         .panel header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
         .panel header h2 { margin: 0; font-size: 1.1rem; }
@@ -82,18 +84,27 @@
             font-size: 0.9rem;
         }
         .status-chip {
+            --status-chip-padding-block: 4px;
+            --status-chip-padding-inline: 22px;
+            --status-chip-width: 300px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 4px 22px;
+            padding: var(--status-chip-padding-block) var(--status-chip-padding-inline);
             border-radius: 16px;
             font-size: 0.8rem;
             font-weight: 600;
             box-sizing: border-box;
             text-align: center;
-            width: 300px;
+            width: var(--status-chip-width);
             white-space: nowrap;
+        }
+        .crm-page[data-page="requests"] .booking-row-status .status-chip {
+            --status-chip-padding-inline: 16px;
+            --status-chip-width: 260px;
+            justify-content: flex-start;
+            text-align: left;
         }
         .status-chip[data-status="availability_request"],
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
@@ -979,8 +990,6 @@
                         <select id="requests-status-filter"></select>
                         <label for="requests-location-filter">Locație:</label>
                         <select id="requests-location-filter"></select>
-                        <label for="requests-date-filter">Luna evenimentului:</label>
-                        <select id="requests-date-filter"></select>
                     </div>
                     <div class="requests-legend" id="requests-status-legend"></div>
                     <div class="table-wrapper">
@@ -1368,9 +1377,6 @@
             }
             return formatDate(date);
         };
-        const formatMonthKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        const formatMonthLabel = (date) => `${monthNames[date.getMonth()].charAt(0).toUpperCase() + monthNames[date.getMonth()].slice(1)} ${date.getFullYear()}`;
-
         const locations = [
             { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400' },
             { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400' },
@@ -1654,7 +1660,7 @@
             })()
         ];
 
-        const requestFilters = { status: 'all', location: 'all', month: 'all' };
+        const requestFilters = { status: 'all', location: 'all' };
         const viewingFilters = { venue: 'all', status: 'all' };
         let activeRescheduleViewingId = null;
         let selectedRescheduleOption = null;
@@ -1670,7 +1676,6 @@
 
         const requestsStatusFilter = document.getElementById('requests-status-filter');
         const requestsLocationFilter = document.getElementById('requests-location-filter');
-        const requestsDateFilter = document.getElementById('requests-date-filter');
         const requestsTableBody = document.getElementById('requests-table-body');
 
         const viewingsVenueFilter = document.getElementById('viewings-venue-filter');
@@ -1885,10 +1890,8 @@
             if (type === 'request') {
                 requestFilters.status = 'all';
                 requestFilters.location = 'all';
-                requestFilters.month = 'all';
                 if (requestsStatusFilter) requestsStatusFilter.value = 'all';
                 if (requestsLocationFilter) requestsLocationFilter.value = 'all';
-                if (requestsDateFilter) requestsDateFilter.value = 'all';
                 renderRequests();
             } else if (type === 'viewing') {
                 viewingFilters.status = 'all';
@@ -2509,15 +2512,6 @@
                 const locationNames = Array.from(new Set(clientRequests.map(req => getLocationById(req.locationId)?.name).filter(Boolean))).sort();
                 populateSelect(requestsLocationFilter, locationNames, true, 'Toate locațiile');
             }
-            if (requestsDateFilter) {
-                const months = Array.from(new Set(clientRequests.map(req => formatMonthKey(req.eventDate)))).sort();
-                const options = months.map(key => {
-                    const [year, month] = key.split('-').map(Number);
-                    const date = new Date(year, month - 1, 1);
-                    return { value: key, label: formatMonthLabel(date) };
-                });
-                populateSelect(requestsDateFilter, options, true, 'Toate lunile');
-            }
         }
 
         function renderRequestsLegend() {
@@ -2549,11 +2543,9 @@
             const filtered = clientRequests
                 .filter(req => {
                     const locationName = getLocationById(req.locationId)?.name || '';
-                    const monthKey = formatMonthKey(req.eventDate);
                     const statusMatch = requestFilters.status === 'all' || req.status === requestFilters.status;
                     const locationMatch = requestFilters.location === 'all' || requestFilters.location === locationName;
-                    const monthMatch = requestFilters.month === 'all' || requestFilters.month === monthKey;
-                    return statusMatch && locationMatch && monthMatch;
+                    return statusMatch && locationMatch;
                 })
                 .sort((a, b) => a.eventDate - b.eventDate);
 
@@ -2635,7 +2627,6 @@
                 switch (req.status) {
                     case 'availability_request':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
@@ -2648,21 +2639,17 @@
                         break;
                     case 'offer_requested':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'offer_sent':
                         actionsDiv.innerHTML = `
                             <button data-request-action="view_offer" data-request-id="${req.id}">Vezi oferta</button>
-                            <button data-request-action="send_message" data-request-id="${req.id}">Pune întrebări</button>
-                            <button data-request-action="accept_offer" data-request-id="${req.id}">Confirmă prin pre-rezervare</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'viewing_request':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                             <button data-request-action="cancel_viewing_request" data-request-id="${req.id}">Anulează vizionarea</button>
                         `;
                         break;
@@ -2681,18 +2668,13 @@
                     case 'pre_booked':
                         actionsDiv.innerHTML = `
                             <button data-request-action="release_hold" data-request-id="${req.id}">Renunță la rezervare</button>
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                         `;
                         break;
                     case 'confirmed':
-                        actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj locației</button>
-                            <button data-request-action="leave_feedback" data-request-id="${req.id}">Lasă feedback</button>
-                        `;
+                        actionsDiv.hidden = true;
                         break;
                     case 'rejected':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="view_details" data-request-id="${req.id}">Vezi mesajul locației</button>
                             <button data-request-action="reopen_request" data-request-id="${req.id}">Trimite o nouă cerere</button>
                         `;
                         break;
@@ -2850,10 +2832,6 @@
                         }
                         break;
                     }
-                case 'leave_feedback':
-                    window.alert('Mulțumim! Secțiunea de feedback va fi disponibilă după eveniment.');
-                    request.lastUpdate = new Date();
-                    break;
                 case 'view_details':
                     request.lastUpdate = new Date();
                     break;
@@ -3302,10 +3280,6 @@
             });
             requestsLocationFilter?.addEventListener('change', (event) => {
                 requestFilters.location = event.target.value;
-                renderRequests();
-            });
-            requestsDateFilter?.addEventListener('change', (event) => {
-                requestFilters.month = event.target.value;
                 renderRequests();
             });
             requestsTableBody?.addEventListener('click', handleRequestAction);
