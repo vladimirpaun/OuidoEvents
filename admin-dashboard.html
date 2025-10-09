@@ -519,14 +519,6 @@
             color: var(--muted-color);
             font-size: 0.85rem;
         }
-        .venue-card__metrics {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 0.85rem;
-            color: var(--dark-color);
-            font-weight: 600;
-        }
         .venue-card__divider {
             margin: 18px 0;
             height: 1px;
@@ -2395,11 +2387,14 @@
                                 ${managementSummary.sub ? `<span class="venue-card__muted">${managementSummary.sub}</span>` : ''}
                             </div>
                             <div class="venue-card__section">
-                                <span class="table-label">Cereri</span>
-                                <div class="venue-card__metrics">
-                                    <span>${formatCount(venue.viewingsRequests)} vizionări</span>
-                                    <span>${formatCount(venue.availabilityRequests)} dispo.</span>
-                                </div>
+                                <span class="table-label">Vizionări</span>
+                                <span class="table-value" data-sort-value="${venue.viewingsRequests}" data-requests-column="viewings">${formatCount(venue.viewingsRequests)}</span>
+                                <span class="venue-card__muted">Solicitări vizionare</span>
+                            </div>
+                            <div class="venue-card__section">
+                                <span class="table-label">Cereri disponibilitate</span>
+                                <span class="table-value" data-sort-value="${venue.availabilityRequests}" data-requests-column="availability">${formatCount(venue.availabilityRequests)}</span>
+                                <span class="venue-card__muted">Confirmări disponibilitate</span>
                             </div>
                             <div class="venue-card__section">
                                 <span class="table-label">Ultima actualizare</span>
