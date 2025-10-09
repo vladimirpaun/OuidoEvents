@@ -1691,6 +1691,21 @@
             box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
         }
 
+        .viewings-table-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .viewings-table-group:first-of-type {
+            margin-top: 0;
+        }
+        .viewings-table-group-header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .reschedule-actions {
             display: flex;
             align-items: center;
@@ -2746,16 +2761,39 @@
                         <label for="viewings-client-filter">Client:</label>
                         <input type="text" id="viewings-client-filter" placeholder="Caută după nume client" style="max-width: 220px;">
                     </div>
-                    <div class="table-wrapper">
-                        <table class="crm-table" aria-describedby="viewings-table-caption">
-                            <caption id="viewings-table-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Detalii vizionări și responsabil</caption>
-                            <thead>
-                                <tr>
-                                    <th>Vizionare · Status & acțiuni</th>
-                                </tr>
-                            </thead>
-                            <tbody id="viewings-table-body"></tbody>
-                        </table>
+                    <div class="viewings-table-group">
+                        <div class="viewings-table-group-header">
+                            <h3>În curs de confirmare</h3>
+                            <span class="panel-meta">Vizionări în status „cerere primită” sau „reprogramată”.</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="crm-table" aria-describedby="viewings-pending-caption">
+                                <caption id="viewings-pending-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Vizionări în curs de confirmare</caption>
+                                <thead>
+                                    <tr>
+                                        <th>Vizionare · Status & acțiuni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewings-table-pending" data-viewings-table="pending"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="viewings-table-group">
+                        <div class="viewings-table-group-header">
+                            <h3>Vizionări confirmate</h3>
+                            <span class="panel-meta">Programări cu interval agreat de client și locație.</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="crm-table" aria-describedby="viewings-confirmed-caption">
+                                <caption id="viewings-confirmed-caption" style="text-align:left; font-weight:600; padding: 12px 0;">Vizionări confirmate</caption>
+                                <thead>
+                                    <tr>
+                                        <th>Vizionare · Status & acțiuni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewings-table-confirmed" data-viewings-table="confirmed"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
