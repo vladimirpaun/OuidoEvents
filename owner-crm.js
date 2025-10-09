@@ -3769,13 +3769,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!slotsContainer) {
                 return;
             }
-            const inputs = Array.from(slotsContainer.querySelectorAll('[data-slot-input]'));
+            const rows = Array.from(slotsContainer.querySelectorAll('[data-slot-row]'));
+            const total = rows.length;
             if (addSlotBtn) {
-                addSlotBtn.disabled = inputs.length >= maxSlots;
+                addSlotBtn.disabled = total >= maxSlots;
             }
             if (counterEl) {
-                if (inputs.length) {
-                    counterEl.textContent = `${inputs.length}/${maxSlots} intervale`;
+                if (total) {
+                    counterEl.textContent = `${total}/${maxSlots} intervale`;
                     counterEl.hidden = false;
                 } else {
                     counterEl.textContent = '';
@@ -3783,7 +3784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             const removeButtons = slotsContainer.querySelectorAll('[data-remove-slot]');
-            const hideRemove = inputs.length <= 1;
+            const hideRemove = total <= 1;
             removeButtons.forEach(btn => {
                 btn.disabled = hideRemove;
                 btn.hidden = hideRemove;
@@ -3791,7 +3792,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const destroySlots = () => {
-            pickers.forEach(picker => picker?.destroy());
+            pickers.forEach(config => {
+                config?.datePicker?.destroy();
+                config?.timePicker?.destroy();
+            });
             pickers.clear();
             if (slotsContainer) {
                 slotsContainer.innerHTML = '';
@@ -3799,18 +3803,31 @@ document.addEventListener('DOMContentLoaded', () => {
             updateControls();
         };
 
-        const createSlot = () => {
+        const createSlot = (initialDate = null) => {
             if (!slotsContainer || slotsContainer.children.length >= maxSlots) {
                 return;
             }
             const wrapper = document.createElement('div');
             wrapper.className = 'reschedule-slot';
+            wrapper.dataset.slotRow = 'true';
 
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = 'Selectează data și ora';
-            input.required = true;
-            input.dataset.slotInput = 'true';
+            const fields = document.createElement('div');
+            fields.className = 'reschedule-slot-fields';
+
+            const dateInput = document.createElement('input');
+            dateInput.type = 'text';
+            dateInput.placeholder = 'Selectează data';
+            dateInput.required = true;
+            dateInput.dataset.slotDate = 'true';
+
+            const timeInput = document.createElement('input');
+            timeInput.type = 'text';
+            timeInput.placeholder = 'Selectează ora';
+            timeInput.required = true;
+            timeInput.dataset.slotTime = 'true';
+            timeInput.inputMode = 'numeric';
+
+            fields.append(dateInput, timeInput);
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
@@ -3818,28 +3835,55 @@ document.addEventListener('DOMContentLoaded', () => {
             removeBtn.dataset.removeSlot = 'true';
             removeBtn.textContent = 'Șterge';
 
-            wrapper.append(input, removeBtn);
+            wrapper.append(fields, removeBtn);
             slotsContainer.appendChild(wrapper);
 
-            let picker = null;
+            let datePicker = null;
+            let timePicker = null;
             if (typeof flatpickr === 'function') {
-                picker = flatpickr(input, {
+                datePicker = flatpickr(dateInput, {
+                    enableTime: false,
+                    altInput: true,
+                    altFormat: 'd M Y',
+                    dateFormat: 'Y-m-d',
+                    locale: 'ro',
+                    minDate: 'today',
+                    allowInput: true
+                });
+                timePicker = flatpickr(timeInput, {
                     enableTime: true,
+                    noCalendar: true,
                     time_24hr: true,
                     minuteIncrement: 15,
-                    altInput: true,
-                    altFormat: 'd M Y, H:i',
-                    dateFormat: 'Y-m-d H:i',
-                    locale: 'ro',
-                    minDate: 'today'
+                    dateFormat: 'H:i',
+                    defaultHour: 11,
+                    defaultMinute: 0,
+                    allowInput: true
                 });
             }
-            pickers.set(input, picker);
+
+            if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
+                const preset = new Date(initialDate.getTime());
+                datePicker?.setDate(preset, true, 'Y-m-d');
+                if (timePicker) {
+                    timePicker.setDate(preset, true, 'H:i');
+                } else {
+                    timeInput.value = formatTime(preset);
+                }
+            }
+
+            pickers.set(wrapper, {
+                datePicker,
+                timePicker,
+                dateInput,
+                timeInput
+            });
 
             removeBtn.addEventListener('click', () => {
-                const fp = pickers.get(input);
-                fp?.destroy();
-                pickers.delete(input);
+                const config = pickers.get(wrapper);
+                config?.datePicker?.destroy();
+                config?.timePicker?.destroy();
+                pickers.delete(wrapper);
                 wrapper.remove();
                 updateControls();
             });
@@ -3978,7 +4022,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             modal.classList.add('is-visible');
             updateControls();
-            const firstInput = slotsContainer.querySelector('[data-slot-input]');
+            const firstInput = slotsContainer.querySelector('[data-slot-date]');
             if (firstInput) {
                 requestAnimationFrame(() => firstInput.focus());
             }
@@ -3998,18 +4042,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
                 return;
             }
-            const inputs = Array.from(slotsContainer.querySelectorAll('[data-slot-input]'));
+            const rows = Array.from(slotsContainer.querySelectorAll('[data-slot-row]'));
             const suggestions = [];
             let hasInvalid = false;
 
-            inputs.forEach(input => {
-                const picker = pickers.get(input);
-                const selectedDate = picker?.selectedDates?.[0] || (input.value ? new Date(input.value) : null);
-                const suggestion = normalizeSuggestion(selectedDate);
+            rows.forEach(row => {
+                const config = pickers.get(row);
+                if (!config) {
+                    return;
+                }
+                const { datePicker, timePicker, dateInput, timeInput } = config;
+                const selectedDate = datePicker?.selectedDates?.[0]
+                    || (dateInput.value ? new Date(dateInput.value) : null);
+                let baseDate = null;
+                if (selectedDate instanceof Date && !Number.isNaN(selectedDate.getTime())) {
+                    baseDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0, 0);
+                }
+                const timeSelection = timePicker?.selectedDates?.[0];
+                let hours = null;
+                let minutes = 0;
+                if (timeSelection instanceof Date && !Number.isNaN(timeSelection.getTime())) {
+                    hours = timeSelection.getHours();
+                    minutes = timeSelection.getMinutes();
+                } else if (timeInput.value) {
+                    const [hStr, mStr] = timeInput.value.split(':');
+                    const parsedHours = Number.parseInt(hStr, 10);
+                    const parsedMinutes = Number.parseInt(mStr, 10);
+                    if (Number.isFinite(parsedHours)) {
+                        hours = parsedHours;
+                        minutes = Number.isFinite(parsedMinutes) ? parsedMinutes : 0;
+                    }
+                }
+                if (!baseDate || !Number.isFinite(hours)) {
+                    hasInvalid = true;
+                    if (!baseDate) {
+                        dateInput.classList.add('is-invalid');
+                        setTimeout(() => dateInput.classList.remove('is-invalid'), 1500);
+                    }
+                    if (!Number.isFinite(hours)) {
+                        timeInput.classList.add('is-invalid');
+                        setTimeout(() => timeInput.classList.remove('is-invalid'), 1500);
+                    }
+                    return;
+                }
+                const combined = new Date(baseDate.getTime());
+                combined.setHours(hours, minutes, 0, 0);
+                const suggestion = normalizeSuggestion(combined);
                 if (!suggestion) {
                     hasInvalid = true;
-                    input.classList.add('is-invalid');
-                    setTimeout(() => input.classList.remove('is-invalid'), 1500);
+                    dateInput.classList.add('is-invalid');
+                    timeInput.classList.add('is-invalid');
+                    setTimeout(() => {
+                        dateInput.classList.remove('is-invalid');
+                        timeInput.classList.remove('is-invalid');
+                    }, 1500);
                     return;
                 }
                 suggestions.push(suggestion);
