@@ -100,18 +100,18 @@
         .status-chip[data-status="availability_confirmed"] { background: rgba(59, 130, 246, 0.22); color: #2563eb; }
         .status-chip[data-status="offer_requested"] { background: rgba(168, 85, 247, 0.22); color: #7c3aed; }
         .status-chip[data-status="offer_sent"] { background: rgba(139, 92, 246, 0.22); color: #6c2bd9; }
-        .status-chip[data-status="viewing_request"],
-        .status-chip[data-status="awaiting_confirmation"] { background: rgba(14, 165, 233, 0.22); color: #0c7ab5; }
-        .status-chip[data-status="viewing_rescheduled"],
-        .status-chip[data-status="reschedule_pending"] { background: rgba(249, 115, 22, 0.22); color: #c2410c; }
+        .status-chip[data-status="viewing_request"] { background: rgba(14, 165, 233, 0.22); color: #0c7ab5; }
+        .status-chip[data-status="viewing_rescheduled"] { background: rgba(56, 189, 248, 0.22); color: #0369a1; }
         .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.22); color: #1d4ed8; }
         .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.22); color: #0f766e; }
         .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.22); color: #166534; }
+        .status-chip[data-status="viewing_completed"] { background: rgba(129, 199, 132, 0.22); color: #166534; }
+        .status-chip[data-status="viewing_cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
+        .status-chip[data-status="viewing_rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
         .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
         .status-chip[data-status="cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
         .status-chip[data-status="due"] { background: rgba(248, 113, 113, 0.22); color: #b91c1c; }
         .status-chip[data-status="upcoming"] { background: rgba(45, 212, 191, 0.22); color: #0f766e; }
-        .status-chip[data-status="completed"] { background: rgba(129, 199, 132, 0.22); color: #166534; }
         .crm-button { border-radius: 999px; padding: 10px 22px; border: 1px solid transparent; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
         .crm-button.primary { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white-color); }
         .crm-button.ghost { background: transparent; border-color: rgba(0, 82, 212, 0.2); color: var(--primary-color); }
@@ -438,6 +438,8 @@
         }
         .favorites-modal {
             width: min(520px, 94vw);
+            max-height: 92vh;
+            overflow-y: auto;
             background: #fff;
             border-radius: 18px;
             padding: 28px 32px;
@@ -489,6 +491,12 @@
             display: flex;
             justify-content: center;
         }
+        .availability-calendar {
+            display: flex;
+            justify-content: center;
+            max-width: 100%;
+            overflow-x: auto;
+        }
         .availability-calendar .flatpickr-calendar {
             box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35);
             border: 1px solid rgba(15, 23, 42, 0.12);
@@ -496,16 +504,89 @@
             padding: 16px 20px;
             overflow: visible;
             min-width: 360px;
+            max-width: 100%;
         }
         .availability-calendar .flatpickr-day {
-            width: 48px;
-            height: 44px;
-            font-size: 0.95rem;
+            width: 46px;
+            height: 42px;
+            line-height: 42px;
+            font-size: 0.9rem;
         }
         .favorites-modal .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 16px;
+        }
+        .viewing-slot-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px dashed rgba(0, 82, 212, 0.2);
+            background: rgba(67, 100, 247, 0.04);
+        }
+        .viewing-slot-builder .panel-meta {
+            margin: 0;
+        }
+        .viewing-slot-builder .reschedule-actions {
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .reschedule-help {
+            font-size: 0.88rem;
+            color: var(--muted-color);
+            margin: 0 0 12px;
+        }
+        .reschedule-slot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .reschedule-slot {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .reschedule-slot input {
+            flex: 1 1 220px;
+            border-radius: 10px;
+            border: 1px solid rgba(15, 23, 42, 0.18);
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            background: #fff;
+        }
+        .reschedule-slot input:focus-visible {
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 28px -18px rgba(0, 82, 212, 0.45);
+            outline: none;
+        }
+        .reschedule-slot input.is-invalid {
+            border-color: #b91c1c;
+            box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+        }
+        .reschedule-slot .crm-button {
+            flex: 0 0 auto;
+        }
+        .reschedule-slot-status {
+            font-size: 0.78rem;
+            color: var(--muted-color);
+        }
+        .reschedule-slot-status.is-warning {
+            color: #b45309;
+        }
+        .reschedule-slot-status.is-danger {
+            color: #b91c1c;
+        }
+        .viewing-empty-state {
+            border-radius: 12px;
+            border: 1px dashed rgba(15, 23, 42, 0.16);
+            padding: 16px;
+            font-size: 0.85rem;
+            color: var(--muted-color);
+            text-align: center;
         }
         .favorites-modal label {
             font-weight: 600;
@@ -538,27 +619,55 @@
             font-size: 0.9rem;
         }
         .flatpickr-calendar {
-            box-shadow: 0 24px 60px -34px rgba(15, 23, 42, 0.35);
-            border-radius: 16px;
-        }
-        .flatpickr-calendar {
-            box-shadow: 0 24px 60px -34px rgba(15, 23, 42, 0.35);
-            border-radius: 16px;
-            background: #fff;
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            width: auto;
         }
         .flatpickr-calendar .flatpickr-months,
         .flatpickr-calendar .flatpickr-weekdays {
-            background: #fff;
+            background: transparent;
+            color: var(--dark-color);
         }
         .flatpickr-calendar .flatpickr-monthDropdown-months,
-        .flatpickr-calendar .numInputWrapper {
+        .flatpickr-calendar .numInputWrapper,
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: var(--dark-color);
+            fill: var(--dark-color);
             font-size: 0.85rem;
+        }
+        .flatpickr-calendar .flatpickr-months .flatpickr-prev-month svg,
+        .flatpickr-calendar .flatpickr-months .flatpickr-next-month svg {
+            fill: var(--dark-color);
         }
         .flatpickr-day {
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 500;
+        }
+        .flatpickr-day:hover {
+            background: var(--light-gray-color);
+        }
+        .flatpickr-day.today {
+            border-color: var(--secondary-color);
+        }
+        .flatpickr-day.today:hover {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--white-color);
+        }
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange,
+        .flatpickr-day.selected:hover,
+        .flatpickr-day.startRange:hover,
+        .flatpickr-day.endRange:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--white-color);
         }
         .flatpickr-day.availability-day-available:hover {
             background: rgba(59, 130, 246, 0.12);
@@ -573,6 +682,15 @@
         }
         .flatpickr-day.flatpickr-disabled {
             cursor: not-allowed;
+        }
+        .flatpickr-time {
+            border-top: 1px solid rgba(15, 23, 42, 0.08);
+            padding-top: 6px;
+        }
+        .flatpickr-time input,
+        .flatpickr-time .flatpickr-time-separator {
+            color: var(--dark-color);
+            font-weight: 600;
         }
         .favorites-modal footer {
             display: flex;
@@ -974,22 +1092,16 @@
                 <button type="button" class="favorites-modal-close" id="viewing-modal-close" aria-label="Închide">×</button>
             </header>
             <form id="viewing-form">
-                <div class="form-section">
-                    <input type="hidden" id="viewing-date-picker">
-                    <div id="viewing-calendar" class="availability-calendar"></div>
-                    <div class="availability-legend">
-                        <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
-                        <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
-                        <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
+                <div class="viewing-slot-builder">
+                    <p class="reschedule-help" data-viewing-slot-hint>Selectează până la 4 intervale (dată și oră) pentru vizionare. Intervalele sunt din 15 în 15 minute.</p>
+                    <div class="reschedule-actions">
+                        <button type="button" class="crm-button ghost" id="viewing-add-slot" data-viewing-add-slot>Adaugă interval</button>
+                        <span class="panel-meta" data-viewing-slot-counter hidden></span>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div>
-                        <label for="viewing-time">Ora preferată</label>
-                        <input type="time" id="viewing-time" required>
-                    </div>
-                </div>
-                <p class="panel-meta" id="viewing-selected-date">Selectează data și ora pentru vizionare.</p>
+                <div class="reschedule-slot-list" data-viewing-slots></div>
+                <div class="viewing-empty-state" data-viewing-empty-state hidden>Încă nu ai intervale salvate. Folosește butonul „Adaugă interval” pentru a propune variantă de vizită.</div>
+                <p class="panel-meta" id="viewing-selected-date">Lista de intervale va fi trimisă către locație. Alege cel puțin o variantă înainte de a continua.</p>
                 <footer>
                     <button type="button" class="crm-button ghost" id="viewing-cancel-btn">Renunță</button>
                     <button type="submit" class="crm-button primary">Trimite solicitarea</button>
@@ -1163,6 +1275,73 @@
         const formatDate = (date) => `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
         const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         const formatDateTime = (date) => `${formatDate(date)} · ${formatTime(date)}`;
+        const normalizeSlotDate = (date) => {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                return null;
+            }
+            const normalized = new Date(date.getTime());
+            normalized.setSeconds(0, 0);
+            return normalized;
+        };
+        const createSlotObject = (date) => {
+            const normalized = normalizeSlotDate(date);
+            if (!normalized) {
+                return null;
+            }
+            return {
+                date: normalized,
+                iso: normalized.toISOString(),
+                label: formatDateTime(normalized)
+            };
+        };
+        const mapSlots = (slots) => {
+            if (!Array.isArray(slots)) {
+                return [];
+            }
+            return slots
+                .map(slot => {
+                    if (slot instanceof Date) {
+                        return createSlotObject(slot);
+                    }
+                    if (slot?.date instanceof Date) {
+                        return createSlotObject(slot.date);
+                    }
+                    if (typeof slot?.iso === 'string') {
+                        const parsed = new Date(slot.iso);
+                        return createSlotObject(parsed);
+                    }
+                    return null;
+                })
+                .filter(Boolean);
+        };
+        const getViewingPrimarySlot = (view) => {
+            if (!view) {
+                return null;
+            }
+            const confirmed = mapSlots([view.confirmedSlot])[0];
+            if (confirmed) {
+                return confirmed;
+            }
+            const ownerSuggestion = mapSlots(view.ownerSuggestions)[0];
+            if (ownerSuggestion) {
+                return ownerSuggestion;
+            }
+            const requested = mapSlots(view.requestedSlots)[0];
+            if (requested) {
+                return requested;
+            }
+            if (view.date instanceof Date && !Number.isNaN(view.date.getTime())) {
+                return createSlotObject(view.date);
+            }
+            if (typeof view.hour === 'string' && view.hour.includes(':') && view.lastUpdate instanceof Date) {
+                const candidate = new Date(view.lastUpdate.getTime());
+                const [hours, minutes] = view.hour.split(':').map(Number);
+                candidate.setHours(Number.isFinite(hours) ? hours : 12, Number.isFinite(minutes) ? minutes : 0, 0, 0);
+                return createSlotObject(candidate);
+            }
+            return null;
+        };
+        const findRequestByViewingId = (viewingId) => clientRequests.find(req => req.viewingId === viewingId);
         const formatRelativeTime = (date) => {
             if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
                 return '';
@@ -1285,10 +1464,36 @@
         };
 
         const viewingStatusMeta = {
-            awaiting_confirmation: { label: 'Așteaptă confirmarea ta', color: '#2563eb' },
-            confirmed: { label: 'Confirmată', color: '#15803d' },
-            reschedule_pending: { label: 'Reprogramare propusă', color: '#c2410c' },
-            completed: { label: 'Vizionare încheiată', color: '#0f172a' }
+            viewing_request: {
+                label: 'Cerere vizionare trimisă',
+                description: 'Locația verifică intervalele propuse.',
+                color: '#0ea5e9'
+            },
+            viewing_rescheduled: {
+                label: 'Propuneri de la locație',
+                description: 'Alege una dintre variantele propuse sau trimite alte intervale.',
+                color: '#0284c7'
+            },
+            viewing_scheduled: {
+                label: 'Vizionare confirmată',
+                description: 'Vizionarea este programată la intervalul stabilit.',
+                color: '#2563eb'
+            },
+            viewing_completed: {
+                label: 'Vizionare încheiată',
+                description: 'Vizita a avut loc. Poți trimite feedback sau cere ofertă.',
+                color: '#0f172a'
+            },
+            viewing_rejected: {
+                label: 'Cerere respinsă',
+                description: 'Locația nu poate onora vizionarea.',
+                color: '#b91c1c'
+            },
+            viewing_cancelled: {
+                label: 'Cerere anulată',
+                description: 'Ai retras solicitarea de vizionare.',
+                color: '#6b7280'
+            }
         };
 
         let clientRequests = [
@@ -1296,13 +1501,54 @@
             { id: 2, locationId: 7, eventDate: addDays(80), guests: 150, status: 'availability_confirmed', lastUpdate: addDays(-2) },
             { id: 3, locationId: 1, eventDate: addDays(120), guests: 200, status: 'offer_sent', lastUpdate: addDays(-3), offerValidUntil: addDays(6) },
             { id: 4, locationId: 3, eventDate: addDays(90), guests: 90, status: 'offer_requested', lastUpdate: addDays(-5) },
-            { id: 5, locationId: 4, eventDate: addDays(62), guests: 80, status: 'viewing_request', lastUpdate: addDays(-4) },
-            { id: 6, locationId: 6, eventDate: addDays(70), guests: 95, status: 'viewing_rescheduled', lastUpdate: addDays(-2) },
+            (() => {
+                const slotA = addDays(6); slotA.setHours(11, 0, 0, 0);
+                const slotB = addDays(7); slotB.setHours(17, 30, 0, 0);
+                return {
+                    id: 5,
+                    locationId: 4,
+                    eventDate: addDays(62),
+                    guests: 80,
+                    status: 'viewing_request',
+                    lastUpdate: addDays(-4),
+                    viewingId: 1,
+                    requestedSlots: mapSlots([slotA, slotB])
+                };
+            })(),
+            (() => {
+                const requestSlotA = addDays(10); requestSlotA.setHours(14, 0, 0, 0);
+                const requestSlotB = addDays(11); requestSlotB.setHours(18, 0, 0, 0);
+                const ownerSlotA = addDays(12); ownerSlotA.setHours(10, 30, 0, 0);
+                const ownerSlotB = addDays(13); ownerSlotB.setHours(16, 0, 0, 0);
+                return {
+                    id: 6,
+                    locationId: 6,
+                    eventDate: addDays(70),
+                    guests: 95,
+                    status: 'viewing_rescheduled',
+                    lastUpdate: addDays(-2),
+                    viewingId: 2,
+                    requestedSlots: mapSlots([requestSlotA, requestSlotB]),
+                    ownerSuggestions: mapSlots([ownerSlotA, ownerSlotB])
+                };
+            })(),
             { id: 7, locationId: 5, eventDate: addDays(35), guests: 100, status: 'pre_booked', lastUpdate: addDays(-4), holdExpiresAt: addDays(2) },
             { id: 8, locationId: 7, eventDate: addDays(160), guests: 60, status: 'confirmed', lastUpdate: addDays(-6) },
             { id: 9, locationId: 2, eventDate: addDays(52), guests: 110, status: 'rejected', lastUpdate: addDays(-8) },
             { id: 10, locationId: 3, eventDate: addDays(35), guests: 70, status: 'cancelled', lastUpdate: addDays(-10) },
-            { id: 11, locationId: 1, eventDate: addDays(28), guests: 85, status: 'viewing_scheduled', lastUpdate: addDays(-1) }
+            (() => {
+                const confirmed = addDays(15); confirmed.setHours(12, 30, 0, 0);
+                return {
+                    id: 11,
+                    locationId: 1,
+                    eventDate: addDays(28),
+                    guests: 85,
+                    status: 'viewing_scheduled',
+                    lastUpdate: addDays(-1),
+                    viewingId: 3,
+                    confirmedSlot: createSlotObject(confirmed)
+                };
+            })()
         ];
 
         let requestHistory = [
@@ -1313,21 +1559,99 @@
         ];
 
         const clientViewings = [
-            { id: 1, locationId: 2, date: addDays(5), hour: '17:00', host: 'Ioana Pop', status: 'awaiting_confirmation', lastUpdate: addDays(-1), note: 'Confirmă prezența cu 24h înainte' },
-            { id: 2, locationId: 7, date: addDays(12), hour: '11:00', host: 'Mihai Dima', status: 'confirmed', lastUpdate: addDays(-2), note: 'Vom discuta logistica exterioară' },
-            { id: 3, locationId: 3, date: addDays(20), hour: '15:30', host: 'Irina M.', status: 'reschedule_pending', lastUpdate: addDays(-1), note: 'Proprietarul a propus o nouă dată', rescheduleSuggestions: [
-                (() => {
-                    const option = addDays(22);
-                    option.setHours(18, 0, 0, 0);
-                    return { date: option, iso: option.toISOString(), label: formatDateTime(option) };
-                })(),
-                (() => {
-                    const option = addDays(24);
-                    option.setHours(11, 30, 0, 0);
-                    return { date: option, iso: option.toISOString(), label: formatDateTime(option) };
-                })()
-            ] },
-            { id: 4, locationId: 1, date: addDays(-3), hour: '10:00', host: 'Laura C.', status: 'completed', lastUpdate: addDays(-3), note: 'Ți-am trimis planul detaliat' }
+            (() => {
+                const optionA = addDays(6);
+                optionA.setHours(11, 0, 0, 0);
+                const optionB = addDays(7);
+                optionB.setHours(17, 30, 0, 0);
+                return {
+                    id: 1,
+                    locationId: 4,
+                    status: 'viewing_request',
+                    requestedSlots: [optionA, optionB].map(date => {
+                        const copy = new Date(date.getTime());
+                        return { date: copy, iso: copy.toISOString(), label: formatDateTime(copy) };
+                    }),
+                    ownerSuggestions: [],
+                    confirmedSlot: null,
+                    host: 'Echipa locației',
+                    lastUpdate: addDays(-1),
+                    note: 'Locația verifică disponibilitatea pentru intervalele propuse.',
+                    date: new Date(optionA.getTime()),
+                    hour: formatTime(optionA)
+                };
+            })(),
+            (() => {
+                const originalA = addDays(10);
+                originalA.setHours(14, 0, 0, 0);
+                const originalB = addDays(11);
+                originalB.setHours(18, 0, 0, 0);
+                const ownerA = addDays(12);
+                ownerA.setHours(10, 30, 0, 0);
+                const ownerB = addDays(13);
+                ownerB.setHours(16, 0, 0, 0);
+                return {
+                    id: 2,
+                    locationId: 6,
+                    status: 'viewing_rescheduled',
+                    requestedSlots: [originalA, originalB].map(date => {
+                        const copy = new Date(date.getTime());
+                        return { date: copy, iso: copy.toISOString(), label: formatDateTime(copy) };
+                    }),
+                    ownerSuggestions: [ownerA, ownerB].map(date => {
+                        const copy = new Date(date.getTime());
+                        return { date: copy, iso: copy.toISOString(), label: formatDateTime(copy) };
+                    }),
+                    confirmedSlot: null,
+                    host: 'Mihai Dima',
+                    lastUpdate: addDays(-2),
+                    note: 'Alege varianta preferată sau propune alte intervale.',
+                    date: new Date(ownerA.getTime()),
+                    hour: formatTime(ownerA)
+                };
+            })(),
+            (() => {
+                const confirmed = addDays(15);
+                confirmed.setHours(12, 30, 0, 0);
+                return {
+                    id: 3,
+                    locationId: 1,
+                    status: 'viewing_scheduled',
+                    requestedSlots: [],
+                    ownerSuggestions: [],
+                    confirmedSlot: {
+                        date: new Date(confirmed.getTime()),
+                        iso: confirmed.toISOString(),
+                        label: formatDateTime(confirmed)
+                    },
+                    host: 'Irina M.',
+                    lastUpdate: addDays(-1),
+                    note: 'Vizionarea este confirmată.',
+                    date: new Date(confirmed.getTime()),
+                    hour: formatTime(confirmed)
+                };
+            })(),
+            (() => {
+                const past = addDays(-3);
+                past.setHours(10, 0, 0, 0);
+                return {
+                    id: 4,
+                    locationId: 3,
+                    status: 'viewing_completed',
+                    requestedSlots: [],
+                    ownerSuggestions: [],
+                    confirmedSlot: {
+                        date: new Date(past.getTime()),
+                        iso: past.toISOString(),
+                        label: formatDateTime(past)
+                    },
+                    host: 'Laura C.',
+                    lastUpdate: addDays(-3),
+                    note: 'Ți-am trimis planul detaliat.',
+                    date: new Date(past.getTime()),
+                    hour: formatTime(past)
+                };
+            })()
         ];
 
         const requestFilters = { status: 'all', location: 'all', month: 'all' };
@@ -1447,7 +1771,10 @@
             if (overviewFavoritesCount) overviewFavoritesCount.textContent = favoriteIds.length;
             if (overviewRequestsCount) overviewRequestsCount.textContent = clientRequests.filter(req => !['cancelled', 'rejected'].includes(req.status)).length;
             if (overviewOffersCount) overviewOffersCount.textContent = clientRequests.filter(req => req.status === 'offer_sent').length;
-            if (overviewViewingsCount) overviewViewingsCount.textContent = clientViewings.filter(view => ['confirmed', 'awaiting_confirmation'].includes(view.status)).length;
+            if (overviewViewingsCount) {
+                const activeStatuses = ['viewing_request', 'viewing_rescheduled', 'viewing_scheduled'];
+                overviewViewingsCount.textContent = clientViewings.filter(view => activeStatuses.includes(view.status)).length;
+            }
         }
 
         function renderOverviewRecentActivity() {
@@ -1516,7 +1843,15 @@
         function renderOverviewViewingsList() {
             if (!overviewViewingsList) return;
             const upcoming = clientViewings
-                .filter(view => view.date >= today && view.date <= addDays(14))
+                .map(view => {
+                    const primarySlot = getViewingPrimarySlot(view);
+                    return {
+                        view,
+                        primarySlot,
+                        date: primarySlot?.date || (view.date instanceof Date ? view.date : null)
+                    };
+                })
+                .filter(item => item.date && item.date >= today && item.date <= addDays(14))
                 .sort((a, b) => a.date - b.date);
 
             overviewViewingsList.innerHTML = '';
@@ -1525,7 +1860,7 @@
                 return;
             }
 
-            upcoming.forEach(view => {
+            upcoming.forEach(({ view, primarySlot }) => {
                 const location = getLocationById(view.locationId);
                 const item = document.createElement('div');
                 // MODIFICAT: Adăugat clasă și event listener pentru interactivitate
@@ -1535,7 +1870,7 @@
                 item.innerHTML = `
                     <div>
                         ${location?.name || 'Locație necunoscută'}
-                        <span class="panel-meta">${formatDate(view.date)} · ${view.hour}</span>
+                        <span class="panel-meta">${primarySlot ? primarySlot.label : 'Programare în curs de stabilire'}</span>
                     </div>
                 `;
                 item.appendChild(chip);
@@ -1562,7 +1897,7 @@
                 if (viewingsVenueFilter) viewingsVenueFilter.value = 'all';
                 renderViewingsTable();
                 const viewing = clientViewings.find(view => view.id === id);
-                if (viewing?.status === 'reschedule_pending') {
+                if (viewing?.status === 'viewing_rescheduled') {
                     renderReschedulePanel(id);
                     reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -1668,21 +2003,23 @@
         const viewingModal = document.getElementById('viewing-modal');
         const viewingModalCloseBtn = document.getElementById('viewing-modal-close');
         const viewingForm = document.getElementById('viewing-form');
-        const viewingCalendarContainer = document.getElementById('viewing-calendar');
-        const viewingDateInput = document.getElementById('viewing-date-picker');
-        const viewingTimeInput = document.getElementById('viewing-time');
         const viewingSelectedDateLabel = document.getElementById('viewing-selected-date');
         const viewingModalSubtitle = document.getElementById('viewing-modal-subtitle');
         const viewingModalTitle = document.getElementById('viewing-modal-title');
         const viewingCancelBtn = document.getElementById('viewing-cancel-btn');
-        let viewingDatePicker = null;
+        const viewingSlotHintEl = document.querySelector('[data-viewing-slot-hint]');
+        const viewingSlotsContainer = document.querySelector('[data-viewing-slots]');
+        const viewingSlotCounter = document.querySelector('[data-viewing-slot-counter]');
+        const viewingEmptyStateEl = document.querySelector('[data-viewing-empty-state]');
+        const viewingAddSlotBtn = document.querySelector('[data-viewing-add-slot]');
+        const slotPickers = new Map();
+        const MAX_VIEWING_SLOTS = 4;
 
         const viewingState = {
             requestId: null,
             locationId: null,
             locationName: '',
-            selectedDate: null,
-            selectedTime: ''
+            slots: []
         };
 
         function openAvailabilityModal(location) {
@@ -1789,15 +2126,24 @@
             }
         }
 
-        function openViewingModal(request) {
+        function openViewingModal(request, { presetSlots = [] } = {}) {
             if (!viewingModal || !request) {
                 return;
             }
             viewingState.requestId = request.id;
             viewingState.locationId = request.locationId;
             viewingState.locationName = getLocationById(request.locationId)?.name || '';
-            viewingState.selectedDate = null;
-            viewingState.selectedTime = '';
+            viewingState.slots = mapSlots(presetSlots);
+
+            if (!viewingState.slots.length && typeof request.viewingId === 'number') {
+                const existingViewing = clientViewings.find(view => view.id === request.viewingId);
+                if (existingViewing) {
+                    viewingState.slots = mapSlots(existingViewing.requestedSlots);
+                }
+            }
+            if (!viewingState.slots.length && Array.isArray(request.requestedSlots)) {
+                viewingState.slots = mapSlots(request.requestedSlots);
+            }
 
             if (viewingModalTitle) {
                 viewingModalTitle.textContent = viewingState.locationName
@@ -1809,12 +2155,8 @@
                     ? `Alege data și ora potrivită pentru ${viewingState.locationName}.`
                     : 'Selectează data și ora preferată pentru vizionare.';
             }
-            if (viewingTimeInput) {
-                viewingTimeInput.value = '';
-            }
+            initializeViewingSlotInputs();
             viewingModal.classList.add('is-visible');
-            ensureViewingDatePicker();
-            updateViewingSelectedDate();
         }
 
         function closeViewingModal() {
@@ -1822,84 +2164,170 @@
             viewingState.requestId = null;
             viewingState.locationId = null;
             viewingState.locationName = '';
-            viewingState.selectedDate = null;
-            viewingState.selectedTime = '';
-            if (viewingTimeInput) {
-                viewingTimeInput.value = '';
-            }
-            viewingDatePicker?.clear(false);
-            updateViewingSelectedDate();
+            viewingState.slots = [];
+            destroyViewingSlotPickers();
+            updateSlotMeta();
         }
 
-        function ensureViewingDatePicker() {
-            if (!viewingCalendarContainer || !viewingDateInput || typeof flatpickr !== 'function') {
-                return null;
+        function destroyViewingSlotPickers() {
+            slotPickers.forEach(picker => picker?.destroy());
+            slotPickers.clear();
+            if (viewingSlotsContainer) {
+                viewingSlotsContainer.innerHTML = '';
             }
-            const today = new Date();
-            if (!viewingDatePicker) {
-                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
-                    flatpickr.localize(flatpickr.l10ns.ro);
+            if (viewingSlotCounter) {
+                viewingSlotCounter.hidden = true;
+                viewingSlotCounter.textContent = '';
+            }
+        }
+
+        function updateSlotStatusBadge(badgeEl, date) {
+            if (!badgeEl) {
+                return;
+            }
+            badgeEl.classList.remove('is-warning', 'is-danger');
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                badgeEl.textContent = 'Selectează data și ora';
+                return;
+            }
+            badgeEl.textContent = 'Interval selectat';
+        }
+
+        function updateSlotMeta() {
+            const totalSlots = slotPickers.size;
+            const filledSlots = Array.from(slotPickers.values()).filter(picker => {
+                const date = picker?.selectedDates?.[0];
+                return date instanceof Date && !Number.isNaN(date.getTime());
+            }).length;
+            if (viewingSlotHintEl) {
+                const remaining = MAX_VIEWING_SLOTS - totalSlots;
+                viewingSlotHintEl.textContent = remaining > 0
+                    ? `Mai poți adăuga ${remaining} ${remaining === 1 ? 'interval' : 'intervale'} preferate.`
+                    : 'Ai atins numărul maxim de intervale. Șterge unul dacă vrei să adaugi altul.';
+            }
+            if (viewingSelectedDateLabel) {
+                viewingSelectedDateLabel.textContent = filledSlots
+                    ? `Trimiți ${filledSlots} ${filledSlots === 1 ? 'interval preferat' : 'intervale preferate'} către locație.`
+                    : 'Lista de intervale va fi trimisă către locație. Alege cel puțin o variantă înainte de a continua.';
+            }
+            if (viewingSlotCounter) {
+                if (totalSlots > 0) {
+                    viewingSlotCounter.textContent = `${filledSlots}/${MAX_VIEWING_SLOTS} intervale selectate`;
+                    viewingSlotCounter.hidden = false;
+                } else {
+                    viewingSlotCounter.hidden = true;
                 }
-                viewingDatePicker = flatpickr(viewingDateInput, {
+            }
+            if (viewingEmptyStateEl) {
+                viewingEmptyStateEl.hidden = totalSlots > 0;
+            }
+            if (viewingAddSlotBtn) {
+                viewingAddSlotBtn.disabled = totalSlots >= MAX_VIEWING_SLOTS;
+            }
+            viewingState.slots = collectViewingSlots();
+        }
+
+        function createViewingSlotInput(initialSlot = null) {
+            if (!viewingSlotsContainer || slotPickers.size >= MAX_VIEWING_SLOTS) {
+                return;
+            }
+            const wrapper = document.createElement('div');
+            wrapper.className = 'reschedule-slot';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Selectează data și ora';
+            input.required = true;
+            input.dataset.slotInput = 'true';
+
+            const statusBadge = document.createElement('span');
+            statusBadge.className = 'reschedule-slot-status panel-meta';
+            statusBadge.textContent = 'Selectează data și ora';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'crm-button ghost sm';
+            removeBtn.textContent = 'Șterge';
+
+            wrapper.append(input, statusBadge, removeBtn);
+            viewingSlotsContainer.appendChild(wrapper);
+
+            let picker = null;
+            if (typeof flatpickr === 'function') {
+                const locale = flatpickr.l10ns?.ro || flatpickr.l10ns.default || 'default';
+                picker = flatpickr(input, {
+                    enableTime: true,
+                    time_24hr: true,
+                    minuteIncrement: 15,
+                    altInput: true,
+                    altFormat: 'd M Y, H:i',
+                    dateFormat: 'Y-m-d H:i',
+                    locale,
                     minDate: 'today',
-                    locale: flatpickr.l10ns?.ro || 'default',
-                    disableMobile: true,
-                    monthSelectorType: 'dropdown',
-                    yearSelectorType: 'dropdown',
-                    showMonths: 1,
-                    inline: true,
-                    appendTo: viewingCalendarContainer,
-                    onChange(selectedDates) {
-                        viewingState.selectedDate = selectedDates[0] || null;
-                        updateViewingSelectedDate();
+                    onOpen() {
+                        updateSlotStatusBadge(statusBadge, picker?.selectedDates?.[0] || null);
                     },
-                    onDayCreate: decorateViewingDay
+                    onChange(selectedDates) {
+                        updateSlotStatusBadge(statusBadge, selectedDates[0]);
+                        updateSlotMeta();
+                    }
                 });
             }
-            const referenceDate = viewingState.selectedDate || today;
-            viewingDatePicker.clear(false);
-            viewingDatePicker.set('disable', [
-                function(date) {
-                    return getAvailabilityStatus(viewingState.locationId, date) === 'booked';
+            slotPickers.set(input, picker);
+
+            if (initialSlot) {
+                const initialDate = normalizeSlotDate(initialSlot.date || initialSlot);
+                if (initialDate && picker) {
+                    picker.setDate(initialDate, true, 'Y-m-d H:i');
+                    updateSlotStatusBadge(statusBadge, initialDate);
                 }
-            ]);
-            viewingDatePicker.redraw();
-            viewingDatePicker.jumpToDate(referenceDate);
-            viewingState.selectedDate = null;
-            updateViewingSelectedDate();
-            return viewingDatePicker;
+            }
+
+            removeBtn.addEventListener('click', () => {
+                const fp = slotPickers.get(input);
+                fp?.destroy();
+                slotPickers.delete(input);
+                wrapper.remove();
+                updateSlotMeta();
+            });
+
+            updateSlotMeta();
         }
 
-        function decorateViewingDay(selectedDates, dateStr, instance, dayElem) {
-            const date = dayElem.dateObj;
-            if (!date) {
-                return;
-            }
-            const status = getAvailabilityStatus(viewingState.locationId, date);
-            dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
-            if (status === 'hold') {
-                dayElem.classList.add('availability-day-hold');
-            } else if (status === 'booked') {
-                dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
+        function initializeViewingSlotInputs() {
+            destroyViewingSlotPickers();
+            const initialSlots = Array.isArray(viewingState.slots) && viewingState.slots.length
+                ? viewingState.slots
+                : [];
+            if (initialSlots.length) {
+                initialSlots.forEach(slot => createViewingSlotInput(slot));
             } else {
-                dayElem.classList.add('availability-day-available');
+                const base = addDays(2);
+                base.setHours(11, 0, 0, 0);
+                createViewingSlotInput({ date: base });
             }
+            updateSlotMeta();
         }
 
-        function updateViewingSelectedDate() {
-            if (!viewingSelectedDateLabel) {
-                return;
-            }
-            if (!viewingState.selectedDate) {
-                viewingSelectedDateLabel.textContent = 'Selectează data și ora pentru vizionare.';
-                return;
-            }
-            const formattedDate = formatDate(viewingState.selectedDate);
-            if (viewingState.selectedTime) {
-                viewingSelectedDateLabel.textContent = `Vizionare: ${formattedDate} · ${viewingState.selectedTime}`;
-            } else {
-                viewingSelectedDateLabel.textContent = `Data selectată: ${formattedDate}. Adaugă și ora preferată.`;
-            }
+        function collectViewingSlots() {
+            const collected = [];
+            const seen = new Set();
+            slotPickers.forEach((picker) => {
+                const date = picker?.selectedDates?.[0];
+                if (date instanceof Date && !Number.isNaN(date.getTime())) {
+                    const slot = createSlotObject(date);
+                    if (slot?.iso && !seen.has(slot.iso)) {
+                        seen.add(slot.iso);
+                        collected.push(slot);
+                    }
+                }
+            });
+            collected.sort((a, b) => {
+                const dateA = normalizeSlotDate(a?.date || a?.iso);
+                const dateB = normalizeSlotDate(b?.date || b?.iso);
+                return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+            });
+            return collected;
         }
 
         function getAvailabilityStatus(locationId, date) {
@@ -1963,29 +2391,16 @@
             event.preventDefault();
             closeViewingModal();
         });
-        viewingTimeInput?.addEventListener('input', () => {
-            viewingState.selectedTime = viewingTimeInput.value || '';
-            updateViewingSelectedDate();
-        });
+        viewingAddSlotBtn?.addEventListener('click', () => createViewingSlotInput());
         viewingForm?.addEventListener('submit', (event) => {
             event.preventDefault();
             if (!viewingState.requestId || !viewingState.locationId) {
                 return;
             }
-            if (!viewingState.selectedDate) {
-                window.alert('Selectează data vizionării.');
+            const requestedSlots = collectViewingSlots();
+            if (!requestedSlots.length) {
+                window.alert('Adaugă cel puțin un interval înainte de a trimite cererea.');
                 return;
-            }
-            const timeValue = viewingTimeInput?.value?.trim() || '';
-            if (!timeValue) {
-                window.alert('Introdu ora preferată pentru vizionare.');
-                return;
-            }
-            viewingState.selectedTime = timeValue;
-            const [hoursPart, minutesPart] = timeValue.split(':').map(Number);
-            const scheduledDate = new Date(viewingState.selectedDate);
-            if (!Number.isNaN(hoursPart)) {
-                scheduledDate.setHours(hoursPart, Number.isNaN(minutesPart) ? 0 : minutesPart, 0, 0);
             }
 
             const request = clientRequests.find(req => req.id === viewingState.requestId);
@@ -1996,34 +2411,63 @@
 
             request.status = 'viewing_request';
             request.lastUpdate = new Date();
+            request.requestedSlots = requestedSlots.slice();
             delete request.holdExpiresAt;
+            viewingState.slots = requestedSlots.slice();
 
-            const nextViewingId = clientViewings.reduce((max, view) => Math.max(max, view.id), 0) + 1;
-            const newViewing = {
-                id: nextViewingId,
-                locationId: viewingState.locationId,
-                date: scheduledDate,
-                hour: timeValue,
-                status: 'awaiting_confirmation',
-                lastUpdate: new Date(),
-                host: 'Echipa locației',
-                note: 'Așteptăm confirmarea locației pentru această vizionare.'
-            };
-            clientViewings.push(newViewing);
+            let viewing = null;
+            if (typeof request.viewingId === 'number') {
+                viewing = clientViewings.find(view => view.id === request.viewingId) || null;
+            }
+
+            const firstSlot = requestedSlots[0] || null;
+            const now = new Date();
+
+            if (!viewing) {
+                const nextViewingId = clientViewings.reduce((max, view) => Math.max(max, view.id), 0) + 1;
+                viewing = {
+                    id: nextViewingId,
+                    locationId: viewingState.locationId,
+                    status: 'viewing_request',
+                    requestedSlots: requestedSlots.slice(),
+                    ownerSuggestions: [],
+                    confirmedSlot: null,
+                    host: 'Echipa locației',
+                    note: 'Locația verifică disponibilitatea pentru intervalele propuse.',
+                    lastUpdate: now,
+                    date: firstSlot?.date ? new Date(firstSlot.date.getTime()) : null,
+                    hour: firstSlot?.date ? formatTime(firstSlot.date) : '—'
+                };
+                clientViewings.push(viewing);
+                request.viewingId = viewing.id;
+            } else {
+                viewing.status = 'viewing_request';
+                viewing.requestedSlots = requestedSlots.slice();
+                viewing.ownerSuggestions = [];
+                viewing.confirmedSlot = null;
+                viewing.note = 'Locația verifică disponibilitatea pentru intervalele propuse.';
+                viewing.lastUpdate = now;
+                viewing.date = firstSlot?.date ? new Date(firstSlot.date.getTime()) : viewing.date;
+                viewing.hour = firstSlot?.date ? formatTime(firstSlot.date) : viewing.hour;
+                viewing.host = viewing.host || 'Echipa locației';
+            }
 
             const location = getLocationById(viewingState.locationId);
+            const slotSummary = requestedSlots.map(slot => slot.label).join('; ');
             const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
             requestHistory.unshift({
                 id: nextHistoryId,
-                message: `Ai solicitat o vizionare la ${location?.name || 'locație'} pe ${formatDate(scheduledDate)}.`,
-                timestamp: new Date()
+                message: `Ai solicitat o vizionare la ${location?.name || 'locație'} pentru ${slotSummary || 'intervalele propuse'}.`,
+                timestamp: now
             });
 
             closeViewingModal();
             renderRequests();
             renderViewingsTable();
             renderOverview();
-            navigateToItem('viewing', newViewing.id);
+            if (viewing) {
+                navigateToItem('viewing', viewing.id);
+            }
         });
 
         function createRequestFromModal({ locationId, eventDate, guests, eventType }) {
@@ -2148,6 +2592,36 @@
                 statusContainer.className = 'booking-row-status';
                 statusContainer.appendChild(createStatusChip(req.status, requestStatusMeta));
 
+                const requestPreferredSlots = mapSlots(req.requestedSlots);
+                const requestOwnerSuggestions = mapSlots(req.ownerSuggestions);
+                const requestConfirmedSlot = mapSlots([req.confirmedSlot])[0] || null;
+                if (req.status === 'viewing_request' && requestPreferredSlots.length) {
+                    const prefMeta = document.createElement('span');
+                    prefMeta.className = 'booking-row-meta';
+                    prefMeta.textContent = `Intervale propuse: ${requestPreferredSlots.map(slot => slot.label).join(' • ')}`;
+                    statusContainer.appendChild(prefMeta);
+                }
+                if (req.status === 'viewing_rescheduled') {
+                    if (requestOwnerSuggestions.length) {
+                        const ownerMeta = document.createElement('span');
+                        ownerMeta.className = 'booking-row-meta';
+                        ownerMeta.textContent = `Propuneri locație: ${requestOwnerSuggestions.map(slot => slot.label).join(' • ')}`;
+                        statusContainer.appendChild(ownerMeta);
+                    }
+                    if (requestPreferredSlots.length) {
+                        const clientMeta = document.createElement('span');
+                        clientMeta.className = 'booking-row-meta';
+                        clientMeta.textContent = `Preferințe trimise: ${requestPreferredSlots.map(slot => slot.label).join(' • ')}`;
+                        statusContainer.appendChild(clientMeta);
+                    }
+                }
+                if (req.status === 'viewing_scheduled' && requestConfirmedSlot) {
+                    const confirmedMeta = document.createElement('span');
+                    confirmedMeta.className = 'booking-row-meta';
+                    confirmedMeta.textContent = `Interval confirmat: ${requestConfirmedSlot.label}`;
+                    statusContainer.appendChild(confirmedMeta);
+                }
+
                 const next = getRequestNextStep(req);
                 const nextStep = document.createElement('span');
                 nextStep.className = 'booking-row-next-step';
@@ -2265,7 +2739,7 @@
                         window.alert('Poți solicita o vizionare doar după confirmarea disponibilității.');
                         return;
                     }
-                    openViewingModal(request);
+                    openViewingModal(request, { presetSlots: request.requestedSlots || [] });
                     return;
                 case 'cancel_request':
                     request.status = 'cancelled';
@@ -2291,27 +2765,91 @@
                     delete request.holdExpiresAt;
                     break;
                 case 'cancel_viewing_request':
-                    request.status = 'availability_confirmed';
-                    request.lastUpdate = new Date();
-                    delete request.holdExpiresAt;
+                    {
+                        const now = new Date();
+                        request.status = 'availability_confirmed';
+                        request.lastUpdate = now;
+                        request.requestedSlots = [];
+                        delete request.holdExpiresAt;
+                        const relatedViewing = request.viewingId
+                            ? clientViewings.find(view => view.id === request.viewingId)
+                            : null;
+                        if (relatedViewing) {
+                            relatedViewing.status = 'viewing_cancelled';
+                            relatedViewing.lastUpdate = now;
+                            relatedViewing.note = 'Ai anulat cererea de vizionare.';
+                            relatedViewing.requestedSlots = [];
+                            relatedViewing.ownerSuggestions = [];
+                            relatedViewing.confirmedSlot = null;
+                        }
+                        const location = getLocationById(request.locationId);
+                        const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+                        requestHistory.unshift({
+                            id: nextHistoryId,
+                            message: `Ai anulat cererea de vizionare pentru ${location?.name || 'locație'}.`,
+                            timestamp: now
+                        });
+                        delete request.viewingId;
+                        delete request.confirmedSlot;
+                    }
                     break;
                 case 'add_to_calendar':
                     window.alert('Exportul în calendar va fi disponibil în curând.');
                     request.lastUpdate = new Date();
                     break;
                 case 'cancel_viewing':
-                    request.status = 'availability_confirmed';
-                    request.lastUpdate = new Date();
-                    delete request.holdExpiresAt;
+                    {
+                        const now = new Date();
+                        request.status = 'availability_confirmed';
+                        request.lastUpdate = now;
+                        delete request.holdExpiresAt;
+                        const relatedViewing = request.viewingId
+                            ? clientViewings.find(view => view.id === request.viewingId)
+                            : null;
+                        if (relatedViewing) {
+                            relatedViewing.status = 'viewing_cancelled';
+                            relatedViewing.lastUpdate = now;
+                            relatedViewing.note = 'Ai anulat vizionarea confirmată.';
+                            relatedViewing.confirmedSlot = null;
+                        }
+                        const location = getLocationById(request.locationId);
+                        const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+                        requestHistory.unshift({
+                            id: nextHistoryId,
+                            message: `Ai anulat vizionarea confirmată la ${location?.name || 'locație'}.`,
+                            timestamp: now
+                        });
+                        delete request.viewingId;
+                        delete request.confirmedSlot;
+                    }
                     break;
                 case 'accept_reschedule':
-                    request.status = 'viewing_scheduled';
-                    request.lastUpdate = new Date();
+                    if (typeof request.viewingId === 'number') {
+                        navigateToItem('viewing', request.viewingId);
+                        renderReschedulePanel(request.viewingId);
+                        reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        return;
+                    }
                     break;
                 case 'decline_reschedule':
-                    request.status = 'viewing_request';
-                    request.lastUpdate = new Date();
-                    break;
+                    {
+                        const now = new Date();
+                        request.status = 'viewing_request';
+                        request.lastUpdate = now;
+                        request.ownerSuggestions = [];
+                        const relatedViewing = request.viewingId
+                            ? clientViewings.find(view => view.id === request.viewingId)
+                            : null;
+                        if (relatedViewing) {
+                            relatedViewing.ownerSuggestions = [];
+                            relatedViewing.lastUpdate = now;
+                            relatedViewing.note = 'Propune noi intervale pentru a continua.';
+                            openViewingModal(request, { presetSlots: relatedViewing.requestedSlots });
+                        } else {
+                            openViewingModal(request, { presetSlots: request.requestedSlots || [] });
+                        }
+                        break;
+                    }
                 case 'leave_feedback':
                     window.alert('Mulțumim! Secțiunea de feedback va fi disponibilă după eveniment.');
                     request.lastUpdate = new Date();
@@ -2340,7 +2878,10 @@
         }
 
         function getPendingRescheduleViewing() {
-            return clientViewings.find(view => view.status === 'reschedule_pending' && Array.isArray(view.rescheduleSuggestions) && view.rescheduleSuggestions.length);
+            return clientViewings.find(view =>
+                view.status === 'viewing_rescheduled' &&
+                Array.isArray(view.ownerSuggestions) &&
+                view.ownerSuggestions.length);
         }
 
         function renderReschedulePanel(targetId = null) {
@@ -2350,7 +2891,7 @@
             const pendingViewing = targetId
                 ? clientViewings.find(view => view.id === targetId)
                 : getPendingRescheduleViewing();
-            const hasSuggestions = pendingViewing && Array.isArray(pendingViewing.rescheduleSuggestions) && pendingViewing.rescheduleSuggestions.length;
+            const hasSuggestions = pendingViewing && Array.isArray(pendingViewing.ownerSuggestions) && pendingViewing.ownerSuggestions.length;
             if (!pendingViewing || !hasSuggestions) {
                 reschedulePanel.hidden = true;
                 activeRescheduleViewingId = null;
@@ -2384,7 +2925,7 @@
 
             if (rescheduleOptionsContainer) {
                 rescheduleOptionsContainer.innerHTML = '';
-                pendingViewing.rescheduleSuggestions.forEach((suggestion, index) => {
+                pendingViewing.ownerSuggestions.forEach((suggestion, index) => {
                     const candidateDate = suggestion?.date instanceof Date && !Number.isNaN(suggestion.date.getTime())
                         ? suggestion.date
                         : (suggestion?.iso ? new Date(suggestion.iso) : null);
@@ -2445,10 +2986,26 @@
                 viewing.date = chosenDate;
                 viewing.hour = formatTime(chosenDate);
             }
-            viewing.status = 'confirmed';
+            const confirmedSlot = createSlotObject(chosenDate || new Date());
+            viewing.status = 'viewing_scheduled';
             viewing.lastUpdate = new Date();
             viewing.note = 'Ai confirmat intervalul propus de locație.';
-            viewing.rescheduleSuggestions = [];
+            viewing.ownerSuggestions = [];
+            viewing.confirmedSlot = confirmedSlot;
+            const relatedRequest = findRequestByViewingId(viewing.id);
+            if (relatedRequest) {
+                relatedRequest.status = 'viewing_scheduled';
+                relatedRequest.lastUpdate = new Date();
+                relatedRequest.confirmedSlot = confirmedSlot;
+                relatedRequest.ownerSuggestions = [];
+            }
+            const location = getLocationById(viewing.locationId);
+            const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+            requestHistory.unshift({
+                id: nextHistoryId,
+                message: `Ai confirmat vizionarea la ${location?.name || 'locație'} pentru ${confirmedSlot?.label || 'intervalul ales'}.`,
+                timestamp: new Date()
+            });
             selectedRescheduleOption = null;
             renderReschedulePanel();
             renderViewingsTable();
@@ -2464,27 +3021,54 @@
             if (!viewing) {
                 return;
             }
-            viewing.status = 'awaiting_confirmation';
-            viewing.lastUpdate = new Date();
-            viewing.note = 'Ai refuzat intervalele propuse. Proprietarul îți va trimite alte variante.';
-            viewing.rescheduleSuggestions = [];
             selectedRescheduleOption = null;
+            viewing.ownerSuggestions = [];
+            viewing.lastUpdate = new Date();
+            viewing.note = 'Trimite alte intervale pentru a continua programarea.';
+            const relatedRequest = findRequestByViewingId(viewing.id);
+            if (relatedRequest) {
+                relatedRequest.ownerSuggestions = [];
+                relatedRequest.lastUpdate = new Date();
+            }
             renderReschedulePanel();
             renderViewingsTable();
             renderOverview();
+            if (relatedRequest) {
+                openViewingModal(relatedRequest, { presetSlots: viewing.requestedSlots });
+            } else {
+                openViewingModal({
+                    id: viewing.id,
+                    locationId: viewing.locationId,
+                    viewingId: viewing.id,
+                    requestedSlots: viewing.requestedSlots
+                }, { presetSlots: viewing.requestedSlots });
+            }
         }
 
         function renderViewingsTable() {
             if (!viewingsTableBody) return;
             viewingsTableBody.innerHTML = '';
-            const filtered = clientViewings.filter(view => {
-                const venueName = getLocationById(view.locationId)?.name || '';
-                const statusMatch = viewingFilters.status === 'all' || view.status === viewingFilters.status;
-                const venueMatch = viewingFilters.venue === 'all' || viewingFilters.venue === venueName;
-                return statusMatch && venueMatch;
-            }).sort((a, b) => a.date - b.date);
 
-            if (!filtered.length) {
+            const enhanced = clientViewings
+                .map(view => {
+                    const requestedSlots = mapSlots(view.requestedSlots);
+                    const ownerSuggestions = mapSlots(view.ownerSuggestions);
+                    const confirmedSlot = mapSlots([view.confirmedSlot])[0] || null;
+                    const primarySlot = getViewingPrimarySlot(view);
+                    const sortTime = primarySlot?.date
+                        ? primarySlot.date.getTime()
+                        : (view.date instanceof Date ? view.date.getTime() : Number.MAX_SAFE_INTEGER);
+                    return { view, requestedSlots, ownerSuggestions, confirmedSlot, primarySlot, sortTime };
+                })
+                .filter(({ view }) => {
+                    const venueName = getLocationById(view.locationId)?.name || '';
+                    const statusMatch = viewingFilters.status === 'all' || view.status === viewingFilters.status;
+                    const venueMatch = viewingFilters.venue === 'all' || viewingFilters.venue === venueName;
+                    return statusMatch && venueMatch;
+                })
+                .sort((a, b) => a.sortTime - b.sortTime);
+
+            if (!enhanced.length) {
                 const emptyRow = viewingsTableBody.insertRow();
                 const emptyCell = emptyRow.insertCell();
                 emptyCell.colSpan = 1;
@@ -2494,7 +3078,7 @@
                 return;
             }
 
-            filtered.forEach(view => {
+            enhanced.forEach(({ view, requestedSlots, ownerSuggestions, confirmedSlot, primarySlot }) => {
                 const location = getLocationById(view.locationId);
                 const row = viewingsTableBody.insertRow();
                 row.dataset.id = view.id;
@@ -2506,9 +3090,11 @@
                 const topRow = document.createElement('div');
                 topRow.className = 'booking-row-top';
                 topRow.appendChild(createInfoItem('Locație', location?.name || 'Locație necunoscută'));
-                topRow.appendChild(createInfoItem('Dată', formatDate(view.date)));
-                topRow.appendChild(createInfoItem('Ora', view.hour || '—'));
-                topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(view.lastUpdate)));
+                topRow.appendChild(createInfoItem('Interval principal', primarySlot ? primarySlot.label : '—'));
+                topRow.appendChild(createInfoItem('Gazdă', view.host || 'Vom confirma în curând'));
+                topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(view.lastUpdate), {
+                    meta: formatRelativeTime(view.lastUpdate) ? `Actualizat ${formatRelativeTime(view.lastUpdate)}` : null
+                }));
                 wrapper.appendChild(topRow);
 
                 const bottomRow = document.createElement('div');
@@ -2523,42 +3109,83 @@
                     noteEl.textContent = view.note;
                     statusContainer.appendChild(noteEl);
                 }
+                if (view.status === 'viewing_request' && requestedSlots.length) {
+                    const metaEl = document.createElement('span');
+                    metaEl.className = 'booking-row-meta';
+                    metaEl.textContent = `Preferințe trimise: ${requestedSlots.map(slot => slot.label).join(' • ')}`;
+                    statusContainer.appendChild(metaEl);
+                }
+                if (view.status === 'viewing_rescheduled') {
+                    if (ownerSuggestions.length) {
+                        const ownerEl = document.createElement('span');
+                        ownerEl.className = 'booking-row-meta';
+                        ownerEl.textContent = `Propuneri primite: ${ownerSuggestions.map(slot => slot.label).join(' • ')}`;
+                        statusContainer.appendChild(ownerEl);
+                    }
+                    if (requestedSlots.length) {
+                        const clientEl = document.createElement('span');
+                        clientEl.className = 'booking-row-meta';
+                        clientEl.textContent = `Preferințe trimise: ${requestedSlots.map(slot => slot.label).join(' • ')}`;
+                        statusContainer.appendChild(clientEl);
+                    }
+                }
+                if (view.status === 'viewing_scheduled' && confirmedSlot) {
+                    const confirmedEl = document.createElement('span');
+                    confirmedEl.className = 'booking-row-meta';
+                    confirmedEl.textContent = `Interval confirmat: ${confirmedSlot.label}`;
+                    statusContainer.appendChild(confirmedEl);
+                }
                 bottomRow.appendChild(statusContainer);
 
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'table-actions booking-row-actions';
-                if (view.status === 'awaiting_confirmation') {
-                    actionsDiv.innerHTML = `
-                        <button data-viewing-action="confirm_viewing" data-viewing-id="${view.id}">Confirmă prezența</button>
-                        <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Solicită reprogramare</button>
-                    `;
-                } else if (view.status === 'confirmed') {
-                    actionsDiv.innerHTML = `
-                        <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Descarcă materiale</button>
-                        <button data-viewing-action="add_note" data-viewing-id="${view.id}">Adaugă notiță</button>
-                    `;
-                } else if (view.status === 'completed') {
-                    actionsDiv.innerHTML = `
-                        <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Vezi rezumatul</button>
-                        <button data-viewing-action="add_review" data-viewing-id="${view.id}">Scrie feedback</button>
-                    `;
-                } else if (view.status === 'reschedule_pending') {
-                    actionsDiv.innerHTML = `
-                        <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi propunerile</button>
-                        <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Propune altă dată</button>
-                    `;
-                } else {
-                    actionsDiv.innerHTML = `
-                        <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi detalii</button>
-                    `;
+                switch (view.status) {
+                    case 'viewing_request':
+                        actionsDiv.innerHTML = `
+                            <button data-viewing-action="edit_slots" data-viewing-id="${view.id}">Editează propunerile</button>
+                            <button data-viewing-action="cancel_request" data-viewing-id="${view.id}">Anulează cererea</button>
+                        `;
+                        break;
+                    case 'viewing_rescheduled':
+                        actionsDiv.innerHTML = `
+                            <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi propunerile</button>
+                            <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Propune altă dată</button>
+                        `;
+                        break;
+                    case 'viewing_scheduled':
+                        actionsDiv.innerHTML = `
+                            <button data-viewing-action="add_to_calendar" data-viewing-id="${view.id}">Adaugă în calendar</button>
+                            <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Solicită reprogramare</button>
+                        `;
+                        break;
+                    case 'viewing_completed':
+                        actionsDiv.innerHTML = `
+                            <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Vezi rezumatul</button>
+                            <button data-viewing-action="add_review" data-viewing-id="${view.id}">Scrie feedback</button>
+                        `;
+                        break;
+                    case 'viewing_rejected':
+                    case 'viewing_cancelled':
+                        actionsDiv.innerHTML = `
+                            <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi detalii</button>
+                        `;
+                        break;
+                    default:
+                        actionsDiv.innerHTML = `
+                            <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi detalii</button>
+                        `;
+                        break;
                 }
-                bottomRow.appendChild(actionsDiv);
+                if (actionsDiv.children.length) {
+                    bottomRow.appendChild(actionsDiv);
+                }
 
                 wrapper.appendChild(bottomRow);
                 cell.appendChild(wrapper);
             });
 
             renderOverviewViewingsList();
+            renderReschedulePanel();
         }
 
         function handleViewingAction(event) {
@@ -2568,30 +3195,71 @@
             const viewingId = parseInt(button.dataset.viewingId, 10);
             const viewing = clientViewings.find(v => v.id === viewingId);
             if (!viewing) return;
+            const request = findRequestByViewingId(viewing.id);
+            const location = getLocationById(viewing.locationId);
+            const now = new Date();
 
             switch (action) {
-                case 'confirm_viewing':
-                    viewing.status = 'confirmed';
-                    viewing.lastUpdate = new Date();
-                    break;
+                case 'edit_slots':
+                    if (request) {
+                        openViewingModal(request, { presetSlots: viewing.requestedSlots });
+                    } else {
+                        openViewingModal({
+                            id: viewingId,
+                            locationId: viewing.locationId,
+                            viewingId,
+                            requestedSlots: viewing.requestedSlots
+                        }, { presetSlots: viewing.requestedSlots });
+                    }
+                    return;
                 case 'request_reschedule':
-                    viewing.status = 'awaiting_confirmation';
-                    viewing.lastUpdate = new Date();
-                    viewing.note = 'Ai cerut un alt interval. Proprietarul îți va trimite noi propuneri.';
-                    viewing.rescheduleSuggestions = [];
-                    break;
+                    if (request) {
+                        openViewingModal(request, { presetSlots: viewing.requestedSlots });
+                    } else {
+                        openViewingModal({
+                            id: viewingId,
+                            locationId: viewing.locationId,
+                            viewingId,
+                            requestedSlots: viewing.requestedSlots
+                        }, { presetSlots: viewing.requestedSlots });
+                    }
+                    return;
                 case 'open_reschedule':
                     renderReschedulePanel(viewingId);
                     reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     return;
-                case 'download_materials':
-                    viewing.lastUpdate = new Date();
+                case 'cancel_request': {
+                    viewing.status = 'viewing_cancelled';
+                    viewing.lastUpdate = now;
+                    viewing.note = 'Ai anulat cererea de vizionare.';
+                    viewing.requestedSlots = [];
+                    viewing.ownerSuggestions = [];
+                    viewing.confirmedSlot = null;
+                    if (request) {
+                        request.status = 'availability_confirmed';
+                        request.lastUpdate = now;
+                        request.requestedSlots = [];
+                        request.ownerSuggestions = [];
+                        delete request.viewingId;
+                        delete request.confirmedSlot;
+                    }
+                    const nextHistoryId = requestHistory.reduce((max, entry) => Math.max(max, entry.id), 0) + 1;
+                    requestHistory.unshift({
+                        id: nextHistoryId,
+                        message: `Ai anulat cererea de vizionare pentru ${location?.name || 'locație'}.`,
+                        timestamp: now
+                    });
                     break;
-                case 'add_note':
-                    viewing.lastUpdate = new Date();
+                }
+                case 'add_to_calendar':
+                    window.alert('Exportul în calendar va fi disponibil în curând.');
+                    viewing.lastUpdate = now;
+                    break;
+                case 'download_materials':
+                    viewing.lastUpdate = now;
                     break;
                 case 'add_review':
-                    viewing.lastUpdate = new Date();
+                    viewing.lastUpdate = now;
                     break;
                 default:
                     break;

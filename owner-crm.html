@@ -845,6 +845,8 @@
         .status-chip[data-status="viewing_request"] { background: rgba(14, 165, 233, 0.22); color: #0c7ab5; }
         .status-chip[data-status="viewing_rescheduled"] { background: rgba(56, 189, 248, 0.22); color: #0369a1; }
         .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.22); color: #1d4ed8; }
+        .status-chip[data-status="viewing_rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
+        .status-chip[data-status="viewing_cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
         .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.22); color: #0f766e; }
         .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.22); color: #166534; }
         .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
@@ -891,6 +893,90 @@
             padding: 18px 20px;
             box-shadow: 0 26px 48px -46px rgba(15, 23, 42, 0.45);
             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .viewing-slot-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 6px 0 4px;
+        }
+        .viewing-slot-group {
+            border: 1px solid rgba(0, 82, 212, 0.14);
+            border-radius: 14px;
+            padding: 14px;
+            background: rgba(67, 100, 247, 0.05);
+        }
+        .viewing-slot-group-title {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+        .viewing-slot-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .viewing-slot-option {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            background: #ffffff;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            font-size: 0.82rem;
+        }
+        .viewing-slot-option:hover {
+            border-color: rgba(67, 100, 247, 0.45);
+            box-shadow: 0 10px 24px -18px rgba(67, 100, 247, 0.5);
+        }
+        .viewing-slot-option input {
+            margin: 0;
+            accent-color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        .viewing-slot-option.is-selected {
+            border-color: rgba(0, 82, 212, 0.6);
+            box-shadow: 0 14px 28px -22px rgba(0, 82, 212, 0.55);
+            background: rgba(0, 82, 212, 0.06);
+        }
+        .viewing-slot-badge {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--muted-color);
+            background: rgba(15, 23, 42, 0.08);
+            border-radius: 999px;
+            padding: 1px 6px;
+        }
+        .viewing-detail-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .viewing-detail-slot-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .viewing-detail-slot-list li {
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            border-radius: 10px;
+            padding: 8px 12px;
+            background: #ffffff;
+            font-size: 0.88rem;
+            color: var(--dark-color);
         }
 
         .booking-row-top {
@@ -1567,20 +1653,40 @@
         }
 
         .reschedule-slot {
-            display: flex;
-            align-items: center;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
             gap: 10px;
+            align-items: center;
+        }
+
+        .reschedule-slot-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
         }
 
         .reschedule-slot input {
-            flex: 1;
+            width: 100%;
             border-radius: 10px;
             border: 1px solid var(--border-color);
             padding: 10px 12px;
             font-size: 0.9rem;
         }
+        .reschedule-slot select {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            background: var(--white-color);
+            color: var(--dark-color);
+        }
 
         .reschedule-slot input.is-invalid {
+            border-color: #b91c1c;
+            box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+        }
+        .reschedule-slot select.is-invalid {
             border-color: #b91c1c;
             box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
         }
