@@ -2359,7 +2359,27 @@
 
         function navigateToItem(type, id) {
             if (!type || !id) return;
-            const pageId = type === 'viewing' ? 'viewings' : 'requests';
+            if (type === 'viewing') {
+                const viewing = clientViewings.find(view => view.id === id);
+                if (!viewing) {
+                    activatePage('viewings');
+                    if (requestDetailElements.footer) {
+                        requestDetailElements.footer.hidden = true;
+                    }
+                    return;
+                }
+                const request = findRequestByViewingId(viewing.id);
+                if (request) {
+                    showRequestDetail(request);
+                } else {
+                    activatePage('viewings');
+                    if (requestDetailElements.footer) {
+                        requestDetailElements.footer.hidden = true;
+                    }
+                }
+                return;
+            }
+            const pageId = 'requests';
             activatePage(pageId);
             if (type === 'request') {
                 requestFilters.status = 'all';
@@ -2367,17 +2387,6 @@
                 if (requestsStatusFilter) requestsStatusFilter.value = 'all';
                 if (requestsLocationFilter) requestsLocationFilter.value = 'all';
                 renderRequests();
-            } else if (type === 'viewing') {
-                viewingFilters.status = 'all';
-                viewingFilters.venue = 'all';
-                if (viewingsStatusFilter) viewingsStatusFilter.value = 'all';
-                if (viewingsVenueFilter) viewingsVenueFilter.value = 'all';
-                renderViewingsTable();
-                const viewing = clientViewings.find(view => view.id === id);
-                if (viewing?.status === 'viewing_rescheduled') {
-                    renderReschedulePanel(id);
-                    reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
             }
             requestAnimationFrame(() => {
                 let targetRow = null;
@@ -3636,31 +3645,37 @@
             renderOverviewViewingsList();
             renderReschedulePanel();
         }
-
+        
         function handleViewingAction(event) {
             const button = event.target.closest('button[data-viewing-action]');
-            if (!button) return;
-            const action = button.dataset.viewingAction;
-            const viewingId = parseInt(button.dataset.viewingId, 10);
+            let viewingId = NaN;
+            if (button) {
+                viewingId = parseInt(button.dataset.viewingId, 10);
+            } else {
+                const row = event.target.closest('tr[data-id]');
+                viewingId = row ? parseInt(row.dataset.id, 10) : NaN;
+            }
             const viewing = clientViewings.find(v => v.id === viewingId);
-            if (!viewing) return;
+            if (!viewing) {
+                return;
+            }
             const request = findRequestByViewingId(viewing.id);
+
+            if (!button) {
+                if (request) {
+                    showRequestDetail(request);
+                } else {
+                    activatePage('viewings');
+                }
+                return;
+            }
+
+            const action = button.dataset.viewingAction;
             const location = getLocationById(viewing.locationId);
             const now = new Date();
 
             switch (action) {
                 case 'edit_slots':
-                    if (request) {
-                        openViewingModal(request, { presetSlots: viewing.requestedSlots });
-                    } else {
-                        openViewingModal({
-                            id: viewingId,
-                            locationId: viewing.locationId,
-                            viewingId,
-                            requestedSlots: viewing.requestedSlots
-                        }, { presetSlots: viewing.requestedSlots });
-                    }
-                    return;
                 case 'request_reschedule':
                     if (request) {
                         openViewingModal(request, { presetSlots: viewing.requestedSlots });
@@ -3668,7 +3683,7 @@
                         openViewingModal({
                             id: viewingId,
                             locationId: viewing.locationId,
-                            viewingId,
+                            viewingId: viewing.id,
                             requestedSlots: viewing.requestedSlots
                         }, { presetSlots: viewing.requestedSlots });
                     }
