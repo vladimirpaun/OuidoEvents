@@ -2584,41 +2584,14 @@
                 statusContainer.className = 'booking-row-status';
                 statusContainer.appendChild(createStatusChip(req.status, requestStatusMeta));
 
-                const requestPreferredSlots = mapSlots(req.requestedSlots);
-                const requestOwnerSuggestions = mapSlots(req.ownerSuggestions);
-                const requestConfirmedSlot = mapSlots([req.confirmedSlot])[0] || null;
-                if (req.status === 'viewing_request' && requestPreferredSlots.length) {
-                    const prefMeta = document.createElement('span');
-                    prefMeta.className = 'booking-row-meta';
-                    prefMeta.textContent = `Intervale propuse: ${requestPreferredSlots.map(slot => slot.label).join(' • ')}`;
-                    statusContainer.appendChild(prefMeta);
+                const isViewingStatus = ['viewing_request', 'viewing_rescheduled', 'viewing_scheduled'].includes(req.status);
+                if (!isViewingStatus) {
+                    const next = getRequestNextStep(req);
+                    const nextStep = document.createElement('span');
+                    nextStep.className = 'booking-row-next-step';
+                    nextStep.textContent = next.detail || next.title || '—';
+                    statusContainer.appendChild(nextStep);
                 }
-                if (req.status === 'viewing_rescheduled') {
-                    if (requestOwnerSuggestions.length) {
-                        const ownerMeta = document.createElement('span');
-                        ownerMeta.className = 'booking-row-meta';
-                        ownerMeta.textContent = `Propuneri locație: ${requestOwnerSuggestions.map(slot => slot.label).join(' • ')}`;
-                        statusContainer.appendChild(ownerMeta);
-                    }
-                    if (requestPreferredSlots.length) {
-                        const clientMeta = document.createElement('span');
-                        clientMeta.className = 'booking-row-meta';
-                        clientMeta.textContent = `Preferințe trimise: ${requestPreferredSlots.map(slot => slot.label).join(' • ')}`;
-                        statusContainer.appendChild(clientMeta);
-                    }
-                }
-                if (req.status === 'viewing_scheduled' && requestConfirmedSlot) {
-                    const confirmedMeta = document.createElement('span');
-                    confirmedMeta.className = 'booking-row-meta';
-                    confirmedMeta.textContent = `Interval confirmat: ${requestConfirmedSlot.label}`;
-                    statusContainer.appendChild(confirmedMeta);
-                }
-
-                const next = getRequestNextStep(req);
-                const nextStep = document.createElement('span');
-                nextStep.className = 'booking-row-next-step';
-                nextStep.textContent = next.detail || next.title || '—';
-                statusContainer.appendChild(nextStep);
                 bottomRow.appendChild(statusContainer);
 
                 const actionsDiv = document.createElement('div');
@@ -2649,20 +2622,10 @@
                         `;
                         break;
                     case 'viewing_request':
-                        actionsDiv.innerHTML = `
-                            <button data-request-action="cancel_viewing_request" data-request-id="${req.id}">Anulează vizionarea</button>
-                        `;
-                        break;
                     case 'viewing_rescheduled':
-                        actionsDiv.innerHTML = `
-                            <button data-request-action="accept_reschedule" data-request-id="${req.id}">Acceptă noua dată</button>
-                            <button data-request-action="decline_reschedule" data-request-id="${req.id}">Refuză vizionarea</button>
-                        `;
-                        break;
                     case 'viewing_scheduled':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="add_to_calendar" data-request-id="${req.id}">Adaugă în calendar</button>
-                            <button data-request-action="cancel_viewing" data-request-id="${req.id}">Anulează vizionarea</button>
+                            <button data-request-action="view_viewing_details" data-request-id="${req.id}">Vezi detalii vizionare</button>
                         `;
                         break;
                     case 'pre_booked':
@@ -2707,6 +2670,24 @@
                 case 'view_offer':
                     request.lastUpdate = new Date();
                     break;
+                case 'view_viewing_details':
+                    {
+                        const targetViewing = (() => {
+                            if (typeof request.viewingId === 'number') {
+                                const linked = clientViewings.find(view => view.id === request.viewingId);
+                                if (linked) return linked;
+                            }
+                            return clientViewings.find(view =>
+                                view.locationId === request.locationId &&
+                                view.status === request.status);
+                        })();
+                        if (targetViewing) {
+                            navigateToItem('viewing', targetViewing.id);
+                        } else {
+                            window.alert('Detaliile vizionării nu sunt disponibile încă.');
+                        }
+                        return;
+                    }
                 case 'send_message':
                 case 'ask_question':
                     request.lastUpdate = new Date();
