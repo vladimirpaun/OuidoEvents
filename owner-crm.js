@@ -3188,11 +3188,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setupBookingModal() {
         const modal = document.getElementById('add-booking-modal');
-        const openButtons = Array.from(document.querySelectorAll('[data-open-booking-modal]'));
         const closeBtns = modal?.querySelectorAll('.modal-close-btn') || [];
         const form = document.getElementById('add-booking-form');
         const venueSelect = document.getElementById('booking-venue');
-        if (!modal || openButtons.length === 0 || !form || !venueSelect) {
+        const openButtons = Array.from(document.querySelectorAll('[data-open-booking-modal]'));
+        if (!modal || !form || !venueSelect) {
             return;
         }
         modal.classList.remove('is-visible');
@@ -3203,7 +3203,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const openModal = () => modal.classList.add('is-visible');
         const closeModal = () => modal.classList.remove('is-visible');
-        openButtons.forEach(btn => btn.addEventListener('click', openModal));
+        openButtons.forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                if (btn.hasAttribute('disabled')) {
+                    return;
+                }
+                event.preventDefault();
+                openModal();
+            });
+        });
+        const handleTriggerClick = (event) => {
+            if (event.defaultPrevented) {
+                return;
+            }
+            const trigger = event.target.closest('[data-open-booking-modal]');
+            if (!trigger || trigger.hasAttribute('disabled')) {
+                return;
+            }
+            event.preventDefault();
+            openModal();
+        };
+        document.addEventListener('click', handleTriggerClick);
         closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {

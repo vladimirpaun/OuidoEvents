@@ -2570,7 +2570,7 @@
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button ghost" type="button">Filtre avansate</button>
-                            <button class="crm-button primary" type="button" data-open-booking-modal>Adaugă rezervare</button>
+                            <button class="crm-button primary" type="button" data-open-booking-modal="true">Adaugă rezervare</button>
                         </div>
                     </div>
                     <div class="context-tags">
@@ -2675,7 +2675,7 @@
                             <p>Verifică rapid intervalele ocupate, datele în hold și ferestrele deschise pentru rezervări.</p>
                         </div>
                         <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Actualizează manual</button>
+                            <button class="crm-button ghost" type="button" data-open-booking-modal="true">Actualizează manual</button>
                             <button class="crm-button primary" type="button">Importă din calendar</button>
                         </div>
                     </div>
@@ -2698,7 +2698,7 @@
                             <h2 id="availability-month-year" style="margin:0;"></h2>
                             <button id="next-month-btn" aria-label="Luna următoare">&gt;</button>
                         </div>
-                        <button id="add-booking-calendar-btn" class="crm-button primary" style="padding: 8px 16px; font-size: 0.85rem;" data-open-booking-modal>Adaugă rezervare</button>
+                        <button id="add-booking-calendar-btn" class="crm-button primary" style="padding: 8px 16px; font-size: 0.85rem;" data-open-booking-modal="true">Adaugă rezervare</button>
                     </header>
                     <div class="monthly-calendar-grid" id="availability-calendar-grid">
                         <!-- Zilele săptămânii vor fi adăugate aici de JS -->
@@ -2708,118 +2708,6 @@
                         <span class="legend-item"><span class="legend-dot availability-legend-dot-prereserve-ouido"></span> Pre-rezervat prin Ouido</span>
                         <span class="legend-item"><span class="legend-dot availability-legend-dot-manual-reserved"></span> Rezervat manual</span>
                         <span class="legend-item"><span class="legend-dot availability-legend-dot-manual-prereserved"></span> Pre-rezervat manual</span>
-                    </div>
-                </div>
-
-                <!-- NOU: Modal pentru adăugare booking -->
-                <div id="add-booking-modal" class="modal-overlay">
-                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-                        <div class="modal-header">
-                            <h3 id="modal-title">Adaugă Rezervare Manuală</h3>
-                            <button class="modal-close-btn" aria-label="Închide">&times;</button>
-                        </div>
-                        <form id="add-booking-form">
-                            <div class="modal-body">
-                                <div class="form-group" style="gap: 8px;">
-                                    <label for="booking-client">Nume Client</label>
-                                    <input type="text" id="booking-client" name="client" required>
-                                </div>
-                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <div class="form-group">
-                                        <label for="booking-email">Email</label>
-                                        <input type="email" id="booking-email" name="email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="booking-phone">Nr. telefon</label>
-                                        <input type="tel" id="booking-phone" name="phone" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="booking-event-type">Tip Eveniment</label>
-                                    <select id="booking-event-type" name="event" required>
-                                        <option value="Nuntă">Nuntă</option>
-                                        <option value="Botez">Botez</option>
-                                        <option value="Eveniment Corporate">Eveniment Corporate</option>
-                                        <option value="Cununie Civilă">Cununie Civilă</option>
-                                        <option value="Petrecere Privată">Petrecere Privată</option>
-                                        <option value="Conferință">Conferință</option>
-                                    </select>
-                                </div>
-                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <div class="form-group">
-                                        <label for="booking-venue">Locație</label>
-                                    <select id="booking-venue" name="venue" required></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="booking-date">Data</label>
-                                    <input type="text" id="booking-date" name="date" required placeholder="Selectează data">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="booking-guests">Nr. invitați</label>
-                                    <input type="number" id="booking-guests" name="guests" min="1" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="booking-details">Alte detalii</label>
-                                    <textarea id="booking-details" name="details" rows="3" placeholder="Ex: preferințe meniu, cerințe speciale..."></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
-                                <button type="submit" class="crm-button primary">Salvează</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- NOU: Modal pentru vizualizare detalii booking -->
-                <div id="view-booking-modal" class="modal-overlay">
-                    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
-                        <div class="modal-header">
-                            <h3 id="edit-modal-title">Editează Rezervare</h3>
-                            <button class="modal-close-btn" aria-label="Închide">&times;</button>
-                        </div>
-                        <form id="edit-booking-form">
-                            <input type="hidden" id="edit-booking-id">
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="edit-booking-client">Nume Client</label>
-                                    <input type="text" id="edit-booking-client" name="client" required>
-                                </div>
-                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <div class="form-group">
-                                        <label for="edit-booking-email">Email</label>
-                                        <input type="email" id="edit-booking-email" name="email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="edit-booking-phone">Nr. telefon</label>
-                                        <input type="tel" id="edit-booking-phone" name="phone" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit-booking-event-type">Tip Eveniment</label>
-                                    <select id="edit-booking-event-type" name="event" required></select>
-                                </div>
-                                <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <div class="form-group">
-                                        <label for="edit-booking-venue">Locație</label>
-                                        <select id="edit-booking-venue" name="venue" required></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="edit-booking-guests">Nr. invitați</label>
-                                        <input type="number" id="edit-booking-guests" name="guests" min="1" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit-booking-details">Alte detalii</label>
-                                    <textarea id="edit-booking-details" name="details" rows="3" placeholder="Ex: preferințe meniu, cerințe speciale..."></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
-                                <button type="submit" class="crm-button primary">Salvează Modificări</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
 
@@ -3204,6 +3092,116 @@
     <script src="main.js"></script>
     <script src="owner-crm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+
+    <div id="add-booking-modal" class="modal-overlay">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <h3 id="modal-title">Adaugă Rezervare Manuală</h3>
+                <button class="modal-close-btn" aria-label="Închide">&times;</button>
+            </div>
+            <form id="add-booking-form">
+                <div class="modal-body">
+                    <div class="form-group" style="gap: 8px;">
+                        <label for="booking-client">Nume Client</label>
+                        <input type="text" id="booking-client" name="client" required>
+                    </div>
+                    <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label for="booking-email">Email</label>
+                            <input type="email" id="booking-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-phone">Nr. telefon</label>
+                            <input type="tel" id="booking-phone" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="booking-event-type">Tip Eveniment</label>
+                        <select id="booking-event-type" name="event" required>
+                            <option value="Nuntă">Nuntă</option>
+                            <option value="Botez">Botez</option>
+                            <option value="Eveniment Corporate">Eveniment Corporate</option>
+                            <option value="Cununie Civilă">Cununie Civilă</option>
+                            <option value="Petrecere Privată">Petrecere Privată</option>
+                            <option value="Conferință">Conferință</option>
+                        </select>
+                    </div>
+                    <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label for="booking-venue">Locație</label>
+                            <select id="booking-venue" name="venue" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-date">Data</label>
+                            <input type="text" id="booking-date" name="date" required placeholder="Selectează data">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="booking-guests">Nr. invitați</label>
+                        <input type="number" id="booking-guests" name="guests" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="booking-details">Alte detalii</label>
+                        <textarea id="booking-details" name="details" rows="3" placeholder="Ex: preferințe meniu, cerințe speciale..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
+                    <button type="submit" class="crm-button primary">Salvează</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="view-booking-modal" class="modal-overlay">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+            <div class="modal-header">
+                <h3 id="edit-modal-title">Editează Rezervare</h3>
+                <button class="modal-close-btn" aria-label="Închide">&times;</button>
+            </div>
+            <form id="edit-booking-form">
+                <input type="hidden" id="edit-booking-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-booking-client">Nume Client</label>
+                        <input type="text" id="edit-booking-client" name="client" required>
+                    </div>
+                    <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label for="edit-booking-email">Email</label>
+                            <input type="email" id="edit-booking-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-booking-phone">Nr. telefon</label>
+                            <input type="tel" id="edit-booking-phone" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-booking-event-type">Tip Eveniment</label>
+                        <select id="edit-booking-event-type" name="event" required></select>
+                    </div>
+                    <div class="form-group-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label for="edit-booking-venue">Locație</label>
+                            <select id="edit-booking-venue" name="venue" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-booking-guests">Nr. invitați</label>
+                            <input type="number" id="edit-booking-guests" name="guests" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-booking-details">Alte detalii</label>
+                        <textarea id="edit-booking-details" name="details" rows="3" placeholder="Ex: preferințe meniu, cerințe speciale..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
+                    <button type="submit" class="crm-button primary">Salvează Modificări</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div id="reschedule-viewing-modal" class="modal-overlay">
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="reschedule-modal-title">
