@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'viewing_scheduled',
                 email: 'ioana.matei@gmail.com',
                 phone: '+40 726 456 789',
-                notes: 'Confirmată cu echipa de vânzări.',
+                notes: '',
                 lastUpdate: addDays(-1),
                 clientSlots: [],
                 rescheduleSuggestions: [],
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'viewing_request',
                 email: 'contact@casatorim.ro',
                 phone: '+40 723 111 222',
-                notes: 'Așteaptă confirmarea echipei.',
+                notes: '',
                 lastUpdate: addDays(-2),
                 clientSlots: [slotA, slotB],
                 rescheduleSuggestions: [],
@@ -402,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'viewing_rescheduled',
                 email: 'hello@eventify.ro',
                 phone: '+40 735 222 111',
-                notes: 'Propuneri trimise clientului.',
+                notes: '',
                 lastUpdate: addDays(-3),
                 clientSlots: [clientSlotA, clientSlotB],
                 rescheduleSuggestions: [ownerProposalA, ownerProposalB],
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'viewing_scheduled',
                 email: 'team@artexpo.ro',
                 phone: '+40 733 654 987',
-                notes: 'Confirmat împreună cu curatorul locației.',
+                notes: '',
                 lastUpdate: addDays(-5),
                 clientSlots: [],
                 rescheduleSuggestions: [],
@@ -734,6 +734,29 @@ document.addEventListener('DOMContentLoaded', () => {
         rejected: ['open_details', 'add_note'],
         cancelled: ['open_details', 'add_note'],
         default: ['open_details']
+    };
+
+    const viewingActionsByStatus = {
+        viewing_request: [
+            { key: 'confirm-slot', label: 'Confirmă intervalul' },
+            { key: 'reschedule', label: 'Propune alte intervale' },
+            { key: 'reject', label: 'Respinge' }
+        ],
+        viewing_rescheduled: [
+            { key: 'confirm-slot', label: 'Confirmă intervalul' },
+            { key: 'reschedule', label: 'Editează propunerile' },
+            { key: 'reject', label: 'Respinge' }
+        ],
+        viewing_scheduled: [
+            { key: 'reschedule', label: 'Reprogramează' },
+            { key: 'cancel-viewing', label: 'Anulează' }
+        ],
+        viewing_rejected: [
+            { key: 'reschedule', label: 'Propune altă vizionare' }
+        ],
+        viewing_cancelled: [
+            { key: 'reschedule', label: 'Propune altă vizionare' }
+        ]
     };
 
     const viewingStatusMeta = {
@@ -1955,12 +1978,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordDetailDateLabel = document.querySelector('[data-detail-date-label]');
     const recordDetailViewingDateWrapper = document.querySelector('[data-detail-viewing-date-wrapper]');
     const recordDetailViewingTimeWrapper = document.querySelector('[data-detail-viewing-time-wrapper]');
-    const recordDetailClientSlotsWrapper = document.querySelector('[data-detail-client-slots-wrapper]');
-    const recordDetailOwnerSlotsWrapper = document.querySelector('[data-detail-owner-slots-wrapper]');
-    const recordDetailConfirmedSlotWrapper = document.querySelector('[data-detail-confirmed-slot-wrapper]');
-    const recordDetailClientSlotsList = document.querySelector('[data-detail-client-slots]');
-    const recordDetailOwnerSlotsList = document.querySelector('[data-detail-owner-slots]');
-    const recordDetailConfirmedSlotValue = document.querySelector('[data-detail-confirmed-slot]');
     const recordDetailTimelineList = document.querySelector('[data-detail-timeline]');
     const recordDetailTimelineEmpty = document.querySelector('[data-detail-timeline-empty]');
     const recordDetailHeading = document.getElementById('record-detail-heading');
@@ -2160,24 +2177,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         populateDetailField('viewingDate', '—');
         populateDetailField('viewingTime', '—');
-        if (recordDetailClientSlotsWrapper) {
-            recordDetailClientSlotsWrapper.hidden = true;
-        }
-        if (recordDetailOwnerSlotsWrapper) {
-            recordDetailOwnerSlotsWrapper.hidden = true;
-        }
-        if (recordDetailConfirmedSlotWrapper) {
-            recordDetailConfirmedSlotWrapper.hidden = true;
-        }
-        if (recordDetailClientSlotsList) {
-            recordDetailClientSlotsList.innerHTML = '';
-        }
-        if (recordDetailOwnerSlotsList) {
-            recordDetailOwnerSlotsList.innerHTML = '';
-        }
-        if (recordDetailConfirmedSlotValue) {
-            recordDetailConfirmedSlotValue.textContent = '—';
-        }
 
         if (type === 'viewing') {
             if (recordDetailViewingDateWrapper) {
@@ -2188,29 +2187,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             populateDetailField('viewingDate', record.date || '—');
             populateDetailField('viewingTime', record.hour || 'Nu este stabilită');
-            const viewerClientSlots = mapSlots(record.clientSlots);
-            const viewerOwnerSlots = mapSlots(record.rescheduleSuggestions);
-            const latestSlotsGroup = resolveLatestViewingSlots(record, viewerClientSlots, viewerOwnerSlots);
-            if (latestSlotsGroup?.source === 'client' && recordDetailClientSlotsWrapper && recordDetailClientSlotsList) {
-                recordDetailClientSlotsWrapper.hidden = false;
-                latestSlotsGroup.slots.forEach(slot => {
-                    const li = document.createElement('li');
-                    li.textContent = slot.label;
-                    recordDetailClientSlotsList.appendChild(li);
-                });
-            } else if (latestSlotsGroup?.source === 'owner' && recordDetailOwnerSlotsWrapper && recordDetailOwnerSlotsList) {
-                recordDetailOwnerSlotsWrapper.hidden = false;
-                latestSlotsGroup.slots.forEach(slot => {
-                    const li = document.createElement('li');
-                    li.textContent = slot.label;
-                    recordDetailOwnerSlotsList.appendChild(li);
-                });
-            }
-            const viewerConfirmedSlot = mapSlots([record.confirmedSlot])[0];
-            if (viewerConfirmedSlot && recordDetailConfirmedSlotWrapper && recordDetailConfirmedSlotValue) {
-                recordDetailConfirmedSlotWrapper.hidden = false;
-                recordDetailConfirmedSlotValue.textContent = viewerConfirmedSlot.label;
-            }
         } else if (relatedViewing) {
             if (recordDetailViewingDateWrapper) {
                 recordDetailViewingDateWrapper.hidden = false;
@@ -2220,29 +2196,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             populateDetailField('viewingDate', relatedViewing.date || '—');
             populateDetailField('viewingTime', relatedViewing.hour || 'Nu este stabilită');
-            const relatedClientSlots = mapSlots(relatedViewing.clientSlots);
-            const relatedOwnerSlots = mapSlots(relatedViewing.rescheduleSuggestions);
-            const relatedLatestSlotsGroup = resolveLatestViewingSlots(relatedViewing, relatedClientSlots, relatedOwnerSlots);
-            if (relatedLatestSlotsGroup?.source === 'client' && recordDetailClientSlotsWrapper && recordDetailClientSlotsList) {
-                recordDetailClientSlotsWrapper.hidden = false;
-                relatedLatestSlotsGroup.slots.forEach(slot => {
-                    const li = document.createElement('li');
-                    li.textContent = slot.label;
-                    recordDetailClientSlotsList.appendChild(li);
-                });
-            } else if (relatedLatestSlotsGroup?.source === 'owner' && recordDetailOwnerSlotsWrapper && recordDetailOwnerSlotsList) {
-                recordDetailOwnerSlotsWrapper.hidden = false;
-                relatedLatestSlotsGroup.slots.forEach(slot => {
-                    const li = document.createElement('li');
-                    li.textContent = slot.label;
-                    recordDetailOwnerSlotsList.appendChild(li);
-                });
-            }
-            const relatedConfirmedSlot = mapSlots([relatedViewing.confirmedSlot])[0];
-            if (relatedConfirmedSlot && recordDetailConfirmedSlotWrapper && recordDetailConfirmedSlotValue) {
-                recordDetailConfirmedSlotWrapper.hidden = false;
-                recordDetailConfirmedSlotValue.textContent = relatedConfirmedSlot.label;
-            }
         }
 
         if (recordDetailNoteInput) {
@@ -2673,6 +2626,13 @@ document.addEventListener('DOMContentLoaded', () => {
             group.appendChild(heading);
             const options = document.createElement('div');
             options.className = 'viewing-slot-options';
+            const syncSelectionState = () => {
+                const optionLabels = options.querySelectorAll('.viewing-slot-option');
+                optionLabels.forEach(label => {
+                    const radio = label.querySelector('input[type="radio"]');
+                    label.classList.toggle('is-selected', Boolean(radio?.checked));
+                });
+            };
             slots.forEach((slot, index) => {
                 const option = document.createElement('label');
                 option.className = 'viewing-slot-option';
@@ -2689,7 +2649,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 text.textContent = slot.label;
                 option.append(input, badge, text);
                 options.appendChild(option);
+                option.addEventListener('click', (event) => {
+                    if (event.target instanceof HTMLInputElement) {
+                        return;
+                    }
+                    if (!input.checked) {
+                        input.checked = true;
+                    }
+                    syncSelectionState();
+                });
+                input.addEventListener('change', syncSelectionState);
             });
+            syncSelectionState();
             group.appendChild(options);
             return group;
         };
@@ -2736,7 +2707,7 @@ document.addEventListener('DOMContentLoaded', () => {
             topRow.className = 'booking-row-top';
             topRow.appendChild(createRecordInfoItem('Client', viewing.client));
             topRow.appendChild(createRecordInfoItem('Locație', viewing.venue));
-            topRow.appendChild(createRecordInfoItem('Interval principal', primarySlot ? primarySlot.label : '—'));
+            topRow.appendChild(createRecordInfoItem('Interval confirmat', primarySlot ? primarySlot.label : '—'));
             topRow.appendChild(createRecordInfoItem('Ultima actualizare', formatDate(viewing.lastUpdate)));
             wrapper.appendChild(topRow);
 
@@ -2784,28 +2755,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const actions = document.createElement('div');
             actions.className = 'table-actions booking-row-actions';
-            switch (viewing.status) {
-                case 'viewing_request':
-                    actions.appendChild(createActionButton('Confirmă intervalul', 'confirm-slot'));
-                    actions.appendChild(createActionButton('Propune alte intervale', 'reschedule'));
-                    actions.appendChild(createActionButton('Respinge', 'reject'));
-                    break;
-                case 'viewing_rescheduled':
-                    actions.appendChild(createActionButton('Confirmă intervalul', 'confirm-slot'));
-                    actions.appendChild(createActionButton('Editează propunerile', 'reschedule'));
-                    actions.appendChild(createActionButton('Respinge', 'reject'));
-                    break;
-                case 'viewing_scheduled':
-                    actions.appendChild(createActionButton('Reprogramează', 'reschedule'));
-                    actions.appendChild(createActionButton('Anulează', 'cancel-viewing'));
-                    break;
-                case 'viewing_rejected':
-                case 'viewing_cancelled':
-                    actions.appendChild(createActionButton('Propune altă vizionare', 'reschedule'));
-                    break;
-                default:
-                    break;
-            }
+            const actionDefs = viewingActionsByStatus[viewing.status] || [];
+            actionDefs.forEach(def => {
+                actions.appendChild(createActionButton(def.label, def.key));
+            });
             if (actions.children.length) {
                 bottomRow.appendChild(actions);
             }
@@ -2814,7 +2767,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.appendChild(wrapper);
 
             row.addEventListener('click', (event) => {
-                if (event.target.closest('button') || event.target.closest('input')) {
+                if (event.target.closest('button') || event.target.closest('input') || event.target.closest('.viewing-slot-option')) {
                     return;
                 }
                 selectedViewingId = viewing.id;
@@ -4375,6 +4328,17 @@ document.addEventListener('DOMContentLoaded', () => {
         renderOverviewLists();
         selectedViewingId = viewingId;
         highlightViewingRow(viewingId, { scroll: true });
+        if (triggerEvent === 'detail') {
+            const updatedViewing = viewings.find(item => item.id === viewingId) || viewing;
+            if (recordDetailState.type === 'viewing' && recordDetailState.id === viewingId && updatedViewing) {
+                showRecordDetailPage('viewing', updatedViewing, recordDetailState.sourcePage);
+            } else if (recordDetailState.type === 'booking' && recordDetailState.id) {
+                const bookingRecord = bookings.find(item => item.id === recordDetailState.id);
+                if (bookingRecord) {
+                    showRecordDetailPage('booking', bookingRecord, recordDetailState.sourcePage);
+                }
+            }
+        }
     }
 
     recordDetailBackBtn?.addEventListener('click', () => returnToListPage({ scroll: true }));

@@ -919,18 +919,20 @@
         .viewing-slot-options {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         .viewing-slot-option {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            border-radius: 12px;
+            position: relative;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 10px;
             border: 1px solid rgba(15, 23, 42, 0.12);
             background: #ffffff;
             cursor: pointer;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            font-size: 0.82rem;
         }
         .viewing-slot-option:hover {
             border-color: rgba(67, 100, 247, 0.45);
@@ -939,14 +941,20 @@
         .viewing-slot-option input {
             margin: 0;
             accent-color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        .viewing-slot-option.is-selected {
+            border-color: rgba(0, 82, 212, 0.6);
+            box-shadow: 0 14px 28px -22px rgba(0, 82, 212, 0.55);
+            background: rgba(0, 82, 212, 0.06);
         }
         .viewing-slot-badge {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 600;
             color: var(--muted-color);
             background: rgba(15, 23, 42, 0.08);
             border-radius: 999px;
-            padding: 2px 8px;
+            padding: 1px 6px;
         }
         .viewing-detail-slots {
             display: flex;
@@ -3142,21 +3150,6 @@
                                     <span class="detail-list-label">Ultima actualizare</span>
                                     <span class="detail-list-value" data-detail-field="updatedAt">—</span>
                                 </div>
-                            </div>
-                        </article>
-                        <article class="detail-card">
-                            <h3>Intervale vizionare</h3>
-                            <div class="viewing-detail-slots" data-detail-client-slots-wrapper hidden>
-                                <h4>Opțiuni client</h4>
-                                <ul class="viewing-detail-slot-list" data-detail-client-slots></ul>
-                            </div>
-                            <div class="viewing-detail-slots" data-detail-owner-slots-wrapper hidden>
-                                <h4>Propuneri trimise</h4>
-                                <ul class="viewing-detail-slot-list" data-detail-owner-slots></ul>
-                            </div>
-                            <div class="viewing-detail-slots" data-detail-confirmed-slot-wrapper hidden>
-                                <h4>Interval confirmat</h4>
-                                <p class="panel-meta" data-detail-confirmed-slot>—</p>
                             </div>
                         </article>
                     </div>
