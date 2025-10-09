@@ -221,6 +221,13 @@
             color: var(--muted-color);
         }
         table.crm-table tbody tr:last-child td { border-bottom: none; }
+        table.crm-table tbody tr.client-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        table.crm-table tbody tr.client-row:hover {
+            background-color: rgba(67, 100, 247, 0.06);
+        }
 
         .table-cell-stack {
             display: flex;
@@ -738,7 +745,6 @@
                             <span class="panel-meta">Ultima sincronizare CRM acum 5 min</span>
                         </div>
                         <div class="panel-actions">
-                            <button class="crm-button small ghost" type="button" data-action="invite-client">Invită client</button>
                             <button class="crm-button small primary" type="button" data-action="export-clients">Exportă CSV</button>
                         </div>
                     </header>
@@ -748,24 +754,13 @@
                                 <tr>
                                     <th>Nume</th>
                                     <th>Email</th>
-                                    <th>Tip cont</th>
                                     <th>Ultima activitate</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
                                 <tr class="filter-row">
-                                    <th>
+                                    <th colspan="2">
                                         <input type="search" class="filter-input" id="clients-search" placeholder="Caută după nume sau email" aria-label="Filtru căutare clienți">
-                                    </th>
-                                    <th></th>
-                                    <th>
-                                        <select class="filter-select" id="clients-type-filter" aria-label="Filtru tip cont">
-                                            <option value="all">Toate tipurile</option>
-                                            <option value="corporate">Corporate</option>
-                                            <option value="private">Privat</option>
-                                            <option value="planner">Wedding planner</option>
-                                            <option value="agency">Agenție</option>
-                                        </select>
                                     </th>
                                     <th></th>
                                     <th>
@@ -1092,7 +1087,6 @@
             clients: {
                 search: '',
                 status: 'all',
-                type: 'all',
             },
             owners: {
                 search: '',
@@ -1104,7 +1098,6 @@
         const accountElements = {
             clients: {
                 search: document.getElementById('clients-search'),
-                type: document.getElementById('clients-type-filter'),
                 status: document.getElementById('clients-status-filter'),
                 reset: document.getElementById('clients-reset-filters'),
                 count: document.getElementById('clients-table-count'),
@@ -1286,21 +1279,6 @@
             `).join('');
         }
 
-        function formatClientType(type) {
-            switch (type) {
-                case 'corporate':
-                    return 'Corporate';
-                case 'private':
-                    return 'Privat';
-                case 'planner':
-                    return 'Wedding planner';
-                case 'agency':
-                    return 'Agenție';
-                default:
-                    return type;
-            }
-        }
-
         function formatOwnerManagement(mode) {
             return mode === 'admin' ? 'Gestionat de Ouido' : 'Gestionat de proprietar';
         }
@@ -1310,9 +1288,6 @@
             const searchTerm = (filters.search || '').trim();
             if (searchTerm) {
                 summary.push(`căutare „${searchTerm}”`);
-            }
-            if (filters.type && filters.type !== 'all') {
-                summary.push(`tip ${formatClientType(filters.type).toLowerCase()}`);
             }
             if (filters.management && filters.management !== 'all') {
                 summary.push(filters.management === 'admin' ? 'administrare Ouido' : 'administrare proprietar');
@@ -1339,13 +1314,12 @@
                     || [client.name, client.email, client.phone || '']
                         .some(field => field.toLowerCase().includes(clientSearch));
                 const matchesStatus = clientsFilters.status === 'all' || client.status === clientsFilters.status;
-                const matchesType = clientsFilters.type === 'all' || client.type === clientsFilters.type;
-                return matchesSearch && matchesStatus && matchesType;
+                return matchesSearch && matchesStatus;
             });
 
             clientsBody.innerHTML = filteredClients.length
                 ? filteredClients.map(client => `
-                    <tr data-id="client-${client.id}">
+                    <tr class="client-row" data-id="client-${client.id}" data-client-link="client-dashboard.html#settings">
                         <td>
                             <div class="table-cell-stack">
                                 <strong>${client.name}</strong>
@@ -1357,7 +1331,6 @@
                                 <span>${client.email}</span>
                             </div>
                         </td>
-                        <td><span class="pill-chip" data-variant="${client.type}">${formatClientType(client.type)}</span></td>
                         <td>
                             <div class="table-cell-stack">
                                 <span>${client.lastActive}</span>
@@ -1374,7 +1347,7 @@
                         </td>
                     </tr>
                 `).join('')
-                : '<tr><td colspan="6" class="empty-state">Niciun client găsit după filtrele curente.</td></tr>';
+                : '<tr><td colspan="5" class="empty-state">Niciun client găsit după filtrele curente.</td></tr>';
 
             if (accountElements.clients.count) {
                 const label = filteredClients.length === 1 ? 'cont' : 'conturi';
@@ -1696,13 +1669,6 @@
             });
         }
 
-        if (accountElements.clients.type) {
-            accountElements.clients.type.addEventListener('change', (event) => {
-                accountFilters.clients.type = event.target.value;
-                renderAccounts();
-            });
-        }
-
         if (accountElements.clients.status) {
             accountElements.clients.status.addEventListener('change', (event) => {
                 accountFilters.clients.status = event.target.value;
@@ -1713,10 +1679,8 @@
         if (accountElements.clients.reset) {
             accountElements.clients.reset.addEventListener('click', () => {
                 accountFilters.clients.search = '';
-                accountFilters.clients.type = 'all';
                 accountFilters.clients.status = 'all';
                 if (accountElements.clients.search) accountElements.clients.search.value = '';
-                if (accountElements.clients.type) accountElements.clients.type.value = 'all';
                 if (accountElements.clients.status) accountElements.clients.status.value = 'all';
                 renderAccounts();
             });
@@ -1838,15 +1802,33 @@
             updateMetricsAfterDecision(approveId ? 'approved' : 'rejected');
         });
 
-        document.getElementById('clients-table-body').addEventListener('click', (event) => {
-            const toggleId = event.target.getAttribute('data-toggle-client');
-            if (!toggleId) return;
-            const client = adminState.clients.find(c => c.id === Number(toggleId));
-            if (!client) return;
-            client.status = client.status === 'active' ? 'inactive' : 'active';
-            renderAccounts();
-            updateAccountMetrics('client', client.status);
-        });
+        const clientsTableBody = document.getElementById('clients-table-body');
+        if (clientsTableBody) {
+            clientsTableBody.addEventListener('click', (event) => {
+                const toggleButton = event.target.closest('[data-toggle-client]');
+                if (toggleButton) {
+                    const toggleId = Number(toggleButton.getAttribute('data-toggle-client'));
+                    if (Number.isNaN(toggleId)) return;
+                    const client = adminState.clients.find(c => c.id === toggleId);
+                    if (!client) return;
+                    client.status = client.status === 'active' ? 'inactive' : 'active';
+                    renderAccounts();
+                    updateAccountMetrics('client', client.status);
+                    return;
+                }
+
+                if (event.target.closest('.table-actions')) {
+                    return;
+                }
+
+                const row = event.target.closest('tr[data-client-link]');
+                if (!row) return;
+                const targetUrl = row.getAttribute('data-client-link');
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        }
 
         document.getElementById('owners-table-body').addEventListener('click', (event) => {
             const toggleId = event.target.getAttribute('data-toggle-owner');
