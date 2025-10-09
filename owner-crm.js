@@ -2609,8 +2609,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const venueFilter = document.getElementById('viewings-venue-filter');
         const clientFilter = document.getElementById('viewings-client-filter');
+        const statusFilter = document.getElementById('viewings-status-filter');
         const venueValue = venueFilter ? venueFilter.value : 'all';
         const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
+        const statusValue = statusFilter ? statusFilter.value : 'all';
         pendingBody.innerHTML = '';
         confirmedBody.innerHTML = '';
 
@@ -2686,7 +2688,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter(item => {
                 const matchesVenue = venueValue === 'all' || item.viewing.venue === venueValue;
                 const matchesClient = !clientQuery || item.viewing.client.toLowerCase().includes(clientQuery);
-                return matchesVenue && matchesClient;
+                const matchesStatus = statusValue === 'all' || item.viewing.status === statusValue;
+                return matchesVenue && matchesClient && matchesStatus;
             })
             .sort((a, b) => a.sortTime - b.sortTime);
 
@@ -2959,8 +2962,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         grid.innerHTML = '';
         const baseDate = new Date();
+        const now = new Date();
         baseDate.setDate(1);
         baseDate.setMonth(baseDate.getMonth() + currentViewingsMonthOffset);
+        if (baseDate.getFullYear() === now.getFullYear() && baseDate.getMonth() === now.getMonth()) {
+            document.getElementById('viewings-today-btn')?.setAttribute('disabled', 'disabled');
+        } else {
+            document.getElementById('viewings-today-btn')?.removeAttribute('disabled');
+        }
         const selectedVenue = venueFilter.value;
         const month = baseDate.getMonth();
         const year = baseDate.getFullYear();
@@ -2998,6 +3007,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const viewingsForDay = viewings.filter(viewing => {
                 if (selectedVenue !== 'all' && viewing.venue !== selectedVenue) {
+                    return false;
+                }
+                if (!['viewing_request', 'viewing_rescheduled', 'viewing_scheduled'].includes(viewing.status)) {
                     return false;
                 }
                 const viewingDate = parseBookingDate(viewing.date);
@@ -4209,6 +4221,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
     document.getElementById('viewings-client-filter')?.addEventListener('input', renderViewingsTable);
+    document.getElementById('viewings-today-btn')?.addEventListener('click', () => {
+        currentViewingsMonthOffset = 0;
+        renderViewingsCalendar();
+    });
+    document.getElementById('viewings-status-filter')?.addEventListener('change', renderViewingsTable);
     document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar);
 
     const availabilityCalendarGrid = document.getElementById('availability-calendar-grid');

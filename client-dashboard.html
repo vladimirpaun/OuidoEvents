@@ -64,6 +64,8 @@
         .page-header { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 28px 32px; box-shadow: 0 28px 50px -48px rgba(67, 100, 247, 0.8); display: flex; flex-direction: column; gap: 18px; }
         .page-header h1 { font-size: 1.8rem; margin: 0 0 4px; }
         .page-header p { margin: 0; color: var(--muted-color); max-width: 520px; font-size: 0.95rem; }
+        .crm-page[data-page="requests"] .page-header h1 { font-size: 1.45rem; }
+        .crm-page[data-page="requests"] .page-header p { font-size: 0.8rem; }
         .panel { background: var(--white-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); padding: 26px 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 30px 48px -52px rgba(67, 100, 247, 0.85); }
         .panel header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
         .panel header h2 { margin: 0; font-size: 1.1rem; }
@@ -82,18 +84,27 @@
             font-size: 0.9rem;
         }
         .status-chip {
+            --status-chip-padding-block: 4px;
+            --status-chip-padding-inline: 22px;
+            --status-chip-width: 300px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 4px 22px;
+            padding: var(--status-chip-padding-block) var(--status-chip-padding-inline);
             border-radius: 16px;
             font-size: 0.8rem;
             font-weight: 600;
             box-sizing: border-box;
             text-align: center;
-            width: 300px;
+            width: var(--status-chip-width);
             white-space: nowrap;
+        }
+        .crm-page[data-page="requests"] .booking-row-status .status-chip {
+            --status-chip-padding-inline: 16px;
+            --status-chip-width: 260px;
+            justify-content: flex-start;
+            text-align: left;
         }
         .status-chip[data-status="availability_request"],
         .status-chip[data-status="pending"] { background: rgba(245, 158, 11, 0.22); color: #b45309; }
@@ -979,8 +990,6 @@
                         <select id="requests-status-filter"></select>
                         <label for="requests-location-filter">Locație:</label>
                         <select id="requests-location-filter"></select>
-                        <label for="requests-date-filter">Luna evenimentului:</label>
-                        <select id="requests-date-filter"></select>
                     </div>
                     <div class="requests-legend" id="requests-status-legend"></div>
                     <div class="table-wrapper">
@@ -1368,17 +1377,84 @@
             }
             return formatDate(date);
         };
-        const formatMonthKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        const formatMonthLabel = (date) => `${monthNames[date.getMonth()].charAt(0).toUpperCase() + monthNames[date.getMonth()].slice(1)} ${date.getFullYear()}`;
-
+        const formatPricePerPerson = (value) => {
+            if (!Number.isFinite(value) || value <= 0) {
+                return '—';
+            }
+            const rounded = Math.round(value);
+            return `de la ${rounded}€/persoană`;
+        };
         const locations = [
-            { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400' },
-            { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400' },
-            { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?w=400' },
-            { id: 4, name: 'Casa Miraval', city: 'Cluj-Napoca', price: 130, imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400' },
-            { id: 5, name: 'Heritage Gardens', city: 'Oradea', price: 105, imageUrl: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?w=400' },
-            { id: 6, name: 'Urban Art Loft', city: 'Timișoara', price: 115, imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400' },
-            { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400' }
+            {
+                id: 1,
+                name: 'The Grand Ballroom',
+                city: 'București',
+                price: 120,
+                address: 'Bulevardul Libertății 12, București',
+                contactPhone: '+40 723 555 111',
+                contactEmail: 'grandballroom@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400'
+            },
+            {
+                id: 2,
+                name: 'Forest Retreat & Spa',
+                city: 'Brașov',
+                price: 95,
+                address: 'Str. Valea Largă 8, Poiana Brașov',
+                contactPhone: '+40 734 889 220',
+                contactEmail: 'forest.retreat@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400'
+            },
+            {
+                id: 3,
+                name: 'Cluj SkyView',
+                city: 'Cluj-Napoca',
+                price: 110,
+                address: 'Str. Regele Ferdinand 5, Cluj-Napoca',
+                contactPhone: '+40 723 990 112',
+                contactEmail: 'skyview@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?w=400'
+            },
+            {
+                id: 4,
+                name: 'Casa Miraval',
+                city: 'Cluj-Napoca',
+                price: 130,
+                address: 'Str. Republicii 40, Cluj-Napoca',
+                contactPhone: '+40 722 556 770',
+                contactEmail: 'miraval@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400'
+            },
+            {
+                id: 5,
+                name: 'Heritage Gardens',
+                city: 'Oradea',
+                price: 105,
+                address: 'Str. Eftimie Murgu 18, Oradea',
+                contactPhone: '+40 724 334 901',
+                contactEmail: 'heritage.gardens@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?w=400'
+            },
+            {
+                id: 6,
+                name: 'Urban Art Loft',
+                city: 'Timișoara',
+                price: 115,
+                address: 'Splaiul Nicolae Titulescu 2, Timișoara',
+                contactPhone: '+40 732 660 845',
+                contactEmail: 'urban.loft@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400'
+            },
+            {
+                id: 7,
+                name: 'Ambiance Lake',
+                city: 'Snagov',
+                price: 150,
+                address: 'Str. Lacului 22, Snagov',
+                contactPhone: '+40 733 889 501',
+                contactEmail: 'ambiance.lake@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400'
+            }
         ];
 
         const defaultFavoriteIds = [2, 3, 5, 7];
@@ -1654,7 +1730,7 @@
             })()
         ];
 
-        const requestFilters = { status: 'all', location: 'all', month: 'all' };
+        const requestFilters = { status: 'all', location: 'all' };
         const viewingFilters = { venue: 'all', status: 'all' };
         let activeRescheduleViewingId = null;
         let selectedRescheduleOption = null;
@@ -1670,7 +1746,6 @@
 
         const requestsStatusFilter = document.getElementById('requests-status-filter');
         const requestsLocationFilter = document.getElementById('requests-location-filter');
-        const requestsDateFilter = document.getElementById('requests-date-filter');
         const requestsTableBody = document.getElementById('requests-table-body');
 
         const viewingsVenueFilter = document.getElementById('viewings-venue-filter');
@@ -1740,6 +1815,84 @@
             }
 
             return item;
+        }
+
+        function openRequestDetailPage(request) {
+            if (!request) return;
+
+            const toISOString = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? date.toISOString() : null;
+            const toLabel = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? formatDate(date) : null;
+
+            const location = getLocationById(request.locationId);
+            const statusMeta = requestStatusMeta[request.status] || {};
+            const viewing = typeof request.viewingId === 'number'
+                ? clientViewings.find(view => view.id === request.viewingId)
+                : null;
+            const viewingMeta = viewing ? viewingStatusMeta[viewing.status] || {} : null;
+            const confirmedRequestSlot = mapSlots([request.confirmedSlot])[0] || null;
+
+            const payload = {
+                generatedAt: new Date().toISOString(),
+                request: {
+                    id: request.id,
+                    status: request.status,
+                    statusLabel: statusMeta.label || request.status,
+                    statusDescription: statusMeta.description || '',
+                    nextStep: statusMeta.nextStep || '',
+                    eventType: request.eventType || '—',
+                    guests: Number.isFinite(request.guests) ? request.guests : null,
+                    eventDate: toISOString(request.eventDate),
+                    eventDateLabel: toLabel(request.eventDate),
+                    lastUpdate: toISOString(request.lastUpdate),
+                    lastUpdateLabel: toLabel(request.lastUpdate),
+                    offerValidUntil: toISOString(request.offerValidUntil),
+                    offerValidUntilLabel: toLabel(request.offerValidUntil),
+                    holdExpiresAt: toISOString(request.holdExpiresAt),
+                    holdExpiresAtLabel: toLabel(request.holdExpiresAt),
+                    requestedSlots: mapSlots(request.requestedSlots).map(slot => slot.label),
+                    ownerSuggestions: mapSlots(request.ownerSuggestions).map(slot => slot.label),
+                    confirmedSlot: confirmedRequestSlot ? confirmedRequestSlot.label : null
+                },
+                location: location ? {
+                    id: location.id,
+                    name: location.name,
+                    city: location.city,
+                    address: location.address || '',
+                    price: location.price,
+                    priceLabel: formatPricePerPerson(location.price),
+                    contactPhone: location.contactPhone || '',
+                    contactEmail: location.contactEmail || '',
+                    imageUrl: location.imageUrl || ''
+                } : null,
+                viewing: viewing ? {
+                    id: viewing.id,
+                    status: viewing.status,
+                    statusLabel: viewingMeta?.label || viewing.status,
+                    statusDescription: viewingMeta?.description || '',
+                    primarySlot: getViewingPrimarySlot(viewing)?.label || null,
+                    requestedSlots: mapSlots(viewing.requestedSlots).map(slot => slot.label),
+                    ownerSuggestions: mapSlots(viewing.ownerSuggestions).map(slot => slot.label),
+                    confirmedSlot: mapSlots([viewing.confirmedSlot])[0]?.label || null,
+                    host: viewing.host || '',
+                    note: viewing.note || '',
+                    lastUpdate: toISOString(viewing.lastUpdate),
+                    lastUpdateLabel: toLabel(viewing.lastUpdate)
+                } : null
+            };
+
+            try {
+                localStorage.setItem('clientRequestDetailPayload', JSON.stringify(payload));
+            } catch (error) {
+                console.warn('Nu am putut salva detaliile cererii în localStorage.', error);
+            }
+
+            try {
+                const detailUrl = new URL('client-request-detail.html', window.location.href);
+                detailUrl.searchParams.set('id', String(request.id));
+                window.open(detailUrl.toString(), '_blank', 'noopener');
+            } catch (error) {
+                console.error('Nu am putut deschide pagina cu detalii.', error);
+            }
         }
 
         function getRequestNextStep(request) {
@@ -1885,10 +2038,8 @@
             if (type === 'request') {
                 requestFilters.status = 'all';
                 requestFilters.location = 'all';
-                requestFilters.month = 'all';
                 if (requestsStatusFilter) requestsStatusFilter.value = 'all';
                 if (requestsLocationFilter) requestsLocationFilter.value = 'all';
-                if (requestsDateFilter) requestsDateFilter.value = 'all';
                 renderRequests();
             } else if (type === 'viewing') {
                 viewingFilters.status = 'all';
@@ -2509,15 +2660,6 @@
                 const locationNames = Array.from(new Set(clientRequests.map(req => getLocationById(req.locationId)?.name).filter(Boolean))).sort();
                 populateSelect(requestsLocationFilter, locationNames, true, 'Toate locațiile');
             }
-            if (requestsDateFilter) {
-                const months = Array.from(new Set(clientRequests.map(req => formatMonthKey(req.eventDate)))).sort();
-                const options = months.map(key => {
-                    const [year, month] = key.split('-').map(Number);
-                    const date = new Date(year, month - 1, 1);
-                    return { value: key, label: formatMonthLabel(date) };
-                });
-                populateSelect(requestsDateFilter, options, true, 'Toate lunile');
-            }
         }
 
         function renderRequestsLegend() {
@@ -2549,11 +2691,9 @@
             const filtered = clientRequests
                 .filter(req => {
                     const locationName = getLocationById(req.locationId)?.name || '';
-                    const monthKey = formatMonthKey(req.eventDate);
                     const statusMatch = requestFilters.status === 'all' || req.status === requestFilters.status;
                     const locationMatch = requestFilters.location === 'all' || requestFilters.location === locationName;
-                    const monthMatch = requestFilters.month === 'all' || requestFilters.month === monthKey;
-                    return statusMatch && locationMatch && monthMatch;
+                    return statusMatch && locationMatch;
                 })
                 .sort((a, b) => a.eventDate - b.eventDate);
 
@@ -2574,6 +2714,7 @@
                 const cell = row.insertCell();
                 const wrapper = document.createElement('div');
                 wrapper.className = 'booking-row';
+                wrapper.dataset.requestId = String(req.id);
 
                 const topRow = document.createElement('div');
                 topRow.className = 'booking-row-top';
@@ -2583,8 +2724,6 @@
                 const hasGuests = Number.isFinite(req.guests) && req.guests > 0;
                 topRow.appendChild(createInfoItem('Invitați', hasGuests ? `${req.guests} invitați` : 'Necesită completare', { isMissing: !hasGuests }));
                 topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(req.lastUpdate)));
-                wrapper.appendChild(topRow);
-
                 const bottomRow = document.createElement('div');
                 bottomRow.className = 'booking-row-bottom';
 
@@ -2592,50 +2731,24 @@
                 statusContainer.className = 'booking-row-status';
                 statusContainer.appendChild(createStatusChip(req.status, requestStatusMeta));
 
-                const requestPreferredSlots = mapSlots(req.requestedSlots);
-                const requestOwnerSuggestions = mapSlots(req.ownerSuggestions);
-                const requestConfirmedSlot = mapSlots([req.confirmedSlot])[0] || null;
-                if (req.status === 'viewing_request' && requestPreferredSlots.length) {
-                    const prefMeta = document.createElement('span');
-                    prefMeta.className = 'booking-row-meta';
-                    prefMeta.textContent = `Intervale propuse: ${requestPreferredSlots.map(slot => slot.label).join(' • ')}`;
-                    statusContainer.appendChild(prefMeta);
+                const isViewingStatus = ['viewing_request', 'viewing_rescheduled', 'viewing_scheduled'].includes(req.status);
+                if (!isViewingStatus) {
+                    const next = getRequestNextStep(req);
+                    const nextStep = document.createElement('span');
+                    nextStep.className = 'booking-row-next-step';
+                    nextStep.textContent = next.detail || next.title || '—';
+                    statusContainer.appendChild(nextStep);
                 }
-                if (req.status === 'viewing_rescheduled') {
-                    if (requestOwnerSuggestions.length) {
-                        const ownerMeta = document.createElement('span');
-                        ownerMeta.className = 'booking-row-meta';
-                        ownerMeta.textContent = `Propuneri locație: ${requestOwnerSuggestions.map(slot => slot.label).join(' • ')}`;
-                        statusContainer.appendChild(ownerMeta);
-                    }
-                    if (requestPreferredSlots.length) {
-                        const clientMeta = document.createElement('span');
-                        clientMeta.className = 'booking-row-meta';
-                        clientMeta.textContent = `Preferințe trimise: ${requestPreferredSlots.map(slot => slot.label).join(' • ')}`;
-                        statusContainer.appendChild(clientMeta);
-                    }
-                }
-                if (req.status === 'viewing_scheduled' && requestConfirmedSlot) {
-                    const confirmedMeta = document.createElement('span');
-                    confirmedMeta.className = 'booking-row-meta';
-                    confirmedMeta.textContent = `Interval confirmat: ${requestConfirmedSlot.label}`;
-                    statusContainer.appendChild(confirmedMeta);
-                }
-
-                const next = getRequestNextStep(req);
-                const nextStep = document.createElement('span');
-                nextStep.className = 'booking-row-next-step';
-                nextStep.textContent = next.detail || next.title || '—';
-                statusContainer.appendChild(nextStep);
                 bottomRow.appendChild(statusContainer);
 
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'table-actions booking-row-actions';
+                actionsDiv.innerHTML = '';
+                actionsDiv.hidden = false;
 
                 switch (req.status) {
                     case 'availability_request':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
@@ -2648,51 +2761,31 @@
                         break;
                     case 'offer_requested':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'offer_sent':
                         actionsDiv.innerHTML = `
                             <button data-request-action="view_offer" data-request-id="${req.id}">Vezi oferta</button>
-                            <button data-request-action="send_message" data-request-id="${req.id}">Pune întrebări</button>
-                            <button data-request-action="accept_offer" data-request-id="${req.id}">Confirmă prin pre-rezervare</button>
                             <button data-request-action="cancel_request" data-request-id="${req.id}">Anulează cererea</button>
                         `;
                         break;
                     case 'viewing_request':
-                        actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
-                            <button data-request-action="cancel_viewing_request" data-request-id="${req.id}">Anulează vizionarea</button>
-                        `;
-                        break;
                     case 'viewing_rescheduled':
-                        actionsDiv.innerHTML = `
-                            <button data-request-action="accept_reschedule" data-request-id="${req.id}">Acceptă noua dată</button>
-                            <button data-request-action="decline_reschedule" data-request-id="${req.id}">Refuză vizionarea</button>
-                        `;
-                        break;
                     case 'viewing_scheduled':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="add_to_calendar" data-request-id="${req.id}">Adaugă în calendar</button>
-                            <button data-request-action="cancel_viewing" data-request-id="${req.id}">Anulează vizionarea</button>
+                            <button data-request-action="view_viewing_details" data-request-id="${req.id}">Vezi detalii vizionare</button>
                         `;
                         break;
                     case 'pre_booked':
                         actionsDiv.innerHTML = `
                             <button data-request-action="release_hold" data-request-id="${req.id}">Renunță la rezervare</button>
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj</button>
                         `;
                         break;
                     case 'confirmed':
-                        actionsDiv.innerHTML = `
-                            <button data-request-action="send_message" data-request-id="${req.id}">Trimite mesaj locației</button>
-                            <button data-request-action="leave_feedback" data-request-id="${req.id}">Lasă feedback</button>
-                        `;
                         break;
                     case 'rejected':
                         actionsDiv.innerHTML = `
-                            <button data-request-action="view_details" data-request-id="${req.id}">Vezi mesajul locației</button>
                             <button data-request-action="reopen_request" data-request-id="${req.id}">Trimite o nouă cerere</button>
                         `;
                         break;
@@ -2704,10 +2797,26 @@
                         break;
                 }
 
+                const detailButton = document.createElement('button');
+                detailButton.type = 'button';
+                detailButton.textContent = 'Deschide detalii cerere';
+                detailButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openRequestDetailPage(req);
+                });
+                actionsDiv.appendChild(detailButton);
+
                 bottomRow.appendChild(actionsDiv);
 
-                wrapper.appendChild(bottomRow);
+                wrapper.append(topRow, bottomRow);
                 cell.appendChild(wrapper);
+
+                wrapper.addEventListener('click', (event) => {
+                    if (event.target.closest('button')) {
+                        return;
+                    }
+                    openRequestDetailPage(req);
+                });
             });
 
             renderOverviewMetrics();
@@ -2725,6 +2834,24 @@
                 case 'view_offer':
                     request.lastUpdate = new Date();
                     break;
+                case 'view_viewing_details':
+                    {
+                        const targetViewing = (() => {
+                            if (typeof request.viewingId === 'number') {
+                                const linked = clientViewings.find(view => view.id === request.viewingId);
+                                if (linked) return linked;
+                            }
+                            return clientViewings.find(view =>
+                                view.locationId === request.locationId &&
+                                view.status === request.status);
+                        })();
+                        if (targetViewing) {
+                            navigateToItem('viewing', targetViewing.id);
+                        } else {
+                            window.alert('Detaliile vizionării nu sunt disponibile încă.');
+                        }
+                        return;
+                    }
                 case 'send_message':
                 case 'ask_question':
                     request.lastUpdate = new Date();
@@ -2850,10 +2977,6 @@
                         }
                         break;
                     }
-                case 'leave_feedback':
-                    window.alert('Mulțumim! Secțiunea de feedback va fi disponibilă după eveniment.');
-                    request.lastUpdate = new Date();
-                    break;
                 case 'view_details':
                     request.lastUpdate = new Date();
                     break;
@@ -3302,10 +3425,6 @@
             });
             requestsLocationFilter?.addEventListener('change', (event) => {
                 requestFilters.location = event.target.value;
-                renderRequests();
-            });
-            requestsDateFilter?.addEventListener('change', (event) => {
-                requestFilters.month = event.target.value;
                 renderRequests();
             });
             requestsTableBody?.addEventListener('click', handleRequestAction);
