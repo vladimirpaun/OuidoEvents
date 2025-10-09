@@ -1878,6 +1878,270 @@
             gap: 8px;
             text-align: left;
         }
+
+        .modal-content--wide {
+            max-width: min(1100px, 96vw);
+            max-height: 92vh;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content--wide .modal-header {
+            padding: 28px 32px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-content--wide .modal-body {
+            padding: 0 32px 32px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+            margin-bottom: 6px;
+        }
+
+        .modal-subtitle {
+            margin: 6px 0 0;
+            color: var(--muted-color);
+            font-size: 0.92rem;
+        }
+
+        .venue-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-top: 16px;
+        }
+
+        .venue-form .form-section {
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 18px 36px -34px rgba(67, 100, 247, 0.5);
+        }
+
+        .venue-form .form-section header {
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .venue-form .form-section h2 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .venue-form .form-section .panel-meta {
+            color: var(--muted-color);
+            font-size: 0.85rem;
+        }
+
+        .venue-form .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px 22px;
+        }
+
+        .venue-form .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .venue-form .form-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .venue-form .form-group input,
+        .venue-form .form-group textarea,
+        .venue-form .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font: inherit;
+            font-size: 0.95rem;
+            background: var(--white-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .venue-form .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .venue-form .form-group input:focus,
+        .venue-form .form-group textarea:focus,
+        .venue-form .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.12);
+        }
+
+        .venue-form .upload-area {
+            border: 1px dashed rgba(0, 82, 212, 0.4);
+            border-radius: 14px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(0, 82, 212, 0.03);
+            color: var(--muted-color);
+            cursor: pointer;
+        }
+
+        .venue-form .upload-area p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .venue-form .document-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .venue-form .upload-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 82, 212, 0.25);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: rgba(0, 82, 212, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .venue-form .upload-trigger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px -24px rgba(0, 82, 212, 0.8);
+        }
+
+        .venue-form .document-upload-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .venue-form .document-upload-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--light-gray-color);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .venue-form .document-upload-remove {
+            border: none;
+            background: transparent;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .venue-form .document-upload-empty {
+            font-size: 0.85rem;
+            color: var(--muted-color);
+        }
+
+        .venue-form .document-upload-hint {
+            font-size: 0.82rem;
+            color: var(--muted-color);
+        }
+
+        .venue-form .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .venue-form .checkbox-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--light-gray-color);
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .venue-form .checkbox-item:hover {
+            border-color: var(--primary-color);
+            background: #f7faff;
+        }
+
+        .venue-form .checkbox-item input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .venue-form .checkbox-item input:focus-visible + span {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .venue-form .checkbox-item input:checked + span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .venue-form .checkbox-item span {
+            font-size: 0.9rem;
+        }
+
+        .venue-form-note {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 0;
+        }
+
+        .venue-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .venue-form-actions .crm-button {
+            min-width: 160px;
+        }
+
+        @media (max-width: 720px) {
+            .modal-content--wide .modal-header {
+                padding: 24px 20px 12px;
+            }
+
+            .modal-content--wide .modal-body {
+                padding: 0 20px 24px;
+            }
+
+            .venue-form .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         .modal-body .form-group label {
             font-weight: 600;
             font-size: 0.9rem;
@@ -2516,7 +2780,7 @@
                         </div>
                         <div class="page-header-actions">
                             <button class="crm-button ghost" type="button">Importă din fișier</button>
-                            <a href="create-venue.html" class="crm-button primary">Locație nouă</a>
+                            <button class="crm-button primary" type="button" data-venue-form-open="create">Locație nouă</button>
                         </div>
                     </div>
                     <div class="context-tags">
@@ -2525,6 +2789,173 @@
                 </div>
 
                 <div class="venue-grid" id="venue-cards"></div>
+
+                <div id="venue-management-modal" class="modal-overlay" aria-hidden="true">
+                    <div class="modal-content modal-content--wide" role="dialog" aria-modal="true" aria-labelledby="venue-modal-title">
+                        <div class="modal-header">
+                            <div>
+                                <span class="modal-eyebrow">Administrare locații</span>
+                                <h3 id="venue-modal-title" data-venue-form-title>Creează locație</h3>
+                                <p class="modal-subtitle" data-venue-form-subtitle>Completează detaliile de mai jos pentru a adăuga o locație nouă.</p>
+                            </div>
+                            <button type="button" class="modal-close-btn" aria-label="Închide formularul de locație">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="venue-management-form" class="venue-form" novalidate>
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Informații generale</h2>
+                                        <span class="panel-meta">Acestea sunt primele informații pe care le văd clienții.</span>
+                                    </header>
+                                    <div class="form-grid">
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label for="venue-name">Numele locației</label>
+                                            <input type="text" id="venue-name" name="venue-name" placeholder="Ex: The Grand Ballroom" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="venue-city">Oraș</label>
+                                            <input type="text" id="venue-city" name="venue-city" placeholder="Ex: București" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="venue-address">Adresă</label>
+                                            <input type="text" id="venue-address" name="venue-address" placeholder="Ex: Str. Unirii nr. 10">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="venue-status">Status locație</label>
+                                            <select id="venue-status" name="venue-status">
+                                                <option value="activ">Activ</option>
+                                                <option value="în onboarding">În onboarding</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label for="venue-image">Imagine principală (URL)</label>
+                                            <input type="url" id="venue-image" name="venue-image" placeholder="https://exemplu.ro/cover.jpg">
+                                        </div>
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label for="venue-description">Descriere scurtă</label>
+                                            <textarea id="venue-description" name="venue-description" rows="4" placeholder="Descrie locația ta în câteva paragrafe atractive..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Galerie Foto</h2>
+                                        <span class="panel-meta">Încarcă cele mai reprezentative imagini. Prima imagine va fi cea principală.</span>
+                                    </header>
+                                    <label class="upload-area" for="venue-gallery-upload">
+                                        <p>Trage fișierele aici sau apasă pentru a selecta</p>
+                                        <input type="file" id="venue-gallery-upload" name="venue-gallery-upload" multiple hidden>
+                                    </label>
+                                </div>
+
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Meniuri & Documente PDF</h2>
+                                        <span class="panel-meta">Adaugă meniurile pe care vrei să le primească automat clienții atunci când confirmi disponibilitatea.</span>
+                                    </header>
+                                    <div class="document-upload">
+                                        <p>Încarcă fișiere PDF (maxim 10)</p>
+                                        <label for="venue-menu-pdfs" class="upload-trigger">Selectează PDF-uri</label>
+                                        <input type="file" id="venue-menu-pdfs" name="venue-menu-pdfs" accept="application/pdf" multiple hidden>
+                                        <ul class="document-upload-list" id="venue-menu-pdfs-list" data-menu-pdfs-list></ul>
+                                        <p class="document-upload-empty" data-menu-pdfs-empty>Nu ai adăugat încă documente.</p>
+                                        <span class="document-upload-hint">Recomandare: Meniu standard, opțiuni vegetariene, listă băuturi, pachete premium.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Detalii & Capacitate</h2>
+                                        <span class="panel-meta">Specifică intervalul de invitați și prețul de pornire.</span>
+                                    </header>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="capacity-min">Capacitate minimă</label>
+                                            <input type="number" id="capacity-min" name="capacity-min" placeholder="Ex: 80" min="0">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="capacity-max">Capacitate maximă</label>
+                                            <input type="number" id="capacity-max" name="capacity-max" placeholder="Ex: 200" min="0">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="price-start">Preț de pornire (€/persoană)</label>
+                                            <input type="number" id="price-start" name="price-start" placeholder="Ex: 95" min="0" step="1">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="venue-form-note">Următoarele selecții sunt folosite de clienți în filtrele de căutare. Completează-le corect pentru vizibilitate maximă.</p>
+
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Stiluri și Teme</h2>
+                                        <span class="panel-meta">Selectează stilurile care descriu cel mai bine locația ta.</span>
+                                    </header>
+                                    <div class="checkbox-grid">
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Boho-Chic"><span>Boho-Chic</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Central"><span>Central</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Clasic"><span>Clasic</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Elegant"><span>Elegant</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Exclusivist"><span>Exclusivist</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Glamour"><span>Glamour</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Istoric"><span>Istoric</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Minimalist"><span>Minimalist</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Modern"><span>Modern</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Natură"><span>Natură</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Panoramic"><span>Panoramic</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-styles" value="Rustic"><span>Rustic</span></label>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Tipuri de evenimente acceptate</h2>
+                                        <span class="panel-meta">Ce fel de evenimente se pot organiza la locația ta?</span>
+                                    </header>
+                                    <div class="checkbox-grid">
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-events" value="Botez"><span>Botez</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-events" value="Conferință"><span>Conferință</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-events" value="Cununie Civilă"><span>Cununie Civilă</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-events" value="Eveniment Corporate"><span>Eveniment Corporate</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-events" value="Nuntă"><span>Nuntă</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-events" value="Petrecere Privată"><span>Petrecere Privată</span></label>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <header>
+                                        <h2>Facilități & Servicii</h2>
+                                        <span class="panel-meta">Bifează toate facilitățile pe care le oferi.</span>
+                                    </header>
+                                    <div class="checkbox-grid">
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Bar (serviciu complet)"><span>Bar complet</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Cameră miri"><span>Cameră miri</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Servicii de catering personalizate"><span>Catering personalizat</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Cazare invitati"><span>Cazare invitați</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Ceremonie in aer liber"><span>Ceremonie în aer liber</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Event planner dedicat"><span>Event planner dedicat</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Kids corner"><span>Kids corner</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Parcare privată"><span>Parcare privată</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Piscina"><span>Piscină</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Ponton"><span>Ponton</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Decor (servicii de amenajare)"><span>Servicii decor</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Sistem de sunet și lumini profesional"><span>Sistem sunet & lumini</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Spațiu lounge"><span>Spațiu lounge</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Terasă / Grădină"><span>Terasă / Grădină</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Vedere lac"><span>Vedere lac</span></label>
+                                        <label class="checkbox-item"><input type="checkbox" name="venue-amenities" value="Wi-Fi gratuit de mare viteză"><span>Wi-Fi gratuit</span></label>
+                                    </div>
+                                </div>
+
+                                <div class="venue-form-actions">
+                                    <button type="button" class="crm-button ghost" data-venue-form-cancel>Renunță</button>
+                                    <button type="submit" class="crm-button primary" data-venue-form-submit>Salvează locația</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section class="crm-page" data-page="settings" id="settings">

@@ -619,40 +619,318 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             name: 'Villa Lac',
             city: 'Snagov',
+            address: 'Șoseaua Snagov 1',
+            description: 'Complex premium pe malul lacului, cu pavilioane elegante și ponton privat.',
             status: 'activ',
-            capacity: '200 persoane',
+            minCapacity: 120,
+            maxCapacity: 220,
+            pricePerGuest: 180,
             image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=60',
-            price: 180,
-            menuPdfs: ['villa-lac-meniu-standard-2024.pdf', 'villa-lac-bar-selection.pdf']
+            menuPdfs: ['villa-lac-meniu-standard-2024.pdf', 'villa-lac-bar-selection.pdf'],
+            styles: ['Elegant', 'Exclusivist', 'Panoramic'],
+            eventTypes: ['Nuntă', 'Eveniment Corporate', 'Petrecere Privată'],
+            amenities: ['Event planner dedicat', 'Parcare privată', 'Vedere lac', 'Wi-Fi gratuit de mare viteză', 'Ponton']
         },
         {
             name: 'Forest Lodge',
             city: 'Brașov',
+            address: 'Strada Poienelor 12',
+            description: 'Refugiu în mijlocul pădurii cu zonă de ceremonie în aer liber.',
             status: 'activ',
-            capacity: '150 persoane',
+            minCapacity: 80,
+            maxCapacity: 160,
+            pricePerGuest: 145,
             image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=60',
-            price: 145,
-            menuPdfs: ['forest-lodge-meniu-de-baza.pdf']
+            menuPdfs: ['forest-lodge-meniu-de-baza.pdf'],
+            styles: ['Natură', 'Rustic', 'Boho-Chic'],
+            eventTypes: ['Nuntă', 'Botez', 'Petrecere Privată'],
+            amenities: ['Ceremonie in aer liber', 'Cazare invitati', 'Kids corner', 'Terasă / Grădină']
         },
         {
             name: 'Urban Loft',
             city: 'București',
+            address: 'Strada Fabricii 25',
+            description: 'Spațiu industrial modern cu vedere panoramică asupra orașului.',
             status: 'activ',
-            capacity: '120 persoane',
+            minCapacity: 50,
+            maxCapacity: 120,
+            pricePerGuest: 160,
             image: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?auto=format&fit=crop&w=900&q=60',
-            price: 160,
-            menuPdfs: ['urban-loft-meniu-urban.pdf', 'urban-loft-drink-list.pdf']
+            menuPdfs: ['urban-loft-meniu-urban.pdf', 'urban-loft-drink-list.pdf'],
+            styles: ['Modern', 'Minimalist', 'Central'],
+            eventTypes: ['Eveniment Corporate', 'Nuntă', 'Petrecere Privată'],
+            amenities: ['Bar (serviciu complet)', 'Servicii de catering personalizate', 'Sistem de sunet și lumini profesional', 'Spațiu lounge', 'Wi-Fi gratuit de mare viteză']
         },
         {
             name: 'Casa Miraval',
             city: 'Cluj-Napoca',
+            address: 'Strada Viilor 8',
+            description: 'Vilă boutique înconjurată de grădini mediteraneene.',
             status: 'în onboarding',
-            capacity: '90 persoane',
+            minCapacity: 40,
+            maxCapacity: 90,
+            pricePerGuest: 120,
             image: 'https://images.unsplash.com/photo-1590490359854-dfba19688d97?auto=format&fit=crop&w=900&q=60',
-            price: 120,
-            menuPdfs: []
+            menuPdfs: [],
+            styles: ['Elegant', 'Rustic'],
+            eventTypes: ['Botez', 'Cununie Civilă', 'Nuntă'],
+            amenities: ['Terasă / Grădină', 'Cameră miri', 'Decor (servicii de amenajare)']
         }
     ];
+
+    const venueFormModal = document.getElementById('venue-management-modal');
+    const venueForm = document.getElementById('venue-management-form');
+    const venueFormTitle = venueFormModal?.querySelector('[data-venue-form-title]');
+    const venueFormSubtitle = venueFormModal?.querySelector('[data-venue-form-subtitle]');
+    const venueFormSubmitButton = venueFormModal?.querySelector('[data-venue-form-submit]');
+    const venueMenuPdfInput = document.getElementById('venue-menu-pdfs');
+    const venueMenuPdfList = document.getElementById('venue-menu-pdfs-list');
+    const venueMenuPdfEmpty = venueFormModal?.querySelector('[data-menu-pdfs-empty]');
+    const openVenueButtons = document.querySelectorAll('[data-venue-form-open]');
+    const venueNameInput = document.getElementById('venue-name');
+    const venueCityInput = document.getElementById('venue-city');
+    const venueAddressInput = document.getElementById('venue-address');
+    const venueStatusSelect = document.getElementById('venue-status');
+    const venueImageInput = document.getElementById('venue-image');
+    const venueDescriptionInput = document.getElementById('venue-description');
+    const capacityMinInput = document.getElementById('capacity-min');
+    const capacityMaxInput = document.getElementById('capacity-max');
+    const priceStartInput = document.getElementById('price-start');
+
+    let venueMenuPdfNames = [];
+    let currentVenueFormMode = 'create';
+    let currentVenueIndex = null;
+
+    function updateVenueMenuPdfsList() {
+        if (!venueMenuPdfList) {
+            return;
+        }
+        venueMenuPdfList.innerHTML = '';
+        venueMenuPdfNames.forEach((fileName, index) => {
+            const item = document.createElement('li');
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = fileName;
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'document-upload-remove';
+            removeBtn.textContent = 'Șterge';
+            removeBtn.setAttribute('aria-label', `Șterge ${fileName}`);
+            removeBtn.addEventListener('click', () => {
+                venueMenuPdfNames.splice(index, 1);
+                updateVenueMenuPdfsList();
+            });
+            item.append(nameSpan, removeBtn);
+            venueMenuPdfList.appendChild(item);
+        });
+        if (venueMenuPdfEmpty) {
+            venueMenuPdfEmpty.hidden = venueMenuPdfNames.length > 0;
+        }
+    }
+
+    function populateVenueCheckboxGroup(name, values) {
+        if (!venueForm) {
+            return;
+        }
+        const checkboxes = venueForm.querySelectorAll(`input[name="${name}"]`);
+        checkboxes.forEach(input => {
+            input.checked = Array.isArray(values) ? values.includes(input.value) : false;
+        });
+    }
+
+    function openVenueForm(mode = 'create', index = null) {
+        if (!venueFormModal || !venueForm) {
+            return;
+        }
+        const isEdit = mode === 'edit' && Number.isInteger(index) && index >= 0 && index < venues.length;
+        currentVenueFormMode = isEdit ? 'edit' : 'create';
+        currentVenueIndex = isEdit ? index : null;
+
+        venueForm.reset();
+        populateVenueCheckboxGroup('venue-styles', []);
+        populateVenueCheckboxGroup('venue-events', []);
+        populateVenueCheckboxGroup('venue-amenities', []);
+        venueMenuPdfNames = [];
+
+        if (isEdit) {
+            const venue = venues[index];
+            if (venueNameInput) {
+                venueNameInput.value = venue.name || '';
+            }
+            if (venueCityInput) {
+                venueCityInput.value = venue.city || '';
+            }
+            if (venueAddressInput) {
+                venueAddressInput.value = venue.address || '';
+            }
+            if (venueStatusSelect) {
+                venueStatusSelect.value = venue.status || 'activ';
+            }
+            if (venueImageInput) {
+                venueImageInput.value = venue.image || '';
+            }
+            if (venueDescriptionInput) {
+                venueDescriptionInput.value = venue.description || '';
+            }
+            if (capacityMinInput) {
+                capacityMinInput.value = Number.isFinite(venue.minCapacity) ? venue.minCapacity : '';
+            }
+            if (capacityMaxInput) {
+                capacityMaxInput.value = Number.isFinite(venue.maxCapacity) ? venue.maxCapacity : '';
+            }
+            if (priceStartInput) {
+                priceStartInput.value = Number.isFinite(venue.pricePerGuest) ? venue.pricePerGuest : '';
+            }
+            populateVenueCheckboxGroup('venue-styles', Array.isArray(venue.styles) ? venue.styles : []);
+            populateVenueCheckboxGroup('venue-events', Array.isArray(venue.eventTypes) ? venue.eventTypes : []);
+            populateVenueCheckboxGroup('venue-amenities', Array.isArray(venue.amenities) ? venue.amenities : []);
+            venueMenuPdfNames = Array.isArray(venue.menuPdfs) ? [...venue.menuPdfs] : [];
+        } else if (venueStatusSelect) {
+            venueStatusSelect.value = 'activ';
+        }
+
+        if (venueMenuPdfInput) {
+            venueMenuPdfInput.value = '';
+        }
+        updateVenueMenuPdfsList();
+
+        if (venueFormTitle) {
+            venueFormTitle.textContent = isEdit ? 'Editează locație' : 'Creează locație';
+        }
+        if (venueFormSubtitle) {
+            venueFormSubtitle.textContent = isEdit
+                ? 'Actualizează informațiile locației selectate.'
+                : 'Completează detaliile de mai jos pentru a adăuga o locație nouă.';
+        }
+        if (venueFormSubmitButton) {
+            venueFormSubmitButton.textContent = isEdit ? 'Salvează modificările' : 'Salvează locația';
+        }
+
+        venueFormModal.classList.add('is-visible');
+        venueFormModal.setAttribute('aria-hidden', 'false');
+        setTimeout(() => venueNameInput?.focus(), 60);
+    }
+
+    function closeVenueForm() {
+        if (!venueFormModal || !venueForm) {
+            return;
+        }
+        venueFormModal.classList.remove('is-visible');
+        venueFormModal.setAttribute('aria-hidden', 'true');
+        venueForm.reset();
+        populateVenueCheckboxGroup('venue-styles', []);
+        populateVenueCheckboxGroup('venue-events', []);
+        populateVenueCheckboxGroup('venue-amenities', []);
+        venueMenuPdfNames = [];
+        if (venueMenuPdfInput) {
+            venueMenuPdfInput.value = '';
+        }
+        updateVenueMenuPdfsList();
+        currentVenueFormMode = 'create';
+        currentVenueIndex = null;
+    }
+
+    openVenueButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const mode = button.dataset.venueFormOpen === 'edit' ? 'edit' : 'create';
+            const indexValue = Number.parseInt(button.dataset.venueIndex || '', 10);
+            openVenueForm(mode, Number.isInteger(indexValue) ? indexValue : null);
+        });
+    });
+
+    venueMenuPdfInput?.addEventListener('change', (event) => {
+        const files = Array.from(event.target.files || []);
+        files.forEach(file => {
+            if (file && file.name && !venueMenuPdfNames.includes(file.name)) {
+                venueMenuPdfNames.push(file.name);
+            }
+        });
+        if (venueMenuPdfInput) {
+            venueMenuPdfInput.value = '';
+        }
+        updateVenueMenuPdfsList();
+    });
+
+    venueForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(venueForm);
+        const nameValue = (formData.get('venue-name') || '').toString().trim();
+        if (!nameValue) {
+            window.alert('Numele locației este obligatoriu.');
+            venueNameInput?.focus();
+            return;
+        }
+        const cityValue = (formData.get('venue-city') || '').toString().trim();
+        if (!cityValue) {
+            window.alert('Orașul este obligatoriu.');
+            venueCityInput?.focus();
+            return;
+        }
+        const addressValue = (formData.get('venue-address') || '').toString().trim();
+        const descriptionValue = (formData.get('venue-description') || '').toString().trim();
+        const statusValue = (formData.get('venue-status') || 'activ').toString();
+        const imageValue = (formData.get('venue-image') || '').toString().trim();
+        const minCapacityValue = Number.parseInt(formData.get('capacity-min'), 10);
+        const maxCapacityValue = Number.parseInt(formData.get('capacity-max'), 10);
+        const priceValue = Number.parseFloat(formData.get('price-start'));
+
+        const normalizedMin = Number.isFinite(minCapacityValue) ? minCapacityValue : null;
+        const normalizedMax = Number.isFinite(maxCapacityValue) ? maxCapacityValue : null;
+        if (normalizedMin !== null && normalizedMax !== null && normalizedMin > normalizedMax) {
+            window.alert('Capacitatea minimă nu poate fi mai mare decât capacitatea maximă.');
+            capacityMinInput?.focus();
+            return;
+        }
+        const normalizedPrice = Number.isFinite(priceValue) ? Math.round(priceValue) : null;
+        const styles = formData.getAll('venue-styles');
+        const eventTypes = formData.getAll('venue-events');
+        const amenities = formData.getAll('venue-amenities');
+
+        const baseVenueData = {
+            name: nameValue,
+            city: cityValue,
+            address: addressValue,
+            description: descriptionValue,
+            status: statusValue || 'activ',
+            minCapacity: normalizedMin,
+            maxCapacity: normalizedMax,
+            pricePerGuest: normalizedPrice,
+            image: imageValue,
+            menuPdfs: [...venueMenuPdfNames],
+            styles: Array.from(new Set(styles)),
+            eventTypes: Array.from(new Set(eventTypes)),
+            amenities: Array.from(new Set(amenities))
+        };
+
+        if (currentVenueFormMode === 'edit' && Number.isInteger(currentVenueIndex) && venues[currentVenueIndex]) {
+            venues[currentVenueIndex] = {
+                ...venues[currentVenueIndex],
+                ...baseVenueData
+            };
+        } else {
+            venues.push(baseVenueData);
+        }
+
+        renderVenueCards();
+        closeVenueForm();
+    });
+
+    if (venueFormModal) {
+        const closeButtons = venueFormModal.querySelectorAll('.modal-close-btn, [data-venue-form-cancel]');
+        closeButtons.forEach(button => button.addEventListener('click', closeVenueForm));
+        venueFormModal.addEventListener('click', (event) => {
+            if (event.target === venueFormModal) {
+                closeVenueForm();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && venueFormModal?.classList.contains('is-visible')) {
+            closeVenueForm();
+        }
+    });
+
+    updateVenueMenuPdfsList();
 
     function getVenueMenuPdfs(venueName) {
         const venue = venues.find(entry => entry.name === venueName);
@@ -2760,7 +3038,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         container.innerHTML = '';
-        venues.forEach(venue => {
+        venues.forEach((venue, index) => {
             const card = document.createElement('article');
             card.className = 'venue-card';
 
@@ -2784,9 +3062,10 @@ document.addEventListener('DOMContentLoaded', () => {
             location.textContent = `${venue.city}, România`;
             titleWrapper.append(title, location);
 
-            const statusKey = venue.status === 'activ' ? 'confirmed' : 'availability_confirmed';
+            const normalizedStatus = (venue.status || '').toLowerCase();
+            const statusKey = normalizedStatus.includes('activ') ? 'confirmed' : 'availability_confirmed';
             const statusChip = createStatusChip(statusKey);
-            statusChip.textContent = venue.status;
+            statusChip.textContent = venue.status || '—';
             statusChip.dataset.status = statusKey;
             statusChip.classList.add('status-chip--compact');
 
@@ -2796,15 +3075,27 @@ document.addEventListener('DOMContentLoaded', () => {
             meta.className = 'venue-card-meta';
             const capacityItem = document.createElement('span');
             capacityItem.className = 'venue-meta-item';
-            capacityItem.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Capacitate: ' + venue.capacity + '</span>';
+            const minCapacity = Number.isFinite(venue.minCapacity) ? venue.minCapacity : null;
+            const maxCapacity = Number.isFinite(venue.maxCapacity) ? venue.maxCapacity : null;
+            let capacityLabel = 'Capacitate nespecificată';
+            if (minCapacity !== null && maxCapacity !== null) {
+                capacityLabel = `${minCapacity}-${maxCapacity} persoane`;
+            } else if (minCapacity !== null) {
+                capacityLabel = `de la ${minCapacity} persoane`;
+            } else if (maxCapacity !== null) {
+                capacityLabel = `până la ${maxCapacity} persoane`;
+            } else if (venue.capacity) {
+                capacityLabel = venue.capacity;
+            }
+            capacityItem.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Capacitate: ' + capacityLabel + '</span>';
             meta.appendChild(capacityItem);
 
             const footer = document.createElement('div');
             footer.className = 'venue-card-footer';
-            if (typeof venue.price === 'number') {
+            if (typeof venue.pricePerGuest === 'number') {
                 const price = document.createElement('span');
                 price.className = 'venue-card-price';
-                price.innerHTML = `de la <strong>${venue.price}€</strong>/pers`;
+                price.innerHTML = `de la <strong>${venue.pricePerGuest}€</strong>/pers`;
                 footer.appendChild(price);
             }
             const actions = document.createElement('div');
@@ -2817,6 +3108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             availabilityBtn.type = 'button';
             availabilityBtn.className = 'crm-button primary';
             availabilityBtn.textContent = 'Actualizează disponibilitate';
+            editBtn.addEventListener('click', () => openVenueForm('edit', index));
             actions.append(editBtn, availabilityBtn);
             footer.appendChild(actions);
 
