@@ -678,15 +678,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    const venueFormModal = document.getElementById('venue-management-modal');
+    const venuePageContent = document.getElementById('venue-page-content');
+    const venueManagementPanel = document.getElementById('venue-management-panel');
     const venueForm = document.getElementById('venue-management-form');
-    const venueFormTitle = venueFormModal?.querySelector('[data-venue-form-title]');
-    const venueFormSubtitle = venueFormModal?.querySelector('[data-venue-form-subtitle]');
-    const venueFormSubmitButton = venueFormModal?.querySelector('[data-venue-form-submit]');
+    const venueFormTitle = venueManagementPanel?.querySelector('[data-venue-form-title]');
+    const venueFormSubtitle = venueManagementPanel?.querySelector('[data-venue-form-subtitle]');
+    const venueFormSubmitButton = venueManagementPanel?.querySelector('[data-venue-form-submit]');
     const venueMenuPdfInput = document.getElementById('venue-menu-pdfs');
     const venueMenuPdfList = document.getElementById('venue-menu-pdfs-list');
-    const venueMenuPdfEmpty = venueFormModal?.querySelector('[data-menu-pdfs-empty]');
+    const venueMenuPdfEmpty = venueManagementPanel?.querySelector('[data-menu-pdfs-empty]');
+    const venueCardsGrid = document.getElementById('venue-cards');
+    const venueAddButton = document.querySelector('[data-venue-add-trigger]');
+    const venueBackButton = document.querySelector('[data-venue-back-trigger]');
+    const venuesTitleEl = document.querySelector('[data-venues-title]');
+    const venuesSubtitleEl = document.querySelector('[data-venues-subtitle]');
+    const venuesContextEl = document.querySelector('[data-venues-context]');
     const openVenueButtons = document.querySelectorAll('[data-venue-form-open]');
+    const defaultVenuesTitle = venuesTitleEl?.textContent?.trim() || '';
+    const defaultVenuesSubtitle = venuesSubtitleEl?.textContent?.trim() || '';
+    const contextInitiallyHidden = venuesContextEl?.hasAttribute('hidden') || false;
     const venueNameInput = document.getElementById('venue-name');
     const venueCityInput = document.getElementById('venue-city');
     const venueAddressInput = document.getElementById('venue-address');
@@ -738,7 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openVenueForm(mode = 'create', index = null) {
-        if (!venueFormModal || !venueForm) {
+        if (!venueManagementPanel || !venueForm) {
             return;
         }
         const isEdit = mode === 'edit' && Number.isInteger(index) && index >= 0 && index < venues.length;
@@ -793,29 +803,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateVenueMenuPdfsList();
 
+        const titleText = isEdit ? 'Editează locație' : 'Creează locație';
+        const subtitleText = isEdit
+            ? 'Actualizează informațiile locației selectate.'
+            : 'Completează detaliile de mai jos pentru a adăuga o locație nouă.';
+
         if (venueFormTitle) {
-            venueFormTitle.textContent = isEdit ? 'Editează locație' : 'Creează locație';
+            venueFormTitle.textContent = titleText;
         }
         if (venueFormSubtitle) {
-            venueFormSubtitle.textContent = isEdit
-                ? 'Actualizează informațiile locației selectate.'
-                : 'Completează detaliile de mai jos pentru a adăuga o locație nouă.';
+            venueFormSubtitle.textContent = subtitleText;
         }
         if (venueFormSubmitButton) {
             venueFormSubmitButton.textContent = isEdit ? 'Salvează modificările' : 'Salvează locația';
         }
-
-        venueFormModal.classList.add('is-visible');
-        venueFormModal.setAttribute('aria-hidden', 'false');
-        setTimeout(() => venueNameInput?.focus(), 60);
+        if (venuesTitleEl) {
+            venuesTitleEl.textContent = titleText;
+        }
+        if (venuesSubtitleEl) {
+            venuesSubtitleEl.textContent = subtitleText;
+        }
+        if (venuesContextEl) {
+            venuesContextEl.hidden = true;
+        }
+        venueAddButton?.setAttribute('hidden', 'true');
+        venueBackButton?.removeAttribute('hidden');
+        if (venueCardsGrid) {
+            venueCardsGrid.hidden = true;
+        }
+        venuePageContent?.classList.add('is-form-active');
+        venueManagementPanel.hidden = false;
+        window.requestAnimationFrame(() => {
+            venueManagementPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            venueNameInput?.focus();
+        });
     }
 
     function closeVenueForm() {
-        if (!venueFormModal || !venueForm) {
+        if (!venueManagementPanel || !venueForm) {
             return;
         }
-        venueFormModal.classList.remove('is-visible');
-        venueFormModal.setAttribute('aria-hidden', 'true');
         venueForm.reset();
         populateVenueCheckboxGroup('venue-styles', []);
         populateVenueCheckboxGroup('venue-events', []);
@@ -827,6 +854,23 @@ document.addEventListener('DOMContentLoaded', () => {
         updateVenueMenuPdfsList();
         currentVenueFormMode = 'create';
         currentVenueIndex = null;
+        venueManagementPanel.hidden = true;
+        if (venueCardsGrid) {
+            venueCardsGrid.hidden = false;
+        }
+        venuePageContent?.classList.remove('is-form-active');
+        if (venuesTitleEl) {
+            venuesTitleEl.textContent = defaultVenuesTitle;
+        }
+        if (venuesSubtitleEl) {
+            venuesSubtitleEl.textContent = defaultVenuesSubtitle;
+        }
+        if (venuesContextEl) {
+            venuesContextEl.hidden = contextInitiallyHidden;
+        }
+        venueAddButton?.removeAttribute('hidden');
+        venueBackButton?.setAttribute('hidden', 'true');
+        window.requestAnimationFrame(() => venueAddButton?.focus());
     }
 
     openVenueButtons.forEach(button => {
@@ -914,20 +958,11 @@ document.addEventListener('DOMContentLoaded', () => {
         closeVenueForm();
     });
 
-    if (venueFormModal) {
-        const closeButtons = venueFormModal.querySelectorAll('.modal-close-btn, [data-venue-form-cancel]');
-        closeButtons.forEach(button => button.addEventListener('click', closeVenueForm));
-        venueFormModal.addEventListener('click', (event) => {
-            if (event.target === venueFormModal) {
-                closeVenueForm();
-            }
-        });
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && venueFormModal?.classList.contains('is-visible')) {
+    const venueCancelButtons = document.querySelectorAll('[data-venue-form-cancel]');
+    venueCancelButtons.forEach(button => {
+        button.addEventListener('click', () => {
             closeVenueForm();
-        }
+        });
     });
 
     updateVenueMenuPdfsList();

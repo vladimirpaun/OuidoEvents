@@ -1277,6 +1277,46 @@
             gap: 22px;
         }
 
+        .venues-page-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .venues-page-content.is-form-active .venue-grid {
+            display: none;
+        }
+
+        .venue-management-panel {
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 32px 60px -48px rgba(67, 100, 247, 0.55);
+            overflow: hidden;
+        }
+
+        .venue-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 28px 32px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .venue-panel-header h2 {
+            margin: 4px 0 0;
+            font-size: 1.6rem;
+        }
+
+        .venue-panel-body {
+            padding: 0 32px 32px;
+        }
+
+        .venue-management-panel .venue-form {
+            padding-top: 24px;
+        }
+
         .venue-card {
             display: flex;
             gap: 24px;
@@ -2138,6 +2178,21 @@
                 padding: 0 20px 24px;
             }
 
+            .venue-panel-header {
+                padding: 24px 20px 14px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .venue-panel-header .crm-button {
+                align-self: flex-end;
+            }
+
+            .venue-panel-body {
+                padding: 0 20px 24px;
+            }
+
             .venue-form .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -2775,32 +2830,33 @@
                 <div class="page-header">
                     <div class="page-header-top">
                         <div>
-                            <h1>Administrare locații</h1>
-                            <p class="page-header-subtitle--compact">Actualizează detalii, capacități și echipe de contact pentru spațiile din portofoliu.</p>
+                            <h1 data-venues-title>Administrare locații</h1>
+                            <p class="page-header-subtitle--compact" data-venues-subtitle>Actualizează detalii, capacități și echipe de contact pentru spațiile din portofoliu.</p>
                         </div>
-                        <div class="page-header-actions">
+                        <div class="page-header-actions" data-venues-actions>
                             <button class="crm-button ghost" type="button">Importă din fișier</button>
-                            <button class="crm-button primary" type="button" data-venue-form-open="create">Locație nouă</button>
+                            <button class="crm-button primary" type="button" data-venue-form-open="create" data-venue-add-trigger>Locație nouă</button>
+                            <button class="crm-button ghost sm" type="button" data-venue-form-cancel data-venue-back-trigger hidden>Înapoi la listă</button>
                         </div>
                     </div>
-                    <div class="context-tags">
+                    <div class="context-tags" data-venues-context>
                         <span class="context-tag">6 locații active · 1 în onboarding</span>
                     </div>
                 </div>
 
-                <div class="venue-grid" id="venue-cards"></div>
+                <div class="venues-page-content" id="venue-page-content">
+                    <div class="venue-grid" id="venue-cards"></div>
 
-                <div id="venue-management-modal" class="modal-overlay" aria-hidden="true">
-                    <div class="modal-content modal-content--wide" role="dialog" aria-modal="true" aria-labelledby="venue-modal-title">
-                        <div class="modal-header">
+                    <div id="venue-management-panel" class="venue-management-panel" hidden>
+                        <header class="venue-panel-header">
                             <div>
                                 <span class="modal-eyebrow">Administrare locații</span>
-                                <h3 id="venue-modal-title" data-venue-form-title>Creează locație</h3>
+                                <h2 data-venue-form-title>Creează locație</h2>
                                 <p class="modal-subtitle" data-venue-form-subtitle>Completează detaliile de mai jos pentru a adăuga o locație nouă.</p>
                             </div>
-                            <button type="button" class="modal-close-btn" aria-label="Închide formularul de locație">&times;</button>
-                        </div>
-                        <div class="modal-body">
+                            <button type="button" class="crm-button ghost sm" data-venue-form-cancel>Înapoi la listă</button>
+                        </header>
+                        <div class="venue-panel-body">
                             <form id="venue-management-form" class="venue-form" novalidate>
                                 <div class="form-section">
                                     <header>
@@ -2866,7 +2922,7 @@
 
                                 <div class="form-section">
                                     <header>
-                                        <h2>Detalii & Capacitate</h2>
+                                        <h2>Capacitate & rang de preț</h2>
                                         <span class="panel-meta">Specifică intervalul de invitați și prețul de pornire.</span>
                                     </header>
                                     <div class="form-grid">
