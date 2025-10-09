@@ -402,6 +402,129 @@
             margin-left: auto;
         }
 
+        .request-detail-header {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        @media (min-width: 768px) {
+            .request-detail-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+        }
+        .request-detail-header-main {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .request-detail-header-main h1 {
+            margin: 0;
+        }
+        .request-detail-header-main p {
+            margin: 0;
+            color: var(--muted-color);
+            max-width: 520px;
+        }
+        .request-detail-header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .request-detail-body {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .request-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px 20px;
+        }
+        .request-detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .request-detail-item small {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-color);
+            font-weight: 600;
+        }
+        .request-detail-item span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .request-detail-offer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .request-detail-slots {
+            margin-top: 6px;
+            border-top: 1px solid rgba(15, 23, 42, 0.08);
+            padding-top: 12px;
+            display: grid;
+            gap: 8px;
+        }
+        .request-detail-slot {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 0.88rem;
+            color: var(--dark-color);
+        }
+        .request-detail-slot span:first-child {
+            font-weight: 600;
+            color: var(--muted-color);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.7rem;
+        }
+        .request-detail-contact {
+            display: grid;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .request-detail-contact-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .request-detail-contact-row small {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted-color);
+            font-weight: 600;
+        }
+        .request-detail-contact a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .request-detail-contact a:hover {
+            text-decoration: underline;
+        }
+        .request-detail-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+        .request-detail-empty {
+            border: 1px dashed rgba(0, 82, 212, 0.2);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            color: var(--muted-color);
+        }
         table.crm-table tbody tr:hover .booking-row {
             border-color: rgba(0, 82, 212, 0.45);
             box-shadow: 0 38px 64px -38px rgba(67, 100, 247, 0.55);
@@ -1005,6 +1128,61 @@
                 </article>
             </section>
 
+            <section class="crm-page request-detail" data-page="request-detail" id="request-detail">
+                <div class="page-header request-detail-header">
+                    <div class="request-detail-header-main">
+                        <h1 id="request-detail-title">Detalii cerere</h1>
+                        <p id="request-detail-subtitle">Aici vezi statusul complet, oferta și detaliile locației pentru cererea selectată.</p>
+                    </div>
+                    <div class="request-detail-header-actions">
+                        <a class="crm-button ghost crm-button--sm" id="request-detail-venue-link" href="venue-details.html" target="_blank" rel="noopener">Vezi pagina locației</a>
+                    </div>
+                </div>
+
+                <div class="request-detail-body" id="request-detail-body" hidden>
+                    <article class="panel">
+                        <header>
+                            <h2>Status cerere</h2>
+                            <span class="panel-meta" id="request-detail-next-step">Următorul pas va fi afișat aici.</span>
+                        </header>
+                        <span class="status-chip" data-status="draft" id="request-detail-status-chip">Status necunoscut</span>
+                        <p class="panel-meta" id="request-detail-status-description"></p>
+                        <div class="request-detail-grid" id="request-detail-overview"></div>
+                        <div class="request-detail-slots" id="request-detail-slots" hidden></div>
+                    </article>
+
+                    <article class="panel" id="request-detail-offer-card" hidden>
+                        <header>
+                            <h2>Ofertă și rezervare</h2>
+                            <span class="panel-meta">Vezi termenele limită și statusul ofertei</span>
+                        </header>
+                        <div class="request-detail-grid" id="request-detail-offer-grid"></div>
+                        <div class="request-detail-offer-actions" id="request-detail-offer-actions" hidden>
+                            <a class="crm-button primary crm-button--sm" id="request-detail-offer-download" href="#" download>Descarcă oferta (PDF)</a>
+                        </div>
+                    </article>
+
+                    <article class="panel">
+                        <header>
+                            <h2>Detalii locație</h2>
+                            <span class="panel-meta">Adresă și date de contact</span>
+                        </header>
+                        <div class="request-detail-grid" id="request-detail-location-grid"></div>
+                        <div class="request-detail-contact" id="request-detail-contact" hidden></div>
+                        
+                    </article>
+
+                    <div class="request-detail-footer" id="request-detail-footer" hidden>
+                        <button class="crm-button ghost crm-button--sm" type="button" id="request-detail-back">Înapoi la cereri</button>
+                    </div>
+
+                </div>
+
+                <div class="request-detail-empty" id="request-detail-empty">
+                    Selectează o cerere din listă pentru a vedea detaliile.
+                </div>
+            </section>
+
             <section class="crm-page" data-page="viewings">
                 <div class="page-header">
                     <h1>Vizionările Mele</h1>
@@ -1014,7 +1192,7 @@
                     <header>
                         <div class="reschedule-heading">
                             <h2>Confirmă intervalul propus</h2>
-                            <span class="panel-meta" data-reschedule-location>Locație · Gazdă</span>
+                            <span class="panel-meta" data-reschedule-location>Locație</span>
                         </div>
                         <span class="reschedule-badge" data-reschedule-updated>Actualizat acum</span>
                     </header>
@@ -1151,7 +1329,9 @@
             }
             pages.forEach(page => page.classList.toggle('is-active', page.dataset.page === pageId));
             navLinks.forEach(link => link.classList.toggle('is-active', link.dataset.pageTarget === pageId));
-            localStorage.setItem(storageKey, pageId);
+            if (pageId !== 'request-detail') {
+                localStorage.setItem(storageKey, pageId);
+            }
             history.replaceState(null, '', `#${pageId}`);
         }
 
@@ -1732,6 +1912,7 @@
 
         const requestFilters = { status: 'all', location: 'all' };
         const viewingFilters = { venue: 'all', status: 'all' };
+        let activeRequestDetailId = null;
         let activeRescheduleViewingId = null;
         let selectedRescheduleOption = null;
 
@@ -1747,6 +1928,27 @@
         const requestsStatusFilter = document.getElementById('requests-status-filter');
         const requestsLocationFilter = document.getElementById('requests-location-filter');
         const requestsTableBody = document.getElementById('requests-table-body');
+        const requestDetailElements = {
+            page: document.getElementById('request-detail'),
+            body: document.getElementById('request-detail-body'),
+            empty: document.getElementById('request-detail-empty'),
+            backButton: document.getElementById('request-detail-back'),
+            title: document.getElementById('request-detail-title'),
+            subtitle: document.getElementById('request-detail-subtitle'),
+            venueLinkPrimary: document.getElementById('request-detail-venue-link'),
+            footer: document.getElementById('request-detail-footer'),
+            statusChip: document.getElementById('request-detail-status-chip'),
+            nextStep: document.getElementById('request-detail-next-step'),
+            statusDescription: document.getElementById('request-detail-status-description'),
+            overviewGrid: document.getElementById('request-detail-overview'),
+            slotsContainer: document.getElementById('request-detail-slots'),
+            offerCard: document.getElementById('request-detail-offer-card'),
+            offerGrid: document.getElementById('request-detail-offer-grid'),
+            offerActions: document.getElementById('request-detail-offer-actions'),
+            offerDownload: document.getElementById('request-detail-offer-download'),
+            locationGrid: document.getElementById('request-detail-location-grid'),
+            locationContact: document.getElementById('request-detail-contact'),
+        };
 
         const viewingsVenueFilter = document.getElementById('viewings-venue-filter');
         const viewingsStatusFilter = document.getElementById('viewings-status-filter');
@@ -1817,11 +2019,51 @@
             return item;
         }
 
-        function openRequestDetailPage(request) {
-            if (!request) return;
+        const formatDateLabel = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? formatDate(date) : '—';
 
-            const toISOString = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? date.toISOString() : null;
-            const toLabel = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? formatDate(date) : null;
+        function createDetailItem(label, value) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'request-detail-item';
+            const labelEl = document.createElement('small');
+            labelEl.textContent = label;
+            const valueEl = document.createElement('span');
+            valueEl.textContent = value ?? '—';
+            wrapper.append(labelEl, valueEl);
+            return wrapper;
+        }
+
+        function renderDetailGrid(container, items) {
+            if (!container) return;
+            container.innerHTML = '';
+            items
+                .filter(item => item && item.label)
+                .forEach(item => {
+                    container.appendChild(createDetailItem(item.label, item.value));
+                });
+        }
+
+        function renderDetailSlots(container, entries) {
+            if (!container) return;
+            container.innerHTML = '';
+            if (!entries || !entries.length) {
+                container.hidden = true;
+                return;
+            }
+            container.hidden = false;
+            entries.forEach(({ label, value }) => {
+                const row = document.createElement('div');
+                row.className = 'request-detail-slot';
+                const labelEl = document.createElement('span');
+                labelEl.textContent = label;
+                const valueEl = document.createElement('span');
+                valueEl.textContent = value || '—';
+                row.append(labelEl, valueEl);
+                container.appendChild(row);
+            });
+        }
+
+        function showRequestDetail(request) {
+            if (!request) return;
 
             const location = getLocationById(request.locationId);
             const statusMeta = requestStatusMeta[request.status] || {};
@@ -1829,70 +2071,154 @@
                 ? clientViewings.find(view => view.id === request.viewingId)
                 : null;
             const viewingMeta = viewing ? viewingStatusMeta[viewing.status] || {} : null;
-            const confirmedRequestSlot = mapSlots([request.confirmedSlot])[0] || null;
 
-            const payload = {
-                generatedAt: new Date().toISOString(),
-                request: {
-                    id: request.id,
-                    status: request.status,
-                    statusLabel: statusMeta.label || request.status,
-                    statusDescription: statusMeta.description || '',
-                    nextStep: statusMeta.nextStep || '',
-                    eventType: request.eventType || '—',
-                    guests: Number.isFinite(request.guests) ? request.guests : null,
-                    eventDate: toISOString(request.eventDate),
-                    eventDateLabel: toLabel(request.eventDate),
-                    lastUpdate: toISOString(request.lastUpdate),
-                    lastUpdateLabel: toLabel(request.lastUpdate),
-                    offerValidUntil: toISOString(request.offerValidUntil),
-                    offerValidUntilLabel: toLabel(request.offerValidUntil),
-                    holdExpiresAt: toISOString(request.holdExpiresAt),
-                    holdExpiresAtLabel: toLabel(request.holdExpiresAt),
-                    requestedSlots: mapSlots(request.requestedSlots).map(slot => slot.label),
-                    ownerSuggestions: mapSlots(request.ownerSuggestions).map(slot => slot.label),
-                    confirmedSlot: confirmedRequestSlot ? confirmedRequestSlot.label : null
-                },
-                location: location ? {
-                    id: location.id,
-                    name: location.name,
-                    city: location.city,
-                    address: location.address || '',
-                    price: location.price,
-                    priceLabel: formatPricePerPerson(location.price),
-                    contactPhone: location.contactPhone || '',
-                    contactEmail: location.contactEmail || '',
-                    imageUrl: location.imageUrl || ''
-                } : null,
-                viewing: viewing ? {
-                    id: viewing.id,
-                    status: viewing.status,
-                    statusLabel: viewingMeta?.label || viewing.status,
-                    statusDescription: viewingMeta?.description || '',
-                    primarySlot: getViewingPrimarySlot(viewing)?.label || null,
-                    requestedSlots: mapSlots(viewing.requestedSlots).map(slot => slot.label),
-                    ownerSuggestions: mapSlots(viewing.ownerSuggestions).map(slot => slot.label),
-                    confirmedSlot: mapSlots([viewing.confirmedSlot])[0]?.label || null,
-                    host: viewing.host || '',
-                    note: viewing.note || '',
-                    lastUpdate: toISOString(viewing.lastUpdate),
-                    lastUpdateLabel: toLabel(viewing.lastUpdate)
-                } : null
-            };
+            activeRequestDetailId = request.id;
 
-            try {
-                localStorage.setItem('clientRequestDetailPayload', JSON.stringify(payload));
-            } catch (error) {
-                console.warn('Nu am putut salva detaliile cererii în localStorage.', error);
+            const venueUrl = location?.id ? `venue-details.html?id=${location.id}` : 'venue-details.html';
+            if (requestDetailElements.venueLinkPrimary) {
+                requestDetailElements.venueLinkPrimary.href = venueUrl;
             }
 
-            try {
-                const detailUrl = new URL('client-request-detail.html', window.location.href);
-                detailUrl.searchParams.set('id', String(request.id));
-                window.open(detailUrl.toString(), '_blank', 'noopener');
-            } catch (error) {
-                console.error('Nu am putut deschide pagina cu detalii.', error);
+            if (requestDetailElements.title) {
+                requestDetailElements.title.textContent = `Cerere pentru ${location?.name || 'locație'}`;
             }
+            if (requestDetailElements.subtitle) {
+                requestDetailElements.subtitle.textContent = statusMeta.label || request.status;
+            }
+
+            if (requestDetailElements.statusChip) {
+                requestDetailElements.statusChip.dataset.status = request.status;
+                requestDetailElements.statusChip.textContent = statusMeta.label || request.status;
+            }
+            if (requestDetailElements.nextStep) {
+                requestDetailElements.nextStep.textContent = statusMeta.nextStep || 'Ține legătura cu locația pentru a avansa discuția.';
+            }
+            if (requestDetailElements.statusDescription) {
+                requestDetailElements.statusDescription.textContent = statusMeta.description || '';
+            }
+
+            const overviewItems = [
+                { label: 'Tip eveniment', value: request.eventType || '—' },
+                { label: 'Dată eveniment', value: formatDateLabel(request.eventDate) },
+                { label: 'Număr invitați', value: Number.isFinite(request.guests) ? `${request.guests} invitați` : 'Necesită completare' },
+                { label: 'Estimare cost', value: location ? formatPricePerPerson(location.price) : '—' },
+                { label: 'Ultima actualizare', value: formatDateLabel(request.lastUpdate) }
+            ];
+            if (request.status === 'pre_booked' && request.holdExpiresAt instanceof Date) {
+                overviewItems.push({ label: 'Pre-rezervare până la', value: formatDateLabel(request.holdExpiresAt) });
+            }
+            renderDetailGrid(requestDetailElements.overviewGrid, overviewItems);
+
+            const requestSlots = mapSlots(request.requestedSlots).map(slot => slot.label);
+            const ownerSlots = mapSlots(request.ownerSuggestions).map(slot => slot.label);
+            const confirmedSlot = mapSlots([request.confirmedSlot])[0]?.label || null;
+            const slotEntries = [];
+            if (requestSlots.length) {
+                slotEntries.push({ label: 'Client', value: requestSlots.join(' • ') });
+            }
+            if (ownerSlots.length) {
+                slotEntries.push({ label: 'Locație', value: ownerSlots.join(' • ') });
+            }
+            if (confirmedSlot) {
+                slotEntries.push({ label: 'Confirmat', value: confirmedSlot });
+            }
+            renderDetailSlots(requestDetailElements.slotsContainer, slotEntries);
+
+            const offerStatuses = ['offer_requested', 'offer_sent', 'pre_booked', 'confirmed'];
+            if (offerStatuses.includes(request.status)) {
+                const offerItems = [
+                    { label: 'Status ofertă', value: statusMeta.label || request.status }
+                ];
+                if (request.status === 'offer_requested') {
+                    offerItems.push({ label: 'Pas următor', value: statusMeta.nextStep || 'Așteaptă răspunsul locației.' });
+                }
+                if (request.status === 'pre_booked') {
+                    offerItems.push({ label: 'Rezervare expiră la', value: formatDateLabel(request.holdExpiresAt) });
+                }
+                if (confirmedSlot) {
+                    offerItems.push({ label: 'Interval confirmat', value: confirmedSlot });
+                }
+                renderDetailGrid(requestDetailElements.offerGrid, offerItems);
+                if (requestDetailElements.offerCard) {
+                    requestDetailElements.offerCard.hidden = offerItems.length === 0;
+                }
+                if (requestDetailElements.offerActions && requestDetailElements.offerDownload) {
+                    if (request.status === 'offer_sent') {
+                        const downloadHref = `assets/offers/sample-offer.pdf`;
+                        requestDetailElements.offerDownload.href = downloadHref;
+                        requestDetailElements.offerDownload.setAttribute('download', `oferta-cerere-${request.id}.pdf`);
+                        requestDetailElements.offerActions.hidden = false;
+                    } else {
+                        requestDetailElements.offerActions.hidden = true;
+                        requestDetailElements.offerDownload.href = '#';
+                        requestDetailElements.offerDownload.removeAttribute('download');
+                    }
+                }
+            } else if (requestDetailElements.offerCard) {
+                requestDetailElements.offerCard.hidden = true;
+                requestDetailElements.offerGrid && (requestDetailElements.offerGrid.innerHTML = '');
+                if (requestDetailElements.offerActions) {
+                    requestDetailElements.offerActions.hidden = true;
+                    if (requestDetailElements.offerDownload) {
+                        requestDetailElements.offerDownload.href = '#';
+                        requestDetailElements.offerDownload.removeAttribute('download');
+                    }
+                }
+            }
+
+            const locationItems = [];
+            locationItems.push({ label: 'Locație', value: location?.name || 'Locație necunoscută' });
+            locationItems.push({ label: 'Adresă', value: location?.address || location?.city || '—' });
+            locationItems.push({ label: 'Oraș', value: location?.city || '—' });
+            renderDetailGrid(requestDetailElements.locationGrid, locationItems);
+            if (requestDetailElements.locationContact) {
+                requestDetailElements.locationContact.innerHTML = '';
+                const contactItems = [];
+                if (location?.contactPhone) {
+                    const phoneHref = location.contactPhone.replace(/[^+0-9]/g, '');
+                    contactItems.push({
+                        label: 'Telefon',
+                        href: `tel:${phoneHref}`,
+                        text: location.contactPhone
+                    });
+                }
+                if (location?.contactEmail) {
+                    contactItems.push({
+                        label: 'Email',
+                        href: `mailto:${location.contactEmail}`,
+                        text: location.contactEmail
+                    });
+                }
+                if (contactItems.length) {
+                    contactItems.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = 'request-detail-contact-row';
+                        const labelEl = document.createElement('small');
+                        labelEl.textContent = item.label;
+                        const link = document.createElement('a');
+                        link.href = item.href;
+                        link.textContent = item.text;
+                        row.append(labelEl, link);
+                        requestDetailElements.locationContact.appendChild(row);
+                    });
+                    requestDetailElements.locationContact.hidden = false;
+                } else {
+                    requestDetailElements.locationContact.hidden = true;
+                }
+            }
+
+            if (requestDetailElements.body) {
+                requestDetailElements.body.hidden = false;
+            }
+            if (requestDetailElements.footer) {
+                requestDetailElements.footer.hidden = false;
+            }
+            if (requestDetailElements.empty) {
+                requestDetailElements.empty.hidden = true;
+            }
+
+            activatePage('request-detail');
+            requestDetailElements.backButton?.focus({ preventScroll: true });
         }
 
         function getRequestNextStep(request) {
@@ -2033,7 +2359,27 @@
 
         function navigateToItem(type, id) {
             if (!type || !id) return;
-            const pageId = type === 'viewing' ? 'viewings' : 'requests';
+            if (type === 'viewing') {
+                const viewing = clientViewings.find(view => view.id === id);
+                if (!viewing) {
+                    activatePage('viewings');
+                    if (requestDetailElements.footer) {
+                        requestDetailElements.footer.hidden = true;
+                    }
+                    return;
+                }
+                const request = findRequestByViewingId(viewing.id);
+                if (request) {
+                    showRequestDetail(request);
+                } else {
+                    activatePage('viewings');
+                    if (requestDetailElements.footer) {
+                        requestDetailElements.footer.hidden = true;
+                    }
+                }
+                return;
+            }
+            const pageId = 'requests';
             activatePage(pageId);
             if (type === 'request') {
                 requestFilters.status = 'all';
@@ -2041,17 +2387,6 @@
                 if (requestsStatusFilter) requestsStatusFilter.value = 'all';
                 if (requestsLocationFilter) requestsLocationFilter.value = 'all';
                 renderRequests();
-            } else if (type === 'viewing') {
-                viewingFilters.status = 'all';
-                viewingFilters.venue = 'all';
-                if (viewingsStatusFilter) viewingsStatusFilter.value = 'all';
-                if (viewingsVenueFilter) viewingsVenueFilter.value = 'all';
-                renderViewingsTable();
-                const viewing = clientViewings.find(view => view.id === id);
-                if (viewing?.status === 'viewing_rescheduled') {
-                    renderReschedulePanel(id);
-                    reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
             }
             requestAnimationFrame(() => {
                 let targetRow = null;
@@ -2600,7 +2935,6 @@
                 viewing.lastUpdate = now;
                 viewing.date = firstSlot?.date ? new Date(firstSlot.date.getTime()) : viewing.date;
                 viewing.hour = firstSlot?.date ? formatTime(firstSlot.date) : viewing.hour;
-                viewing.host = viewing.host || 'Echipa locației';
             }
 
             const location = getLocationById(viewingState.locationId);
@@ -2799,10 +3133,11 @@
 
                 const detailButton = document.createElement('button');
                 detailButton.type = 'button';
+                detailButton.className = 'crm-button ghost crm-button--sm';
                 detailButton.textContent = 'Deschide detalii cerere';
                 detailButton.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    openRequestDetailPage(req);
+                    showRequestDetail(req);
                 });
                 actionsDiv.appendChild(detailButton);
 
@@ -2815,7 +3150,7 @@
                     if (event.target.closest('button')) {
                         return;
                     }
-                    openRequestDetailPage(req);
+                    showRequestDetail(req);
                 });
             });
 
@@ -2833,6 +3168,7 @@
             switch (action) {
                 case 'view_offer':
                     request.lastUpdate = new Date();
+                    showRequestDetail(request);
                     break;
                 case 'view_viewing_details':
                     {
@@ -2979,6 +3315,7 @@
                     }
                 case 'view_details':
                     request.lastUpdate = new Date();
+                    showRequestDetail(request);
                     break;
                 default:
                     break;
@@ -3034,8 +3371,7 @@
             selectedRescheduleOption = null;
 
             if (rescheduleLocationEl) {
-                const hostLabel = pendingViewing.host ? ` · ${pendingViewing.host}` : '';
-                rescheduleLocationEl.textContent = `${location?.name || 'Locație necunoscută'}${hostLabel}`;
+                rescheduleLocationEl.textContent = location?.name || 'Locație necunoscută';
             }
             if (rescheduleUpdatedEl) {
                 rescheduleUpdatedEl.textContent = `Actualizat ${formatRelativeTime(pendingViewing.lastUpdate) || 'recent'}`;
@@ -3069,7 +3405,7 @@
                     main.textContent = labelText;
                     const meta = document.createElement('span');
                     meta.className = 'reschedule-option-meta';
-                    meta.textContent = location?.name ? `${location.name} · ${pendingViewing.host || 'Gazda locației'}` : (pendingViewing.host || 'Gazda locației');
+                    meta.textContent = location?.name || 'Locație';
                     content.append(main, meta);
 
                     input.addEventListener('change', () => {
@@ -3214,7 +3550,6 @@
                 topRow.className = 'booking-row-top';
                 topRow.appendChild(createInfoItem('Locație', location?.name || 'Locație necunoscută'));
                 topRow.appendChild(createInfoItem('Interval principal', primarySlot ? primarySlot.label : '—'));
-                topRow.appendChild(createInfoItem('Gazdă', view.host || 'Vom confirma în curând'));
                 topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(view.lastUpdate), {
                     meta: formatRelativeTime(view.lastUpdate) ? `Actualizat ${formatRelativeTime(view.lastUpdate)}` : null
                 }));
@@ -3310,31 +3645,37 @@
             renderOverviewViewingsList();
             renderReschedulePanel();
         }
-
+        
         function handleViewingAction(event) {
             const button = event.target.closest('button[data-viewing-action]');
-            if (!button) return;
-            const action = button.dataset.viewingAction;
-            const viewingId = parseInt(button.dataset.viewingId, 10);
+            let viewingId = NaN;
+            if (button) {
+                viewingId = parseInt(button.dataset.viewingId, 10);
+            } else {
+                const row = event.target.closest('tr[data-id]');
+                viewingId = row ? parseInt(row.dataset.id, 10) : NaN;
+            }
             const viewing = clientViewings.find(v => v.id === viewingId);
-            if (!viewing) return;
+            if (!viewing) {
+                return;
+            }
             const request = findRequestByViewingId(viewing.id);
+
+            if (!button) {
+                if (request) {
+                    showRequestDetail(request);
+                } else {
+                    activatePage('viewings');
+                }
+                return;
+            }
+
+            const action = button.dataset.viewingAction;
             const location = getLocationById(viewing.locationId);
             const now = new Date();
 
             switch (action) {
                 case 'edit_slots':
-                    if (request) {
-                        openViewingModal(request, { presetSlots: viewing.requestedSlots });
-                    } else {
-                        openViewingModal({
-                            id: viewingId,
-                            locationId: viewing.locationId,
-                            viewingId,
-                            requestedSlots: viewing.requestedSlots
-                        }, { presetSlots: viewing.requestedSlots });
-                    }
-                    return;
                 case 'request_reschedule':
                     if (request) {
                         openViewingModal(request, { presetSlots: viewing.requestedSlots });
@@ -3342,7 +3683,7 @@
                         openViewingModal({
                             id: viewingId,
                             locationId: viewing.locationId,
-                            viewingId,
+                            viewingId: viewing.id,
                             requestedSlots: viewing.requestedSlots
                         }, { presetSlots: viewing.requestedSlots });
                     }
@@ -3419,6 +3760,23 @@
         }
 
         function attachEventListeners() {
+            requestDetailElements.backButton?.addEventListener('click', () => {
+                const lastId = activeRequestDetailId;
+                activatePage('requests');
+                if (requestDetailElements.body) {
+                    requestDetailElements.body.hidden = true;
+                }
+                if (requestDetailElements.footer) {
+                    requestDetailElements.footer.hidden = true;
+                }
+                if (requestDetailElements.empty) {
+                    requestDetailElements.empty.hidden = false;
+                }
+                activeRequestDetailId = null;
+                if (Number.isFinite(lastId)) {
+                    requestAnimationFrame(() => navigateToItem('request', lastId));
+                }
+            });
             requestsStatusFilter?.addEventListener('change', (event) => {
                 requestFilters.status = event.target.value;
                 renderRequests();
