@@ -1963,6 +1963,50 @@
             display: none;
         }
 
+        .calendar-event[data-status="viewing_request"],
+        .calendar-event[data-status="viewing_rescheduled"] {
+            background-color: rgba(245, 158, 11, 0.22);
+            color: #b45309;
+        }
+        .calendar-event[data-status="viewing_scheduled"] {
+            background-color: rgba(59, 130, 246, 0.24);
+            color: #1d4ed8;
+        }
+        .calendar-event[data-status="viewing_cancelled"],
+        .calendar-event[data-status="viewing_rejected"] {
+            background-color: rgba(239, 68, 68, 0.22);
+            color: #b91c1c;
+        }
+
+        .viewings-calendar-legend {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            margin: 12px 0 18px;
+        }
+        .viewings-calendar-legend .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--muted-color);
+        }
+        .viewings-calendar-legend .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot-viewing-pending {
+            background-color: rgba(245, 158, 11, 0.85);
+        }
+        .legend-dot-viewing-confirmed {
+            background-color: rgba(59, 130, 246, 0.85);
+        }
+        .legend-dot-viewing-cancelled {
+            background-color: rgba(239, 68, 68, 0.85);
+        }
+
         .availability-legend-dot-reserved-ouido {
             background-color: #16a34a;
         }
@@ -2802,6 +2846,11 @@
                             <button id="next-viewings-month-btn" aria-label="Luna următoare">&gt;</button>
                         </div>
                     </header>
+                    <div class="viewings-calendar-legend">
+                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-pending"></span> În curs de confirmare</span>
+                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-confirmed"></span> Confirmată</span>
+                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-cancelled"></span> Anulată / Respinsă</span>
+                    </div>
                     <div class="monthly-calendar-grid" id="viewings-calendar-grid">
                         <!-- Calendarul vizionărilor va fi generat aici -->
                     </div>

@@ -3010,17 +3010,12 @@ document.addEventListener('DOMContentLoaded', () => {
             viewingsForDay.forEach(viewing => {
                 const eventDiv = document.createElement('div');
                 eventDiv.className = 'calendar-event';
-                const statusMeta = viewingStatusMeta[viewing.status];
-                const baseColor = statusMeta?.color || '#2563eb';
-                const backgroundColor = typeof hexToRgba === 'function' ? hexToRgba(baseColor, 0.18) : null;
-                if (backgroundColor) {
-                    eventDiv.style.backgroundColor = backgroundColor;
-                } else {
-                    eventDiv.style.backgroundColor = 'rgba(37, 99, 235, 0.18)';
+                const titleParts = [viewing.client];
+                if (viewing.hour) {
+                    titleParts.push(viewing.hour);
                 }
-                eventDiv.style.color = baseColor;
                 eventDiv.dataset.status = viewing.status;
-                eventDiv.textContent = `${viewing.client} - ${viewing.hour}`;
+                eventDiv.textContent = titleParts.join(' - ');
                 eventDiv.title = `Click pentru a vedea detalii pentru ${viewing.client}`;
                 eventDiv.addEventListener('click', (e) => {
                     e.stopPropagation();
