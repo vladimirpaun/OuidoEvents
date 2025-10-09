@@ -1124,20 +1124,6 @@
                                 </span>
                                 <input type="checkbox" id="notif-bookings" checked>
                             </label>
-                            <label class="settings-toggle" for="notif-weekly">
-                                <span>
-                                    Rezumat săptămânal
-                                    <small>Un digest cu cererile active, vizionările și ofertele primite.</small>
-                                </span>
-                                <input type="checkbox" id="notif-weekly">
-                            </label>
-                            <label class="settings-toggle" for="notif-insights">
-                                <span>
-                                    Recomandări personalizate
-                                    <small>Primești sugestii de locații pe baza preferințelor salvate.</small>
-                                </span>
-                                <input type="checkbox" id="notif-insights" checked>
-                            </label>
                         </div>
                         <div class="settings-card-footer">
                             <button class="crm-button primary" type="button">Salvează</button>
@@ -1174,6 +1160,12 @@
                         <select id="requests-status-filter"></select>
                         <label for="requests-location-filter">Locație:</label>
                         <select id="requests-location-filter"></select>
+                        <label for="requests-sort">Sortare:</label>
+                        <select id="requests-sort">
+                            <option value="event-date">Dată eveniment</option>
+                            <option value="status-asc">Status A-Z</option>
+                            <option value="status-desc">Status Z-A</option>
+                        </select>
                     </div>
                     <div class="requests-legend" id="requests-status-legend"></div>
                     <div class="table-wrapper">
@@ -1276,6 +1268,12 @@
                         <select id="viewings-venue-filter"></select>
                         <label for="viewings-status-filter">Status:</label>
                         <select id="viewings-status-filter"></select>
+                        <label for="viewings-sort">Sortare:</label>
+                        <select id="viewings-sort">
+                            <option value="primary-date">Dată apropiată</option>
+                            <option value="status-asc">Status A-Z</option>
+                            <option value="status-desc">Status Z-A</option>
+                        </select>
                     </div>
                     <div class="table-wrapper">
                         <table class="crm-table">
@@ -1971,8 +1969,8 @@
             })()
         ];
 
-        const requestFilters = { status: 'all', location: 'all' };
-        const viewingFilters = { venue: 'all', status: 'all' };
+        const requestFilters = { status: 'all', location: 'all', sort: 'event-date' };
+        const viewingFilters = { venue: 'all', status: 'all', sort: 'primary-date' };
         let activeRequestDetailId = null;
         let activeRescheduleViewingId = null;
         let selectedRescheduleOption = null;
@@ -1988,6 +1986,7 @@
 
         const requestsStatusFilter = document.getElementById('requests-status-filter');
         const requestsLocationFilter = document.getElementById('requests-location-filter');
+        const requestsSortSelect = document.getElementById('requests-sort');
         const requestsTableBody = document.getElementById('requests-table-body');
         const requestDetailElements = {
             page: document.getElementById('request-detail'),
@@ -2013,6 +2012,7 @@
 
         const viewingsVenueFilter = document.getElementById('viewings-venue-filter');
         const viewingsStatusFilter = document.getElementById('viewings-status-filter');
+        const viewingsSortSelect = document.getElementById('viewings-sort');
         const viewingsTableBody = document.getElementById('viewings-table-body');
         const reschedulePanel = document.querySelector('[data-reschedule-panel]');
         const rescheduleLocationEl = document.querySelector('[data-reschedule-location]');
@@ -2021,6 +2021,13 @@
         const rescheduleOptionsContainer = document.querySelector('[data-reschedule-options]');
         const rescheduleAcceptBtn = document.querySelector('[data-reschedule-accept]');
         const rescheduleDeclineBtn = document.querySelector('[data-reschedule-decline]');
+
+        if (requestsSortSelect) {
+            requestsSortSelect.value = requestFilters.sort;
+        }
+        if (viewingsSortSelect) {
+            viewingsSortSelect.value = viewingFilters.sort;
+        }
 
         function getLocationById(id) {
             return locations.find(loc => loc.id === id);
@@ -2445,8 +2452,10 @@
             if (type === 'request') {
                 requestFilters.status = 'all';
                 requestFilters.location = 'all';
+                requestFilters.sort = 'event-date';
                 if (requestsStatusFilter) requestsStatusFilter.value = 'all';
                 if (requestsLocationFilter) requestsLocationFilter.value = 'all';
+                if (requestsSortSelect) requestsSortSelect.value = 'event-date';
                 renderRequests();
             }
             requestAnimationFrame(() => {
@@ -3218,6 +3227,14 @@
             });
         }
 
+        function getRequestStatusLabel(status) {
+            return requestStatusMeta[status]?.label || status || '';
+        }
+
+        function getViewingStatusLabel(status) {
+            return viewingStatusMeta[status]?.label || status || '';
+        }
+
         function renderRequests() {
             if (!requestsTableBody) return;
             requestsTableBody.innerHTML = '';
@@ -3228,10 +3245,23 @@
                     const statusMatch = requestFilters.status === 'all' || req.status === requestFilters.status;
                     const locationMatch = requestFilters.location === 'all' || requestFilters.location === locationName;
                     return statusMatch && locationMatch;
-                })
-                .sort((a, b) => a.eventDate - b.eventDate);
+                });
 
-            if (!filtered.length) {
+            const sorted = filtered.slice().sort((a, b) => {
+                const sortMode = requestFilters.sort || 'event-date';
+                if (sortMode === 'status-asc' || sortMode === 'status-desc') {
+                    const labelA = getRequestStatusLabel(a.status);
+                    const labelB = getRequestStatusLabel(b.status);
+                    const compare = labelA.localeCompare(labelB, 'ro', { sensitivity: 'base' });
+                    if (compare !== 0) {
+                        return sortMode === 'status-asc' ? compare : -compare;
+                    }
+                    return a.eventDate - b.eventDate;
+                }
+                return a.eventDate - b.eventDate;
+            });
+
+            if (!sorted.length) {
                 const emptyRow = requestsTableBody.insertRow();
                 const emptyCell = emptyRow.insertCell();
                 emptyCell.colSpan = 1;
@@ -3240,7 +3270,7 @@
                 return;
             }
 
-            filtered.forEach(req => {
+            sorted.forEach(req => {
                 const location = getLocationById(req.locationId);
                 const row = requestsTableBody.insertRow();
                 row.dataset.id = req.id;
@@ -3724,10 +3754,23 @@
                     const statusMatch = viewingFilters.status === 'all' || view.status === viewingFilters.status;
                     const venueMatch = viewingFilters.venue === 'all' || viewingFilters.venue === venueName;
                     return statusMatch && venueMatch;
-                })
-                .sort((a, b) => a.sortTime - b.sortTime);
+                });
 
-            if (!enhanced.length) {
+            const sorted = enhanced.slice().sort((a, b) => {
+                const sortMode = viewingFilters.sort || 'primary-date';
+                if (sortMode === 'status-asc' || sortMode === 'status-desc') {
+                    const labelA = getViewingStatusLabel(a.view.status);
+                    const labelB = getViewingStatusLabel(b.view.status);
+                    const compare = labelA.localeCompare(labelB, 'ro', { sensitivity: 'base' });
+                    if (compare !== 0) {
+                        return sortMode === 'status-asc' ? compare : -compare;
+                    }
+                    return (a.sortTime || 0) - (b.sortTime || 0);
+                }
+                return (a.sortTime || 0) - (b.sortTime || 0);
+            });
+
+            if (!sorted.length) {
                 const emptyRow = viewingsTableBody.insertRow();
                 const emptyCell = emptyRow.insertCell();
                 emptyCell.colSpan = 1;
@@ -3737,7 +3780,7 @@
                 return;
             }
 
-            enhanced.forEach(({ view, requestedSlots, ownerSuggestions, confirmedSlot, primarySlot }) => {
+            sorted.forEach(({ view, requestedSlots, ownerSuggestions, confirmedSlot, primarySlot }) => {
                 const location = getLocationById(view.locationId);
                 const row = viewingsTableBody.insertRow();
                 row.dataset.id = view.id;
@@ -3971,6 +4014,10 @@
                 requestFilters.location = event.target.value;
                 renderRequests();
             });
+            requestsSortSelect?.addEventListener('change', (event) => {
+                requestFilters.sort = event.target.value;
+                renderRequests();
+            });
             requestsTableBody?.addEventListener('click', handleRequestAction);
 
             viewingsVenueFilter?.addEventListener('change', (event) => {
@@ -3979,6 +4026,10 @@
             });
             viewingsStatusFilter?.addEventListener('change', (event) => {
                 viewingFilters.status = event.target.value;
+                renderViewingsTable();
+            });
+            viewingsSortSelect?.addEventListener('change', (event) => {
+                viewingFilters.sort = event.target.value;
                 renderViewingsTable();
             });
             viewingsTableBody?.addEventListener('click', handleViewingAction);

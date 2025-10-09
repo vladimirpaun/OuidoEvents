@@ -802,6 +802,9 @@ document.addEventListener('DOMContentLoaded', () => {
         viewing: viewingStatusMeta
     };
 
+    const getBookingStatusLabel = (statusKey) => bookingStatusMeta[statusKey]?.label || statusKey || '';
+    const getViewingStatusLabel = (statusKey) => viewingStatusMeta[statusKey]?.label || statusKey || '';
+
     function getClientStatusLabel(statusKey) {
         return bookingStatusMeta[statusKey]?.client?.label || '';
     }
@@ -2465,8 +2468,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const venueFilter = document.getElementById('bookings-venue-filter');
         const statusFilter = document.getElementById('bookings-status-filter');
         const clientFilter = document.getElementById('bookings-client-filter');
+        const sortSelect = document.getElementById('bookings-sort');
         const venueValue = venueFilter ? venueFilter.value : 'all';
         const statusValue = statusFilter ? statusFilter.value : 'all';
+        const sortValue = sortSelect ? sortSelect.value : 'event-date';
         body.innerHTML = '';
 
         const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
@@ -2505,17 +2510,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     return true;
                 }
                 return item.date === activeDateDisplay;
-            })
-            .slice()
-            .sort((a, b) => {
-                const dateA = parseBookingDate(a.date);
-                const dateB = parseBookingDate(b.date);
-                const timeA = dateA ? dateA.getTime() : Number.MAX_SAFE_INTEGER;
-                const timeB = dateB ? dateB.getTime() : Number.MAX_SAFE_INTEGER;
-                return timeA - timeB;
             });
 
-        filteredBookings.forEach(item => {
+        const sortedBookings = filteredBookings.slice().sort((a, b) => {
+            if (sortValue === 'status-asc' || sortValue === 'status-desc') {
+                const labelA = getBookingStatusLabel(a.status);
+                const labelB = getBookingStatusLabel(b.status);
+                const compare = labelA.localeCompare(labelB, 'ro', { sensitivity: 'base' });
+                if (compare !== 0) {
+                    return sortValue === 'status-asc' ? compare : -compare;
+                }
+            }
+            const dateA = parseBookingDate(a.date);
+            const dateB = parseBookingDate(b.date);
+            const timeA = dateA ? dateA.getTime() : Number.MAX_SAFE_INTEGER;
+            const timeB = dateB ? dateB.getTime() : Number.MAX_SAFE_INTEGER;
+            return timeA - timeB;
+        });
+
+        sortedBookings.forEach(item => {
             const row = body.insertRow();
             row.dataset.identifier = String(item.id);
             if (selectedBookingId === item.id) {
@@ -2610,9 +2623,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const venueFilter = document.getElementById('viewings-venue-filter');
         const clientFilter = document.getElementById('viewings-client-filter');
         const statusFilter = document.getElementById('viewings-status-filter');
+        const sortSelect = document.getElementById('viewings-sort');
         const venueValue = venueFilter ? venueFilter.value : 'all';
         const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
         const statusValue = statusFilter ? statusFilter.value : 'all';
+        const sortValue = sortSelect ? sortSelect.value : 'primary-date';
         pendingBody.innerHTML = '';
         confirmedBody.innerHTML = '';
 
@@ -2690,15 +2705,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 const matchesClient = !clientQuery || item.viewing.client.toLowerCase().includes(clientQuery);
                 const matchesStatus = statusValue === 'all' || item.viewing.status === statusValue;
                 return matchesVenue && matchesClient && matchesStatus;
-            })
-            .sort((a, b) => a.sortTime - b.sortTime);
+            });
+
+        const sorted = enhanced.slice().sort((a, b) => {
+            if (sortValue === 'status-asc' || sortValue === 'status-desc') {
+                const labelA = getViewingStatusLabel(a.viewing.status);
+                const labelB = getViewingStatusLabel(b.viewing.status);
+                const compare = labelA.localeCompare(labelB, 'ro', { sensitivity: 'base' });
+                if (compare !== 0) {
+                    return sortValue === 'status-asc' ? compare : -compare;
+                }
+            }
+            return (a.sortTime || 0) - (b.sortTime || 0);
+        });
 
         const pendingStatuses = new Set(['viewing_request', 'viewing_rescheduled']);
         const confirmedStatuses = new Set(['viewing_scheduled']);
         const pendingItems = [];
         const confirmedItems = [];
 
-        enhanced.forEach(item => {
+        sorted.forEach(item => {
             if (confirmedStatuses.has(item.viewing.status)) {
                 confirmedItems.push(item);
             } else if (pendingStatuses.has(item.viewing.status)) {
@@ -4211,6 +4237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('bookings-venue-filter')?.addEventListener('change', renderBookingsTable);
     document.getElementById('bookings-status-filter')?.addEventListener('change', renderBookingsTable);
+    document.getElementById('bookings-sort')?.addEventListener('change', renderBookingsTable);
     document.getElementById('bookings-client-filter')?.addEventListener('input', () => {
         renderBookingsTable();
     });
@@ -4226,6 +4253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderViewingsCalendar();
     });
     document.getElementById('viewings-status-filter')?.addEventListener('change', renderViewingsTable);
+    document.getElementById('viewings-sort')?.addEventListener('change', renderViewingsTable);
     document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar);
 
     const availabilityCalendarGrid = document.getElementById('availability-calendar-grid');
