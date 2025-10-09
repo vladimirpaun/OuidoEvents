@@ -2705,7 +2705,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const renderCollection = (targetBody, items, emptyMessage) => {
+        const renderCollection = (targetBody, items, emptyMessage, { showSlots = true } = {}) => {
             targetBody.innerHTML = '';
             if (!items.length) {
                 const emptyRow = targetBody.insertRow();
@@ -2714,10 +2714,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 emptyCell.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
                 return;
             }
-            items.forEach(item => renderRow(targetBody, item));
+            items.forEach(item => renderRow(targetBody, item, { showSlots }));
         };
 
-        const renderRow = (targetBody, { viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, latestSlotGroup }) => {
+        const renderRow = (targetBody, { viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, latestSlotGroup }, { showSlots = true } = {}) => {
             const row = targetBody.insertRow();
             row.dataset.identifier = String(viewing.id);
             if (selectedViewingId === viewing.id) {
@@ -2736,7 +2736,7 @@ document.addEventListener('DOMContentLoaded', () => {
             topRow.appendChild(createRecordInfoItem('Ultima actualizare', formatDate(viewing.lastUpdate)));
             wrapper.appendChild(topRow);
 
-            if (latestSlotGroup && latestSlotGroup.slots.length) {
+            if (showSlots && latestSlotGroup && latestSlotGroup.slots.length) {
                 const slotGroups = document.createElement('div');
                 slotGroups.className = 'viewing-slot-groups';
                 const radioName = `viewing-${viewing.id}-slot`;
@@ -2770,7 +2770,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmedEl.className = 'booking-row-meta';
                 confirmedEl.textContent = `Interval confirmat: ${confirmedSlot.label}`;
                 statusContainer.appendChild(confirmedEl);
-            } else if (!latestSlotGroup) {
+            } else if (!latestSlotGroup && showSlots) {
                 const infoEl = document.createElement('span');
                 infoEl.className = 'booking-row-meta';
                 infoEl.textContent = 'Nu există intervale salvate pentru această vizionare.';
@@ -2800,8 +2800,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        renderCollection(pendingBody, pendingItems, 'Nu există vizionări în curs de confirmare pentru filtrele aplicate.');
-        renderCollection(confirmedBody, confirmedItems, 'Nu există vizionări confirmate pentru filtrele aplicate.');
+        renderCollection(pendingBody, pendingItems, 'Nu există vizionări în curs de confirmare pentru filtrele aplicate.', { showSlots: true });
+        renderCollection(confirmedBody, confirmedItems, 'Nu există vizionări confirmate pentru filtrele aplicate.', { showSlots: false });
 
         const event = new Event('viewings:rendered');
         document.dispatchEvent(event);
