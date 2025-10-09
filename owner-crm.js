@@ -3765,6 +3765,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return base;
         };
 
+        const timeOptions = (() => {
+            const options = [];
+            for (let hour = 8; hour <= 20; hour += 1) {
+                [0, 30].forEach(minute => {
+                    if (hour === 20 && minute > 0) {
+                        return;
+                    }
+                    const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    options.push({ value, label: value });
+                });
+            }
+            return options;
+        })();
+
         const updateControls = () => {
             if (!slotsContainer) {
                 return;
@@ -3794,7 +3808,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const destroySlots = () => {
             pickers.forEach(config => {
                 config?.datePicker?.destroy();
-                config?.timePicker?.destroy();
             });
             pickers.clear();
             if (slotsContainer) {
@@ -3820,14 +3833,23 @@ document.addEventListener('DOMContentLoaded', () => {
             dateInput.required = true;
             dateInput.dataset.slotDate = 'true';
 
-            const timeInput = document.createElement('input');
-            timeInput.type = 'text';
-            timeInput.placeholder = 'Selectează ora';
-            timeInput.required = true;
-            timeInput.dataset.slotTime = 'true';
-            timeInput.inputMode = 'numeric';
+            const timeSelect = document.createElement('select');
+            timeSelect.required = true;
+            timeSelect.dataset.slotTime = 'true';
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = '';
+            placeholderOption.textContent = 'Selectează ora';
+            placeholderOption.disabled = true;
+            placeholderOption.selected = true;
+            timeSelect.appendChild(placeholderOption);
+            timeOptions.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.value;
+                opt.textContent = option.label;
+                timeSelect.appendChild(opt);
+            });
 
-            fields.append(dateInput, timeInput);
+            fields.append(dateInput, timeSelect);
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
@@ -3839,7 +3861,6 @@ document.addEventListener('DOMContentLoaded', () => {
             slotsContainer.appendChild(wrapper);
 
             let datePicker = null;
-            let timePicker = null;
             if (typeof flatpickr === 'function') {
                 datePicker = flatpickr(dateInput, {
                     enableTime: false,
@@ -3849,42 +3870,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     allowInput: true,
                     clickOpens: true
                 });
-                timePicker = flatpickr(timeInput, {
-                    enableTime: true,
-                    noCalendar: true,
-                    time_24hr: true,
-                    minuteIncrement: 15,
-                    dateFormat: 'H:i',
-                    defaultHour: 0,
-                    defaultMinute: 0,
-                    allowInput: true,
-                    clickOpens: true
-                });
                 datePicker?.clear(false);
-                timePicker?.clear(false);
                 dateInput.value = '';
-                timeInput.value = '';
-                timeInput.placeholder = 'Selectează ora (HH:MM)';
-            } else {
-                timeInput.placeholder = 'Selectează ora (HH:MM)';
             }
 
             if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
                 const preset = new Date(initialDate.getTime());
                 datePicker?.setDate(preset, true, 'Y-m-d');
-                if (timePicker) {
-                    timePicker.setDate(preset, true, 'H:i');
-                } else {
-                    timeInput.value = formatTime(preset);
+                const timeValue = formatTime(preset);
+                timeSelect.value = timeValue;
+                if (timeSelect.value !== timeValue) {
+                    const opt = document.createElement('option');
+                    opt.value = timeValue;
+                    opt.textContent = timeValue;
+                    timeSelect.appendChild(opt);
+                    timeSelect.value = timeValue;
                 }
             }
 
-            pickers.set(wrapper, { datePicker, timePicker, dateInput, timeInput });
+            pickers.set(wrapper, { datePicker, dateInput, timeSelect });
 
             removeBtn.addEventListener('click', () => {
                 const config = pickers.get(wrapper);
                 config?.datePicker?.destroy();
-                config?.timePicker?.destroy();
                 pickers.delete(wrapper);
                 wrapper.remove();
                 updateControls();
@@ -4042,21 +4050,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!config) {
                     return;
                 }
-                const { datePicker, timePicker, dateInput, timeInput } = config;
+                const { datePicker, dateInput, timeSelect } = config;
                 const selectedDate = datePicker?.selectedDates?.[0]
                     || (dateInput.value ? new Date(dateInput.value) : null);
                 let baseDate = null;
                 if (selectedDate instanceof Date && !Number.isNaN(selectedDate.getTime())) {
                     baseDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0, 0);
                 }
-                const timeSelection = timePicker?.selectedDates?.[0];
+                const timeValue = timeSelect.value;
                 let hours = null;
                 let minutes = 0;
-                if (timeSelection instanceof Date && !Number.isNaN(timeSelection.getTime())) {
-                    hours = timeSelection.getHours();
-                    minutes = timeSelection.getMinutes();
-                } else if (timeInput.value) {
-                    const [hStr, mStr] = timeInput.value.split(':');
+                if (timeValue) {
+                    const [hStr, mStr] = timeValue.split(':');
                     const parsedHours = Number.parseInt(hStr, 10);
                     const parsedMinutes = Number.parseInt(mStr, 10);
                     if (Number.isFinite(parsedHours)) {
@@ -4071,8 +4076,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => dateInput.classList.remove('is-invalid'), 1500);
                     }
                     if (!Number.isFinite(hours)) {
-                        timeInput.classList.add('is-invalid');
-                        setTimeout(() => timeInput.classList.remove('is-invalid'), 1500);
+                        timeSelect.classList.add('is-invalid');
+                        setTimeout(() => timeSelect.classList.remove('is-invalid'), 1500);
                     }
                     return;
                 }
@@ -4082,10 +4087,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!suggestion) {
                     hasInvalid = true;
                     dateInput.classList.add('is-invalid');
-                    timeInput.classList.add('is-invalid');
+                    timeSelect.classList.add('is-invalid');
                     setTimeout(() => {
                         dateInput.classList.remove('is-invalid');
-                        timeInput.classList.remove('is-invalid');
+                        timeSelect.classList.remove('is-invalid');
                     }, 1500);
                     return;
                 }
