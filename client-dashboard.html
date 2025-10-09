@@ -438,6 +438,8 @@
         }
         .favorites-modal {
             width: min(520px, 94vw);
+            max-height: 92vh;
+            overflow-y: auto;
             background: #fff;
             border-radius: 18px;
             padding: 28px 32px;
@@ -489,6 +491,12 @@
             display: flex;
             justify-content: center;
         }
+        .availability-calendar {
+            display: flex;
+            justify-content: center;
+            max-width: 100%;
+            overflow-x: auto;
+        }
         .availability-calendar .flatpickr-calendar {
             box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35);
             border: 1px solid rgba(15, 23, 42, 0.12);
@@ -496,11 +504,13 @@
             padding: 16px 20px;
             overflow: visible;
             min-width: 360px;
+            max-width: 100%;
         }
         .availability-calendar .flatpickr-day {
-            width: 48px;
-            height: 44px;
-            font-size: 0.95rem;
+            width: 46px;
+            height: 42px;
+            line-height: 42px;
+            font-size: 0.9rem;
         }
         .favorites-modal .form-row {
             display: grid;
@@ -510,70 +520,65 @@
         .viewing-slot-builder {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
             padding: 16px;
             border-radius: 14px;
-            border: 1px dashed rgba(0, 82, 212, 0.25);
+            border: 1px dashed rgba(0, 82, 212, 0.2);
             background: rgba(67, 100, 247, 0.04);
         }
         .viewing-slot-builder .panel-meta {
             margin: 0;
         }
-        .viewing-slot-actions {
-            display: flex;
+        .viewing-slot-builder .reschedule-actions {
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
         }
-        .viewing-slot-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
+        .reschedule-help {
+            font-size: 0.88rem;
+            color: var(--muted-color);
+            margin: 0 0 12px;
+        }
+        .reschedule-slot-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        .viewing-slot-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            border: 1px solid rgba(0, 82, 212, 0.18);
-            border-radius: 12px;
-            padding: 12px 16px;
-            background: rgba(67, 100, 247, 0.08);
-        }
-        .viewing-slot-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .viewing-slot-right {
+        .reschedule-slot {
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
-        .viewing-slot-item .panel-meta {
-            font-size: 0.75rem;
+        .reschedule-slot input {
+            flex: 1 1 220px;
+            border-radius: 10px;
+            border: 1px solid rgba(15, 23, 42, 0.18);
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            background: #fff;
         }
-        .viewing-slot-item span {
-            font-weight: 500;
-            color: var(--dark-color);
+        .reschedule-slot input:focus-visible {
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 28px -18px rgba(0, 82, 212, 0.45);
+            outline: none;
         }
-        .viewing-slot-badge {
-            font-size: 0.72rem;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.08);
+        .reschedule-slot input.is-invalid {
+            border-color: #b91c1c;
+            box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+        }
+        .reschedule-slot .crm-button {
+            flex: 0 0 auto;
+        }
+        .reschedule-slot-status {
+            font-size: 0.78rem;
             color: var(--muted-color);
         }
-        .viewing-slot-remove {
-            border: none;
-            background: transparent;
-            color: #ef4444;
-            font-weight: 600;
-            cursor: pointer;
+        .reschedule-slot-status.is-warning {
+            color: #b45309;
+        }
+        .reschedule-slot-status.is-danger {
+            color: #b91c1c;
         }
         .viewing-empty-state {
             border-radius: 12px;
@@ -1050,33 +1055,15 @@
                 <button type="button" class="favorites-modal-close" id="viewing-modal-close" aria-label="Închide">×</button>
             </header>
             <form id="viewing-form">
-                <div class="form-section">
-                    <input type="hidden" id="viewing-date-picker">
-                    <div id="viewing-calendar" class="availability-calendar"></div>
-                    <div class="availability-legend">
-                        <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
-                        <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
-                        <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
-                    </div>
-                </div>
                 <div class="viewing-slot-builder">
-                    <div class="form-row">
-                        <div>
-                            <label>Data selectată</label>
-                            <p class="panel-meta" id="viewing-active-date" data-viewing-active-date>Nu ai selectat încă o dată.</p>
-                        </div>
-                        <div>
-                            <label for="viewing-time">Ora preferată</label>
-                            <input type="time" id="viewing-time" data-viewing-time>
-                        </div>
-                    </div>
-                    <div class="viewing-slot-actions">
-                        <p class="panel-meta" data-viewing-slot-hint>După ce alegi data și ora, adaugă intervalul în lista de preferințe. Poți propune până la 4 opțiuni.</p>
+                    <p class="reschedule-help" data-viewing-slot-hint>Selectează până la 4 intervale (dată și oră) pentru vizionare. Intervalele sunt din 15 în 15 minute.</p>
+                    <div class="reschedule-actions">
                         <button type="button" class="crm-button ghost" id="viewing-add-slot" data-viewing-add-slot>Adaugă interval</button>
+                        <span class="panel-meta" data-viewing-slot-counter hidden></span>
                     </div>
                 </div>
-                <ul class="viewing-slot-list" id="viewing-slot-list" data-viewing-slot-list></ul>
-                <div class="viewing-empty-state" data-viewing-empty-state hidden>Încă nu ai intervale salvate. Selectează o zi din calendar, alege ora potrivită și apasă „Adaugă interval”.</div>
+                <div class="reschedule-slot-list" data-viewing-slots></div>
+                <div class="viewing-empty-state" data-viewing-empty-state hidden>Încă nu ai intervale salvate. Folosește butonul „Adaugă interval” pentru a propune variantă de vizită.</div>
                 <p class="panel-meta" id="viewing-selected-date">Lista de intervale va fi trimisă către locație. Alege cel puțin o variantă înainte de a continua.</p>
                 <footer>
                     <button type="button" class="crm-button ghost" id="viewing-cancel-btn">Renunță</button>
@@ -1979,27 +1966,22 @@
         const viewingModal = document.getElementById('viewing-modal');
         const viewingModalCloseBtn = document.getElementById('viewing-modal-close');
         const viewingForm = document.getElementById('viewing-form');
-        const viewingCalendarContainer = document.getElementById('viewing-calendar');
-        const viewingDateInput = document.getElementById('viewing-date-picker');
-        const viewingTimeInput = document.getElementById('viewing-time');
         const viewingSelectedDateLabel = document.getElementById('viewing-selected-date');
         const viewingModalSubtitle = document.getElementById('viewing-modal-subtitle');
         const viewingModalTitle = document.getElementById('viewing-modal-title');
         const viewingCancelBtn = document.getElementById('viewing-cancel-btn');
-        const viewingActiveDateEl = document.querySelector('[data-viewing-active-date]');
         const viewingSlotHintEl = document.querySelector('[data-viewing-slot-hint]');
-        const viewingSlotListEl = document.querySelector('[data-viewing-slot-list]');
+        const viewingSlotsContainer = document.querySelector('[data-viewing-slots]');
+        const viewingSlotCounter = document.querySelector('[data-viewing-slot-counter]');
         const viewingEmptyStateEl = document.querySelector('[data-viewing-empty-state]');
         const viewingAddSlotBtn = document.querySelector('[data-viewing-add-slot]');
-        let viewingDatePicker = null;
+        const slotPickers = new Map();
         const MAX_VIEWING_SLOTS = 4;
 
         const viewingState = {
             requestId: null,
             locationId: null,
             locationName: '',
-            selectedDate: null,
-            selectedTime: '',
             slots: []
         };
 
@@ -2114,8 +2096,6 @@
             viewingState.requestId = request.id;
             viewingState.locationId = request.locationId;
             viewingState.locationName = getLocationById(request.locationId)?.name || '';
-            viewingState.selectedDate = null;
-            viewingState.selectedTime = '';
             viewingState.slots = mapSlots(presetSlots);
 
             if (!viewingState.slots.length && typeof request.viewingId === 'number') {
@@ -2138,13 +2118,8 @@
                     ? `Alege data și ora potrivită pentru ${viewingState.locationName}.`
                     : 'Selectează data și ora preferată pentru vizionare.';
             }
-            if (viewingTimeInput) {
-                viewingTimeInput.value = '';
-            }
-            renderViewingSlots();
+            initializeViewingSlotInputs();
             viewingModal.classList.add('is-visible');
-            ensureViewingDatePicker();
-            updateViewingSelectedDate();
         }
 
         function closeViewingModal() {
@@ -2152,167 +2127,170 @@
             viewingState.requestId = null;
             viewingState.locationId = null;
             viewingState.locationName = '';
-            viewingState.selectedDate = null;
-            viewingState.selectedTime = '';
             viewingState.slots = [];
-            if (viewingTimeInput) {
-                viewingTimeInput.value = '';
-            }
-            viewingDatePicker?.clear(false);
-            renderViewingSlots();
+            destroyViewingSlotPickers();
+            updateSlotMeta();
         }
 
-        function ensureViewingDatePicker() {
-            if (!viewingCalendarContainer || !viewingDateInput || typeof flatpickr !== 'function') {
-                return null;
+        function destroyViewingSlotPickers() {
+            slotPickers.forEach(picker => picker?.destroy());
+            slotPickers.clear();
+            if (viewingSlotsContainer) {
+                viewingSlotsContainer.innerHTML = '';
             }
-            const today = new Date();
-            if (!viewingDatePicker) {
-                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
-                    flatpickr.localize(flatpickr.l10ns.ro);
-                }
-                viewingDatePicker = flatpickr(viewingDateInput, {
-                    minDate: 'today',
-                    locale: flatpickr.l10ns?.ro || 'default',
-                    disableMobile: true,
-                    monthSelectorType: 'dropdown',
-                    yearSelectorType: 'dropdown',
-                    showMonths: 1,
-                    inline: true,
-                    appendTo: viewingCalendarContainer,
-                    onChange(selectedDates) {
-                        viewingState.selectedDate = selectedDates[0] || null;
-                        updateViewingSelectedDate();
-                    },
-                    onDayCreate: decorateViewingDay
-                });
+            if (viewingSlotCounter) {
+                viewingSlotCounter.hidden = true;
+                viewingSlotCounter.textContent = '';
             }
-            const referenceDate = viewingState.selectedDate || today;
-            viewingDatePicker.clear(false);
-            viewingDatePicker.set('disable', [
-                function(date) {
-                    return getAvailabilityStatus(viewingState.locationId, date) === 'booked';
-                }
-            ]);
-            viewingDatePicker.redraw();
-            viewingDatePicker.jumpToDate(referenceDate);
-            viewingState.selectedDate = null;
-            updateViewingSelectedDate();
-            return viewingDatePicker;
         }
 
-        function decorateViewingDay(selectedDates, dateStr, instance, dayElem) {
-            const date = dayElem.dateObj;
-            if (!date) {
+        function updateSlotStatusBadge(badgeEl, date) {
+            if (!badgeEl) {
                 return;
             }
-            const status = getAvailabilityStatus(viewingState.locationId, date);
-            dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
-            if (status === 'hold') {
-                dayElem.classList.add('availability-day-hold');
-            } else if (status === 'booked') {
-                dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
-            } else {
-                dayElem.classList.add('availability-day-available');
+            badgeEl.classList.remove('is-warning', 'is-danger');
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                badgeEl.textContent = 'Selectează data și ora';
+                return;
             }
+            badgeEl.textContent = 'Interval selectat';
         }
 
-        function updateViewingSelectedDate() {
-            const slotCount = Array.isArray(viewingState.slots) ? viewingState.slots.length : 0;
-            if (viewingActiveDateEl) {
-                if (!viewingState.selectedDate) {
-                    viewingActiveDateEl.textContent = 'Nu ai selectat încă o dată.';
-                } else {
-                    const formattedDate = formatDate(viewingState.selectedDate);
-                    viewingActiveDateEl.textContent = viewingState.selectedTime
-                        ? `${formattedDate} · ${viewingState.selectedTime}`
-                        : `${formattedDate} — selectează ora preferată.`;
-                }
-            }
+        function updateSlotMeta() {
+            const totalSlots = slotPickers.size;
+            const filledSlots = Array.from(slotPickers.values()).filter(picker => {
+                const date = picker?.selectedDates?.[0];
+                return date instanceof Date && !Number.isNaN(date.getTime());
+            }).length;
             if (viewingSlotHintEl) {
-                const remaining = MAX_VIEWING_SLOTS - slotCount;
-                if (remaining > 0) {
-                    const noun = remaining === 1 ? 'interval' : 'intervale';
-                    viewingSlotHintEl.textContent = `După ce alegi ora, apasă „Adaugă interval”. Mai poți adăuga ${remaining} ${noun}.`;
-                } else {
-                    viewingSlotHintEl.textContent = 'Ai atins numărul maxim de intervale. Șterge unul dacă vrei să adaugi altul.';
-                }
+                const remaining = MAX_VIEWING_SLOTS - totalSlots;
+                viewingSlotHintEl.textContent = remaining > 0
+                    ? `Mai poți adăuga ${remaining} ${remaining === 1 ? 'interval' : 'intervale'} preferate.`
+                    : 'Ai atins numărul maxim de intervale. Șterge unul dacă vrei să adaugi altul.';
             }
             if (viewingSelectedDateLabel) {
-                viewingSelectedDateLabel.textContent = slotCount
-                    ? `Trimiți ${slotCount} ${slotCount === 1 ? 'interval preferat' : 'intervale preferate'} către locație.`
+                viewingSelectedDateLabel.textContent = filledSlots
+                    ? `Trimiți ${filledSlots} ${filledSlots === 1 ? 'interval preferat' : 'intervale preferate'} către locație.`
                     : 'Lista de intervale va fi trimisă către locație. Alege cel puțin o variantă înainte de a continua.';
             }
-            if (viewingAddSlotBtn) {
-                viewingAddSlotBtn.disabled = slotCount >= MAX_VIEWING_SLOTS;
-            }
-        }
-
-        function renderViewingSlots() {
-            const slots = Array.isArray(viewingState.slots) ? viewingState.slots : [];
-            if (viewingSlotListEl) {
-                viewingSlotListEl.innerHTML = '';
-                slots.forEach((slot, index) => {
-                    const item = document.createElement('li');
-                    item.className = 'viewing-slot-item';
-                    item.dataset.iso = slot.iso;
-                    item.innerHTML = `
-                        <div class="viewing-slot-info">
-                            <span>${slot.label}</span>
-                            <span class="panel-meta">Preferință client · varianta ${index + 1}</span>
-                        </div>
-                        <div class="viewing-slot-right">
-                            <span class="viewing-slot-badge">#${index + 1}</span>
-                            <button type="button" class="viewing-slot-remove" data-slot-remove="${slot.iso}">Șterge</button>
-                        </div>
-                    `;
-                    viewingSlotListEl.appendChild(item);
-                });
+            if (viewingSlotCounter) {
+                if (totalSlots > 0) {
+                    viewingSlotCounter.textContent = `${filledSlots}/${MAX_VIEWING_SLOTS} intervale selectate`;
+                    viewingSlotCounter.hidden = false;
+                } else {
+                    viewingSlotCounter.hidden = true;
+                }
             }
             if (viewingEmptyStateEl) {
-                viewingEmptyStateEl.hidden = slots.length > 0;
+                viewingEmptyStateEl.hidden = totalSlots > 0;
             }
-            updateViewingSelectedDate();
+            if (viewingAddSlotBtn) {
+                viewingAddSlotBtn.disabled = totalSlots >= MAX_VIEWING_SLOTS;
+            }
+            viewingState.slots = collectViewingSlots();
         }
 
-        function addSlotFromSelection() {
-            if (!viewingState.selectedDate) {
-                window.alert('Selectează o dată pentru vizionare din calendar.');
+        function createViewingSlotInput(initialSlot = null) {
+            if (!viewingSlotsContainer || slotPickers.size >= MAX_VIEWING_SLOTS) {
                 return;
             }
-            const timeValue = viewingTimeInput?.value?.trim() || '';
-            if (!timeValue) {
-                window.alert('Introdu ora preferată înainte de a adăuga intervalul.');
-                return;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'reschedule-slot';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Selectează data și ora';
+            input.required = true;
+            input.dataset.slotInput = 'true';
+
+            const statusBadge = document.createElement('span');
+            statusBadge.className = 'reschedule-slot-status panel-meta';
+            statusBadge.textContent = 'Selectează data și ora';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'crm-button ghost sm';
+            removeBtn.textContent = 'Șterge';
+
+            wrapper.append(input, statusBadge, removeBtn);
+            viewingSlotsContainer.appendChild(wrapper);
+
+            let picker = null;
+            if (typeof flatpickr === 'function') {
+                const locale = flatpickr.l10ns?.ro || flatpickr.l10ns.default || 'default';
+                picker = flatpickr(input, {
+                    enableTime: true,
+                    time_24hr: true,
+                    minuteIncrement: 15,
+                    altInput: true,
+                    altFormat: 'd M Y, H:i',
+                    dateFormat: 'Y-m-d H:i',
+                    locale,
+                    minDate: 'today',
+                    onOpen() {
+                        updateSlotStatusBadge(statusBadge, picker?.selectedDates?.[0] || null);
+                    },
+                    onChange(selectedDates) {
+                        updateSlotStatusBadge(statusBadge, selectedDates[0]);
+                        updateSlotMeta();
+                    }
+                });
             }
-            if (!Array.isArray(viewingState.slots)) {
-                viewingState.slots = [];
+            slotPickers.set(input, picker);
+
+            if (initialSlot) {
+                const initialDate = normalizeSlotDate(initialSlot.date || initialSlot);
+                if (initialDate && picker) {
+                    picker.setDate(initialDate, true, 'Y-m-d H:i');
+                    updateSlotStatusBadge(statusBadge, initialDate);
+                }
             }
-            if (viewingState.slots.length >= MAX_VIEWING_SLOTS) {
-                window.alert('Poți propune maximum 4 intervale. Șterge unul din listă pentru a adăuga altul.');
-                return;
+
+            removeBtn.addEventListener('click', () => {
+                const fp = slotPickers.get(input);
+                fp?.destroy();
+                slotPickers.delete(input);
+                wrapper.remove();
+                updateSlotMeta();
+            });
+
+            updateSlotMeta();
+        }
+
+        function initializeViewingSlotInputs() {
+            destroyViewingSlotPickers();
+            const initialSlots = Array.isArray(viewingState.slots) && viewingState.slots.length
+                ? viewingState.slots
+                : [];
+            if (initialSlots.length) {
+                initialSlots.forEach(slot => createViewingSlotInput(slot));
+            } else {
+                const base = addDays(2);
+                base.setHours(11, 0, 0, 0);
+                createViewingSlotInput({ date: base });
             }
-            const [hoursPart, minutesPart] = timeValue.split(':').map(Number);
-            const candidate = new Date(viewingState.selectedDate.getTime());
-            if (!Number.isNaN(hoursPart)) {
-                candidate.setHours(hoursPart, Number.isNaN(minutesPart) ? 0 : minutesPart, 0, 0);
-            }
-            const slot = createSlotObject(candidate);
-            if (!slot) {
-                window.alert('Intervalul selectat nu este valid.');
-                return;
-            }
-            const exists = viewingState.slots.some(existing => existing.iso === slot.iso);
-            if (exists) {
-                window.alert('Ai adăugat deja acest interval.');
-                return;
-            }
-            viewingState.slots.push(slot);
-            viewingState.selectedTime = '';
-            if (viewingTimeInput) {
-                viewingTimeInput.value = '';
-            }
-            renderViewingSlots();
+            updateSlotMeta();
+        }
+
+        function collectViewingSlots() {
+            const collected = [];
+            const seen = new Set();
+            slotPickers.forEach((picker) => {
+                const date = picker?.selectedDates?.[0];
+                if (date instanceof Date && !Number.isNaN(date.getTime())) {
+                    const slot = createSlotObject(date);
+                    if (slot?.iso && !seen.has(slot.iso)) {
+                        seen.add(slot.iso);
+                        collected.push(slot);
+                    }
+                }
+            });
+            collected.sort((a, b) => {
+                const dateA = normalizeSlotDate(a?.date || a?.iso);
+                const dateB = normalizeSlotDate(b?.date || b?.iso);
+                return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
+            });
+            return collected;
         }
 
         function getAvailabilityStatus(locationId, date) {
@@ -2376,31 +2354,13 @@
             event.preventDefault();
             closeViewingModal();
         });
-        viewingTimeInput?.addEventListener('input', () => {
-            viewingState.selectedTime = viewingTimeInput.value || '';
-            updateViewingSelectedDate();
-        });
-        viewingAddSlotBtn?.addEventListener('click', addSlotFromSelection);
-        viewingSlotListEl?.addEventListener('click', (event) => {
-            const removeBtn = event.target.closest('[data-slot-remove]');
-            if (!removeBtn) {
-                return;
-            }
-            const { slotRemove } = removeBtn.dataset;
-            if (!slotRemove) {
-                return;
-            }
-            viewingState.slots = Array.isArray(viewingState.slots)
-                ? viewingState.slots.filter(slot => slot.iso !== slotRemove)
-                : [];
-            renderViewingSlots();
-        });
+        viewingAddSlotBtn?.addEventListener('click', () => createViewingSlotInput());
         viewingForm?.addEventListener('submit', (event) => {
             event.preventDefault();
             if (!viewingState.requestId || !viewingState.locationId) {
                 return;
             }
-            const requestedSlots = mapSlots(viewingState.slots);
+            const requestedSlots = collectViewingSlots();
             if (!requestedSlots.length) {
                 window.alert('Adaugă cel puțin un interval înainte de a trimite cererea.');
                 return;
@@ -2414,8 +2374,9 @@
 
             request.status = 'viewing_request';
             request.lastUpdate = new Date();
-            request.requestedSlots = mapSlots(requestedSlots);
+            request.requestedSlots = requestedSlots.slice();
             delete request.holdExpiresAt;
+            viewingState.slots = requestedSlots.slice();
 
             let viewing = null;
             if (typeof request.viewingId === 'number') {
@@ -2431,7 +2392,7 @@
                     id: nextViewingId,
                     locationId: viewingState.locationId,
                     status: 'viewing_request',
-                    requestedSlots: mapSlots(requestedSlots),
+                    requestedSlots: requestedSlots.slice(),
                     ownerSuggestions: [],
                     confirmedSlot: null,
                     host: 'Echipa locației',
@@ -2444,7 +2405,7 @@
                 request.viewingId = viewing.id;
             } else {
                 viewing.status = 'viewing_request';
-                viewing.requestedSlots = mapSlots(requestedSlots);
+                viewing.requestedSlots = requestedSlots.slice();
                 viewing.ownerSuggestions = [];
                 viewing.confirmedSlot = null;
                 viewing.note = 'Locația verifică disponibilitatea pentru intervalele propuse.';
