@@ -450,6 +450,11 @@ document.addEventListener('DOMContentLoaded', () => {
             label: 'Confirmă vizionarea',
             title: 'Confirmă intervalul de vizionare cu clientul.'
         },
+        viewing_details: {
+            key: 'viewing_details',
+            label: 'Vezi detalii vizionare',
+            title: 'Deschide programul de vizionări pentru această cerere.'
+        },
         propose_new_date: {
             key: 'propose_new_date',
             label: 'Propune altă dată',
@@ -497,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         availability_confirmed: ['send_offer', 'schedule_viewing', 'open_details'],
         offer_requested: ['send_offer', 'reject'],
         offer_sent: ['pre_reserve', 'reject'],
-        viewing_request: ['schedule_viewing', 'propose_new_date', 'reject'],
+        viewing_request: ['viewing_details'],
         viewing_rescheduled: ['schedule_viewing', 'cancel_viewing'],
         viewing_scheduled: ['send_updated_offer', 'pre_reserve'],
         pre_booked: ['mark_confirmed', 'reject'],
@@ -1401,6 +1406,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const teamInviteForm = document.getElementById('team-invite-form');
     const teamInviteNameInput = document.getElementById('team-invite-name');
     const teamInviteEmailInput = document.getElementById('team-invite-email');
+    let showRescheduleModal = null;
     const recordDetailState = {
         type: null,
         id: null,
@@ -2287,9 +2293,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const existing = viewings.find(viewing => viewing.client === booking.client);
         const parsedDate = parseBookingDate(booking.date) || addDays(3);
         const formattedDate = formatDate(parsedDate);
+        const firstSuggestion = rescheduled && Array.isArray(booking?.rescheduleSuggestions)
+            ? booking.rescheduleSuggestions.find(item => item?.date instanceof Date)
+            : null;
         if (existing) {
             existing.status = targetStatus;
-            existing.date = formattedDate;
+            existing.date = firstSuggestion ? formatDate(firstSuggestion.date) : formattedDate;
+            if (firstSuggestion) {
+                existing.hour = formatTime(firstSuggestion.date);
+            }
             existing.venue = booking.venue;
             existing.email = booking.email || existing.email || '';
             existing.phone = booking.phone || existing.phone || '';
@@ -2297,19 +2309,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 existing.notes = booking.details;
             }
             existing.lastUpdate = new Date();
+            if (Array.isArray(booking.rescheduleSuggestions) && booking.rescheduleSuggestions.length) {
+                existing.rescheduleSuggestions = booking.rescheduleSuggestions.map(item => ({
+                    iso: item?.iso || null,
+                    label: item?.label || '',
+                    date: item?.date instanceof Date ? new Date(item.date.getTime()) : (item?.iso ? new Date(item.iso) : null)
+                }));
+            }
         } else {
             const nextId = viewings.reduce((max, viewing) => Math.max(max, viewing.id || 0), 0) + 1;
             viewings.push({
                 id: nextId,
                 client: booking.client,
                 venue: booking.venue,
-                date: formattedDate,
-                hour: '12:00',
+                date: firstSuggestion ? formatDate(firstSuggestion.date) : formattedDate,
+                hour: firstSuggestion ? formatTime(firstSuggestion.date) : '12:00',
                 status: targetStatus,
                 email: booking.email || '',
                 phone: booking.phone || '',
                 notes: booking.details || '',
-                lastUpdate: new Date()
+                lastUpdate: new Date(),
+                rescheduleSuggestions: Array.isArray(booking.rescheduleSuggestions)
+                    ? booking.rescheduleSuggestions.map(item => ({
+                        iso: item?.iso || null,
+                        label: item?.label || '',
+                        date: item?.date instanceof Date ? new Date(item.date.getTime()) : (item?.iso ? new Date(item.iso) : null)
+                    }))
+                    : []
             });
         }
         renderViewingsTable();
@@ -2367,7 +2393,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 ensureViewingEntry(booking);
                 didMutate = true;
                 break;
+            case 'viewing_details':
+                {
+                    const relatedViewing = viewings.find(item =>
+                        item.client === booking.client && item.venue === booking.venue);
+                    activatePage('viewings');
+                    renderViewingsTable();
+                    renderViewingsStatusChart();
+                    renderViewingsCalendar();
+                    renderOverviewLists();
+                    if (relatedViewing) {
+                        selectedViewingId = relatedViewing.id;
+                        highlightViewingRow(relatedViewing.id, { scroll: true });
+                        showAutomationToast(`Vizionarea pentru ${relatedViewing.client} este afișată în program.`);
+                    } else {
+                        showAutomationToast('Nu există încă o vizionare asociată. Creează una din program.');
+                    }
+                }
+                return;
             case 'propose_new_date':
+                if (typeof showRescheduleModal === 'function') {
+                    showRescheduleModal({ type: 'booking', record: booking });
+                    return;
+                }
                 booking.status = 'viewing_rescheduled';
                 booking.autoGenerated = false;
                 ensureViewingEntry(booking, { rescheduled: true });
@@ -2854,6 +2902,333 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.add('is-visible');
     }
 
+    function setupRescheduleModal() {
+        const modal = document.getElementById('reschedule-viewing-modal');
+        const form = document.getElementById('reschedule-viewing-form');
+        if (!modal || !form) {
+            showRescheduleModal = null;
+            return;
+        }
+        const slotsContainer = form.querySelector('[data-reschedule-slots]');
+        const addSlotBtn = form.querySelector('[data-add-reschedule-slot]');
+        const counterEl = form.querySelector('[data-reschedule-slot-counter]');
+        const closeButtons = modal.querySelectorAll('.modal-close-btn');
+        const pickers = new Map();
+        const maxSlots = 4;
+        let activeContext = null;
+
+        const resolveContext = (input) => {
+            if (input && typeof input === 'object' && 'record' in input) {
+                return {
+                    type: input.type === 'viewing' ? 'viewing' : 'booking',
+                    record: input.record,
+                    relatedBooking: input.relatedBooking || null
+                };
+            }
+            return { type: 'booking', record: input, relatedBooking: null };
+        };
+
+        const combineDateTime = (dateString, timeString) => {
+            const base = parseBookingDate(dateString);
+            if (!base) {
+                return null;
+            }
+            if (typeof timeString === 'string') {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                if (Number.isFinite(hours)) {
+                    base.setHours(hours, Number.isFinite(minutes) ? minutes : 0, 0, 0);
+                    return base;
+                }
+            }
+            base.setHours(11, 0, 0, 0);
+            return base;
+        };
+
+        const updateControls = () => {
+            if (!slotsContainer) {
+                return;
+            }
+            const inputs = Array.from(slotsContainer.querySelectorAll('[data-slot-input]'));
+            if (addSlotBtn) {
+                addSlotBtn.disabled = inputs.length >= maxSlots;
+            }
+            if (counterEl) {
+                if (inputs.length) {
+                    counterEl.textContent = `${inputs.length}/${maxSlots} intervale`;
+                    counterEl.hidden = false;
+                } else {
+                    counterEl.textContent = '';
+                    counterEl.hidden = true;
+                }
+            }
+            const removeButtons = slotsContainer.querySelectorAll('[data-remove-slot]');
+            const hideRemove = inputs.length <= 1;
+            removeButtons.forEach(btn => {
+                btn.disabled = hideRemove;
+                btn.hidden = hideRemove;
+            });
+        };
+
+        const destroySlots = () => {
+            pickers.forEach(picker => picker?.destroy());
+            pickers.clear();
+            if (slotsContainer) {
+                slotsContainer.innerHTML = '';
+            }
+            updateControls();
+        };
+
+        const createSlot = (initialDate = null) => {
+            if (!slotsContainer || slotsContainer.children.length >= maxSlots) {
+                return;
+            }
+            const wrapper = document.createElement('div');
+            wrapper.className = 'reschedule-slot';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Selectează data și ora';
+            input.required = true;
+            input.dataset.slotInput = 'true';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'crm-button ghost sm';
+            removeBtn.dataset.removeSlot = 'true';
+            removeBtn.textContent = 'Șterge';
+
+            wrapper.append(input, removeBtn);
+            slotsContainer.appendChild(wrapper);
+
+            let picker = null;
+            if (typeof flatpickr === 'function') {
+                picker = flatpickr(input, {
+                    enableTime: true,
+                    time_24hr: true,
+                    minuteIncrement: 15,
+                    altInput: true,
+                    altFormat: 'd M Y, H:i',
+                    dateFormat: 'Y-m-d H:i',
+                    locale: 'ro',
+                    minDate: 'today'
+                });
+                if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
+                    picker.setDate(initialDate, true);
+                } else if (typeof initialDate === 'string' && initialDate) {
+                    picker.setDate(initialDate, true);
+                }
+            } else if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
+                input.value = `${formatDate(initialDate)} ${formatTime(initialDate)}`;
+            }
+            pickers.set(input, picker);
+
+            removeBtn.addEventListener('click', () => {
+                const fp = pickers.get(input);
+                fp?.destroy();
+                pickers.delete(input);
+                wrapper.remove();
+                updateControls();
+            });
+
+            updateControls();
+            return wrapper;
+        };
+
+        const normalizeSuggestion = (value) => {
+            if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+                return null;
+            }
+            const normalized = new Date(value.getTime());
+            normalized.setSeconds(0, 0);
+            return {
+                date: normalized,
+                iso: normalized.toISOString(),
+                label: `${formatDate(normalized)} · ${formatTime(normalized)}`
+            };
+        };
+
+        const closeModal = () => {
+            modal.classList.remove('is-visible');
+            destroySlots();
+            activeContext = null;
+        };
+
+        const applyBookingSuggestions = (booking, suggestions, { toastMessage = null } = {}) => {
+            const previousStatus = booking.status;
+            booking.status = 'viewing_rescheduled';
+            booking.autoGenerated = false;
+            booking.rescheduleSuggestions = suggestions.map(item => ({
+                iso: item.iso,
+                label: item.label,
+                date: new Date(item.date.getTime())
+            }));
+            booking.lastUpdate = new Date();
+            booking.clientStatus = getClientStatusLabel(booking.status);
+            logBookingStatusChange(booking, {
+                status: booking.status,
+                user: 'Owner CRM',
+                previousStatus,
+                manual: true,
+                reason: `Sloturi propuse: ${suggestions.map(item => item.label).join('; ')}`
+            });
+            ensureViewingEntry(booking, { rescheduled: true });
+            selectedBookingId = booking.id;
+            renderBookingsTable();
+            renderOverviewLists();
+            renderMonthlyCalendar();
+            if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
+                showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
+            }
+            highlightBookingRow(booking.id, { scroll: true });
+            if (toastMessage) {
+                showAutomationToast(toastMessage);
+            }
+        };
+
+        const applyViewingSuggestions = (viewing, suggestions, relatedBooking, { toastMessage = null } = {}) => {
+            viewing.status = 'viewing_rescheduled';
+            viewing.lastUpdate = new Date();
+            viewing.rescheduleSuggestions = suggestions.map(item => ({
+                iso: item.iso,
+                label: item.label,
+                date: new Date(item.date.getTime())
+            }));
+            const first = suggestions[0];
+            if (first) {
+                viewing.date = formatDate(first.date);
+                viewing.hour = formatTime(first.date);
+            }
+            renderViewingsTable();
+            renderViewingsStatusChart();
+            renderViewingsCalendar();
+            renderOverviewLists();
+            selectedViewingId = viewing.id;
+            highlightViewingRow(viewing.id, { scroll: true });
+            if (relatedBooking) {
+                applyBookingSuggestions(relatedBooking, suggestions, { toastMessage: null });
+            }
+            if (toastMessage) {
+                showAutomationToast(toastMessage);
+            }
+        };
+
+        const openModal = (input) => {
+            const context = resolveContext(input);
+            if (!context.record) {
+                return;
+            }
+            if (context.type === 'viewing' && !context.relatedBooking) {
+                context.relatedBooking = bookings.find(booking =>
+                    booking.client === context.record.client &&
+                    booking.venue === context.record.venue) || null;
+            }
+            activeContext = context;
+            destroySlots();
+
+            const { record, type, relatedBooking } = context;
+            const existingSuggestions = Array.isArray(record?.rescheduleSuggestions) && record.rescheduleSuggestions.length
+                ? record.rescheduleSuggestions.slice(0, maxSlots)
+                : (relatedBooking?.rescheduleSuggestions
+                    ? relatedBooking.rescheduleSuggestions.slice(0, maxSlots)
+                    : []);
+
+            existingSuggestions.forEach(item => {
+                const parsed = item?.date instanceof Date
+                    ? item.date
+                    : (item?.iso ? new Date(item.iso) : null);
+                if (parsed) {
+                    createSlot(parsed);
+                }
+            });
+
+            if (!slotsContainer.children.length) {
+                const baseDate = type === 'viewing'
+                    ? combineDateTime(record?.date, record?.hour)
+                    : parseBookingDate(record?.date || '');
+                const normalizedBase = baseDate || addDays(2);
+                if (!baseDate || (normalizedBase.getHours() === 0 && normalizedBase.getMinutes() === 0)) {
+                    normalizedBase.setHours(11, 0, 0, 0);
+                }
+                const first = new Date(normalizedBase.getTime());
+                const second = new Date(first.getTime());
+                second.setDate(second.getDate() + 1);
+                createSlot(first);
+                createSlot(second);
+            }
+
+            modal.classList.add('is-visible');
+            updateControls();
+            const firstInput = slotsContainer.querySelector('[data-slot-input]');
+            if (firstInput) {
+                requestAnimationFrame(() => firstInput.focus());
+            }
+        };
+
+        closeButtons.forEach(btn => btn.addEventListener('click', closeModal));
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+        addSlotBtn?.addEventListener('click', () => createSlot());
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (!slotsContainer || !activeContext?.record) {
+                closeModal();
+                return;
+            }
+            const inputs = Array.from(slotsContainer.querySelectorAll('[data-slot-input]'));
+            const suggestions = [];
+            let hasInvalid = false;
+
+            inputs.forEach(input => {
+                const picker = pickers.get(input);
+                const selectedDate = picker?.selectedDates?.[0] || (input.value ? new Date(input.value) : null);
+                const suggestion = normalizeSuggestion(selectedDate);
+                if (!suggestion) {
+                    hasInvalid = true;
+                    input.classList.add('is-invalid');
+                    setTimeout(() => input.classList.remove('is-invalid'), 1500);
+                    return;
+                }
+                suggestions.push(suggestion);
+            });
+
+            if (hasInvalid || !suggestions.length) {
+                showAutomationToast('Selectează cel puțin un interval valid pentru vizionare.');
+                return;
+            }
+
+            const unique = [];
+            const seen = new Set();
+            suggestions.forEach(item => {
+                if (!item.iso || seen.has(item.iso)) {
+                    return;
+                }
+                seen.add(item.iso);
+                unique.push(item);
+            });
+
+            const toastMessage = `Au fost propuse ${unique.length} intervale pentru vizionare.`;
+            if (activeContext.type === 'viewing') {
+                applyViewingSuggestions(activeContext.record, unique, activeContext.relatedBooking, { toastMessage });
+            } else {
+                applyBookingSuggestions(activeContext.record, unique, { toastMessage });
+            }
+
+            closeModal();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.classList.contains('is-visible')) {
+                closeModal();
+            }
+        });
+
+        showRescheduleModal = openModal;
+    }
+
     function navigateToBooking(bookingId) {
         activatePage('bookings');
         setTimeout(() => {
@@ -2883,6 +3258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderViewingsCalendar();
     setupBookingModal();
     setupEditModal();
+    setupRescheduleModal();
     renderVenueCards();
     renderMonthlyOccupancyChart();
     renderEventTypeDistributionChart();
@@ -3045,6 +3421,12 @@ document.addEventListener('DOMContentLoaded', () => {
             viewing.lastUpdate = new Date();
             showAutomationToast(`Prezența a fost confirmată pentru ${viewing.client}.`);
         } else if (action === 'reschedule') {
+            if (typeof showRescheduleModal === 'function') {
+                const relatedBooking = bookings.find(item =>
+                    item.client === viewing.client && item.venue === viewing.venue) || null;
+                showRescheduleModal({ type: 'viewing', record: viewing, relatedBooking });
+                return;
+            }
             viewing.status = 'viewing_rescheduled';
             viewing.lastUpdate = new Date();
             showAutomationToast(`Propune o nouă dată pentru ${viewing.client}.`);

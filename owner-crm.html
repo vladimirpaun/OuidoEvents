@@ -1508,6 +1508,46 @@
             line-height: 1.4;
         }
 
+        .reschedule-help {
+            font-size: 0.88rem;
+            color: var(--muted-color);
+            margin: 0 0 12px;
+        }
+
+        .reschedule-slot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .reschedule-slot {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reschedule-slot input {
+            flex: 1;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        .reschedule-slot input.is-invalid {
+            border-color: #b91c1c;
+            box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+        }
+
+        .reschedule-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
         .settings-toggle span small {
             display: block;
             font-size: 0.78rem;
@@ -2681,5 +2721,28 @@
     <script src="main.js"></script>
     <script src="owner-crm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+
+    <div id="reschedule-viewing-modal" class="modal-overlay">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="reschedule-modal-title">
+            <div class="modal-header">
+                <h3 id="reschedule-modal-title">Propune noi intervale</h3>
+                <button class="modal-close-btn" aria-label="Închide">&times;</button>
+            </div>
+            <form id="reschedule-viewing-form">
+                <div class="modal-body">
+                    <p class="reschedule-help">Selectează până la 4 opțiuni (dată și oră) pentru tur. Intervalele sunt din 15 în 15 minute.</p>
+                    <div class="reschedule-slot-list" data-reschedule-slots></div>
+                    <div class="reschedule-actions">
+                        <button type="button" class="crm-button ghost sm" data-add-reschedule-slot>Adaugă interval</button>
+                        <span class="panel-meta" data-reschedule-slot-counter hidden></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="crm-button ghost modal-close-btn">Anulează</button>
+                    <button type="submit" class="crm-button primary">Trimite propunerile</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
