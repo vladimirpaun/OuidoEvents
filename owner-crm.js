@@ -3421,7 +3421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateControls();
         };
 
-        const createSlot = (initialDate = null) => {
+        const createSlot = () => {
             if (!slotsContainer || slotsContainer.children.length >= maxSlots) {
                 return;
             }
@@ -3455,13 +3455,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     locale: 'ro',
                     minDate: 'today'
                 });
-                if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
-                    picker.setDate(initialDate, true);
-                } else if (typeof initialDate === 'string' && initialDate) {
-                    picker.setDate(initialDate, true);
-                }
-            } else if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
-                input.value = `${formatDate(initialDate)} ${formatTime(initialDate)}`;
             }
             pickers.set(input, picker);
 
@@ -3723,6 +3716,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearBookingsDateFilter();
     });
     document.getElementById('viewings-venue-filter')?.addEventListener('change', renderViewingsTable);
+    document.getElementById('viewings-client-filter')?.addEventListener('input', renderViewingsTable);
     document.getElementById('viewings-calendar-venue-filter')?.addEventListener('change', renderViewingsCalendar);
 
     const availabilityCalendarGrid = document.getElementById('availability-calendar-grid');
