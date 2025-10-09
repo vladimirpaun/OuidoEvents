@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.crm-nav-link');
     const pages = document.querySelectorAll('.crm-page');
     const storageKey = 'owner-crm-v3-active-page';
+    let onVenuesPageDeactivated = null;
 
     function activatePage(pageId) {
         if (!pageId) {
@@ -16,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (pageId !== 'record-detail') {
                     localStorage.setItem(storageKey, pageId);
                 }
+            } else if (page.dataset.page === 'venues' && typeof onVenuesPageDeactivated === 'function') {
+                onVenuesPageDeactivated();
             }
         });
         navLinks.forEach(link => {
@@ -30,7 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     navLinks.forEach(link => {
-        link.addEventListener('click', () => activatePage(link.dataset.pageTarget));
+        link.addEventListener('click', () => {
+            const targetPage = link.dataset.pageTarget;
+            if (targetPage === 'venues') {
+                closeVenueForm({ restoreFocus: false });
+            }
+            activatePage(targetPage);
+        });
     });
 
     window.addEventListener('popstate', (event) => {
@@ -839,7 +848,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function closeVenueForm() {
+    function closeVenueForm(options = {}) {
+        const { restoreFocus = true } = options;
         if (!venueManagementPanel || !venueForm) {
             return;
         }
@@ -870,8 +880,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         venueAddButton?.removeAttribute('hidden');
         venueBackButton?.setAttribute('hidden', 'true');
-        window.requestAnimationFrame(() => venueAddButton?.focus());
+        if (restoreFocus) {
+            window.requestAnimationFrame(() => venueAddButton?.focus());
+        }
     }
+
+    onVenuesPageDeactivated = () => closeVenueForm({ restoreFocus: false });
 
     openVenueButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -1021,7 +1035,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const venuesSelect = new Set(bookings.map(item => item.venue));
+    const venuesSelect = new Set(venues.map(item => item.name));
+    bookings.forEach(item => venuesSelect.add(item.venue));
     viewings.forEach(item => venuesSelect.add(item.venue));
     const hasMultipleVenues = venuesSelect.size > 1;
 
@@ -3067,6 +3082,29 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(chartContainer);
     }
 
+    function navigateToAvailabilityForVenue(venueName) {
+        activatePage('availability');
+        const availabilityFilter = document.getElementById('availability-venue-filter');
+        if (!availabilityFilter || !venueName) {
+            return;
+        }
+        let option = Array.from(availabilityFilter.options).find(opt => opt.value === venueName);
+        if (!option) {
+            option = document.createElement('option');
+            option.value = venueName;
+            option.textContent = venueName;
+            availabilityFilter.appendChild(option);
+        }
+        const shouldTriggerChange = availabilityFilter.value !== venueName;
+        availabilityFilter.value = venueName;
+        if (shouldTriggerChange) {
+            availabilityFilter.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+            renderMonthlyCalendar();
+        }
+        document.getElementById('availability-calendar-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     function renderVenueCards() {
         const container = document.getElementById('venue-cards');
         if (!container) {
@@ -3144,6 +3182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             availabilityBtn.className = 'crm-button primary';
             availabilityBtn.textContent = 'Actualizează disponibilitate';
             editBtn.addEventListener('click', () => openVenueForm('edit', index));
+            availabilityBtn.addEventListener('click', () => navigateToAvailabilityForVenue(venue.name));
             actions.append(editBtn, availabilityBtn);
             footer.appendChild(actions);
 
