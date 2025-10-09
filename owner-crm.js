@@ -1064,7 +1064,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (actionsEl.children.length) {
                 headerEl.appendChild(actionsEl);
             }
-
             memberEl.appendChild(headerEl);
 
             if (member.editing) {
