@@ -109,6 +109,42 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .filter(Boolean);
     };
+    const toTimestamp = (value) => {
+        if (value instanceof Date && !Number.isNaN(value.getTime())) {
+            return value.getTime();
+        }
+        if (typeof value === 'string') {
+            const parsed = new Date(value);
+            if (!Number.isNaN(parsed.getTime())) {
+                return parsed.getTime();
+            }
+        }
+        return Number.NEGATIVE_INFINITY;
+    };
+    const resolveLatestViewingSlots = (viewing, clientSlots, ownerSlots) => {
+        const hasClient = Array.isArray(clientSlots) && clientSlots.length > 0;
+        const hasOwner = Array.isArray(ownerSlots) && ownerSlots.length > 0;
+        if (!hasClient && !hasOwner) {
+            return null;
+        }
+        const clientTimestamp = hasClient ? toTimestamp(viewing?.clientSlotsUpdatedAt) : Number.NEGATIVE_INFINITY;
+        const ownerTimestamp = hasOwner ? toTimestamp(viewing?.ownerSlotsUpdatedAt) : Number.NEGATIVE_INFINITY;
+        if (hasClient && hasOwner) {
+            if (ownerTimestamp > clientTimestamp) {
+                return { source: 'owner', slots: ownerSlots };
+            }
+            if (clientTimestamp > ownerTimestamp) {
+                return { source: 'client', slots: clientSlots };
+            }
+            if (viewing?.status === 'viewing_request') {
+                return { source: 'client', slots: clientSlots };
+            }
+            return { source: 'owner', slots: ownerSlots };
+        }
+        return hasOwner
+            ? { source: 'owner', slots: ownerSlots }
+            : { source: 'client', slots: clientSlots };
+    };
     const getPrimaryViewingSlot = (viewing) => {
         if (!viewing) {
             return null;
@@ -326,6 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastUpdate: addDays(-1),
                 clientSlots: [],
                 rescheduleSuggestions: [],
+                clientSlotsUpdatedAt: null,
+                ownerSlotsUpdatedAt: null,
                 confirmedSlot,
                 date: formatDate(confirmedSlot.date),
                 hour: formatTime(confirmedSlot.date)
@@ -345,6 +383,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastUpdate: addDays(-2),
                 clientSlots: [slotA, slotB],
                 rescheduleSuggestions: [],
+                clientSlotsUpdatedAt: addDays(-2),
+                ownerSlotsUpdatedAt: null,
                 confirmedSlot: null,
                 date: formatDate(slotA.date),
                 hour: formatTime(slotA.date)
@@ -366,6 +406,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastUpdate: addDays(-3),
                 clientSlots: [clientSlotA, clientSlotB],
                 rescheduleSuggestions: [ownerProposalA, ownerProposalB],
+                clientSlotsUpdatedAt: addDays(-4),
+                ownerSlotsUpdatedAt: addDays(-3),
                 confirmedSlot: null,
                 date: formatDate(ownerProposalA.date),
                 hour: formatTime(ownerProposalA.date)
@@ -385,6 +427,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastUpdate: addDays(-4),
                 clientSlots: [slotA, slotB],
                 rescheduleSuggestions: [],
+                clientSlotsUpdatedAt: addDays(-4),
+                ownerSlotsUpdatedAt: null,
                 confirmedSlot: null,
                 date: formatDate(slotA.date),
                 hour: formatTime(slotA.date)
@@ -403,6 +447,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastUpdate: addDays(-5),
                 clientSlots: [],
                 rescheduleSuggestions: [],
+                clientSlotsUpdatedAt: null,
+                ownerSlotsUpdatedAt: null,
                 confirmedSlot,
                 date: formatDate(confirmedSlot.date),
                 hour: formatTime(confirmedSlot.date)
@@ -2143,18 +2189,18 @@ document.addEventListener('DOMContentLoaded', () => {
             populateDetailField('viewingDate', record.date || '—');
             populateDetailField('viewingTime', record.hour || 'Nu este stabilită');
             const viewerClientSlots = mapSlots(record.clientSlots);
-            if (viewerClientSlots.length && recordDetailClientSlotsWrapper && recordDetailClientSlotsList) {
+            const viewerOwnerSlots = mapSlots(record.rescheduleSuggestions);
+            const latestSlotsGroup = resolveLatestViewingSlots(record, viewerClientSlots, viewerOwnerSlots);
+            if (latestSlotsGroup?.source === 'client' && recordDetailClientSlotsWrapper && recordDetailClientSlotsList) {
                 recordDetailClientSlotsWrapper.hidden = false;
-                viewerClientSlots.forEach(slot => {
+                latestSlotsGroup.slots.forEach(slot => {
                     const li = document.createElement('li');
                     li.textContent = slot.label;
                     recordDetailClientSlotsList.appendChild(li);
                 });
-            }
-            const viewerOwnerSlots = mapSlots(record.rescheduleSuggestions);
-            if (viewerOwnerSlots.length && recordDetailOwnerSlotsWrapper && recordDetailOwnerSlotsList) {
+            } else if (latestSlotsGroup?.source === 'owner' && recordDetailOwnerSlotsWrapper && recordDetailOwnerSlotsList) {
                 recordDetailOwnerSlotsWrapper.hidden = false;
-                viewerOwnerSlots.forEach(slot => {
+                latestSlotsGroup.slots.forEach(slot => {
                     const li = document.createElement('li');
                     li.textContent = slot.label;
                     recordDetailOwnerSlotsList.appendChild(li);
@@ -2175,18 +2221,18 @@ document.addEventListener('DOMContentLoaded', () => {
             populateDetailField('viewingDate', relatedViewing.date || '—');
             populateDetailField('viewingTime', relatedViewing.hour || 'Nu este stabilită');
             const relatedClientSlots = mapSlots(relatedViewing.clientSlots);
-            if (relatedClientSlots.length && recordDetailClientSlotsWrapper && recordDetailClientSlotsList) {
+            const relatedOwnerSlots = mapSlots(relatedViewing.rescheduleSuggestions);
+            const relatedLatestSlotsGroup = resolveLatestViewingSlots(relatedViewing, relatedClientSlots, relatedOwnerSlots);
+            if (relatedLatestSlotsGroup?.source === 'client' && recordDetailClientSlotsWrapper && recordDetailClientSlotsList) {
                 recordDetailClientSlotsWrapper.hidden = false;
-                relatedClientSlots.forEach(slot => {
+                relatedLatestSlotsGroup.slots.forEach(slot => {
                     const li = document.createElement('li');
                     li.textContent = slot.label;
                     recordDetailClientSlotsList.appendChild(li);
                 });
-            }
-            const relatedOwnerSlots = mapSlots(relatedViewing.rescheduleSuggestions);
-            if (relatedOwnerSlots.length && recordDetailOwnerSlotsWrapper && recordDetailOwnerSlotsList) {
+            } else if (relatedLatestSlotsGroup?.source === 'owner' && recordDetailOwnerSlotsWrapper && recordDetailOwnerSlotsList) {
                 recordDetailOwnerSlotsWrapper.hidden = false;
-                relatedOwnerSlots.forEach(slot => {
+                relatedLatestSlotsGroup.slots.forEach(slot => {
                     const li = document.createElement('li');
                     li.textContent = slot.label;
                     recordDetailOwnerSlotsList.appendChild(li);
@@ -2655,7 +2701,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const confirmedSlot = mapSlots([viewing.confirmedSlot])[0] || null;
                 const primarySlot = getPrimaryViewingSlot(viewing);
                 const sortTime = primarySlot?.date ? primarySlot.date.getTime() : Number.MAX_SAFE_INTEGER;
-                return { viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, sortTime };
+                const latestSlotGroup = resolveLatestViewingSlots(viewing, clientSlots, ownerSlots);
+                return { viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, sortTime, latestSlotGroup };
             })
             .filter(item => {
                 const matchesVenue = venueValue === 'all' || item.viewing.venue === venueValue;
@@ -2674,7 +2721,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        enhanced.forEach(({ viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot }) => {
+        enhanced.forEach(({ viewing, clientSlots, ownerSlots, confirmedSlot, primarySlot, latestSlotGroup }) => {
             const row = body.insertRow();
             row.dataset.identifier = String(viewing.id);
             if (selectedViewingId === viewing.id) {
@@ -2693,27 +2740,19 @@ document.addEventListener('DOMContentLoaded', () => {
             topRow.appendChild(createRecordInfoItem('Ultima actualizare', formatDate(viewing.lastUpdate)));
             wrapper.appendChild(topRow);
 
-            if (clientSlots.length || ownerSlots.length) {
+            if (latestSlotGroup && latestSlotGroup.slots.length) {
                 const slotGroups = document.createElement('div');
                 slotGroups.className = 'viewing-slot-groups';
                 const radioName = `viewing-${viewing.id}-slot`;
-
-                if (clientSlots.length) {
-                    slotGroups.appendChild(buildSlotGroup({
-                        title: 'Opțiuni client',
-                        name: radioName,
-                        source: 'client',
-                        slots: clientSlots
-                    }));
-                }
-                if (ownerSlots.length) {
-                    slotGroups.appendChild(buildSlotGroup({
-                        title: 'Propuneri trimise clientului',
-                        name: radioName,
-                        source: 'owner',
-                        slots: ownerSlots
-                    }));
-                }
+                const slotTitle = latestSlotGroup.source === 'client'
+                    ? 'Ultimele opțiuni trimise de client'
+                    : 'Ultimele propuneri trimise clientului';
+                slotGroups.appendChild(buildSlotGroup({
+                    title: slotTitle,
+                    name: radioName,
+                    source: latestSlotGroup.source,
+                    slots: latestSlotGroup.slots
+                }));
 
                 wrapper.appendChild(slotGroups);
             }
@@ -2735,7 +2774,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmedEl.className = 'booking-row-meta';
                 confirmedEl.textContent = `Interval confirmat: ${confirmedSlot.label}`;
                 statusContainer.appendChild(confirmedEl);
-            } else if (!clientSlots.length && !ownerSlots.length) {
+            } else if (!latestSlotGroup) {
                 const infoEl = document.createElement('span');
                 infoEl.className = 'booking-row-meta';
                 infoEl.textContent = 'Nu există intervale salvate pentru această vizionare.';
@@ -3013,6 +3052,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstSuggestion = rescheduled && Array.isArray(booking?.rescheduleSuggestions)
             ? booking.rescheduleSuggestions.find(item => item?.date instanceof Date)
             : null;
+        const updateMoment = new Date();
         if (existing) {
             existing.status = targetStatus;
             existing.date = firstSuggestion ? formatDate(firstSuggestion.date) : formattedDate;
@@ -3027,13 +3067,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!existing.notes && booking.details) {
                 existing.notes = booking.details;
             }
-            existing.lastUpdate = new Date();
-            if (!Array.isArray(existing.clientSlots)) {
-                existing.clientSlots = Array.isArray(booking?.requestedSlots)
-                    ? mapSlots(booking.requestedSlots)
-                    : [];
-            } else if (Array.isArray(booking?.requestedSlots) && booking.requestedSlots.length) {
+            existing.lastUpdate = updateMoment;
+            const hasRequestedSlots = Array.isArray(booking?.requestedSlots) && booking.requestedSlots.length > 0;
+            if (hasRequestedSlots) {
                 existing.clientSlots = mapSlots(booking.requestedSlots);
+                existing.clientSlotsUpdatedAt = updateMoment;
+            } else if (!Array.isArray(existing.clientSlots)) {
+                existing.clientSlots = [];
+                existing.clientSlotsUpdatedAt = null;
             }
             if (Array.isArray(booking.rescheduleSuggestions) && booking.rescheduleSuggestions.length) {
                 existing.rescheduleSuggestions = booking.rescheduleSuggestions.map(item => ({
@@ -3041,6 +3082,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     label: item?.label || '',
                     date: item?.date instanceof Date ? new Date(item.date.getTime()) : (item?.iso ? new Date(item.iso) : null)
                 }));
+                existing.ownerSlotsUpdatedAt = updateMoment;
+            } else if (!Array.isArray(existing.rescheduleSuggestions)) {
+                existing.rescheduleSuggestions = [];
+                existing.ownerSlotsUpdatedAt = null;
             }
             if (targetStatus === 'viewing_scheduled') {
                 const confirmedBase = firstSuggestion?.date instanceof Date
@@ -3052,6 +3097,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const confirmedSlot = createSlotObject(confirmedBase);
                 existing.confirmedSlot = confirmedSlot;
                 existing.rescheduleSuggestions = [];
+                existing.ownerSlotsUpdatedAt = null;
             }
         } else {
             const nextId = viewings.reduce((max, viewing) => Math.max(max, viewing.id || 0), 0) + 1;
@@ -3061,6 +3107,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstSuggestion) {
                 confirmedBase.setHours(12, 0, 0, 0);
             }
+            const mappedRequestedSlots = Array.isArray(booking.requestedSlots) ? mapSlots(booking.requestedSlots) : [];
+            const mappedRescheduleSuggestions = Array.isArray(booking.rescheduleSuggestions)
+                ? booking.rescheduleSuggestions.map(item => ({
+                    iso: item?.iso || null,
+                    label: item?.label || '',
+                    date: item?.date instanceof Date ? new Date(item.date.getTime()) : (item?.iso ? new Date(item.iso) : null)
+                }))
+                : [];
             viewings.push({
                 id: nextId,
                 client: booking.client,
@@ -3071,15 +3125,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: booking.email || '',
                 phone: booking.phone || '',
                 notes: booking.details || '',
-                lastUpdate: new Date(),
-                clientSlots: Array.isArray(booking.requestedSlots) ? mapSlots(booking.requestedSlots) : [],
-                rescheduleSuggestions: Array.isArray(booking.rescheduleSuggestions)
-                    ? booking.rescheduleSuggestions.map(item => ({
-                        iso: item?.iso || null,
-                        label: item?.label || '',
-                        date: item?.date instanceof Date ? new Date(item.date.getTime()) : (item?.iso ? new Date(item.iso) : null)
-                    }))
-                    : [],
+                lastUpdate: updateMoment,
+                clientSlots: mappedRequestedSlots,
+                rescheduleSuggestions: mappedRescheduleSuggestions,
+                clientSlotsUpdatedAt: mappedRequestedSlots.length ? updateMoment : null,
+                ownerSlotsUpdatedAt: mappedRescheduleSuggestions.length ? updateMoment : null,
                 confirmedSlot: targetStatus === 'viewing_scheduled' ? createSlotObject(confirmedBase) : null
             });
         }
@@ -3904,6 +3954,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 label: item.label,
                 date: new Date(item.date.getTime())
             }));
+            viewing.ownerSlotsUpdatedAt = viewing.lastUpdate;
             const first = suggestions[0];
             if (first) {
                 viewing.date = formatDate(first.date);
@@ -4280,6 +4331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewing.date = formatDate(normalizedSlot.date);
                 viewing.hour = formatTime(normalizedSlot.date);
                 viewing.rescheduleSuggestions = [];
+                viewing.ownerSlotsUpdatedAt = null;
                 const noteSource = source === 'client'
                     ? 'Vizionarea a fost confirmată pe unul dintre intervalele propuse de client.'
                     : 'Vizionarea a fost confirmată pe intervalul propus de locație.';
