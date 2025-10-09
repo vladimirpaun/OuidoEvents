@@ -3843,12 +3843,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof flatpickr === 'function') {
                 datePicker = flatpickr(dateInput, {
                     enableTime: false,
-                    altInput: true,
-                    altFormat: 'd M Y',
                     dateFormat: 'Y-m-d',
                     locale: 'ro',
                     minDate: 'today',
-                    allowInput: true
+                    allowInput: true,
+                    clickOpens: true
                 });
                 timePicker = flatpickr(timeInput, {
                     enableTime: true,
@@ -3856,10 +3855,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     time_24hr: true,
                     minuteIncrement: 15,
                     dateFormat: 'H:i',
-                    defaultHour: 11,
+                    defaultHour: 0,
                     defaultMinute: 0,
-                    allowInput: true
+                    allowInput: true,
+                    clickOpens: true
                 });
+                datePicker?.clear(false);
+                timePicker?.clear(false);
+                dateInput.value = '';
+                timeInput.value = '';
+                timeInput.placeholder = 'Selectează ora (HH:MM)';
+            } else {
+                timeInput.placeholder = 'Selectează ora (HH:MM)';
             }
 
             if (initialDate instanceof Date && !Number.isNaN(initialDate.getTime())) {
@@ -3872,12 +3879,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            pickers.set(wrapper, {
-                datePicker,
-                timePicker,
-                dateInput,
-                timeInput
-            });
+            pickers.set(wrapper, { datePicker, timePicker, dateInput, timeInput });
 
             removeBtn.addEventListener('click', () => {
                 const config = pickers.get(wrapper);
@@ -4006,18 +4008,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!slotsContainer.children.length) {
-                const baseDate = type === 'viewing'
-                    ? combineDateTime(record?.date, record?.hour)
-                    : parseBookingDate(record?.date || '');
-                const normalizedBase = baseDate || addDays(2);
-                if (!baseDate || (normalizedBase.getHours() === 0 && normalizedBase.getMinutes() === 0)) {
-                    normalizedBase.setHours(11, 0, 0, 0);
-                }
-                const first = new Date(normalizedBase.getTime());
-                const second = new Date(first.getTime());
-                second.setDate(second.getDate() + 1);
-                createSlot(first);
-                createSlot(second);
+                createSlot();
             }
 
             modal.classList.add('is-visible');
