@@ -234,6 +234,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 5, client: 'Art Expo Team', venue: 'Hub Creativ', date: formatDate(addDays(8)), hour: '10:30', status: 'viewing_request', email: 'team@artexpo.ro', phone: '+40 733 654 987', notes: '', lastUpdate: addDays(-5) }
     ];
 
+    let teamMembers = [
+        { id: 1, name: 'Andreea Ionescu', email: 'andreea@ouidoevents.ro', status: 'active' },
+        { id: 2, name: 'Paul Radu', email: 'paul.radu@ouidoevents.ro', status: 'active' },
+        { id: 3, name: 'Ana Dobre', email: 'ana.dobre@ouidoevents.ro', status: 'pending', invitedAt: addDays(-3) }
+    ];
+    let teamMemberIdCounter = teamMembers.length;
+
     let selectedBookingId = null;
     let selectedViewingId = null;
 
@@ -939,6 +946,176 @@ document.addEventListener('DOMContentLoaded', () => {
         showAutomationToast(`Cererile pentru ${friendlyDate} sunt afișate în pagină.`);
     }
 
+    function getInitialsFromName(name = '') {
+        return name
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part[0].toUpperCase())
+            .join('') || 'OU';
+    }
+
+    function isValidEmail(email) {
+        if (typeof email !== 'string') {
+            return false;
+        }
+        const trimmed = email.trim();
+        if (!trimmed) {
+            return false;
+        }
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(trimmed);
+    }
+
+    function createTeamActionButton(label, action, variant = 'ghost') {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `crm-button ${variant} sm`;
+        button.dataset.teamAction = action;
+        button.textContent = label;
+        return button;
+    }
+
+    function setTeamMemberEditing(targetId, isEditing) {
+        teamMembers.forEach(member => {
+            member.editing = member.id === targetId ? isEditing : false;
+        });
+    }
+
+    function renderTeamAccessList() {
+        if (!teamAccessListEl) {
+            return;
+        }
+        teamAccessListEl.innerHTML = '';
+        let focusInput = null;
+
+        if (!teamMembers.length) {
+            if (teamEmptyState) {
+                teamEmptyState.hidden = false;
+            }
+            return;
+        }
+
+        if (teamEmptyState) {
+            teamEmptyState.hidden = true;
+        }
+
+        teamMembers.forEach(member => {
+            const memberEl = document.createElement('div');
+            memberEl.className = 'team-member';
+            memberEl.dataset.memberId = String(member.id);
+
+            const headerEl = document.createElement('div');
+            headerEl.className = 'team-member-header';
+
+            const mainEl = document.createElement('div');
+            mainEl.className = 'team-member-main';
+
+            const avatarEl = document.createElement('div');
+            avatarEl.className = 'team-member-avatar';
+            avatarEl.textContent = getInitialsFromName(member.name);
+
+            const infoEl = document.createElement('div');
+            infoEl.className = 'team-member-info';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'team-member-name';
+            nameEl.textContent = member.name;
+            infoEl.appendChild(nameEl);
+
+            if (member.email) {
+                const emailEl = document.createElement('span');
+                emailEl.className = 'team-member-email';
+                emailEl.textContent = member.email;
+                infoEl.appendChild(emailEl);
+            }
+
+            const statusEl = document.createElement('span');
+            statusEl.className = 'team-member-status';
+            if (member.status === 'active') {
+                statusEl.classList.add('is-active');
+                statusEl.textContent = 'Activ';
+            } else {
+                statusEl.classList.add('is-pending');
+                statusEl.textContent = 'Invitație trimisă';
+            }
+            infoEl.appendChild(statusEl);
+
+            mainEl.append(avatarEl, infoEl);
+            headerEl.appendChild(mainEl);
+
+            const actionsEl = document.createElement('div');
+            actionsEl.className = 'team-member-actions';
+
+            if (member.editing) {
+                actionsEl.append(
+                    createTeamActionButton('Șterge', 'delete', 'danger')
+                );
+            } else {
+                if (member.status === 'pending') {
+                    actionsEl.append(createTeamActionButton('Retrimite invitație', 'resend', 'primary'));
+                }
+                actionsEl.append(
+                    createTeamActionButton('Editează', 'edit'),
+                    createTeamActionButton('Șterge', 'delete', 'danger')
+                );
+            }
+
+            if (actionsEl.children.length) {
+                headerEl.appendChild(actionsEl);
+            }
+            memberEl.appendChild(headerEl);
+
+            if (member.editing) {
+                const editWrapper = document.createElement('div');
+                editWrapper.className = 'team-member-edit';
+
+                const form = document.createElement('form');
+                form.className = 'team-member-edit-form';
+                form.dataset.memberId = String(member.id);
+
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.name = 'name';
+                nameInput.placeholder = 'Nume complet';
+                nameInput.required = true;
+                nameInput.value = member.name;
+
+                const emailInput = document.createElement('input');
+                emailInput.type = 'email';
+                emailInput.name = 'email';
+                emailInput.placeholder = 'Email colaborator';
+                emailInput.required = true;
+                emailInput.value = member.email;
+
+                const editActions = document.createElement('div');
+                editActions.className = 'edit-actions';
+
+                const saveBtn = document.createElement('button');
+                saveBtn.type = 'submit';
+                saveBtn.className = 'crm-button primary sm';
+                saveBtn.textContent = 'Salvează';
+
+                const cancelBtn = createTeamActionButton('Renunță', 'cancel-edit');
+
+                editActions.append(saveBtn, cancelBtn);
+                form.append(nameInput, emailInput, editActions);
+                editWrapper.appendChild(form);
+                memberEl.appendChild(editWrapper);
+
+                if (!focusInput) {
+                    focusInput = nameInput;
+                }
+            }
+
+            teamAccessListEl.appendChild(memberEl);
+        });
+
+        if (focusInput) {
+            requestAnimationFrame(() => focusInput.focus());
+        }
+    }
+
     function showAvailabilityQuickMenu(dayCell, { dateISO }) {
         if (!(dayCell instanceof HTMLElement)) {
             return;
@@ -1219,6 +1396,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordDetailBackBtn = document.getElementById('record-detail-back');
     const recordDetailSaveBtn = document.getElementById('record-detail-save');
     const recordDetailQuickActions = document.querySelectorAll('[data-detail-action]');
+    const teamAccessListEl = document.querySelector('[data-team-list]');
+    const teamEmptyState = document.querySelector('[data-team-empty]');
+    const teamInviteForm = document.getElementById('team-invite-form');
+    const teamInviteNameInput = document.getElementById('team-invite-name');
+    const teamInviteEmailInput = document.getElementById('team-invite-email');
     const recordDetailState = {
         type: null,
         id: null,
@@ -2890,24 +3072,197 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             const currentVenue = recordDetailCurrentVenue || record.venue || null;
+            const dateISO = buildIsoDateFromBooking(record.date);
+            const previousStatus = record.status;
+            const hadManualStatus = dateISO ? Boolean(getManualStatusForVenue(dateISO, currentVenue)) : false;
+            let statusMutated = false;
+            let actionHandled = false;
+
             switch (action) {
                 case 'reserve':
-                    record.status = 'confirmed';
-                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_reserved', currentVenue);
+                    if (record.status !== 'confirmed') {
+                        record.status = 'confirmed';
+                        statusMutated = true;
+                    }
+                    if (dateISO) {
+                        setAvailabilityStatus(dateISO, 'manual_reserved', currentVenue);
+                    }
+                    actionHandled = true;
                     break;
                 case 'pre-reserve':
-                    record.status = 'pre_booked';
-                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_pre_reserved', currentVenue);
+                    if (record.status !== 'pre_booked') {
+                        record.status = 'pre_booked';
+                        statusMutated = true;
+                    }
+                    if (dateISO) {
+                        setAvailabilityStatus(dateISO, 'manual_pre_reserved', currentVenue);
+                    }
+                    actionHandled = true;
                     break;
-                case 'free':
-                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_free', currentVenue);
+                case 'reject':
+                    if (record.status !== 'rejected') {
+                        record.status = 'rejected';
+                        statusMutated = true;
+                    }
+                    if (dateISO) {
+                        setAvailabilityStatus(dateISO, 'manual_free', currentVenue);
+                    }
+                    {
+                        const friendlyDate = dateISO ? formatFriendlyDateFromISO(dateISO) : null;
+                        const releaseNote = hadManualStatus && friendlyDate ? ` Data ${friendlyDate} este marcată liberă.` : '';
+                        const clientSegment = record.client ? `pentru ${record.client}` : 'selectată';
+                        showAutomationToast(`Rezervarea ${clientSegment} a fost marcată ca respinsă.${releaseNote}`);
+                    }
+                    actionHandled = true;
                     break;
                 default:
                     break;
             }
+            if (!actionHandled) {
+                return;
+            }
+            record.lastUpdate = new Date();
+            if (statusMutated) {
+                record.clientStatus = getClientStatusLabel(record.status);
+                logBookingStatusChange(record, {
+                    status: record.status,
+                    user: 'Owner CRM',
+                    previousStatus,
+                    manual: true
+                });
+            }
+            selectedBookingId = record.id;
             renderBookingsTable();
+            renderOverviewLists();
             renderMonthlyCalendar();
             showRecordDetailPage('booking', record, recordDetailState.sourcePage);
+            highlightBookingRow(record.id, { scroll: true });
         });
     });
+
+    teamAccessListEl?.addEventListener('click', (event) => {
+        const actionBtn = event.target.closest('button[data-team-action]');
+        if (!actionBtn) {
+            return;
+        }
+        const memberEl = actionBtn.closest('[data-member-id]');
+        if (!memberEl) {
+            return;
+        }
+        const memberId = Number(memberEl.dataset.memberId);
+        if (!memberId) {
+            return;
+        }
+        const member = teamMembers.find(item => item.id === memberId);
+        if (!member) {
+            return;
+        }
+        const action = actionBtn.dataset.teamAction;
+        switch (action) {
+            case 'edit':
+                setTeamMemberEditing(memberId, true);
+                renderTeamAccessList();
+                break;
+            case 'cancel-edit':
+                setTeamMemberEditing(memberId, false);
+                renderTeamAccessList();
+                break;
+            case 'delete':
+                {
+                    const confirmed = window.confirm(`Ștergi accesul pentru ${member.name}?`);
+                    if (!confirmed) {
+                        return;
+                    }
+                    teamMembers = teamMembers.filter(item => item.id !== memberId);
+                    renderTeamAccessList();
+                    showAutomationToast(`${member.name} a fost eliminat din echipă.`);
+                }
+                break;
+            case 'resend':
+                member.status = 'pending';
+                member.invitedAt = new Date();
+                showAutomationToast(`Invitația a fost retrimisă către ${member.name}.`);
+                renderTeamAccessList();
+                break;
+            default:
+                break;
+        }
+    });
+
+    teamAccessListEl?.addEventListener('submit', (event) => {
+        const form = event.target.closest('.team-member-edit-form');
+        if (!form) {
+            return;
+        }
+        event.preventDefault();
+        const memberId = Number(form.dataset.memberId);
+        if (!memberId) {
+            return;
+        }
+        const member = teamMembers.find(item => item.id === memberId);
+        if (!member) {
+            return;
+        }
+        const nameInput = form.querySelector('input[name="name"]');
+        const emailInput = form.querySelector('input[name="email"]');
+        const nameValue = nameInput?.value.trim() || '';
+        const emailValue = emailInput?.value.trim() || '';
+        if (!nameValue) {
+            nameInput?.focus();
+            return;
+        }
+        if (!isValidEmail(emailValue)) {
+            showAutomationToast('Introdu un email valid pentru colaborator.');
+            emailInput?.focus();
+            return;
+        }
+        const duplicate = teamMembers.some(item =>
+            item.id !== memberId && item.email?.toLowerCase() === emailValue.toLowerCase());
+        if (duplicate) {
+            showAutomationToast('Există deja un colaborator cu acest email.');
+            emailInput?.focus();
+            return;
+        }
+        member.name = nameValue;
+        member.email = emailValue;
+        member.editing = false;
+        renderTeamAccessList();
+        showAutomationToast(`Detaliile pentru ${member.name} au fost actualizate.`);
+    });
+
+    teamInviteForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const nameValue = teamInviteNameInput?.value.trim() || '';
+        const emailValue = teamInviteEmailInput?.value.trim() || '';
+        if (!nameValue) {
+            teamInviteNameInput?.focus();
+            return;
+        }
+        if (!isValidEmail(emailValue)) {
+            showAutomationToast('Introdu un email valid pentru invitație.');
+            teamInviteEmailInput?.focus();
+            return;
+        }
+        const duplicate = teamMembers.some(member => member.email?.toLowerCase() === emailValue.toLowerCase());
+        if (duplicate) {
+            showAutomationToast('Există deja un colaborator cu acest email.');
+            teamInviteEmailInput?.focus();
+            return;
+        }
+        teamMemberIdCounter += 1;
+        const newMember = {
+            id: teamMemberIdCounter,
+            name: nameValue,
+            email: emailValue,
+            status: 'pending',
+            invitedAt: new Date()
+        };
+        teamMembers.push(newMember);
+        renderTeamAccessList();
+        teamInviteForm.reset();
+        teamInviteNameInput?.focus();
+        showAutomationToast(`Invitația a fost trimisă către ${newMember.name}.`);
+    });
+
+    renderTeamAccessList();
 });
