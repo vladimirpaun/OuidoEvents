@@ -1479,6 +1479,35 @@
             font-size: 0.9rem;
         }
 
+        .settings-auto-summary {
+            margin-top: 6px;
+            display: grid;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(0, 82, 212, 0.04);
+            border: 1px solid rgba(0, 82, 212, 0.12);
+        }
+
+        .settings-auto-summary-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .settings-auto-summary-label {
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted-color);
+        }
+
+        .settings-auto-summary-value {
+            font-size: 0.88rem;
+            color: var(--dark-color);
+            line-height: 1.4;
+        }
+
         .settings-toggle span small {
             display: block;
             font-size: 0.78rem;
@@ -2499,13 +2528,21 @@
                         </header>
                         <div class="settings-toggle">
                             <span>
-                                <strong>Trimite automat ofertă după confirmarea disponibilității</strong>
-                                <small>Oferta standard pleacă imediat către client și statusurile ambelor CRM-uri se actualizează.</small>
+                                <strong>Trimite automat oferta după confirmarea disponibilității</strong>
+                                <small>Activează pentru a livra instant oferta standard și a sincroniza statusurile.</small>
                             </span>
                             <input type="checkbox" id="auto-offer-toggle" checked>
                         </div>
-                        <p class="settings-helper"><strong>Confirmă disponibilitatea:</strong> „Data este liberă. Poți trimite automat oferta dacă ai activată opțiunea din setări.”</p>
-                        <p class="settings-helper"><strong>Ofertă automată:</strong> „Oferta standard a fost trimisă automat după confirmarea disponibilității.”</p>
+                        <div class="settings-auto-summary">
+                            <div class="settings-auto-summary-item">
+                                <span class="settings-auto-summary-label">După confirmare</span>
+                                <span class="settings-auto-summary-value">Clientul primește oferta standard imediat ce marchezi data ca disponibilă.</span>
+                            </div>
+                            <div class="settings-auto-summary-item">
+                                <span class="settings-auto-summary-label">Sincronizare CRM</span>
+                                <span class="settings-auto-summary-value">Statusurile și timeline-ul rezervării se actualizează automat în ambele sisteme.</span>
+                            </div>
+                        </div>
                     </section>
 
                     <section class="settings-card wide">
