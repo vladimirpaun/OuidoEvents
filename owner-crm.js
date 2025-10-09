@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bookingActionsByStatus = {
         availability_request: ['confirm_availability', 'reject'],
-        availability_confirmed: ['send_offer', 'schedule_viewing', 'open_details'],
+        availability_confirmed: ['send_offer', 'open_details'],
         offer_requested: ['send_offer', 'reject'],
         offer_sent: ['pre_reserve', 'reject'],
         viewing_request: ['viewing_details'],
@@ -2165,6 +2165,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     rowElement.classList.add('has-open-menu');
                 }
                 ensureActionsMenuBackdrop().classList.add('is-visible');
+                requestAnimationFrame(() => {
+                    const menuRect = menu.getBoundingClientRect();
+                    if (menuRect.bottom > window.innerHeight) {
+                        menu.style.top = 'auto';
+                        menu.style.bottom = 'calc(100% + 8px)';
+                        menu.classList.add('is-open--top');
+                    } else {
+                        menu.style.bottom = '';
+                        menu.style.top = 'calc(100% + 8px)';
+                        menu.classList.remove('is-open--top');
+                    }
+                });
                 activeActionsMenu = { trigger, menu, container: hostElement, rowWrapper, rowElement };
             }
         });
