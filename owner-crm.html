@@ -2480,8 +2480,7 @@
                             <p>Monitorizează cererile noi, disponibilitatea confirmată și activările pentru toate locațiile tale.</p>
                         </div>
                         <div class="page-header-actions">
-                            <button class="crm-button primary" type="button">Adaugă booking manual</button>
-                            <button class="crm-button ghost" type="button">Exportă status</button>
+                            <button class="crm-button primary" type="button" data-navigate-availability>Adaugă booking manual</button>
                         </div>
                     </div>
                     <div class="context-tags">
@@ -2569,7 +2568,6 @@
                             <p>Centralizează toate cererile de evenimente, actualizează statusul și confirmă disponibilitatea.</p>
                         </div>
                         <div class="page-header-actions">
-                            <button class="crm-button ghost" type="button">Filtre avansate</button>
                             <button class="crm-button primary" type="button" data-open-booking-modal="true">Adaugă rezervare</button>
                         </div>
                     </div>
@@ -2633,6 +2631,8 @@
                     <div class="filter-bar">
                         <label for="viewings-venue-filter">Locație:</label>
                         <select id="viewings-venue-filter"></select>
+                        <label for="viewings-client-filter">Client:</label>
+                        <input type="text" id="viewings-client-filter" placeholder="Caută după nume client" style="max-width: 220px;">
                     </div>
                     <div class="table-wrapper">
                         <table class="crm-table" aria-describedby="viewings-table-caption">

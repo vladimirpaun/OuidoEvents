@@ -1116,7 +1116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     populateSelect(document.getElementById('bookings-venue-filter'), Array.from(venuesSelect).sort(), true, 'Toate locațiile');
-    populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort());
+    populateSelect(document.getElementById('viewings-venue-filter'), Array.from(venuesSelect).sort(), true);
     populateSelect(document.getElementById('viewings-calendar-venue-filter'), Array.from(venuesSelect).sort(), true);
     populateSelect(document.getElementById('availability-venue-filter'), Array.from(venuesSelect).sort(), true);
     document.getElementById('availability-venue-filter')?.addEventListener('change', renderMonthlyCalendar);
@@ -2346,11 +2346,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const venueFilter = document.getElementById('viewings-venue-filter');
+        const clientFilter = document.getElementById('viewings-client-filter');
         const venueValue = venueFilter ? venueFilter.value : 'all';
+        const clientQuery = clientFilter ? clientFilter.value.trim().toLowerCase() : '';
         body.innerHTML = '';
 
         viewings
             .filter(item => venueValue === 'all' || item.venue === venueValue)
+            .filter(item => {
+                if (!clientQuery) {
+                    return true;
+                }
+                return item.client.toLowerCase().includes(clientQuery);
+            })
             .slice()
             .sort((a, b) => {
                 const dateA = parseBookingDate(a.date);
@@ -3098,6 +3106,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.getElementById('availability-calendar-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    document.querySelector('[data-navigate-availability]')?.addEventListener('click', () => {
+        navigateToAvailabilityForVenue('all');
+    });
 
     function renderVenueCards() {
         const container = document.getElementById('venue-cards');
