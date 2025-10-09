@@ -880,9 +880,63 @@
             .crm-sidebar { position: relative; top: 0; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); }
             .crm-pages { padding: 36px 24px 48px; }
         }
+        @media (max-width: 1024px) {
+            .crm-sidebar { padding: 24px 20px; }
+            .crm-pages { padding: 32px 20px 44px; }
+            .page-header { padding: 24px 20px; }
+            .panel { padding: 24px 20px; }
+        }
+        @media (max-width: 900px) {
+            .crm-sidebar { padding: 18px 16px; border-bottom: 1px solid var(--border-color); box-shadow: 0 12px 30px -28px rgba(15, 23, 42, 0.55); z-index: 15; position: sticky; top: var(--header-height); background: var(--white-color); }
+            .crm-sidebar h2 { font-size: 1.18rem; }
+            .crm-sidebar p { font-size: 0.85rem; }
+            .crm-nav { gap: 12px; }
+            .crm-nav-links { flex-direction: row; gap: 12px; overflow-x: auto; padding: 4px 0 8px; margin: 0 -16px; padding-left: 16px; scroll-snap-type: x proximity; }
+            .crm-nav-links::-webkit-scrollbar { display: none; }
+            .crm-nav-links { -ms-overflow-style: none; scrollbar-width: none; }
+            .crm-nav-link { flex: 0 0 auto; min-width: 160px; justify-content: flex-start; scroll-snap-align: start; padding: 12px 14px; }
+            .crm-sidebar-footer { margin-top: 12px; }
+        }
         @media (max-width: 720px) {
-            .crm-pages { padding: 28px 16px 40px; }
-            .page-header { padding: 22px; }
+            .crm-sidebar { padding: 16px 14px; }
+            .crm-sidebar-footer { display: none; }
+            .crm-pages { padding: 28px 16px 36px; }
+            .page-header { padding: 20px 16px; gap: 12px; }
+            .page-header h1 { font-size: 1.45rem; }
+            .page-header p { font-size: 0.86rem; max-width: none; }
+            .panel { padding: 20px 16px; gap: 14px; }
+            .panel header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .panel header h2 { font-size: 1.02rem; }
+            .panel-meta { font-size: 0.78rem; }
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .filter-bar label { font-size: 0.82rem; }
+            .filter-bar select { width: 100%; }
+            .table-wrapper { margin: 0 -16px; padding: 0 16px; }
+            .table-actions { width: 100%; justify-content: flex-start; }
+            .booking-row { padding: 16px 14px; }
+            .booking-row-top { grid-template-columns: 1fr; gap: 10px; }
+            .booking-row-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .reschedule-response-panel header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .reschedule-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+            .reschedule-actions .crm-button { width: 100%; }
+            .reschedule-option { align-items: flex-start; }
+            .favorites-grid { grid-template-columns: 1fr; }
+            .location-card-footer { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .settings-overview { padding: 18px 16px; }
+            .settings-overview-header { flex-direction: column; align-items: flex-start; }
+            .settings-overview-actions { width: 100%; justify-content: flex-start; gap: 10px; }
+            .settings-overview-actions .crm-button { flex: 1 1 auto; width: 100%; justify-content: center; }
+            .panel-grid, .metrics-grid, .requests-legend { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .crm-sidebar { padding: 14px 12px; box-shadow: 0 10px 26px -30px rgba(15, 23, 42, 0.6); }
+            .crm-nav-link { min-width: 140px; padding: 10px 12px; font-size: 0.88rem; }
+            .crm-pages { padding: 22px 12px 32px; }
+            .page-header h1 { font-size: 1.32rem; }
+            .panel { padding: 18px 14px; }
+            .booking-row { padding: 14px 12px; gap: 10px; }
+            .filter-bar label { font-size: 0.78rem; }
+            .location-image { height: 160px; }
         }
     </style>
 </head>
@@ -1733,8 +1787,8 @@
                 color: '#0ea5e9'
             },
             viewing_rescheduled: {
-                label: 'Propuneri de la locație',
-                description: 'Alege una dintre variantele propuse sau trimite alte intervale.',
+                label: 'Reprogramat de locatie',
+                description: 'Selectează varianta propusă de locație sau trimite alt interval.',
                 color: '#0284c7'
             },
             viewing_scheduled: {
@@ -3718,20 +3772,6 @@
                     metaEl.className = 'booking-row-meta';
                     metaEl.textContent = `Preferințe trimise: ${requestedSlots.map(slot => slot.label).join(' • ')}`;
                     statusContainer.appendChild(metaEl);
-                }
-                if (view.status === 'viewing_rescheduled') {
-                    if (ownerSuggestions.length) {
-                        const ownerEl = document.createElement('span');
-                        ownerEl.className = 'booking-row-meta';
-                        ownerEl.textContent = `Propuneri primite: ${ownerSuggestions.map(slot => slot.label).join(' • ')}`;
-                        statusContainer.appendChild(ownerEl);
-                    }
-                    if (requestedSlots.length) {
-                        const clientEl = document.createElement('span');
-                        clientEl.className = 'booking-row-meta';
-                        clientEl.textContent = `Preferințe trimise: ${requestedSlots.map(slot => slot.label).join(' • ')}`;
-                        statusContainer.appendChild(clientEl);
-                    }
                 }
                 if (view.status === 'viewing_scheduled' && confirmedSlot) {
                     const confirmedEl = document.createElement('span');
