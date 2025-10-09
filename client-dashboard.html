@@ -1377,14 +1377,84 @@
             }
             return formatDate(date);
         };
+        const formatPricePerPerson = (value) => {
+            if (!Number.isFinite(value) || value <= 0) {
+                return '—';
+            }
+            const rounded = Math.round(value);
+            return `de la ${rounded}€/persoană`;
+        };
         const locations = [
-            { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400' },
-            { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400' },
-            { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?w=400' },
-            { id: 4, name: 'Casa Miraval', city: 'Cluj-Napoca', price: 130, imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400' },
-            { id: 5, name: 'Heritage Gardens', city: 'Oradea', price: 105, imageUrl: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?w=400' },
-            { id: 6, name: 'Urban Art Loft', city: 'Timișoara', price: 115, imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400' },
-            { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400' }
+            {
+                id: 1,
+                name: 'The Grand Ballroom',
+                city: 'București',
+                price: 120,
+                address: 'Bulevardul Libertății 12, București',
+                contactPhone: '+40 723 555 111',
+                contactEmail: 'grandballroom@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400'
+            },
+            {
+                id: 2,
+                name: 'Forest Retreat & Spa',
+                city: 'Brașov',
+                price: 95,
+                address: 'Str. Valea Largă 8, Poiana Brașov',
+                contactPhone: '+40 734 889 220',
+                contactEmail: 'forest.retreat@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400'
+            },
+            {
+                id: 3,
+                name: 'Cluj SkyView',
+                city: 'Cluj-Napoca',
+                price: 110,
+                address: 'Str. Regele Ferdinand 5, Cluj-Napoca',
+                contactPhone: '+40 723 990 112',
+                contactEmail: 'skyview@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1590073242678-70ee3fc2f8b2?w=400'
+            },
+            {
+                id: 4,
+                name: 'Casa Miraval',
+                city: 'Cluj-Napoca',
+                price: 130,
+                address: 'Str. Republicii 40, Cluj-Napoca',
+                contactPhone: '+40 722 556 770',
+                contactEmail: 'miraval@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400'
+            },
+            {
+                id: 5,
+                name: 'Heritage Gardens',
+                city: 'Oradea',
+                price: 105,
+                address: 'Str. Eftimie Murgu 18, Oradea',
+                contactPhone: '+40 724 334 901',
+                contactEmail: 'heritage.gardens@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1529429617124-aee711a52795?w=400'
+            },
+            {
+                id: 6,
+                name: 'Urban Art Loft',
+                city: 'Timișoara',
+                price: 115,
+                address: 'Splaiul Nicolae Titulescu 2, Timișoara',
+                contactPhone: '+40 732 660 845',
+                contactEmail: 'urban.loft@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400'
+            },
+            {
+                id: 7,
+                name: 'Ambiance Lake',
+                city: 'Snagov',
+                price: 150,
+                address: 'Str. Lacului 22, Snagov',
+                contactPhone: '+40 733 889 501',
+                contactEmail: 'ambiance.lake@ouido.com',
+                imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400'
+            }
         ];
 
         const defaultFavoriteIds = [2, 3, 5, 7];
@@ -1745,6 +1815,84 @@
             }
 
             return item;
+        }
+
+        function openRequestDetailPage(request) {
+            if (!request) return;
+
+            const toISOString = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? date.toISOString() : null;
+            const toLabel = (date) => (date instanceof Date && !Number.isNaN(date.getTime())) ? formatDate(date) : null;
+
+            const location = getLocationById(request.locationId);
+            const statusMeta = requestStatusMeta[request.status] || {};
+            const viewing = typeof request.viewingId === 'number'
+                ? clientViewings.find(view => view.id === request.viewingId)
+                : null;
+            const viewingMeta = viewing ? viewingStatusMeta[viewing.status] || {} : null;
+            const confirmedRequestSlot = mapSlots([request.confirmedSlot])[0] || null;
+
+            const payload = {
+                generatedAt: new Date().toISOString(),
+                request: {
+                    id: request.id,
+                    status: request.status,
+                    statusLabel: statusMeta.label || request.status,
+                    statusDescription: statusMeta.description || '',
+                    nextStep: statusMeta.nextStep || '',
+                    eventType: request.eventType || '—',
+                    guests: Number.isFinite(request.guests) ? request.guests : null,
+                    eventDate: toISOString(request.eventDate),
+                    eventDateLabel: toLabel(request.eventDate),
+                    lastUpdate: toISOString(request.lastUpdate),
+                    lastUpdateLabel: toLabel(request.lastUpdate),
+                    offerValidUntil: toISOString(request.offerValidUntil),
+                    offerValidUntilLabel: toLabel(request.offerValidUntil),
+                    holdExpiresAt: toISOString(request.holdExpiresAt),
+                    holdExpiresAtLabel: toLabel(request.holdExpiresAt),
+                    requestedSlots: mapSlots(request.requestedSlots).map(slot => slot.label),
+                    ownerSuggestions: mapSlots(request.ownerSuggestions).map(slot => slot.label),
+                    confirmedSlot: confirmedRequestSlot ? confirmedRequestSlot.label : null
+                },
+                location: location ? {
+                    id: location.id,
+                    name: location.name,
+                    city: location.city,
+                    address: location.address || '',
+                    price: location.price,
+                    priceLabel: formatPricePerPerson(location.price),
+                    contactPhone: location.contactPhone || '',
+                    contactEmail: location.contactEmail || '',
+                    imageUrl: location.imageUrl || ''
+                } : null,
+                viewing: viewing ? {
+                    id: viewing.id,
+                    status: viewing.status,
+                    statusLabel: viewingMeta?.label || viewing.status,
+                    statusDescription: viewingMeta?.description || '',
+                    primarySlot: getViewingPrimarySlot(viewing)?.label || null,
+                    requestedSlots: mapSlots(viewing.requestedSlots).map(slot => slot.label),
+                    ownerSuggestions: mapSlots(viewing.ownerSuggestions).map(slot => slot.label),
+                    confirmedSlot: mapSlots([viewing.confirmedSlot])[0]?.label || null,
+                    host: viewing.host || '',
+                    note: viewing.note || '',
+                    lastUpdate: toISOString(viewing.lastUpdate),
+                    lastUpdateLabel: toLabel(viewing.lastUpdate)
+                } : null
+            };
+
+            try {
+                localStorage.setItem('clientRequestDetailPayload', JSON.stringify(payload));
+            } catch (error) {
+                console.warn('Nu am putut salva detaliile cererii în localStorage.', error);
+            }
+
+            try {
+                const detailUrl = new URL('client-request-detail.html', window.location.href);
+                detailUrl.searchParams.set('id', String(request.id));
+                window.open(detailUrl.toString(), '_blank', 'noopener');
+            } catch (error) {
+                console.error('Nu am putut deschide pagina cu detalii.', error);
+            }
         }
 
         function getRequestNextStep(request) {
@@ -2566,6 +2714,7 @@
                 const cell = row.insertCell();
                 const wrapper = document.createElement('div');
                 wrapper.className = 'booking-row';
+                wrapper.dataset.requestId = String(req.id);
 
                 const topRow = document.createElement('div');
                 topRow.className = 'booking-row-top';
@@ -2575,8 +2724,6 @@
                 const hasGuests = Number.isFinite(req.guests) && req.guests > 0;
                 topRow.appendChild(createInfoItem('Invitați', hasGuests ? `${req.guests} invitați` : 'Necesită completare', { isMissing: !hasGuests }));
                 topRow.appendChild(createInfoItem('Ultima actualizare', formatDate(req.lastUpdate)));
-                wrapper.appendChild(topRow);
-
                 const bottomRow = document.createElement('div');
                 bottomRow.className = 'booking-row-bottom';
 
@@ -2596,6 +2743,8 @@
 
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'table-actions booking-row-actions';
+                actionsDiv.innerHTML = '';
+                actionsDiv.hidden = false;
 
                 switch (req.status) {
                     case 'availability_request':
@@ -2634,7 +2783,6 @@
                         `;
                         break;
                     case 'confirmed':
-                        actionsDiv.hidden = true;
                         break;
                     case 'rejected':
                         actionsDiv.innerHTML = `
@@ -2649,10 +2797,26 @@
                         break;
                 }
 
+                const detailButton = document.createElement('button');
+                detailButton.type = 'button';
+                detailButton.textContent = 'Deschide detalii cerere';
+                detailButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openRequestDetailPage(req);
+                });
+                actionsDiv.appendChild(detailButton);
+
                 bottomRow.appendChild(actionsDiv);
 
-                wrapper.appendChild(bottomRow);
+                wrapper.append(topRow, bottomRow);
                 cell.appendChild(wrapper);
+
+                wrapper.addEventListener('click', (event) => {
+                    if (event.target.closest('button')) {
+                        return;
+                    }
+                    openRequestDetailPage(req);
+                });
             });
 
             renderOverviewMetrics();
