@@ -2890,24 +2890,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             const currentVenue = recordDetailCurrentVenue || record.venue || null;
+            const dateISO = buildIsoDateFromBooking(record.date);
+            const previousStatus = record.status;
+            const hadManualStatus = dateISO ? Boolean(getManualStatusForVenue(dateISO, currentVenue)) : false;
+            let statusMutated = false;
+            let actionHandled = false;
+
             switch (action) {
                 case 'reserve':
-                    record.status = 'confirmed';
-                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_reserved', currentVenue);
+                    if (record.status !== 'confirmed') {
+                        record.status = 'confirmed';
+                        statusMutated = true;
+                    }
+                    if (dateISO) {
+                        setAvailabilityStatus(dateISO, 'manual_reserved', currentVenue);
+                    }
+                    actionHandled = true;
                     break;
                 case 'pre-reserve':
-                    record.status = 'pre_booked';
-                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_pre_reserved', currentVenue);
+                    if (record.status !== 'pre_booked') {
+                        record.status = 'pre_booked';
+                        statusMutated = true;
+                    }
+                    if (dateISO) {
+                        setAvailabilityStatus(dateISO, 'manual_pre_reserved', currentVenue);
+                    }
+                    actionHandled = true;
                     break;
-                case 'free':
-                    setAvailabilityStatus(buildIsoDateFromBooking(record.date), 'manual_free', currentVenue);
+                case 'reject':
+                    if (record.status !== 'rejected') {
+                        record.status = 'rejected';
+                        statusMutated = true;
+                    }
+                    if (dateISO) {
+                        setAvailabilityStatus(dateISO, 'manual_free', currentVenue);
+                    }
+                    {
+                        const friendlyDate = dateISO ? formatFriendlyDateFromISO(dateISO) : null;
+                        const releaseNote = hadManualStatus && friendlyDate ? ` Data ${friendlyDate} este marcată liberă.` : '';
+                        const clientSegment = record.client ? `pentru ${record.client}` : 'selectată';
+                        showAutomationToast(`Rezervarea ${clientSegment} a fost marcată ca respinsă.${releaseNote}`);
+                    }
+                    actionHandled = true;
                     break;
                 default:
                     break;
             }
+            if (!actionHandled) {
+                return;
+            }
+            record.lastUpdate = new Date();
+            if (statusMutated) {
+                record.clientStatus = getClientStatusLabel(record.status);
+                logBookingStatusChange(record, {
+                    status: record.status,
+                    user: 'Owner CRM',
+                    previousStatus,
+                    manual: true
+                });
+            }
+            selectedBookingId = record.id;
             renderBookingsTable();
+            renderOverviewLists();
             renderMonthlyCalendar();
             showRecordDetailPage('booking', record, recordDetailState.sourcePage);
+            highlightBookingRow(record.id, { scroll: true });
         });
     });
 });
