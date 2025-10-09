@@ -2802,6 +2802,15 @@
                     <div class="filter-bar">
                         <label for="viewings-venue-filter">Locație:</label>
                         <select id="viewings-venue-filter"></select>
+                        <label for="viewings-status-filter">Status:</label>
+                        <select id="viewings-status-filter">
+                            <option value="all">Toate statusurile</option>
+                            <option value="viewing_request">Vizionare solicitată</option>
+                            <option value="viewing_rescheduled">Reprogramată</option>
+                            <option value="viewing_scheduled">Confirmată</option>
+                            <option value="viewing_cancelled">Anulată</option>
+                            <option value="viewing_rejected">Respinsă</option>
+                        </select>
                         <label for="viewings-client-filter">Client:</label>
                         <input type="text" id="viewings-client-filter" placeholder="Caută după nume client" style="max-width: 220px;">
                     </div>
@@ -2839,6 +2848,7 @@
                         <div class="filter-bar">
                             <label for="viewings-calendar-venue-filter">Calendar pentru locația:</label>
                             <select id="viewings-calendar-venue-filter"></select>
+                            <button class="crm-button ghost crm-button--sm" id="viewings-today-btn" type="button">Astăzi</button>
                         </div>
                         <div class="calendar-nav">
                             <button id="prev-viewings-month-btn" aria-label="Luna precedentă">&lt;</button>
@@ -2849,7 +2859,6 @@
                     <div class="viewings-calendar-legend">
                         <span class="legend-item"><span class="legend-dot legend-dot-viewing-pending"></span> În curs de confirmare</span>
                         <span class="legend-item"><span class="legend-dot legend-dot-viewing-confirmed"></span> Confirmată</span>
-                        <span class="legend-item"><span class="legend-dot legend-dot-viewing-cancelled"></span> Anulată / Respinsă</span>
                     </div>
                     <div class="monthly-calendar-grid" id="viewings-calendar-grid">
                         <!-- Calendarul vizionărilor va fi generat aici -->
