@@ -243,6 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedBookingId = null;
     let selectedViewingId = null;
+    let pendingViewingFocusId = null;
+    let pendingViewingDetailRecord = null;
 
     let autoOfferEnabled = true;
     let automationToastTimeout = null;
@@ -503,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         offer_requested: ['send_offer', 'reject'],
         offer_sent: ['pre_reserve', 'reject'],
         viewing_request: ['viewing_details'],
-        viewing_rescheduled: ['schedule_viewing', 'cancel_viewing'],
+        viewing_rescheduled: ['viewing_details'],
         viewing_scheduled: ['send_updated_offer', 'pre_reserve'],
         pre_booked: ['mark_confirmed', 'reject'],
         confirmed: ['add_note', 'open_details'],
@@ -1350,6 +1352,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return targetRow;
     }
 
+    function focusViewingRow(viewingId) {
+        let attempts = 0;
+        const maxAttempts = 6;
+        const tryFocus = () => {
+            const targetRow = document.querySelector(`#viewings-table-body tr[data-identifier="${viewingId}"]`);
+            if (targetRow) {
+                highlightViewingRow(viewingId, { scroll: true });
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            if (attempts < maxAttempts) {
+                attempts += 1;
+                requestAnimationFrame(tryFocus);
+            }
+        };
+        tryFocus();
+    }
+
     function createRecordInfoItem(label, value, { meta, isMissing } = {}) {
         const itemEl = document.createElement('div');
         itemEl.className = 'booking-row-item';
@@ -2064,9 +2084,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rescheduleBtn = document.createElement('button');
                 rescheduleBtn.type = 'button';
                 rescheduleBtn.dataset.action = 'reschedule';
-                rescheduleBtn.textContent = 'Propune intervale';
+                rescheduleBtn.textContent = 'Reprogramează';
                 rescheduleBtn.title = 'Deschide modalul de reprogramare';
-                actions.append(confirmBtn, rescheduleBtn);
+                if (item.status !== 'viewing_scheduled') {
+                    actions.appendChild(confirmBtn);
+                }
+                actions.appendChild(rescheduleBtn);
                 if (actions.children.length) {
                     bottomRow.appendChild(actions);
                 }
@@ -2079,9 +2102,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
                     selectedViewingId = item.id;
-                    showRecordDetailPage('viewing', item, 'viewings');
-                });
+                showRecordDetailPage('viewing', item, 'viewings');
             });
+        });
+
+        const event = new Event('viewings:rendered');
+        document.dispatchEvent(event);
+
+        if (pendingViewingFocusId !== null) {
+            const focusId = pendingViewingFocusId;
+            const detailRecord = pendingViewingDetailRecord;
+            pendingViewingFocusId = null;
+            pendingViewingDetailRecord = null;
+            requestAnimationFrame(() => {
+                focusViewingRow(focusId);
+                if (detailRecord && detailRecord.id === focusId) {
+                    showRecordDetailPage('viewing', detailRecord, 'viewings');
+                }
+            });
+        }
     }
 
     const monthMap = { 'ian': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mai': 4, 'iun': 5, 'iul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'noi': 10, 'dec': 11 };
@@ -2398,18 +2437,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     const relatedViewing = viewings.find(item =>
                         item.client === booking.client && item.venue === booking.venue);
+                    const venueFilter = document.getElementById('viewings-venue-filter');
+                    if (relatedViewing && venueFilter) {
+                        const hasOption = Array.from(venueFilter.options).some(option => option.value === relatedViewing.venue);
+                        venueFilter.value = hasOption ? relatedViewing.venue : 'all';
+                    } else if (venueFilter) {
+                        venueFilter.value = 'all';
+                    }
+
+                    if (relatedViewing) {
+                        pendingViewingFocusId = relatedViewing.id;
+                        pendingViewingDetailRecord = relatedViewing;
+                        showAutomationToast(`Vizionarea pentru ${relatedViewing.client} este afișată în program.`);
+                    } else {
+                        pendingViewingFocusId = null;
+                        pendingViewingDetailRecord = null;
+                        showAutomationToast('Nu există încă o vizionare asociată. Creează una din program.');
+                    }
+
                     activatePage('viewings');
                     renderViewingsTable();
                     renderViewingsStatusChart();
                     renderViewingsCalendar();
                     renderOverviewLists();
-                    if (relatedViewing) {
-                        selectedViewingId = relatedViewing.id;
-                        highlightViewingRow(relatedViewing.id, { scroll: true });
-                        showAutomationToast(`Vizionarea pentru ${relatedViewing.client} este afișată în program.`);
-                    } else {
-                        showAutomationToast('Nu există încă o vizionare asociată. Creează una din program.');
-                    }
                 }
                 return;
             case 'propose_new_date':
@@ -3099,12 +3149,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewing.date = formatDate(first.date);
                 viewing.hour = formatTime(first.date);
             }
+            const venueFilter = document.getElementById('viewings-venue-filter');
+            if (venueFilter) {
+                const hasOption = Array.from(venueFilter.options).some(option => option.value === viewing.venue);
+                venueFilter.value = hasOption ? viewing.venue : 'all';
+            }
             renderViewingsTable();
             renderViewingsStatusChart();
             renderViewingsCalendar();
             renderOverviewLists();
             selectedViewingId = viewing.id;
-            highlightViewingRow(viewing.id, { scroll: true });
+            requestAnimationFrame(() => focusViewingRow(viewing.id));
             if (relatedBooking) {
                 applyBookingSuggestions(relatedBooking, suggestions, { toastMessage: null });
             }
