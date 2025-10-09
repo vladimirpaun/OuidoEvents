@@ -292,6 +292,89 @@
             padding-top: 12px;
         }
 
+        .reschedule-response-panel {
+            border: 1px solid rgba(234, 179, 8, 0.35);
+            background: rgba(253, 230, 138, 0.18);
+            gap: 16px;
+        }
+
+        .reschedule-response-panel header {
+            align-items: flex-start;
+        }
+
+        .reschedule-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .reschedule-badge {
+            background: rgba(234, 179, 8, 0.18);
+            color: #b45309;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .reschedule-message {
+            margin: 0;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .reschedule-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .reschedule-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--white-color);
+            border: 1px solid rgba(234, 179, 8, 0.35);
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .reschedule-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #b45309;
+            flex-shrink: 0;
+        }
+
+        .reschedule-option-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .reschedule-option-main {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .reschedule-option-meta {
+            font-size: 0.8rem;
+            color: var(--muted-color);
+        }
+
+        .reschedule-option.is-selected {
+            border-color: #b45309;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+        }
+
+        .reschedule-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
         .booking-row-status {
             display: flex;
             flex-direction: column;
@@ -800,6 +883,23 @@
                     <h1>Vizionările Mele</h1>
                     <p>Confirmă prezența, cere reprogramări și urmărește notițele trimise de proprietari.</p>
                 </div>
+                <div class="panel reschedule-response-panel" data-reschedule-panel hidden>
+                    <header>
+                        <div class="reschedule-heading">
+                            <h2>Confirmă intervalul propus</h2>
+                            <span class="panel-meta" data-reschedule-location>Locație · Gazdă</span>
+                        </div>
+                        <span class="reschedule-badge" data-reschedule-updated>Actualizat acum</span>
+                    </header>
+                    <p class="reschedule-message" data-reschedule-message>
+                        Proprietarul îți propune noi intervale pentru vizionare. Alege varianta preferată sau cere o altă propunere.
+                    </p>
+                    <div class="reschedule-options" data-reschedule-options></div>
+                    <div class="reschedule-actions">
+                        <button class="crm-button primary" type="button" data-reschedule-accept disabled>Confirmă intervalul selectat</button>
+                        <button class="crm-button ghost" type="button" data-reschedule-decline>Propune altă dată</button>
+                    </div>
+                </div>
                 <article class="panel">
                     <header>
                         <h2>Programări viitoare</h2>
@@ -1063,6 +1163,32 @@
         const formatDate = (date) => `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
         const formatTime = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         const formatDateTime = (date) => `${formatDate(date)} · ${formatTime(date)}`;
+        const formatRelativeTime = (date) => {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+                return '';
+            }
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMinutes = Math.round(diffMs / 60000);
+            if (diffMinutes < 1) {
+                return 'acum câteva secunde';
+            }
+            if (diffMinutes < 60) {
+                return `acum ${diffMinutes} min`;
+            }
+            const diffHours = Math.round(diffMinutes / 60);
+            if (diffHours < 24) {
+                return `acum ${diffHours}h`;
+            }
+            const diffDays = Math.round(diffHours / 24);
+            if (diffDays === 1) {
+                return 'ieri';
+            }
+            if (diffDays < 7) {
+                return `acum ${diffDays} zile`;
+            }
+            return formatDate(date);
+        };
         const formatMonthKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         const formatMonthLabel = (date) => `${monthNames[date.getMonth()].charAt(0).toUpperCase() + monthNames[date.getMonth()].slice(1)} ${date.getFullYear()}`;
 
@@ -1189,12 +1315,25 @@
         const clientViewings = [
             { id: 1, locationId: 2, date: addDays(5), hour: '17:00', host: 'Ioana Pop', status: 'awaiting_confirmation', lastUpdate: addDays(-1), note: 'Confirmă prezența cu 24h înainte' },
             { id: 2, locationId: 7, date: addDays(12), hour: '11:00', host: 'Mihai Dima', status: 'confirmed', lastUpdate: addDays(-2), note: 'Vom discuta logistica exterioară' },
-            { id: 3, locationId: 3, date: addDays(20), hour: '15:30', host: 'Irina M.', status: 'reschedule_pending', lastUpdate: addDays(-1), note: 'Proprietarul a propus o nouă dată' },
+            { id: 3, locationId: 3, date: addDays(20), hour: '15:30', host: 'Irina M.', status: 'reschedule_pending', lastUpdate: addDays(-1), note: 'Proprietarul a propus o nouă dată', rescheduleSuggestions: [
+                (() => {
+                    const option = addDays(22);
+                    option.setHours(18, 0, 0, 0);
+                    return { date: option, iso: option.toISOString(), label: formatDateTime(option) };
+                })(),
+                (() => {
+                    const option = addDays(24);
+                    option.setHours(11, 30, 0, 0);
+                    return { date: option, iso: option.toISOString(), label: formatDateTime(option) };
+                })()
+            ] },
             { id: 4, locationId: 1, date: addDays(-3), hour: '10:00', host: 'Laura C.', status: 'completed', lastUpdate: addDays(-3), note: 'Ți-am trimis planul detaliat' }
         ];
 
         const requestFilters = { status: 'all', location: 'all', month: 'all' };
         const viewingFilters = { venue: 'all', status: 'all' };
+        let activeRescheduleViewingId = null;
+        let selectedRescheduleOption = null;
 
         const favoritesGrid = document.getElementById('favorites-grid');
         const overviewFavoritesCount = document.getElementById('overview-favorites-count');
@@ -1213,6 +1352,13 @@
         const viewingsVenueFilter = document.getElementById('viewings-venue-filter');
         const viewingsStatusFilter = document.getElementById('viewings-status-filter');
         const viewingsTableBody = document.getElementById('viewings-table-body');
+        const reschedulePanel = document.querySelector('[data-reschedule-panel]');
+        const rescheduleLocationEl = document.querySelector('[data-reschedule-location]');
+        const rescheduleUpdatedEl = document.querySelector('[data-reschedule-updated]');
+        const rescheduleMessageEl = document.querySelector('[data-reschedule-message]');
+        const rescheduleOptionsContainer = document.querySelector('[data-reschedule-options]');
+        const rescheduleAcceptBtn = document.querySelector('[data-reschedule-accept]');
+        const rescheduleDeclineBtn = document.querySelector('[data-reschedule-decline]');
 
         function getLocationById(id) {
             return locations.find(loc => loc.id === id);
@@ -1415,6 +1561,11 @@
                 if (viewingsStatusFilter) viewingsStatusFilter.value = 'all';
                 if (viewingsVenueFilter) viewingsVenueFilter.value = 'all';
                 renderViewingsTable();
+                const viewing = clientViewings.find(view => view.id === id);
+                if (viewing?.status === 'reschedule_pending') {
+                    renderReschedulePanel(id);
+                    reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
             requestAnimationFrame(() => {
                 let targetRow = null;
@@ -1435,6 +1586,7 @@
             renderOverviewMetrics();
             renderOverviewRecentActivity();
             renderOverviewViewingsList();
+            renderReschedulePanel();
         }
 
         function renderFavorites() {
@@ -2187,6 +2339,141 @@
             }
         }
 
+        function getPendingRescheduleViewing() {
+            return clientViewings.find(view => view.status === 'reschedule_pending' && Array.isArray(view.rescheduleSuggestions) && view.rescheduleSuggestions.length);
+        }
+
+        function renderReschedulePanel(targetId = null) {
+            if (!reschedulePanel) {
+                return;
+            }
+            const pendingViewing = targetId
+                ? clientViewings.find(view => view.id === targetId)
+                : getPendingRescheduleViewing();
+            const hasSuggestions = pendingViewing && Array.isArray(pendingViewing.rescheduleSuggestions) && pendingViewing.rescheduleSuggestions.length;
+            if (!pendingViewing || !hasSuggestions) {
+                reschedulePanel.hidden = true;
+                activeRescheduleViewingId = null;
+                selectedRescheduleOption = null;
+                if (rescheduleOptionsContainer) {
+                    rescheduleOptionsContainer.innerHTML = '';
+                }
+                if (rescheduleAcceptBtn) {
+                    rescheduleAcceptBtn.disabled = true;
+                }
+                return;
+            }
+
+            reschedulePanel.hidden = false;
+            const location = getLocationById(pendingViewing.locationId);
+            activeRescheduleViewingId = pendingViewing.id;
+            selectedRescheduleOption = null;
+
+            if (rescheduleLocationEl) {
+                const hostLabel = pendingViewing.host ? ` · ${pendingViewing.host}` : '';
+                rescheduleLocationEl.textContent = `${location?.name || 'Locație necunoscută'}${hostLabel}`;
+            }
+            if (rescheduleUpdatedEl) {
+                rescheduleUpdatedEl.textContent = `Actualizat ${formatRelativeTime(pendingViewing.lastUpdate) || 'recent'}`;
+            }
+            if (rescheduleMessageEl) {
+                rescheduleMessageEl.textContent = pendingViewing.note
+                    ? `${pendingViewing.note} Selectează intervalul potrivit pentru tine.`
+                    : 'Selectează intervalul potrivit pentru tine sau cere o altă propunere.';
+            }
+
+            if (rescheduleOptionsContainer) {
+                rescheduleOptionsContainer.innerHTML = '';
+                pendingViewing.rescheduleSuggestions.forEach((suggestion, index) => {
+                    const candidateDate = suggestion?.date instanceof Date && !Number.isNaN(suggestion.date.getTime())
+                        ? suggestion.date
+                        : (suggestion?.iso ? new Date(suggestion.iso) : null);
+                    const labelText = suggestion?.label || (candidateDate ? formatDateTime(candidateDate) : `Variantă ${index + 1}`);
+                    const optionWrapper = document.createElement('label');
+                    optionWrapper.className = 'reschedule-option';
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = 'reschedule-option';
+                    input.value = suggestion?.iso || `option-${index}`;
+                    input.dataset.index = String(index);
+
+                    const content = document.createElement('div');
+                    content.className = 'reschedule-option-content';
+                    const main = document.createElement('span');
+                    main.className = 'reschedule-option-main';
+                    main.textContent = labelText;
+                    const meta = document.createElement('span');
+                    meta.className = 'reschedule-option-meta';
+                    meta.textContent = location?.name ? `${location.name} · ${pendingViewing.host || 'Gazda locației'}` : (pendingViewing.host || 'Gazda locației');
+                    content.append(main, meta);
+
+                    input.addEventListener('change', () => {
+                        selectedRescheduleOption = {
+                            ...suggestion,
+                            date: candidateDate || new Date()
+                        };
+                        Array.from(rescheduleOptionsContainer.querySelectorAll('.reschedule-option')).forEach(option => option.classList.remove('is-selected'));
+                        optionWrapper.classList.add('is-selected');
+                        if (rescheduleAcceptBtn) {
+                            rescheduleAcceptBtn.disabled = false;
+                        }
+                    });
+
+                    optionWrapper.append(input, content);
+                    rescheduleOptionsContainer.appendChild(optionWrapper);
+                });
+            }
+
+            if (rescheduleAcceptBtn) {
+                rescheduleAcceptBtn.disabled = true;
+            }
+        }
+
+        function acceptRescheduleSelection() {
+            if (!activeRescheduleViewingId || !selectedRescheduleOption) {
+                return;
+            }
+            const viewing = clientViewings.find(view => view.id === activeRescheduleViewingId);
+            if (!viewing) {
+                return;
+            }
+            const chosenDate = selectedRescheduleOption.date instanceof Date && !Number.isNaN(selectedRescheduleOption.date.getTime())
+                ? new Date(selectedRescheduleOption.date.getTime())
+                : (selectedRescheduleOption.iso ? new Date(selectedRescheduleOption.iso) : null);
+            if (chosenDate && !Number.isNaN(chosenDate.getTime())) {
+                viewing.date = chosenDate;
+                viewing.hour = formatTime(chosenDate);
+            }
+            viewing.status = 'confirmed';
+            viewing.lastUpdate = new Date();
+            viewing.note = 'Ai confirmat intervalul propus de locație.';
+            viewing.rescheduleSuggestions = [];
+            selectedRescheduleOption = null;
+            renderReschedulePanel();
+            renderViewingsTable();
+            renderOverview();
+            reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function declineRescheduleSelection() {
+            if (!activeRescheduleViewingId) {
+                return;
+            }
+            const viewing = clientViewings.find(view => view.id === activeRescheduleViewingId);
+            if (!viewing) {
+                return;
+            }
+            viewing.status = 'awaiting_confirmation';
+            viewing.lastUpdate = new Date();
+            viewing.note = 'Ai refuzat intervalele propuse. Proprietarul îți va trimite alte variante.';
+            viewing.rescheduleSuggestions = [];
+            selectedRescheduleOption = null;
+            renderReschedulePanel();
+            renderViewingsTable();
+            renderOverview();
+        }
+
         function renderViewingsTable() {
             if (!viewingsTableBody) return;
             viewingsTableBody.innerHTML = '';
@@ -2203,6 +2490,7 @@
                 emptyCell.colSpan = 1;
                 emptyCell.innerHTML = '<div class="empty-state">Nu ai vizionări care să corespundă filtrului selectat.</div>';
                 renderOverviewViewingsList();
+                renderReschedulePanel();
                 return;
             }
 
@@ -2254,10 +2542,14 @@
                         <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Vezi rezumatul</button>
                         <button data-viewing-action="add_review" data-viewing-id="${view.id}">Scrie feedback</button>
                     `;
+                } else if (view.status === 'reschedule_pending') {
+                    actionsDiv.innerHTML = `
+                        <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi propunerile</button>
+                        <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Propune altă dată</button>
+                    `;
                 } else {
                     actionsDiv.innerHTML = `
-                        <button data-viewing-action="accept_reschedule" data-viewing-id="${view.id}">Acceptă noua dată</button>
-                        <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Propune altă dată</button>
+                        <button data-viewing-action="open_reschedule" data-viewing-id="${view.id}">Vezi detalii</button>
                     `;
                 }
                 bottomRow.appendChild(actionsDiv);
@@ -2283,13 +2575,15 @@
                     viewing.lastUpdate = new Date();
                     break;
                 case 'request_reschedule':
-                    viewing.status = 'reschedule_pending';
+                    viewing.status = 'awaiting_confirmation';
                     viewing.lastUpdate = new Date();
+                    viewing.note = 'Ai cerut un alt interval. Proprietarul îți va trimite noi propuneri.';
+                    viewing.rescheduleSuggestions = [];
                     break;
-                case 'accept_reschedule':
-                    viewing.status = 'confirmed';
-                    viewing.lastUpdate = new Date();
-                    break;
+                case 'open_reschedule':
+                    renderReschedulePanel(viewingId);
+                    reschedulePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return;
                 case 'download_materials':
                     viewing.lastUpdate = new Date();
                     break;
@@ -2357,6 +2651,8 @@
                 renderViewingsTable();
             });
             viewingsTableBody?.addEventListener('click', handleViewingAction);
+            rescheduleAcceptBtn?.addEventListener('click', acceptRescheduleSelection);
+            rescheduleDeclineBtn?.addEventListener('click', declineRescheduleSelection);
         }
 
         populateRequestFilters();
