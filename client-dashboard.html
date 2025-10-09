@@ -2507,6 +2507,7 @@
         const viewingAddSlotBtn = document.querySelector('[data-viewing-add-slot]');
         const viewingSuggestionPickers = new Map();
         const MAX_VIEWING_SLOTS = 4;
+        const MIN_VIEWING_SLOTS = 2;
         const viewingTimeOptions = (() => {
             const options = [];
             for (let hour = 8; hour <= 20; hour += 1) {
@@ -2676,9 +2677,7 @@
                     : 'Programează o vizionare';
             }
             if (viewingModalSubtitle) {
-                viewingModalSubtitle.textContent = viewingState.locationName
-                    ? `Alege data și ora potrivită pentru ${viewingState.locationName}.`
-                    : 'Selectează data și ora preferată pentru vizionare.';
+                viewingModalSubtitle.textContent = 'Selectează data și ora preferată pentru vizionare.';
             }
             initializeViewingSuggestionSlots(viewingState.slots);
             viewingModal.classList.add('is-visible');
@@ -2827,7 +2826,11 @@
         function initializeViewingSuggestionSlots(presetSlots = []) {
             destroyViewingSuggestionSlots();
             const initialSlots = Array.isArray(presetSlots) ? presetSlots.slice(0, MAX_VIEWING_SLOTS) : [];
-            for (let i = 0; i < MAX_VIEWING_SLOTS; i += 1) {
+            const desiredCount = Math.min(
+                Math.max(initialSlots.length, MIN_VIEWING_SLOTS),
+                MAX_VIEWING_SLOTS
+            );
+            for (let i = 0; i < desiredCount; i += 1) {
                 const slot = initialSlots[i] || null;
                 createViewingSuggestionSlot(i, slot);
             }
@@ -2903,7 +2906,7 @@
 
             if (viewingSuggestionsContainer) {
                 const removeButtons = viewingSuggestionsContainer.querySelectorAll('[data-viewing-remove-slot]');
-                const hideRemove = total <= 1;
+                const hideRemove = total <= MIN_VIEWING_SLOTS;
                 removeButtons.forEach(button => {
                     button.hidden = hideRemove;
                     button.disabled = hideRemove;
@@ -3027,8 +3030,8 @@
                 requestedSlots.push(slot);
             });
 
-            if (hasInvalid || requestedSlots.length !== MAX_VIEWING_SLOTS) {
-                window.alert('Completează și validează toate cele 4 intervale înainte de a trimite cererea.');
+            if (hasInvalid || requestedSlots.length < MIN_VIEWING_SLOTS) {
+                window.alert(`Completează și validează cel puțin ${MIN_VIEWING_SLOTS} ${MIN_VIEWING_SLOTS === 1 ? 'interval' : 'intervale'} (maxim ${MAX_VIEWING_SLOTS}) înainte de a trimite cererea.`);
                 return;
             }
 
