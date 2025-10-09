@@ -228,6 +228,13 @@
         table.crm-table tbody tr.client-row:hover {
             background-color: rgba(67, 100, 247, 0.06);
         }
+        table.crm-table tbody tr.owner-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        table.crm-table tbody tr.owner-row:hover {
+            background-color: rgba(0, 82, 212, 0.05);
+        }
 
         .table-cell-stack {
             display: flex;
@@ -342,12 +349,38 @@
             box-shadow: 0 0 0 4px rgba(0, 82, 212, 0.12);
         }
 
+        .filter-bar {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+        }
+        .filter-bar select,
+        .filter-bar input {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font: inherit;
+            font-size: 0.9rem;
+            background: var(--white-color);
+        }
+        .filter-bar input::placeholder {
+            color: var(--muted-color);
+        }
+        .table-filter-bar {
+            margin-bottom: 18px;
+        }
         .crm-table .filter-row th {
             padding: 10px 12px 16px;
             border-bottom: none;
         }
-        .crm-table .filter-input,
-        .crm-table .filter-select {
+        .crm-table .filter-row input,
+        .crm-table .filter-row select {
             width: 100%;
             padding: 10px 12px;
             border-radius: 12px;
@@ -355,8 +388,8 @@
             background: rgba(67, 100, 247, 0.06);
             font-size: 0.85rem;
         }
-        .crm-table .filter-input:focus,
-        .crm-table .filter-select:focus {
+        .crm-table .filter-row input:focus,
+        .crm-table .filter-row select:focus {
             outline: none;
             border-color: rgba(0, 82, 212, 0.4);
             box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.12);
@@ -379,10 +412,72 @@
         .pill-chip[data-variant="agency"] { background: rgba(59, 130, 246, 0.16); color: #1d4ed8; }
         .pill-chip[data-variant="admin"] { background: rgba(14, 165, 233, 0.16); color: #0369a1; }
         .pill-chip[data-variant="owner"] { background: rgba(245, 158, 11, 0.16); color: #b45309; }
+        .claim-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(67, 100, 247, 0.12);
+            color: var(--primary-color);
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .claim-chip[data-claim="unclaimed"] { background: rgba(67, 100, 247, 0.12); color: var(--primary-color); }
+        .claim-chip[data-claim="pending"] { background: rgba(245, 158, 11, 0.18); color: #b45309; cursor: pointer; }
+        .claim-chip[data-claim="pending"]:hover,
+        .claim-chip[data-claim="pending"]:focus-visible { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25); transform: translateY(-1px); }
+        .claim-chip[data-claim="accepted"] { background: rgba(20, 164, 77, 0.16); color: #15803d; }
+        .claim-chip[data-claim="rejected"] { background: rgba(224, 36, 36, 0.16); color: #b91c1c; }
+        .claim-chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.2); }
+        .link-muted {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .link-muted:hover,
+        .link-muted:focus {
+            text-decoration: underline;
+        }
         .crm-table .empty-state {
             text-align: center;
             padding: 26px;
             color: var(--muted-color);
+        }
+        .crm-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.38);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 1000;
+        }
+        .crm-modal-backdrop[hidden] { display: none; }
+        .crm-modal {
+            background: var(--white-color);
+            border-radius: var(--border-radius);
+            padding: 28px 32px;
+            box-shadow: 0 40px 120px -60px rgba(67, 100, 247, 0.4);
+            max-width: 420px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .crm-modal h3 { margin: 0; font-size: 1.2rem; }
+        .crm-modal-body p {
+            margin: 0;
+            color: var(--muted-color);
+            line-height: 1.5;
+        }
+        .crm-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .venue-meta {
@@ -748,6 +843,17 @@
                             <button class="crm-button small primary" type="button" data-action="export-clients">Exportă CSV</button>
                         </div>
                     </header>
+                    <div class="filter-bar table-filter-bar" aria-label="Filtre clienți">
+                        <label for="clients-search">Căutare:</label>
+                        <input type="search" id="clients-search" placeholder="Caută după nume sau email">
+                        <label for="clients-status-filter">Status:</label>
+                        <select id="clients-status-filter">
+                            <option value="all">Toate statusurile</option>
+                            <option value="active">Activ</option>
+                            <option value="inactive">Inactiv</option>
+                        </select>
+                        <button class="crm-button small ghost" type="button" id="clients-reset-filters">Reset</button>
+                    </div>
                     <div class="table-wrapper">
                         <table class="crm-table">
                             <thead>
@@ -757,22 +863,6 @@
                                     <th>Ultima activitate</th>
                                     <th>Status</th>
                                     <th></th>
-                                </tr>
-                                <tr class="filter-row">
-                                    <th colspan="2">
-                                        <input type="search" class="filter-input" id="clients-search" placeholder="Caută după nume sau email" aria-label="Filtru căutare clienți">
-                                    </th>
-                                    <th></th>
-                                    <th>
-                                        <select class="filter-select" id="clients-status-filter" aria-label="Filtru status clienți">
-                                            <option value="all">Toate statusurile</option>
-                                            <option value="active">Activ</option>
-                                            <option value="inactive">Inactiv</option>
-                                        </select>
-                                    </th>
-                                    <th>
-                                        <button class="crm-button small ghost" type="button" id="clients-reset-filters">Reset</button>
-                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="clients-table-body"></tbody>
@@ -794,40 +884,36 @@
                             <button class="crm-button small primary" type="button" data-action="create-owner">Adaugă business</button>
                         </div>
                     </header>
+                    <div class="filter-bar table-filter-bar" aria-label="Filtre proprietari">
+                        <label for="owners-search">Căutare:</label>
+                        <input type="search" id="owners-search" placeholder="Caută business sau contact">
+                        <label for="owners-claim-filter">Claim:</label>
+                        <select id="owners-claim-filter">
+                            <option value="all">Toate claim-urile</option>
+                            <option value="unclaimed">Nealocate</option>
+                            <option value="pending">Claim în așteptare</option>
+                            <option value="accepted">Claim acceptat</option>
+                            <option value="rejected">Claim respins</option>
+                        </select>
+                        <label for="owners-status-filter">Status:</label>
+                        <select id="owners-status-filter">
+                            <option value="all">Toate statusurile</option>
+                            <option value="active">Activ</option>
+                            <option value="inactive">Inactiv</option>
+                        </select>
+                        <button class="crm-button small ghost" type="button" id="owners-reset-filters">Reset</button>
+                    </div>
                     <div class="table-wrapper">
                         <table class="crm-table">
                             <thead>
                                 <tr>
-                                    <th>Nume business</th>
-                                    <th>Administrare</th>
                                     <th>Contact</th>
+                                    <th>Nume business</th>
+                                    <th>Website</th>
                                     <th>Locații active</th>
+                                    <th>Claim</th>
                                     <th>Status</th>
                                     <th></th>
-                                </tr>
-                                <tr class="filter-row">
-                                    <th>
-                                        <input type="search" class="filter-input" id="owners-search" placeholder="Caută business sau contact" aria-label="Filtru căutare proprietari">
-                                    </th>
-                                    <th>
-                                        <select class="filter-select" id="owners-management-filter" aria-label="Filtru administrare">
-                                            <option value="all">Toate modurile</option>
-                                            <option value="owner">Gestionat de proprietar</option>
-                                            <option value="admin">Gestionat de Ouido</option>
-                                        </select>
-                                    </th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>
-                                        <select class="filter-select" id="owners-status-filter" aria-label="Filtru status proprietari">
-                                            <option value="all">Toate statusurile</option>
-                                            <option value="active">Activ</option>
-                                            <option value="inactive">Inactiv</option>
-                                        </select>
-                                    </th>
-                                    <th>
-                                        <button class="crm-button small ghost" type="button" id="owners-reset-filters">Reset</button>
-                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="owners-table-body"></tbody>
@@ -855,6 +941,23 @@
             </section>
         </section>
     </main>
+
+    <div class="crm-modal-backdrop" id="claim-modal" hidden>
+        <div class="crm-modal" role="dialog" aria-modal="true" aria-labelledby="claim-modal-title">
+            <div>
+                <h3 id="claim-modal-title">Procesează claim</h3>
+                <div class="crm-modal-body">
+                    <p id="claim-modal-text">Revizuiește solicitarea proprietarului înainte de a decide.</p>
+                </div>
+            </div>
+            <div class="crm-modal-actions">
+                <button class="crm-button small ghost" type="button" data-claim-modal="close">Anulează</button>
+                <button class="crm-button small ghost" type="button" data-claim-modal="location">Locație</button>
+                <button class="crm-button small danger" type="button" data-claim-modal="reject">Respinge</button>
+                <button class="crm-button small primary" type="button" data-claim-modal="accept">Acceptă</button>
+            </div>
+        </div>
+    </div>
 
     <script src="main.js"></script>
     <script>
@@ -990,7 +1093,11 @@
                     business: 'Eventique SRL',
                     contact: 'Ioana Pătrașcu',
                     contactEmail: 'ioana.patrascu@eventique.ro',
-                    management: 'owner',
+                    claimStatus: 'accepted',
+                    claimDetails: 'Claim verificat pentru „Luna Ballroom”',
+                    phone: '+40 723 112 480',
+                    website: 'https://eventique.ro',
+                    claimedVenue: { id: 401, name: 'Luna Ballroom', url: 'venue-details.html#luna-ballroom' },
                     locations: 4,
                     lastUpdate: 'Contract revizuit acum 2 zile',
                     status: 'active',
@@ -1000,7 +1107,11 @@
                     business: 'Nymphaea Events',
                     contact: 'Rareș Ioniță',
                     contactEmail: 'rares@nymphaeaevents.ro',
-                    management: 'owner',
+                    claimStatus: 'accepted',
+                    claimDetails: 'Portofoliu sincronizat în ultima săptămână',
+                    phone: '+40 744 308 912',
+                    website: 'https://nymphaeaevents.ro',
+                    claimedVenue: { id: 405, name: 'Nymphaea Garden', url: 'venue-details.html#nymphaea-garden' },
                     locations: 2,
                     lastUpdate: 'Dashboard actualizat ieri',
                     status: 'active',
@@ -1010,17 +1121,25 @@
                     business: 'Casa Alba Events',
                     contact: 'Lavinia Neagu',
                     contactEmail: 'lavinia@casaalbaevents.ro',
-                    management: 'owner',
-                    locations: 1,
+                    claimStatus: 'pending',
+                    claimDetails: 'Claim trimis pentru „Casa Alba Ballroom”',
+                    phone: '+40 723 987 601',
+                    website: 'https://casaalbaevents.ro',
+                    claimedVenue: { id: 402, name: 'Casa Alba Ballroom', url: 'venue-details.html#casa-alba-ballroom' },
+                    locations: 0,
                     lastUpdate: 'Necesită follow-up documente',
-                    status: 'inactive',
+                    status: 'active',
                 },
                 {
                     id: 4,
                     business: 'GreenStay',
                     contact: 'Mihai Radu',
                     contactEmail: 'mihai@greenstay.ro',
-                    management: 'owner',
+                    claimStatus: 'accepted',
+                    claimDetails: 'Owner verificat · SLA respectat',
+                    phone: '+40 720 556 730',
+                    website: 'https://greenstay.ro',
+                    claimedVenue: { id: 406, name: 'Forest Retreat & Spa', url: 'venue-details.html#forest-retreat' },
                     locations: 3,
                     lastUpdate: 'Raport performanță trimis azi',
                     status: 'active',
@@ -1030,7 +1149,11 @@
                     business: 'CityLights Venues',
                     contact: 'Echipa Ouido',
                     contactEmail: 'partners@ouidoevents.com',
-                    management: 'admin',
+                    claimStatus: 'unclaimed',
+                    claimDetails: 'Portofoliu gestionat de Ouido · așteaptă claim',
+                    phone: '+40 314 325 400',
+                    website: 'https://ouidoevents.com/partners',
+                    claimedVenue: { id: 405, name: 'Skyline Events Terrace', url: 'venue-details.html#skyline-events-terrace' },
                     locations: 3,
                     lastUpdate: 'Administrat intern · sync azi 08:00',
                     status: 'active',
@@ -1040,7 +1163,11 @@
                     business: 'Heritage Halls',
                     contact: 'Coordonator Ouido',
                     contactEmail: 'heritage@ouidoevents.com',
-                    management: 'admin',
+                    claimStatus: 'rejected',
+                    claimDetails: 'Claim respins · documente incomplete',
+                    phone: '+40 314 890 220',
+                    website: 'https://ouidoevents.com/heritage',
+                    claimedVenue: { id: 404, name: 'Urban Yard', url: 'venue-details.html#urban-yard' },
                     locations: 2,
                     lastUpdate: 'Preluat de Ouido · contract în revizie',
                     status: 'inactive',
@@ -1091,7 +1218,7 @@
             owners: {
                 search: '',
                 status: 'all',
-                management: 'all',
+                claim: 'all',
             },
         };
 
@@ -1105,13 +1232,27 @@
             },
             owners: {
                 search: document.getElementById('owners-search'),
-                management: document.getElementById('owners-management-filter'),
+                claim: document.getElementById('owners-claim-filter'),
                 status: document.getElementById('owners-status-filter'),
                 reset: document.getElementById('owners-reset-filters'),
                 count: document.getElementById('owners-table-count'),
                 meta: document.getElementById('owners-table-meta'),
             },
         };
+
+        const claimModalElements = {
+            backdrop: document.getElementById('claim-modal'),
+            title: document.getElementById('claim-modal-title'),
+            description: document.getElementById('claim-modal-text'),
+            accept: document.querySelector('[data-claim-modal="accept"]'),
+            reject: document.querySelector('[data-claim-modal="reject"]'),
+            close: document.querySelector('[data-claim-modal="close"]'),
+            location: document.querySelector('[data-claim-modal="location"]'),
+        };
+        let claimModalOwnerId = null;
+        let claimModalTriggerElement = null;
+        let claimModalVenueUrl = '';
+        let claimModalVenueName = '';
 
         function renderMetrics() {
             const metricsContainer = document.getElementById('overview-metrics');
@@ -1279,8 +1420,116 @@
             `).join('');
         }
 
-        function formatOwnerManagement(mode) {
-            return mode === 'admin' ? 'Gestionat de Ouido' : 'Gestionat de proprietar';
+        function formatClaimStatus(claimStatus) {
+            switch (claimStatus) {
+                case 'pending':
+                    return 'Claim în așteptare';
+                case 'accepted':
+                    return 'Claim acceptat';
+                case 'rejected':
+                    return 'Claim respins';
+                case 'unclaimed':
+                default:
+                    return 'Nealocat · Ouido';
+            }
+        }
+
+        function openClaimModal(owner, triggerElement) {
+            if (!claimModalElements.backdrop) {
+                const venueName = owner.claimedVenue && owner.claimedVenue.name ? owner.claimedVenue.name : owner.business;
+                const accepts = window.confirm(`Acceptă claim-ul pentru ${venueName} (${owner.business})?`); // fallback minimal
+                if (accepts) {
+                    owner.claimStatus = 'accepted';
+                    owner.claimDetails = `Claim acceptat pentru ${venueName}`;
+                    owner.lastUpdate = 'Claim acceptat chiar acum';
+                    owner.locations = Math.max(owner.locations, 1);
+                    renderAccounts();
+                }
+                return;
+            }
+
+            claimModalOwnerId = owner.id;
+            claimModalTriggerElement = triggerElement;
+            claimModalVenueUrl = owner.claimedVenue && owner.claimedVenue.url ? owner.claimedVenue.url : '';
+            claimModalVenueName = owner.claimedVenue && owner.claimedVenue.name ? owner.claimedVenue.name : owner.business;
+            if (claimModalElements.title) {
+                claimModalElements.title.textContent = `Procesare claim – ${owner.business}`;
+            }
+            if (claimModalElements.description) {
+                const detail = owner.claimDetails
+                    ? `Detalii: ${owner.claimDetails}`
+                    : 'Revizuiește documentele înainte de a confirma.';
+                const venueLine = owner.claimedVenue && owner.claimedVenue.name
+                    ? `Solicită preluarea locației „${owner.claimedVenue.name}”. `
+                    : '';
+                claimModalElements.description.textContent = `${owner.contact} (${owner.contactEmail}) ${venueLine}${detail}`;
+            }
+            if (claimModalElements.location) {
+                if (claimModalVenueUrl) {
+                    claimModalElements.location.disabled = false;
+                    claimModalElements.location.removeAttribute('disabled');
+                    claimModalElements.location.setAttribute('aria-label', `Deschide locația ${claimModalVenueName}`);
+                } else {
+                    claimModalElements.location.disabled = true;
+                    claimModalElements.location.setAttribute('disabled', '');
+                    claimModalElements.location.setAttribute('aria-label', 'Locație indisponibilă');
+                }
+            }
+
+            claimModalElements.backdrop.removeAttribute('hidden');
+            if (claimModalElements.accept) {
+                claimModalElements.accept.focus();
+            }
+        }
+
+        function closeClaimModal(options = { restore: true }) {
+            if (!claimModalElements.backdrop) return;
+            claimModalElements.backdrop.setAttribute('hidden', '');
+            if (options.restore !== false) {
+                if (claimModalTriggerElement && document.body.contains(claimModalTriggerElement)) {
+                    claimModalTriggerElement.focus();
+                } else if (accountElements.owners.search) {
+                    accountElements.owners.search.focus();
+                }
+            }
+            claimModalOwnerId = null;
+            claimModalTriggerElement = null;
+            claimModalVenueUrl = '';
+            claimModalVenueName = '';
+        }
+
+        function handleClaimDecision(decision) {
+            if (!claimModalOwnerId) {
+                closeClaimModal();
+                return;
+            }
+            const owner = adminState.owners.find(o => o.id === claimModalOwnerId);
+            if (!owner) {
+                closeClaimModal();
+                return;
+            }
+
+            if (decision === 'accept') {
+                owner.claimStatus = 'accepted';
+                owner.claimDetails = claimModalVenueName
+                    ? `Claim acceptat pentru ${claimModalVenueName}`
+                    : 'Claim acceptat · proprietar confirmat';
+                owner.lastUpdate = 'Claim acceptat chiar acum';
+                owner.locations = Math.max(owner.locations, 1);
+            } else if (decision === 'reject') {
+                owner.claimStatus = 'rejected';
+                owner.claimDetails = claimModalVenueName
+                    ? `Claim respins pentru ${claimModalVenueName}`
+                    : 'Claim respins · proprietar notificat';
+                owner.lastUpdate = 'Claim respins chiar acum';
+                owner.locations = Math.max(0, owner.locations);
+            }
+
+            closeClaimModal({ restore: false });
+            renderAccounts();
+            if (accountElements.owners.search) {
+                accountElements.owners.search.focus();
+            }
         }
 
         function describeFiltersSummary(filters) {
@@ -1289,8 +1538,9 @@
             if (searchTerm) {
                 summary.push(`căutare „${searchTerm}”`);
             }
-            if (filters.management && filters.management !== 'all') {
-                summary.push(filters.management === 'admin' ? 'administrare Ouido' : 'administrare proprietar');
+            if (filters.claim && filters.claim !== 'all') {
+                const claimLabel = formatClaimStatus(filters.claim).toLowerCase();
+                summary.push(`claim ${claimLabel}`);
             }
             if (filters.status && filters.status !== 'all') {
                 summary.push(`status ${filters.status === 'active' ? 'activ' : 'inactiv'}`);
@@ -1363,13 +1613,20 @@
                     || [owner.business, owner.contact, owner.contactEmail || '']
                         .some(field => field.toLowerCase().includes(ownerSearch));
                 const matchesStatus = ownersFilters.status === 'all' || owner.status === ownersFilters.status;
-                const matchesManagement = ownersFilters.management === 'all' || owner.management === ownersFilters.management;
-                return matchesSearch && matchesStatus && matchesManagement;
+                const matchesClaim = ownersFilters.claim === 'all' || owner.claimStatus === ownersFilters.claim;
+                return matchesSearch && matchesStatus && matchesClaim;
             });
 
             ownersBody.innerHTML = filteredOwners.length
                 ? filteredOwners.map(owner => `
-                    <tr data-id="owner-${owner.id}">
+                    <tr class="owner-row" data-id="owner-${owner.id}" data-owner-link="owner-crm.html#venues">
+                        <td>
+                            <div class="table-cell-stack">
+                                <strong>${owner.contact}</strong>
+                                <span class="table-subtext">${owner.contactEmail}</span>
+                                ${owner.phone ? `<span class="table-subtext">${owner.phone}</span>` : ''}
+                            </div>
+                        </td>
                         <td>
                             <div class="table-cell-stack">
                                 <strong>${owner.business}</strong>
@@ -1378,17 +1635,18 @@
                         </td>
                         <td>
                             <div class="table-cell-stack">
-                                <span class="pill-chip" data-variant="${owner.management}">${formatOwnerManagement(owner.management)}</span>
-                                <span class="table-subtext">${owner.management === 'admin' ? 'Portofoliu fără proprietar dedicat' : 'Administrat direct de partener'}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="table-cell-stack">
-                                <span>${owner.contact}</span>
-                                <span class="table-subtext">${owner.contactEmail}</span>
+                                ${owner.website ? `<a href="${owner.website}" target="_blank" rel="noopener" class="link-muted">${owner.website.replace(/^https?:\/\//, '')}</a>` : '<span class="table-subtext">—</span>'}
                             </div>
                         </td>
                         <td>${owner.locations}</td>
+                        <td>
+                            <div class="table-cell-stack">
+                                <span class="claim-chip" data-claim="${owner.claimStatus}" ${owner.claimStatus === 'pending' ? `data-owner-claim="${owner.id}" role="button" tabindex="0" aria-label="Procesează claim pentru ${owner.business}"` : ''}>
+                                    ${formatClaimStatus(owner.claimStatus)}
+                                </span>
+                                <span class="table-subtext">${owner.claimDetails || ''}</span>
+                            </div>
+                        </td>
                         <td><span class="status-chip" data-status="${owner.status}">${owner.status === 'active' ? 'Activ' : 'Inactiv'}</span></td>
                         <td>
                             <div class="table-actions">
@@ -1399,7 +1657,7 @@
                         </td>
                     </tr>
                 `).join('')
-                : '<tr><td colspan="6" class="empty-state">Nu există parteneri care să corespundă filtrelor.</td></tr>';
+                : '<tr><td colspan="7" class="empty-state">Nu există parteneri care să corespundă filtrelor.</td></tr>';
 
             if (accountElements.owners.count) {
                 const label = filteredOwners.length === 1 ? 'partener' : 'parteneri';
@@ -1648,6 +1906,35 @@
             });
         }
 
+        if (claimModalElements.accept) {
+            claimModalElements.accept.addEventListener('click', () => handleClaimDecision('accept'));
+        }
+        if (claimModalElements.location) {
+            claimModalElements.location.addEventListener('click', () => {
+                if (!claimModalVenueUrl) return;
+                window.open(claimModalVenueUrl, '_blank');
+            });
+        }
+        if (claimModalElements.reject) {
+            claimModalElements.reject.addEventListener('click', () => handleClaimDecision('reject'));
+        }
+        if (claimModalElements.close) {
+            claimModalElements.close.addEventListener('click', () => closeClaimModal());
+        }
+        if (claimModalElements.backdrop) {
+            claimModalElements.backdrop.addEventListener('click', (event) => {
+                if (event.target === claimModalElements.backdrop) {
+                    closeClaimModal();
+                }
+            });
+        }
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && claimModalElements.backdrop && !claimModalElements.backdrop.hasAttribute('hidden')) {
+                event.preventDefault();
+                closeClaimModal();
+            }
+        });
+
         if (manageVenuesElements.owner) {
             manageVenuesElements.owner.addEventListener('change', (event) => {
                 manageVenuesFilters.owner = event.target.value;
@@ -1693,9 +1980,9 @@
             });
         }
 
-        if (accountElements.owners.management) {
-            accountElements.owners.management.addEventListener('change', (event) => {
-                accountFilters.owners.management = event.target.value;
+        if (accountElements.owners.claim) {
+            accountElements.owners.claim.addEventListener('change', (event) => {
+                accountFilters.owners.claim = event.target.value;
                 renderAccounts();
             });
         }
@@ -1710,10 +1997,10 @@
         if (accountElements.owners.reset) {
             accountElements.owners.reset.addEventListener('click', () => {
                 accountFilters.owners.search = '';
-                accountFilters.owners.management = 'all';
+                accountFilters.owners.claim = 'all';
                 accountFilters.owners.status = 'all';
                 if (accountElements.owners.search) accountElements.owners.search.value = '';
-                if (accountElements.owners.management) accountElements.owners.management.value = 'all';
+                if (accountElements.owners.claim) accountElements.owners.claim.value = 'all';
                 if (accountElements.owners.status) accountElements.owners.status.value = 'all';
                 renderAccounts();
             });
@@ -1830,15 +2117,57 @@
             });
         }
 
-        document.getElementById('owners-table-body').addEventListener('click', (event) => {
-            const toggleId = event.target.getAttribute('data-toggle-owner');
-            if (!toggleId) return;
-            const owner = adminState.owners.find(o => o.id === Number(toggleId));
-            if (!owner) return;
-            owner.status = owner.status === 'active' ? 'inactive' : 'active';
-            renderAccounts();
-            updateAccountMetrics('owner', owner.status);
-        });
+        const ownersTableBody = document.getElementById('owners-table-body');
+        if (ownersTableBody) {
+            ownersTableBody.addEventListener('click', (event) => {
+                const toggleButton = event.target.closest('[data-toggle-owner]');
+                if (toggleButton) {
+                    const toggleId = Number(toggleButton.getAttribute('data-toggle-owner'));
+                    if (Number.isNaN(toggleId)) return;
+                    const owner = adminState.owners.find(o => o.id === toggleId);
+                    if (!owner) return;
+                    owner.status = owner.status === 'active' ? 'inactive' : 'active';
+                    renderAccounts();
+                    updateAccountMetrics('owner', owner.status);
+                    return;
+                }
+
+                const claimTarget = event.target.closest('[data-owner-claim]');
+                if (claimTarget) {
+                    const ownerId = Number(claimTarget.getAttribute('data-owner-claim'));
+                    if (Number.isNaN(ownerId)) return;
+                    const owner = adminState.owners.find(o => o.id === ownerId);
+                    if (!owner) return;
+                    openClaimModal(owner, claimTarget);
+                    return;
+                }
+
+                if (event.target.closest('.table-actions')) {
+                    return;
+                }
+                if (event.target.closest('a')) {
+                    return;
+                }
+
+                const row = event.target.closest('tr[data-owner-link]');
+                if (!row) return;
+                const targetUrl = row.getAttribute('data-owner-link');
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+
+            ownersTableBody.addEventListener('keydown', (event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && event.target.hasAttribute('data-owner-claim')) {
+                    event.preventDefault();
+                    const ownerId = Number(event.target.getAttribute('data-owner-claim'));
+                    if (Number.isNaN(ownerId)) return;
+                    const owner = adminState.owners.find(o => o.id === ownerId);
+                    if (!owner) return;
+                    openClaimModal(owner, event.target);
+                }
+            });
+        }
 
         renderMetrics();
         renderRequestChart();
