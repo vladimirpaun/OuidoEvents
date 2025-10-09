@@ -2780,7 +2780,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const actions = document.createElement('div');
             actions.className = 'table-actions booking-row-actions';
-            const actionDefs = viewingActionsByStatus[viewing.status] || [];
+            const actionDefs = (viewingActionsByStatus[viewing.status] || []).filter(def => {
+                if (def.key !== 'confirm-slot') {
+                    return true;
+                }
+                if (!showSlots) {
+                    return false;
+                }
+                return latestSlotGroup?.source !== 'owner';
+            });
             actionDefs.forEach(def => {
                 actions.appendChild(createActionButton(def.label, def.key));
             });
