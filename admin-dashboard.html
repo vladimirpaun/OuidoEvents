@@ -3103,6 +3103,61 @@
             return links;
         }
 
+        function showAdminToast(message, options = {}) {
+            const toastContainerId = 'admin-toast-container';
+            let container = document.getElementById(toastContainerId);
+            if (!container) {
+                container = document.createElement('div');
+                container.id = toastContainerId;
+                container.setAttribute('data-admin-ready', 'true');
+                Object.assign(container.style, {
+                    position: 'fixed',
+                    bottom: '24px',
+                    right: '24px',
+                    zIndex: '2000',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    maxWidth: '320px',
+                    pointerEvents: 'none',
+                });
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'admin-toast';
+            toast.textContent = message;
+            toast.setAttribute('role', 'status');
+            toast.setAttribute('aria-live', 'polite');
+            Object.assign(toast.style, {
+                background: 'rgba(26, 32, 44, 0.92)',
+                color: 'var(--white-color)',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                boxShadow: '0 18px 40px -22px rgba(15, 23, 42, 0.55)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                pointerEvents: 'auto',
+            });
+
+            container.appendChild(toast);
+
+            const duration = typeof options.duration === 'number' ? options.duration : 2500;
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                setTimeout(() => {
+                    if (toast.parentNode === container) {
+                        container.removeChild(toast);
+                    }
+                    if (!container.hasChildNodes()) {
+                        container.remove();
+                    }
+                }, 260);
+            }, duration);
+        }
+
         function initElementOnce(element, key, initializer) {
             if (!element || typeof initializer !== 'function') {
                 return;
@@ -3985,9 +4040,18 @@
                     if (Number.isNaN(toggleId)) return;
                     const owner = adminState.owners.find(o => o.id === toggleId);
                     if (!owner) return;
-                    owner.status = owner.status === 'active' ? 'inactive' : 'active';
+                    const nextStatus = owner.status === 'active' ? 'inactive' : 'active';
+                    const message = nextStatus === 'inactive'
+                        ? 'Marcăm acest owner ca inactiv?'
+                        : 'Marcăm acest owner ca activ?';
+                    const confirmed = window.confirm(message);
+                    if (!confirmed) {
+                        return;
+                    }
+                    owner.status = nextStatus;
                     renderAccounts();
                     updateAccountMetrics('owner', owner.status);
+                    showAdminToast(`Owner ${owner.status === 'active' ? 'activat' : 'inactivat'} – ${owner.business}`);
                     return;
                 }
 
