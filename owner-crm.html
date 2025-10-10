@@ -1437,12 +1437,14 @@
             border-bottom: none;
         }
 
+        .availability-slot[data-status="confirmed"],
         .availability-slot[data-status="booked"] {
             background: rgba(0, 82, 212, 0.12);
             color: var(--primary-color);
             font-weight: 600;
         }
 
+        .availability-slot[data-status="pre_booked"],
         .availability-slot[data-status="hold"] {
             background: rgba(255, 193, 7, 0.18);
             color: #b7791f;
@@ -2026,14 +2028,14 @@
             background: currentColor;
         }
 
-        .calendar-event[data-status="booked"] {
-            background-color: rgba(34, 197, 94, 0.16);
+        .calendar-event[data-status="confirmed"] {
+            background-color: rgba(21, 128, 61, 0.18);
             color: #15803d;
         }
 
         .calendar-event[data-status="pre_booked"] {
-            background-color: rgba(14, 165, 233, 0.16);
-            color: #0e7490;
+            background-color: rgba(13, 148, 136, 0.18);
+            color: #0d9488;
         }
 
         .calendar-event[data-status="manual_reserved"] {
@@ -2098,11 +2100,11 @@
         }
 
         .availability-legend-dot-reserved-ouido {
-            background-color: #16a34a;
+            background-color: #15803d;
         }
 
         .availability-legend-dot-prereserve-ouido {
-            background-color: #0ea5e9;
+            background-color: #0d9488;
         }
 
         .availability-legend-dot-manual-reserved {
@@ -3160,10 +3162,10 @@
                         <!-- Zilele săptămânii vor fi adăugate aici de JS -->
                     </div>
                     <div class="availability-legend" style="margin-top: 10px;">
-                        <span class="legend-item"><span class="legend-dot availability-legend-dot-reserved-ouido"></span> Rezervat prin Ouido</span>
-                        <span class="legend-item"><span class="legend-dot availability-legend-dot-prereserve-ouido"></span> Pre-rezervat prin Ouido</span>
-                        <span class="legend-item"><span class="legend-dot availability-legend-dot-manual-reserved"></span> Rezervat manual</span>
-                        <span class="legend-item"><span class="legend-dot availability-legend-dot-manual-prereserved"></span> Pre-rezervat manual</span>
+                        <span class="legend-item" data-status="confirmed"><span class="legend-dot availability-legend-dot-reserved-ouido"></span> Rezervat prin Ouido</span>
+                        <span class="legend-item" data-status="pre_booked"><span class="legend-dot availability-legend-dot-prereserve-ouido"></span> Pre-rezervat prin Ouido</span>
+                        <span class="legend-item" data-status="manual_reserved"><span class="legend-dot availability-legend-dot-manual-reserved"></span> Rezervat manual</span>
+                        <span class="legend-item" data-status="manual_pre_reserved"><span class="legend-dot availability-legend-dot-manual-prereserved"></span> Pre-rezervat manual</span>
                     </div>
                 </div>
 
@@ -3681,6 +3683,30 @@
                     <button type="submit" class="crm-button primary">Trimite propunerile</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="booking-status-confirm-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="booking-status-confirm-title">
+            <div class="modal-header">
+                <h3 id="booking-status-confirm-title" data-modal-title>Confirmă acțiunea</h3>
+                <button class="modal-close-btn" aria-label="Închide">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtitle" data-modal-subtitle>Selectează motivul acțiunii pentru a păstra istoricul complet.</p>
+                <div class="form-group">
+                    <label for="booking-status-reason">Motiv</label>
+                    <select id="booking-status-reason" data-reason-select required></select>
+                </div>
+                <div class="form-group">
+                    <label for="booking-status-note">Notițe interne (opțional)</label>
+                    <textarea id="booking-status-note" data-reason-note rows="3" placeholder=""></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="crm-button ghost modal-close-btn">Renunță</button>
+                <button type="button" class="crm-button danger" data-confirm-booking-status>Confirmă</button>
+            </div>
         </div>
     </div>
 </body>

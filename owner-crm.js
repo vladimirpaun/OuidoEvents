@@ -570,173 +570,226 @@ document.addEventListener('DOMContentLoaded', () => {
         'cancelled'
     ];
 
-    const bookingStatusMeta = {
-        availability_request: {
-            label: 'Cerere disponibilitate',
-            className: 'availability_request',
-            color: '#b45309',
-            owner: {
-                description: 'Venue-ul a primit o cerere de disponibilitate.',
-                actions: ['Confirmă disponibilitatea', 'Respinge'],
-                nextStep: 'Confirmă disponibilitatea'
+    const statusCatalog = {
+        booking: {
+            availability_request: {
+                label: 'Cerere disponibilitate',
+                clientLabel: 'Cerere disponibilitate trimisă',
+                className: 'availability_request',
+                color: '#b45309',
+                owner: {
+                    description: 'Venue-ul a primit o cerere de disponibilitate.',
+                    actions: ['Confirmă disponibilitatea', 'Respinge'],
+                    nextStep: 'Confirmă disponibilitatea'
+                },
+                client: {
+                    label: 'Cerere disponibilitate trimisă',
+                    description: 'Locația a primit cererea ta și verifică disponibilitatea pentru data selectată.',
+                    actions: ['Anulează cererea']
+                }
             },
-            client: {
-                label: 'Cerere disponibilitate trimisă',
-                description: 'Locația a primit cererea ta și verifică disponibilitatea pentru data selectată.',
-                actions: ['Anulează cererea']
-            }
-        },
-        availability_confirmed: {
-            label: 'Disponibilitate confirmată',
-            className: 'availability_confirmed',
-            color: '#2563eb',
-            owner: {
-                description: 'Data este liberă.',
-                actions: ['Așteaptă cererea clientului (ofertă sau vizionare)'],
-                nextStep: 'Așteaptă cererea clientului (ofertă sau vizionare)'
+            availability_confirmed: {
+                label: 'Disponibilitate confirmată',
+                clientLabel: 'Dată disponibilă – poți cere ofertă',
+                className: 'availability_confirmed',
+                color: '#2563eb',
+                owner: {
+                    description: 'Data este liberă.',
+                    actions: ['Așteaptă cererea clientului (ofertă sau vizionare)'],
+                    nextStep: 'Așteaptă cererea clientului (ofertă sau vizionare)'
+                },
+                client: {
+                    label: 'Dată disponibilă – poți cere ofertă',
+                    description: 'Locația a confirmat că data este liberă.',
+                    actions: ['Cere ofertă', 'Cere vizionare', 'Anulează cererea']
+                }
             },
-            client: {
-                label: 'Dată disponibilă – poți cere ofertă',
-                description: 'Locația a confirmat că data este liberă.',
-                actions: ['Cere ofertă', 'Cere vizionare', 'Anulează cererea']
-            }
-        },
-        offer_requested: {
-            label: 'Ofertă solicitată',
-            className: 'offer_requested',
-            color: '#a855f7',
-            owner: {
-                description: 'Clientul a cerut o ofertă.',
-                actions: ['Trimite ofertă', 'Respinge cererea'],
-                nextStep: 'Trimite ofertă'
+            offer_requested: {
+                label: 'Ofertă solicitată',
+                clientLabel: 'Ofertă cerută',
+                className: 'offer_requested',
+                color: '#a855f7',
+                owner: {
+                    description: 'Clientul a cerut o ofertă.',
+                    actions: ['Trimite ofertă', 'Respinge cererea'],
+                    nextStep: 'Trimite ofertă'
+                },
+                client: {
+                    label: 'Ofertă cerută',
+                    description: 'Ai solicitat o ofertă personalizată, așteptând răspunsul locației.',
+                    actions: ['Anulează cererea']
+                }
             },
-            client: {
-                label: 'Ofertă cerută',
-                description: 'Ai solicitat o ofertă personalizată, așteptând răspunsul locației.',
-                actions: ['Anulează cererea']
-            }
-        },
-        offer_sent: {
-            label: 'Ofertă trimisă',
-            className: 'offer_sent',
-            color: '#7c3aed',
-            owner: {
-                description: 'Oferta a fost transmisă clientului.',
-                actions: ['Pre-rezervă data (la cererea clientului)', 'Respinge'],
-                nextStep: 'Pre-rezervă data (la cererea clientului)'
+            offer_sent: {
+                label: 'Ofertă trimisă',
+                clientLabel: 'Ofertă primită',
+                className: 'offer_sent',
+                color: '#7c3aed',
+                owner: {
+                    description: 'Oferta a fost transmisă clientului.',
+                    actions: ['Pre-rezervă data (la cererea clientului)', 'Respinge'],
+                    nextStep: 'Pre-rezervă data (la cererea clientului)'
+                },
+                client: {
+                    label: 'Ofertă primită',
+                    description: 'Locația ți-a trimis o ofertă personalizată.',
+                    actions: ['Vezi ofertă', 'Pune întrebări', 'Cere vizionare', 'Anulează cererea']
+                }
             },
-            client: {
-                label: 'Ofertă primită',
-                description: 'Locația ți-a trimis o ofertă personalizată.',
-                actions: ['Vezi ofertă', 'Pune întrebări', 'Cere vizionare', 'Anulează cererea']
-            }
-        },
-        viewing_request: {
-            label: 'Cerere vizionare',
-            className: 'viewing_request',
-            color: '#0ea5e9',
-            owner: {
-                description: 'Clientul a cerut o vizionare.',
-                actions: ['Confirmă vizionarea', 'Propune altă dată', 'Respinge'],
-                nextStep: 'Confirmă vizionarea'
+            viewing_request: {
+                label: 'Cerere vizionare',
+                clientLabel: 'Cerere vizionare trimisă',
+                className: 'viewing_request',
+                color: '#0ea5e9',
+                owner: {
+                    description: 'Clientul a cerut o vizionare.',
+                    actions: ['Confirmă vizionarea', 'Propune altă dată', 'Respinge'],
+                    nextStep: 'Confirmă vizionarea'
+                },
+                client: {
+                    label: 'Cerere vizionare trimisă',
+                    description: 'Ai cerut o vizionare a locației.',
+                    actions: ['Anulează vizionarea']
+                }
             },
-            client: {
-                label: 'Cerere vizionare trimisă',
-                description: 'Ai cerut o vizionare a locației.',
-                actions: ['Anulează vizionarea']
-            }
-        },
-        viewing_rescheduled: {
-            label: 'Vizionare reprogramată',
-            className: 'viewing_rescheduled',
-            color: '#0284c7',
-            owner: {
-                description: 'O nouă dată de vizionare a fost propusă.',
-                actions: ['Confirmă vizionarea', 'Anulează vizionarea'],
-                nextStep: 'Confirmă vizionarea'
-            },
-            client: {
+            viewing_rescheduled: {
                 label: 'Vizionare reprogramată',
-                description: 'Locația a propus o altă dată pentru vizionare.',
-                actions: ['Acceptă noua dată', 'Refuză vizionarea']
-            }
-        },
-        viewing_scheduled: {
-            label: 'Vizionare programată',
-            className: 'viewing_scheduled',
-            color: '#2563eb',
-            owner: {
-                description: 'Vizionarea a fost confirmată.',
-                actions: ['(după tur) Trimite ofertă actualizată', '(opțional) Pre-rezervă data'],
-                nextStep: 'Trimite ofertă actualizată după tur'
+                clientLabel: 'Vizionare reprogramată',
+                className: 'viewing_rescheduled',
+                color: '#0284c7',
+                owner: {
+                    description: 'O nouă dată de vizionare a fost propusă.',
+                    actions: ['Confirmă vizionarea', 'Anulează vizionarea'],
+                    nextStep: 'Confirmă vizionarea'
+                },
+                client: {
+                    label: 'Vizionare reprogramată',
+                    description: 'Locația a propus o altă dată pentru vizionare.',
+                    actions: ['Acceptă noua dată', 'Refuză vizionarea']
+                }
             },
-            client: {
-                label: 'Vizionare confirmată',
-                description: 'Vizionarea este programată la o dată și oră stabilite.',
-                actions: ['Adaugă în calendar', 'Anulează vizionarea']
-            }
-        },
-        pre_booked: {
-            label: 'Pre-rezervat',
-            className: 'pre_booked',
-            color: '#0d9488',
-            owner: {
-                description: 'Data este blocată temporar (hold).',
-                actions: ['Confirmă rezervarea (după avans)', 'Respinge'],
-                nextStep: 'Confirmă rezervarea (după avans)'
+            viewing_scheduled: {
+                label: 'Vizionare programată',
+                clientLabel: 'Vizionare confirmată',
+                className: 'viewing_scheduled',
+                color: '#2563eb',
+                owner: {
+                    description: 'Vizionarea a fost confirmată.',
+                    actions: ['(după tur) Trimite ofertă actualizată', '(opțional) Pre-rezervă data'],
+                    nextStep: 'Trimite ofertă actualizată după tur'
+                },
+                client: {
+                    label: 'Vizionare confirmată',
+                    description: 'Vizionarea este programată la o dată și oră stabilite.',
+                    actions: ['Adaugă în calendar', 'Anulează vizionarea']
+                }
             },
-            client: {
-                label: 'Dată blocată temporar (Pre-rezervat)',
-                description: 'Locația a blocat data provizoriu.',
-                actions: ['Renunță la rezervare']
-            }
-        },
-        confirmed: {
-            label: 'Rezervat',
-            className: 'confirmed',
-            color: '#15803d',
-            owner: {
-                description: 'Rezervarea a fost confirmată și avansul încasat.',
-                actions: ['Adaugă notă internă', 'Vezi detalii'],
-                nextStep: 'Adaugă notă internă'
+            pre_booked: {
+                label: 'Pre-rezervat',
+                clientLabel: 'Dată blocată temporar (Pre-rezervat)',
+                className: 'pre_booked',
+                color: '#0d9488',
+                owner: {
+                    description: 'Data este blocată temporar (hold).',
+                    actions: ['Confirmă rezervarea (după avans)', 'Respinge'],
+                    nextStep: 'Confirmă rezervarea (după avans)'
+                },
+                client: {
+                    label: 'Dată blocată temporar (Pre-rezervat)',
+                    description: 'Locația a blocat data provizoriu.',
+                    actions: ['Renunță la rezervare']
+                }
             },
-            client: {
+            confirmed: {
                 label: 'Rezervat',
-                description: 'Rezervarea a fost confirmată de locație (după avans).',
-                actions: ['Lasă feedback după eveniment']
+                clientLabel: 'Rezervat',
+                className: 'confirmed',
+                color: '#15803d',
+                owner: {
+                    description: 'Rezervarea a fost confirmată și avansul încasat.',
+                    actions: ['Adaugă notă internă', 'Vezi detalii'],
+                    nextStep: 'Adaugă notă internă'
+                },
+                client: {
+                    label: 'Rezervat',
+                    description: 'Rezervarea a fost confirmată de locație (după avans).',
+                    actions: ['Lasă feedback după eveniment']
+                }
+            },
+            rejected: {
+                label: 'Respins',
+                clientLabel: 'Indisponibil / Refuzat',
+                className: 'rejected',
+                color: '#b91c1c',
+                owner: {
+                    description: 'Cererea a fost refuzată.',
+                    actions: ['Vezi detalii', 'Adaugă notă internă'],
+                    nextStep: 'Vezi detalii'
+                },
+                client: {
+                    label: 'Indisponibil / Refuzat',
+                    description: 'Locația nu este disponibilă sau a refuzat cererea.',
+                    actions: ['Vezi mesajul locației', 'Trimite o nouă cerere']
+                }
+            },
+            cancelled: {
+                label: 'Anulat',
+                clientLabel: 'Anulat de client',
+                className: 'cancelled',
+                color: '#dc2626',
+                owner: {
+                    description: 'Clientul a anulat cererea.',
+                    actions: ['Vezi detalii', 'Adaugă notă internă'],
+                    nextStep: 'Vezi detalii'
+                },
+                client: {
+                    label: 'Anulat de client',
+                    description: 'Ai anulat cererea înainte de confirmare.',
+                    actions: ['Retrimite cererea']
+                }
             }
         },
-        rejected: {
-            label: 'Respins',
-            className: 'rejected',
-            color: '#b91c1c',
-            owner: {
-                description: 'Cererea a fost refuzată.',
-                actions: ['Vezi detalii', 'Adaugă notă internă'],
-                nextStep: 'Vezi detalii'
+        viewing: {
+            viewing_request: {
+                label: 'Cerere vizionare primită',
+                clientLabel: 'Cerere vizionare trimisă',
+                className: 'viewing_request',
+                color: '#0ea5e9',
+                description: 'Clientul a propus intervale pentru vizionare. Confirmă sau propune alternative.'
             },
-            client: {
-                label: 'Indisponibil / Refuzat',
-                description: 'Locația nu este disponibilă sau a refuzat cererea.',
-                actions: ['Vezi mesajul locației', 'Trimite o nouă cerere']
-            }
-        },
-        cancelled: {
-            label: 'Anulat',
-            className: 'cancelled',
-            color: '#dc2626',
-            owner: {
-                description: 'Clientul a anulat cererea.',
-                actions: ['Vezi detalii', 'Adaugă notă internă'],
-                nextStep: 'Vezi detalii'
+            viewing_rescheduled: {
+                label: 'Vizionare reprogramată',
+                clientLabel: 'Vizionare reprogramată',
+                className: 'viewing_rescheduled',
+                color: '#0284c7',
+                description: 'Ai trimis variante noi. Așteaptă confirmarea clientului sau ajustează propunerile.'
             },
-            client: {
-                label: 'Anulat de client',
-                description: 'Ai anulat cererea înainte de confirmare.',
-                actions: ['Retrimite cererea']
+            viewing_scheduled: {
+                label: 'Vizionare programată',
+                clientLabel: 'Vizionare confirmată',
+                className: 'viewing_scheduled',
+                color: '#2563eb',
+                description: 'Vizionarea este confirmată în calendar.'
+            },
+            viewing_rejected: {
+                label: 'Vizionare respinsă',
+                clientLabel: 'Vizionare respinsă',
+                className: 'viewing_rejected',
+                color: '#b91c1c',
+                description: 'Vizionarea a fost refuzată. Trimite notificarea și oferă alternative.'
+            },
+            viewing_cancelled: {
+                label: 'Vizionare anulată',
+                clientLabel: 'Vizionare anulată',
+                className: 'viewing_cancelled',
+                color: '#ef4444',
+                description: 'Vizionarea a fost anulată de client sau de echipă.'
             }
         }
     };
+
+    const bookingStatusMeta = statusCatalog.booking;
+    const viewingStatusMeta = statusCatalog.viewing;
 
     const bookingActionLibrary = {
         confirm_availability: {
@@ -821,6 +874,35 @@ document.addEventListener('DOMContentLoaded', () => {
         default: ['open_details']
     };
 
+    const destructiveBookingActionConfig = {
+        reject: {
+            targetStatus: 'rejected',
+            title: 'Respinge această cerere?',
+            subtitle: 'Selectează motivul respingerii. Informația va fi logată în timeline-ul rezervării.',
+            confirmLabel: 'Respinge cererea',
+            reasonOptions: [
+                { value: 'no-availability', label: 'Data nu mai este disponibilă' },
+                { value: 'not-fit', label: 'Evenimentul nu se potrivește cu locația' },
+                { value: 'budget', label: 'Bugetul nu se încadrează' },
+                { value: 'other', label: 'Alt motiv (detaliază mai jos)' }
+            ],
+            notePlaceholder: 'Detalii pentru echipă (opțional)'
+        },
+        cancel_viewing: {
+            targetStatus: 'cancelled',
+            title: 'Marchezi cererea ca anulată?',
+            subtitle: 'Alege motivul anulării. Va fi salvat pentru colegii din echipă.',
+            confirmLabel: 'Anulează cererea',
+            reasonOptions: [
+                { value: 'client-cancelled', label: 'Clientul a anulat solicitarea' },
+                { value: 'owner-cancelled', label: 'Locația nu mai poate onora rezervarea' },
+                { value: 'no-response', label: 'Nu am primit confirmarea clientului' },
+                { value: 'other', label: 'Alt motiv (detaliază mai jos)' }
+            ],
+            notePlaceholder: 'Note interne (opțional)'
+        }
+    };
+
     const viewingActionsByStatus = {
         viewing_request: [
             { key: 'confirm-slot', label: 'Confirmă intervalul' },
@@ -844,54 +926,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const viewingStatusMeta = {
-        viewing_request: {
-            label: 'Cerere vizionare primită',
-            clientLabel: 'Cerere vizionare trimisă',
-            className: 'viewing_request',
-            color: '#0ea5e9',
-            description: 'Clientul a propus intervale pentru vizionare. Confirmă sau propune alternative.'
-        },
-        viewing_rescheduled: {
-            label: 'Vizionare reprogramată',
-            clientLabel: 'Vizionare reprogramată',
-            className: 'viewing_rescheduled',
-            color: '#0284c7',
-            description: 'Ai trimis variante noi. Așteaptă confirmarea clientului sau ajustează propunerile.'
-        },
-        viewing_scheduled: {
-            label: 'Vizionare programată',
-            clientLabel: 'Vizionare confirmată',
-            className: 'viewing_scheduled',
-            color: '#2563eb',
-            description: 'Vizionarea este confirmată în calendar.'
-        },
-        viewing_rejected: {
-            label: 'Vizionare respinsă',
-            clientLabel: 'Vizionare respinsă',
-            className: 'viewing_rejected',
-            color: '#b91c1c',
-            description: 'Vizionarea a fost refuzată. Trimite notificarea și oferă alternative.'
-        },
-        viewing_cancelled: {
-            label: 'Vizionare anulată',
-            clientLabel: 'Vizionare anulată',
-            className: 'viewing_cancelled',
-            color: '#ef4444',
-            description: 'Vizionarea a fost anulată de client sau de echipă.'
-        }
-    };
-
-    const statusCatalog = {
-        booking: bookingStatusMeta,
-        viewing: viewingStatusMeta
-    };
-
     const getBookingStatusLabel = (statusKey) => bookingStatusMeta[statusKey]?.label || statusKey || '';
     const getViewingStatusLabel = (statusKey) => viewingStatusMeta[statusKey]?.label || statusKey || '';
 
     function getClientStatusLabel(statusKey) {
-        return bookingStatusMeta[statusKey]?.client?.label || '';
+        const meta = bookingStatusMeta[statusKey];
+        return meta?.clientLabel || meta?.client?.label || '';
     }
 
     function ensureBookingTimelineStructure(booking) {
@@ -2086,6 +2126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const teamInviteNameInput = document.getElementById('team-invite-name');
     const teamInviteEmailInput = document.getElementById('team-invite-email');
     let showRescheduleModal = null;
+    let showBookingStatusConfirmModal = null;
     const recordDetailState = {
         type: null,
         id: null,
@@ -3041,7 +3082,7 @@ document.addEventListener('DOMContentLoaded', () => {
             eventsForDay.forEach(event => {
                 const eventDiv = document.createElement('div');
                 eventDiv.className = 'calendar-event';
-                const calendarStatus = event.status === 'confirmed' ? 'booked' : 'pre_booked';
+                const calendarStatus = event.status || 'pre_booked';
                 eventDiv.dataset.status = calendarStatus;
                 eventDiv.textContent = selectedVenue === 'all'
                     ? `${event.event} - ${event.venue}`
@@ -3245,6 +3286,162 @@ document.addEventListener('DOMContentLoaded', () => {
         renderViewingsStatusChart();
     }
 
+    function finalizeBookingMutation(booking, previousStatus, {
+        reason = '',
+        manual = true,
+        user = null
+    } = {}) {
+        if (!booking) {
+            return;
+        }
+        booking.lastUpdate = new Date();
+        selectedBookingId = booking.id;
+        if (booking.status !== previousStatus) {
+            booking.clientStatus = getClientStatusLabel(booking.status);
+            const actor = user || (manual ? 'Owner CRM' : 'Sistem CRM');
+            logBookingStatusChange(booking, {
+                status: booking.status,
+                user: actor,
+                previousStatus,
+                manual,
+                reason
+            });
+            if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
+                showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
+            }
+        }
+        renderBookingsTable();
+        renderOverviewLists();
+        renderMonthlyCalendar();
+        highlightBookingRow(booking.id);
+    }
+
+    (function setupBookingStatusConfirmModal() {
+        const modal = document.getElementById('booking-status-confirm-modal');
+        if (!modal) {
+            return;
+        }
+        const titleEl = modal.querySelector('[data-modal-title]');
+        const subtitleEl = modal.querySelector('[data-modal-subtitle]');
+        const reasonSelect = modal.querySelector('[data-reason-select]');
+        const noteField = modal.querySelector('[data-reason-note]');
+        const confirmBtn = modal.querySelector('[data-confirm-booking-status]');
+        const closeButtons = modal.querySelectorAll('.modal-close-btn');
+        let activeContext = null;
+
+        const resetForm = () => {
+            if (reasonSelect) {
+                reasonSelect.innerHTML = '';
+                reasonSelect.classList.remove('is-invalid');
+            }
+            if (noteField) {
+                noteField.value = '';
+            }
+            if (subtitleEl) {
+                subtitleEl.hidden = false;
+            }
+        };
+
+        const closeModal = () => {
+            modal.classList.remove('is-visible');
+            modal.setAttribute('aria-hidden', 'true');
+            activeContext = null;
+            resetForm();
+        };
+
+        const buildReasonOptions = (config) => {
+            if (!reasonSelect) {
+                return;
+            }
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Selectează motivul';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            reasonSelect.appendChild(placeholder);
+            config.reasonOptions.forEach(({ value, label }) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                reasonSelect.appendChild(option);
+            });
+        };
+
+        const openModal = ({ booking, actionKey, previousStatus }) => {
+            const config = destructiveBookingActionConfig[actionKey];
+            if (!config || !booking) {
+                return;
+            }
+            activeContext = { booking, previousStatus, config };
+            if (titleEl) {
+                titleEl.textContent = config.title;
+            }
+            if (subtitleEl) {
+                subtitleEl.textContent = config.subtitle || '';
+                subtitleEl.hidden = !config.subtitle;
+            }
+            if (confirmBtn) {
+                confirmBtn.textContent = config.confirmLabel;
+            }
+            if (noteField) {
+                noteField.placeholder = config.notePlaceholder || '';
+            }
+            buildReasonOptions(config);
+            modal.classList.add('is-visible');
+            modal.setAttribute('aria-hidden', 'false');
+            if (reasonSelect) {
+                requestAnimationFrame(() => reasonSelect.focus());
+            }
+        };
+
+        const handleConfirm = () => {
+            if (!activeContext?.booking || !activeContext.config) {
+                closeModal();
+                return;
+            }
+            if (reasonSelect && !reasonSelect.value) {
+                reasonSelect.classList.add('is-invalid');
+                reasonSelect.focus();
+                return;
+            }
+            const { booking, previousStatus, config } = activeContext;
+            const selectedOption = reasonSelect
+                ? reasonSelect.options[reasonSelect.selectedIndex]
+                : null;
+            const reasonLabel = selectedOption?.textContent || '';
+            const note = noteField?.value?.trim() || '';
+            const reasonText = note ? `${reasonLabel} — ${note}` : reasonLabel;
+            const reason = reasonText ? `Motiv: ${reasonText}` : '';
+            booking.status = config.targetStatus;
+            booking.autoGenerated = false;
+            closeModal();
+            finalizeBookingMutation(booking, previousStatus, {
+                reason,
+                manual: true
+            });
+        };
+
+        confirmBtn?.addEventListener('click', handleConfirm);
+        reasonSelect?.addEventListener('change', () => {
+            reasonSelect.classList.remove('is-invalid');
+        });
+        closeButtons.forEach(btn => btn.addEventListener('click', closeModal));
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.classList.contains('is-visible')) {
+                closeModal();
+            }
+        });
+
+        showBookingStatusConfirmModal = ({ booking, actionKey, previousStatus }) => {
+            openModal({ booking, actionKey, previousStatus });
+        };
+    }());
+
     function handleBookingAction(bookingId, actionKey) {
         const booking = bookings.find(item => item.id === bookingId);
         if (!booking || !actionKey) {
@@ -3254,6 +3451,23 @@ document.addEventListener('DOMContentLoaded', () => {
         closeActiveActionsMenu();
 
         const previousStatus = booking.status;
+        const destructiveConfig = destructiveBookingActionConfig[actionKey];
+        if (destructiveConfig) {
+            if (typeof showBookingStatusConfirmModal === 'function') {
+                showBookingStatusConfirmModal({ booking, actionKey, previousStatus });
+            } else {
+                booking.status = destructiveConfig.targetStatus;
+                booking.autoGenerated = false;
+                const defaultReasonLabel = destructiveConfig.reasonOptions?.[0]?.label || '';
+                const fallbackReason = defaultReasonLabel ? `Motiv: ${defaultReasonLabel}` : '';
+                finalizeBookingMutation(booking, previousStatus, {
+                    reason: fallbackReason,
+                    manual: true
+                });
+            }
+            return;
+        }
+
         let didMutate = false;
 
         switch (actionKey) {
@@ -3334,11 +3548,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ensureViewingEntry(booking, { rescheduled: true });
                 didMutate = true;
                 break;
-            case 'cancel_viewing':
-                booking.status = 'cancelled';
-                booking.autoGenerated = false;
-                didMutate = true;
-                break;
             case 'pre_reserve':
                 booking.status = 'pre_booked';
                 booking.autoGenerated = false;
@@ -3346,11 +3555,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'mark_confirmed':
                 booking.status = 'confirmed';
-                booking.autoGenerated = false;
-                didMutate = true;
-                break;
-            case 'reject':
-                booking.status = 'rejected';
                 booking.autoGenerated = false;
                 didMutate = true;
                 break;
@@ -3376,25 +3580,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (didMutate) {
-            booking.lastUpdate = new Date();
-            selectedBookingId = booking.id;
-            if (booking.status !== previousStatus) {
-                booking.clientStatus = getClientStatusLabel(booking.status);
-                logBookingStatusChange(booking, {
-                    status: booking.status,
-                    user: 'Owner CRM',
-                    previousStatus,
-                    manual: true
-                });
-                if (recordDetailState.type === 'booking' && recordDetailState.id === booking.id) {
-                    showRecordDetailPage('booking', booking, recordDetailState.sourcePage);
-                }
-            }
+            finalizeBookingMutation(booking, previousStatus, {
+                manual: !booking.autoGenerated
+            });
+            return;
         }
 
-        renderBookingsTable();
-        renderOverviewLists();
-        renderMonthlyCalendar();
         highlightBookingRow(booking.id);
     }
 
