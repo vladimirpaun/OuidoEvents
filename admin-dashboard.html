@@ -677,39 +677,127 @@
             padding: 26px;
             color: var(--muted-color);
         }
+        @keyframes crmModalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
         .crm-modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.38);
+            background: rgba(15, 23, 42, 0.42);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px;
             z-index: 1000;
+            overflow-y: auto;
+        }
+        @supports (backdrop-filter: blur(10px)) {
+            .crm-modal-backdrop {
+                backdrop-filter: blur(10px);
+            }
         }
         .crm-modal-backdrop[hidden] { display: none; }
         .crm-modal {
+            position: relative;
             background: var(--white-color);
             border-radius: var(--border-radius);
-            padding: 28px 32px;
-            box-shadow: 0 40px 120px -60px rgba(67, 100, 247, 0.4);
-            max-width: 420px;
+            padding: 30px;
+            box-shadow: 0 40px 120px -60px rgba(67, 100, 247, 0.45), 0 24px 64px -40px rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            max-width: 460px;
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 20px;
+            animation: crmModalFadeIn 0.24s ease forwards;
         }
-        .crm-modal h3 { margin: 0; font-size: 1.2rem; }
+        .crm-modal::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+        .crm-modal h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .crm-modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 6px;
+        }
         .crm-modal-body p {
             margin: 0;
             color: var(--muted-color);
-            line-height: 1.5;
+            line-height: 1.55;
+        }
+        .crm-field-label {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--dark-color);
+            display: block;
+        }
+        .crm-modal-body input,
+        .crm-modal-body textarea,
+        .crm-modal-body select {
+            width: 100%;
+            font: inherit;
+            font-size: 0.95rem;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 82, 212, 0.18);
+            background: rgba(67, 100, 247, 0.05);
+            color: var(--dark-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+        .crm-modal-body textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+        .crm-modal-body input:focus,
+        .crm-modal-body textarea:focus,
+        .crm-modal-body select:focus {
+            outline: none;
+            border-color: rgba(0, 82, 212, 0.45);
+            background: rgba(67, 100, 247, 0.08);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.14);
+        }
+        .crm-modal-body input::placeholder,
+        .crm-modal-body textarea::placeholder {
+            color: rgba(122, 127, 135, 0.85);
         }
         .crm-modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
             flex-wrap: wrap;
+            padding-top: 16px;
+            border-top: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .crm-modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        @media (max-width: 520px) {
+            .crm-modal {
+                padding: 24px 20px;
+                border-radius: 20px;
+                max-width: 94vw;
+            }
         }
 
         .venue-meta {
@@ -1148,7 +1236,8 @@
                             <span class="panel-meta">Ultima sincronizare CRM acum 5 min</span>
                         </div>
                         <div class="panel-actions">
-                            <button class="crm-button small primary" type="button" data-action="export-clients">Exportă CSV</button>
+                            <button class="crm-button small ghost" type="button" data-action="export-clients">Exportă CSV</button>
+                            <button class="crm-button small primary" type="button" data-action="create-client">Adaugă client</button>
                         </div>
                     </header>
                     <div class="filter-bar table-filter-bar" aria-label="Filtre clienți">
@@ -1280,6 +1369,59 @@
                 <button class="crm-button small ghost" type="button" data-rejection-note="cancel">Renunță</button>
                 <button class="crm-button small danger" type="button" data-rejection-note="submit">Salvează</button>
             </div>
+        </div>
+    </div>
+
+    <div class="crm-modal-backdrop" id="create-owner-modal" hidden role="dialog" aria-modal="true" aria-labelledby="create-owner-title" aria-hidden="true">
+        <div class="crm-modal">
+            <form id="create-owner-form" novalidate>
+                <div>
+                    <h3 id="create-owner-title">Adaugă proprietar</h3>
+                    <div class="crm-modal-body">
+                        <label class="crm-field-label" for="create-owner-business">Nume business *</label>
+                        <input type="text" id="create-owner-business" autocomplete="organization" required aria-required="true" placeholder="Ex: Eventique SRL">
+                        <label class="crm-field-label" for="create-owner-contact">Persoană de contact *</label>
+                        <input type="text" id="create-owner-contact" autocomplete="name" required aria-required="true" placeholder="Ex: Ioana Pătrașcu">
+                        <label class="crm-field-label" for="create-owner-email">Email *</label>
+                        <input type="email" id="create-owner-email" autocomplete="email" required aria-required="true" placeholder="contact@business.ro">
+                        <label class="crm-field-label" for="create-owner-phone">Telefon</label>
+                        <input type="tel" id="create-owner-phone" autocomplete="tel" placeholder="+40 712 345 678">
+                    </div>
+                </div>
+                <div class="crm-modal-actions">
+                    <button class="crm-button small ghost" type="button" data-create-owner="cancel">Renunță</button>
+                    <button class="crm-button small primary" type="submit" data-create-owner="submit" disabled>Salvează proprietar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="crm-modal-backdrop" id="create-client-modal" hidden role="dialog" aria-modal="true" aria-labelledby="create-client-title" aria-hidden="true">
+        <div class="crm-modal">
+            <form id="create-client-form" novalidate>
+                <div>
+                    <h3 id="create-client-title">Adaugă client</h3>
+                    <div class="crm-modal-body">
+                        <label class="crm-field-label" for="create-client-name">Nume client *</label>
+                        <input type="text" id="create-client-name" autocomplete="name" required aria-required="true" placeholder="Ex: Alex Marin">
+                        <label class="crm-field-label" for="create-client-email">Email *</label>
+                        <input type="email" id="create-client-email" autocomplete="email" required aria-required="true" placeholder="alex@email.com">
+                        <label class="crm-field-label" for="create-client-phone">Telefon</label>
+                        <input type="tel" id="create-client-phone" autocomplete="tel" placeholder="+40 7xx xxx xxx">
+                        <label class="crm-field-label" for="create-client-type">Tip client</label>
+                        <select id="create-client-type">
+                            <option value="corporate">Corporate</option>
+                            <option value="private">Privat</option>
+                            <option value="planner">Planner</option>
+                            <option value="agency">Agency</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="crm-modal-actions">
+                    <button class="crm-button small ghost" type="button" data-create-client="cancel">Renunță</button>
+                    <button class="crm-button small primary" type="submit" data-create-client="submit" disabled>Salvează client</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1872,6 +2014,38 @@
         };
         let rejectionModalResolver = null;
         let rejectionModalTriggerElement = null;
+        const creationModals = {
+            owner: {
+                backdrop: document.getElementById('create-owner-modal'),
+                form: document.getElementById('create-owner-form'),
+                fields: {
+                    business: document.getElementById('create-owner-business'),
+                    contact: document.getElementById('create-owner-contact'),
+                    email: document.getElementById('create-owner-email'),
+                    phone: document.getElementById('create-owner-phone'),
+                },
+                submit: document.querySelector('[data-create-owner="submit"]'),
+                cancel: document.querySelector('[data-create-owner="cancel"]'),
+                focusables: [],
+                trapHandler: null,
+                trigger: null,
+            },
+            client: {
+                backdrop: document.getElementById('create-client-modal'),
+                form: document.getElementById('create-client-form'),
+                fields: {
+                    name: document.getElementById('create-client-name'),
+                    email: document.getElementById('create-client-email'),
+                    phone: document.getElementById('create-client-phone'),
+                    type: document.getElementById('create-client-type'),
+                },
+                submit: document.querySelector('[data-create-client="submit"]'),
+                cancel: document.querySelector('[data-create-client="cancel"]'),
+                focusables: [],
+                trapHandler: null,
+                trigger: null,
+            },
+        };
 
         function renderMetrics() {
             const metricsContainer = document.getElementById('overview-metrics');
@@ -2083,6 +2257,29 @@
                 "'": '&#39;',
             };
             return value.replace(/[&<>"']/g, (char) => entities[char] || char);
+        }
+
+        function getFocusableElements(container) {
+            if (!container) return [];
+            const selectors = [
+                'a[href]',
+                'area[href]',
+                'input:not([disabled])',
+                'select:not([disabled])',
+                'textarea:not([disabled])',
+                'button:not([disabled])',
+                '[tabindex]:not([tabindex="-1"])',
+            ];
+            return Array.from(container.querySelectorAll(selectors.join(',')))
+                .filter(element => !element.hasAttribute('hidden') && element.closest('[hidden]') === null);
+        }
+
+        function isValidEmail(value) {
+            if (typeof value !== 'string') return false;
+            const trimmed = value.trim();
+            if (!trimmed) return false;
+            const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return pattern.test(trimmed);
         }
 
         function getVenueManagementState(venue) {
@@ -2497,6 +2694,214 @@
                 }
             }
             rejectionModalTriggerElement = null;
+        }
+
+        function refreshCreationModalFocusables(type) {
+            const modal = creationModals[type];
+            if (!modal || !modal.backdrop) return;
+            modal.focusables = getFocusableElements(modal.backdrop);
+        }
+
+        function handleCreationModalFocus(event, type) {
+            if (event.key !== 'Tab') return;
+            const modal = creationModals[type];
+            if (!modal || !modal.focusables.length) return;
+            const focusables = modal.focusables;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                }
+            } else if (document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+
+        function validateCreationModal(type) {
+            const modal = creationModals[type];
+            if (!modal || !modal.submit) return false;
+            let isValid = false;
+
+            if (type === 'owner') {
+                const business = modal.fields.business ? modal.fields.business.value.trim() : '';
+                const contact = modal.fields.contact ? modal.fields.contact.value.trim() : '';
+                const email = modal.fields.email ? modal.fields.email.value.trim() : '';
+                isValid = Boolean(business && contact && isValidEmail(email));
+            } else if (type === 'client') {
+                const name = modal.fields.name ? modal.fields.name.value.trim() : '';
+                const email = modal.fields.email ? modal.fields.email.value.trim() : '';
+                isValid = Boolean(name && isValidEmail(email));
+            }
+
+            if (isValid) {
+                modal.submit.removeAttribute('disabled');
+                modal.submit.disabled = false;
+            } else {
+                modal.submit.setAttribute('disabled', 'true');
+                modal.submit.disabled = true;
+            }
+
+            refreshCreationModalFocusables(type);
+            return isValid;
+        }
+
+        function openCreationModal(type, triggerElement) {
+            const modal = creationModals[type];
+            if (!modal || !modal.backdrop) return;
+
+            if (modal.form && typeof modal.form.reset === 'function') {
+                modal.form.reset();
+            }
+            if (type === 'client' && modal.fields.type) {
+                const options = modal.fields.type.options;
+                modal.fields.type.value = options && options.length ? options[0].value : (modal.fields.type.value || 'corporate');
+            }
+
+            modal.trigger = triggerElement || null;
+            modal.backdrop.removeAttribute('hidden');
+            modal.backdrop.removeAttribute('aria-hidden');
+
+            validateCreationModal(type);
+            modal.trapHandler = (event) => handleCreationModalFocus(event, type);
+            modal.backdrop.addEventListener('keydown', modal.trapHandler);
+
+            const firstField = modal.form
+                ? modal.form.querySelector('input, select, textarea')
+                : null;
+            if (firstField) {
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(() => firstField.focus());
+                } else {
+                    firstField.focus();
+                }
+            }
+        }
+
+        function closeCreationModal(type, options = { restore: true, reset: true }) {
+            const modal = creationModals[type];
+            if (!modal || !modal.backdrop) return;
+
+            modal.backdrop.setAttribute('hidden', '');
+            modal.backdrop.setAttribute('aria-hidden', 'true');
+
+            if (modal.trapHandler) {
+                modal.backdrop.removeEventListener('keydown', modal.trapHandler);
+                modal.trapHandler = null;
+            }
+
+            if (options.reset !== false && modal.form) {
+                modal.form.reset();
+            }
+            if (modal.submit) {
+                modal.submit.setAttribute('disabled', 'true');
+                modal.submit.disabled = true;
+            }
+            refreshCreationModalFocusables(type);
+
+            if (options.restore !== false && modal.trigger && document.body.contains(modal.trigger)) {
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(() => modal.trigger.focus());
+                } else {
+                    modal.trigger.focus();
+                }
+            }
+            modal.trigger = null;
+        }
+
+        function isCreationModalOpen(type) {
+            const modal = creationModals[type];
+            if (!modal || !modal.backdrop) return false;
+            return !modal.backdrop.hasAttribute('hidden');
+        }
+
+        function handleCreateOwner() {
+            const modal = creationModals.owner;
+            if (!modal || !modal.form) return;
+            if (!validateCreationModal('owner')) return;
+
+            const business = sanitizeText(modal.fields.business.value.trim());
+            const contact = sanitizeText(modal.fields.contact.value.trim());
+            const email = sanitizeText(modal.fields.email.value.trim());
+            const phone = modal.fields.phone ? sanitizeText(modal.fields.phone.value.trim()) : '';
+
+            const nextId = adminState.owners.reduce((max, item) => {
+                const numericId = Number(item.id);
+                return Number.isFinite(numericId) && numericId > max ? numericId : max;
+            }, 0) + 1;
+            const newOwner = {
+                id: nextId,
+                business,
+                contact,
+                contactEmail: email,
+                claimStatus: 'unclaimed',
+                claimDetails: 'Cont nou creat din dashboard',
+                phone,
+                website: '',
+                claimedVenue: null,
+                locations: 0,
+                lastUpdate: 'Creat chiar acum',
+                status: 'active',
+            };
+
+            adminState.owners.unshift(newOwner);
+            adminState.metrics.totalOwners += 1;
+            renderAccounts();
+            updateAccountMetrics('owner', 'active');
+            adminState.activity.unshift({
+                id: Date.now(),
+                initials: 'OW',
+                title: 'Business creat',
+                detail: `${business} a fost adăugat în portofoliu.`,
+                time: 'chiar acum',
+            });
+            adminState.activity = adminState.activity.slice(0, 12);
+            renderActivity();
+            closeCreationModal('owner');
+        }
+
+        function handleCreateClient() {
+            const modal = creationModals.client;
+            if (!modal || !modal.form) return;
+            if (!validateCreationModal('client')) return;
+
+            const name = sanitizeText(modal.fields.name.value.trim());
+            const email = sanitizeText(modal.fields.email.value.trim());
+            const phone = modal.fields.phone ? sanitizeText(modal.fields.phone.value.trim()) : '';
+            const type = modal.fields.type ? modal.fields.type.value : 'corporate';
+
+            const nextId = adminState.clients.reduce((max, item) => {
+                const numericId = Number(item.id);
+                return Number.isFinite(numericId) && numericId > max ? numericId : max;
+            }, 0) + 1;
+            const newClient = {
+                id: nextId,
+                name,
+                email,
+                phone,
+                type,
+                lastActive: 'chiar acum',
+                activityNote: 'Cont creat din dashboard',
+                status: 'active',
+            };
+
+            adminState.clients.unshift(newClient);
+            adminState.metrics.totalClients += 1;
+            renderAccounts();
+            updateAccountMetrics('client', 'active');
+            adminState.activity.unshift({
+                id: Date.now(),
+                initials: 'CL',
+                title: 'Client creat',
+                detail: `${name} a fost adăugat în CRM.`,
+                time: 'chiar acum',
+            });
+            adminState.activity = adminState.activity.slice(0, 12);
+            renderActivity();
+            closeCreationModal('client');
         }
 
         function handleClaimDecision(decision) {
@@ -2980,6 +3385,55 @@
             });
         }
 
+        const createOwnerButton = document.querySelector('[data-action="create-owner"]');
+        if (createOwnerButton) {
+            createOwnerButton.addEventListener('click', () => {
+                openCreationModal('owner', createOwnerButton);
+            });
+        }
+        const createClientButton = document.querySelector('[data-action="create-client"]');
+        if (createClientButton) {
+            createClientButton.addEventListener('click', () => {
+                openCreationModal('client', createClientButton);
+            });
+        }
+        if (creationModals.owner.cancel) {
+            creationModals.owner.cancel.addEventListener('click', () => closeCreationModal('owner'));
+        }
+        if (creationModals.client.cancel) {
+            creationModals.client.cancel.addEventListener('click', () => closeCreationModal('client'));
+        }
+        if (creationModals.owner.form) {
+            creationModals.owner.form.addEventListener('input', () => validateCreationModal('owner'));
+            creationModals.owner.form.addEventListener('change', () => validateCreationModal('owner'));
+            creationModals.owner.form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                handleCreateOwner();
+            });
+        }
+        if (creationModals.client.form) {
+            creationModals.client.form.addEventListener('input', () => validateCreationModal('client'));
+            creationModals.client.form.addEventListener('change', () => validateCreationModal('client'));
+            creationModals.client.form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                handleCreateClient();
+            });
+        }
+        if (creationModals.owner.backdrop) {
+            creationModals.owner.backdrop.addEventListener('click', (event) => {
+                if (event.target === creationModals.owner.backdrop) {
+                    closeCreationModal('owner');
+                }
+            });
+        }
+        if (creationModals.client.backdrop) {
+            creationModals.client.backdrop.addEventListener('click', (event) => {
+                if (event.target === creationModals.client.backdrop) {
+                    closeCreationModal('client');
+                }
+            });
+        }
+
         if (claimModalElements.accept) {
             claimModalElements.accept.addEventListener('click', () => handleClaimDecision('accept'));
         }
@@ -3022,6 +3476,16 @@
         }
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
+                if (isCreationModalOpen('owner')) {
+                    event.preventDefault();
+                    closeCreationModal('owner');
+                    return;
+                }
+                if (isCreationModalOpen('client')) {
+                    event.preventDefault();
+                    closeCreationModal('client');
+                    return;
+                }
                 if (rejectionModalElements.backdrop && !rejectionModalElements.backdrop.hasAttribute('hidden')) {
                     event.preventDefault();
                     closeRejectionNoteModal(null);
