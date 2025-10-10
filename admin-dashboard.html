@@ -1298,7 +1298,7 @@
                             <span class="panel-meta">Ultima sincronizare CRM acum 5 min</span>
                         </div>
                         <div class="panel-actions">
-                            <button class="crm-button small ghost" type="button" data-action="export-clients">Exportă CSV</button>
+                            <button class="crm-button small ghost" type="button" data-action="export-clients" data-testid="clients-export">Exportă CSV</button>
                             <button class="crm-button small primary" type="button" data-action="create-client">Adaugă client</button>
                         </div>
                     </header>
@@ -1339,7 +1339,7 @@
                             <span class="panel-meta">Monitorizare contracte active</span>
                         </div>
                         <div class="panel-actions">
-                            <button class="crm-button small ghost" type="button" data-action="owners-export">Export parteneri</button>
+                            <button class="crm-button small ghost" type="button" data-action="owners-export" data-testid="owners-export">Export parteneri</button>
                             <button class="crm-button small primary" type="button" data-action="create-owner">Adaugă business</button>
                         </div>
                     </header>
@@ -2476,8 +2476,8 @@
             if (venue.claimStatus === 'pending') {
                 return `
                     <div class="table-actions table-actions--compact">
-                        <button class="crm-button small primary" data-claim="accept" data-venue-id="${venue.id}">Acceptă</button>
-                        <button class="crm-button small danger" data-claim="reject" data-venue-id="${venue.id}">Respinge</button>
+                        <button class="crm-button small primary" data-testid="claim-accept" data-claim="accept" data-venue-id="${venue.id}">Acceptă</button>
+                        <button class="crm-button small danger" data-testid="claim-reject" data-claim="reject" data-venue-id="${venue.id}">Respinge</button>
                     </div>
                 `;
             }
@@ -2504,15 +2504,15 @@
 
             if (venue.status === 'pending') {
                 actions = `
-                    <button class="crm-button small primary" data-publish="approve" data-venue-id="${venue.id}">Publică</button>
-                    <button class="crm-button small danger" data-publish="reject" data-venue-id="${venue.id}">Respinge</button>
+                    <button class="crm-button small primary" data-testid="publish-approve" data-publish="approve" data-venue-id="${venue.id}">Publică</button>
+                    <button class="crm-button small danger" data-testid="publish-reject" data-publish="reject" data-venue-id="${venue.id}">Respinge</button>
                 `;
             } else if (venue.status === 'approved') {
-                actions = `<button class="crm-button small danger" data-publish="deactivate" data-venue-id="${venue.id}">Dezactivează</button>`;
+                actions = `<button class="crm-button small danger" data-testid="publish-deactivate" data-publish="deactivate" data-venue-id="${venue.id}">Dezactivează</button>`;
             } else if (venue.status === 'inactive') {
                 actions = `
-                    <button class="crm-button small primary" data-publish="reactivate" data-venue-id="${venue.id}">Reactivează</button>
-                    <button class="crm-button small ghost" data-publish="reopen" data-venue-id="${venue.id}">Retrimite spre moderare</button>
+                    <button class="crm-button small primary" data-testid="publish-reactivate" data-publish="reactivate" data-venue-id="${venue.id}">Reactivează</button>
+                    <button class="crm-button small ghost" data-testid="publish-reopen" data-publish="reopen" data-venue-id="${venue.id}">Retrimite spre moderare</button>
                 `;
             }
 
@@ -3498,7 +3498,7 @@
                 const claimActions = renderClaimActions(venue);
                 const statusMessage = describeVenueStatus(venue);
                 return `
-                    <article class="venue-card" data-id="${venue.id}">
+                    <article class="venue-card" data-id="${venue.id}" data-testid="venue-card">
                         <div class="venue-card__header">
                             <div class="venue-card__section">
                                 <span class="table-label">Locație</span>
