@@ -9,6 +9,66 @@
   const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
   const dateFieldState = new WeakMap();
 
+  function createEventBus() {
+    const registry = new Map();
+
+    const getListeners = (eventName) => {
+      if (!registry.has(eventName)) {
+        registry.set(eventName, new Set());
+      }
+      return registry.get(eventName);
+    };
+
+    return {
+      on(eventName, handler) {
+        if (typeof eventName !== 'string' || !eventName || typeof handler !== 'function') {
+          return () => {};
+        }
+        const listeners = getListeners(eventName);
+        listeners.add(handler);
+        return () => listeners.delete(handler);
+      },
+      off(eventName, handler) {
+        if (!registry.has(eventName)) {
+          return;
+        }
+        if (typeof handler === 'function') {
+          registry.get(eventName).delete(handler);
+        } else {
+          registry.get(eventName).clear();
+        }
+      },
+      emit(eventName, payload) {
+        if (!registry.has(eventName)) {
+          return;
+        }
+        registry.get(eventName).forEach((listener) => {
+          try {
+            listener(payload);
+          } catch (error) {
+            console.error(`[ouidoBus] listener for "${eventName}" failed:`, error);
+          }
+        });
+      },
+    };
+  }
+
+  const ouidoBus =
+    typeof window !== 'undefined' &&
+    window.ouidoBus &&
+    typeof window.ouidoBus.emit === 'function'
+      ? window.ouidoBus
+      : createEventBus();
+
+  if (typeof window !== 'undefined' && window.ouidoBus !== ouidoBus) {
+    window.ouidoBus = ouidoBus;
+  }
+
+  const scheduleMicrotask =
+    typeof queueMicrotask === 'function'
+      ? queueMicrotask
+      : (callback) => Promise.resolve().then(callback);
+
   function fetchFragment(url) {
     if (!url) {
       return Promise.resolve('');
@@ -474,6 +534,7 @@
           detail: { role: normalized },
         })
       );
+      ouidoBus.emit('role:change', { role: normalized });
     };
 
     setupRoleSwitcher(header, handleRoleChange);
@@ -608,8 +669,21 @@
     };
   }
 
-  function readSearchParams() {
-    const params = new URLSearchParams(window.location.search);
+  function readSearchParams(source) {
+    let params;
+    if (source instanceof URLSearchParams) {
+      params = source;
+    } else if (typeof source === 'string') {
+      const trimmed = source.trim();
+      const query = trimmed ? (trimmed.startsWith('?') ? trimmed : `?${trimmed}`) : '';
+      params = new URLSearchParams(query);
+    } else if (source && typeof source === 'object' && typeof source.search === 'string') {
+      params = new URLSearchParams(source.search);
+    } else {
+      const search = typeof window !== 'undefined' ? window.location.search : '';
+      params = new URLSearchParams(search);
+    }
+
     const result = {
       type: '',
       city: '',
@@ -640,16 +714,28 @@
     return result;
   }
 
-  function prefillSearchBox(component, params = {}) {
-    if (!component || typeof params !== 'object' || params === null) {
+  function prefillSearchBox(component, params = null) {
+    if (!component) {
       return;
     }
 
-    const hasProp = (key) => Object.prototype.hasOwnProperty.call(params, key);
+    const resolved =
+      params && typeof params === 'object' ? params : readSearchParams();
+
+    if (!resolved || typeof resolved !== 'object') {
+      return;
+    }
+
+    const paramsObject =
+      resolved instanceof URLSearchParams
+        ? Object.fromEntries(resolved.entries())
+        : resolved;
+
+    const hasProp = (key) => Object.prototype.hasOwnProperty.call(paramsObject, key);
 
     const typeSelect = component.querySelector('#event-type');
     if (typeSelect && hasProp('type')) {
-      const typeValue = typeof params.type === 'string' ? params.type : '';
+      const typeValue = typeof paramsObject.type === 'string' ? paramsObject.type : '';
       if (typeValue) {
         const optionExists = Array.from(typeSelect.options).some(
           (option) => option.value === typeValue
@@ -662,13 +748,14 @@
 
     const locationInput = component.querySelector('#location');
     if (locationInput && hasProp('city')) {
-      const cityValue = typeof params.city === 'string' ? params.city : '';
+      const cityValue = typeof paramsObject.city === 'string' ? paramsObject.city : '';
       locationInput.value = cityValue;
     }
 
     const guestsSelect = component.querySelector('#guests');
     if (guestsSelect && hasProp('guests')) {
-      const guestsValue = typeof params.guests === 'string' ? params.guests : '';
+      const guestsValue =
+        typeof paramsObject.guests === 'string' ? paramsObject.guests : '';
       if (guestsValue) {
         const optionExists = Array.from(guestsSelect.options).some(
           (option) => option.value === guestsValue
@@ -683,7 +770,7 @@
     if (dateInput && hasProp('date')) {
       const dateState = initializeDateInput(dateInput);
       if (dateState) {
-        const isoDate = typeof params.date === 'string' ? params.date : '';
+        const isoDate = typeof paramsObject.date === 'string' ? paramsObject.date : '';
         dateState.setISOValue(isoDate && ISO_DATE_PATTERN.test(isoDate) ? isoDate : '');
       }
     }
@@ -706,58 +793,95 @@
       const dateInput = component.querySelector('[data-search-date]');
       initializeDateInput(dateInput);
 
+      const submitHandler = (event) => {
+        if (event && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
+
+        const values = collectSearchValues(component);
+        const searchEvent = new CustomEvent('search:submit', {
+          bubbles: true,
+          cancelable: true,
+          detail: values,
+        });
+
+        const shouldProceed = component.dispatchEvent(searchEvent);
+        const cancelled = shouldProceed === false;
+        ouidoBus.emit('search:submit', {
+          component,
+          values,
+          cancelled,
+          defaultAction,
+          navigateTo,
+        });
+
+        if (cancelled) {
+          return;
+        }
+
+        if (defaultAction === 'navigate') {
+          const params = new URLSearchParams();
+          if (values.type) {
+            params.set('type', values.type);
+          }
+          if (values.city) {
+            params.set('city', values.city);
+          }
+          if (values.date) {
+            params.set('date', values.date);
+          }
+          if (values.guests) {
+            params.set('guests', values.guests);
+          }
+
+          const query = params.toString();
+          const destination = query ? `${navigateTo}?${query}` : navigateTo;
+          window.location.href = destination;
+        }
+      };
+
       const submitButton = component.querySelector('[data-search-submit]');
       if (submitButton && submitButton.dataset.searchSubmitReady !== 'true') {
         submitButton.dataset.searchSubmitReady = 'true';
-        submitButton.addEventListener('click', (event) => {
-          event.preventDefault();
+        submitButton.addEventListener('click', submitHandler);
+      }
 
-          const values = collectSearchValues(component);
-          const searchEvent = new CustomEvent('search:submit', {
-            bubbles: true,
-            cancelable: true,
-            detail: values,
-          });
-
-          const shouldProceed = component.dispatchEvent(searchEvent);
-
-          if (shouldProceed && defaultAction === 'navigate') {
-            const params = new URLSearchParams();
-            if (values.type) {
-              params.set('type', values.type);
-            }
-            if (values.city) {
-              params.set('city', values.city);
-            }
-            if (values.date) {
-              params.set('date', values.date);
-            }
-            if (values.guests) {
-              params.set('guests', values.guests);
-            }
-
-            const query = params.toString();
-            const destination = query ? `${navigateTo}?${query}` : navigateTo;
-            window.location.href = destination;
-          }
-        });
+      if (component instanceof HTMLFormElement && component.dataset.searchFormReady !== 'true') {
+        component.dataset.searchFormReady = 'true';
+        component.addEventListener('submit', submitHandler);
       }
 
       prefillSearchBox(component, sharedParams);
 
       component.dataset.searchReady = 'true';
+      const readyDetail = {
+        component,
+        values: collectSearchValues(component),
+        defaultAction,
+        navigateTo,
+      };
       component.dispatchEvent(
-        new CustomEvent('search:ready', { bubbles: true, detail: { component } })
+        new CustomEvent('search:ready', { bubbles: true, detail: readyDetail })
       );
+      ouidoBus.emit('search:ready', readyDetail);
     });
   }
 
   async function initSharedLayout() {
     await injectFragments();
     setupHeaderAndMobileMenu();
-    initializeSearchComponents();
-    document.dispatchEvent(new CustomEvent('fragments:ready'));
-    document.dispatchEvent(new CustomEvent('fragments:loaded'));
+    const detail = { root: document };
+    const readyEvent = new CustomEvent('fragments:ready', { detail });
+    document.dispatchEvent(readyEvent);
+    ouidoBus.emit('fragments:ready', detail);
+
+    scheduleMicrotask(() => {
+      initializeSearchComponents();
+      const loadedDetail = { root: document };
+      const loadedEvent = new CustomEvent('fragments:loaded', { detail: loadedDetail });
+      document.dispatchEvent(loadedEvent);
+      ouidoBus.emit('fragments:loaded', loadedDetail);
+    });
   }
 
   if (typeof window !== 'undefined') {
@@ -778,14 +902,20 @@
     }
   }
 
-  document.addEventListener('search:init', (event) => {
-    const context = event && event.detail && event.detail.context;
+  const handleSearchInit = (payload) => {
+    const context = payload && payload.context;
     if (context instanceof Element || context instanceof Document || context instanceof DocumentFragment) {
       initializeSearchComponents(context);
     } else {
       initializeSearchComponents();
     }
+  };
+
+  document.addEventListener('search:init', (event) => {
+    handleSearchInit(event && event.detail);
   });
+
+  ouidoBus.on('search:init', handleSearchInit);
 
   document.addEventListener('DOMContentLoaded', () => {
     initSharedLayout().catch((error) => {
