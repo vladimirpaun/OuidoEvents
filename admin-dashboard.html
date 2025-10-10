@@ -1025,7 +1025,8 @@
                                     <th>Oraș</th>
                                     <th>Capacitate</th>
                                     <th>Trimis</th>
-                                    <th></th>
+                                    <th>Acțiuni</th>
+                                    <th>Linkuri</th>
                                 </tr>
                             </thead>
                             <tbody id="pending-venues-body"></tbody>
@@ -1266,6 +1267,22 @@
         </div>
     </div>
 
+    <div class="crm-modal-backdrop" id="rejection-note-modal" hidden role="dialog" aria-modal="true" aria-labelledby="rejection-note-title" aria-hidden="true">
+        <div class="crm-modal">
+            <div>
+                <h3 id="rejection-note-title">Motiv respingere</h3>
+                <div class="crm-modal-body">
+                    <label for="rejection-note-text" class="crm-field-label">Adaugă notițe pentru respingere</label>
+                    <textarea id="rejection-note-text" rows="4" placeholder="Precizează motivul respingerii"></textarea>
+                </div>
+            </div>
+            <div class="crm-modal-actions">
+                <button class="crm-button small ghost" type="button" data-rejection-note="cancel">Renunță</button>
+                <button class="crm-button small danger" type="button" data-rejection-note="submit">Salvează</button>
+            </div>
+        </div>
+    </div>
+
     <script src="main.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -1395,9 +1412,36 @@
                 { type: 'Moderare', description: 'Listare nouă "Casa Hellen" cu review-uri incomplete', time: 'acum 2 ore' },
             ],
             pendingVenues: [
-                { id: 301, name: 'The Ivy Loft', owner: 'Evelin Pop', city: 'București', capacity: '80-150', submittedAt: 'acum 2h' },
-                { id: 302, name: 'Domaine Verde', owner: 'Marius Bălan', city: 'Sinaia', capacity: '120-300', submittedAt: 'acum 4h' },
-                { id: 303, name: 'Mare Nostrum Terrace', owner: 'Iulia Iancu', city: 'Constanța', capacity: '60-220', submittedAt: 'ieri' },
+                {
+                    id: 301,
+                    name: 'The Ivy Loft',
+                    owner: 'Evelin Pop',
+                    city: 'București',
+                    capacity: '80-150',
+                    submittedAt: 'acum 2h',
+                    detailsUrl: 'venue-details.html#ivy-loft',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 302,
+                    name: 'Domaine Verde',
+                    owner: 'Marius Bălan',
+                    city: 'Sinaia',
+                    capacity: '120-300',
+                    submittedAt: 'acum 4h',
+                    detailsUrl: 'venue-details.html#domaine-verde',
+                    crmUrl: 'owner-crm.html#venues',
+                },
+                {
+                    id: 303,
+                    name: 'Mare Nostrum Terrace',
+                    owner: 'Iulia Iancu',
+                    city: 'Constanța',
+                    capacity: '60-220',
+                    submittedAt: 'ieri',
+                    detailsUrl: 'venue-details.html#mare-nostrum-terrace',
+                    crmUrl: 'owner-crm.html#venues',
+                },
             ],
             recentDecisions: [
                 { id: 201, name: 'Luna Ballroom', owner: 'Eventique SRL', status: 'approved', notes: 'Fotografii și meniu complet', time: '3h' },
@@ -1820,6 +1864,14 @@
         let claimModalVenueId = null;
         let claimModalVenueUrl = '';
         let claimModalVenueName = '';
+        const rejectionModalElements = {
+            backdrop: document.getElementById('rejection-note-modal'),
+            textarea: document.getElementById('rejection-note-text'),
+            submit: document.querySelector('[data-rejection-note="submit"]'),
+            cancel: document.querySelector('[data-rejection-note="cancel"]'),
+        };
+        let rejectionModalResolver = null;
+        let rejectionModalTriggerElement = null;
 
         function renderMetrics() {
             const metricsContainer = document.getElementById('overview-metrics');
@@ -1906,25 +1958,36 @@
         function renderPendingVenues() {
             const tbody = document.getElementById('pending-venues-body');
             if (!adminState.pendingVenues.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--muted-color);">Nicio listare în așteptare.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--muted-color);">Nicio listare în așteptare.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = adminState.pendingVenues.map(venue => `
-                <tr data-id="${venue.id}">
-                    <td><strong>${venue.name}</strong></td>
-                    <td>${venue.owner}</td>
-                    <td>${venue.city}</td>
-                    <td>${venue.capacity}</td>
-                    <td>${venue.submittedAt}</td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="crm-button small primary" data-approve="${venue.id}">Aprobă</button>
-                            <button class="crm-button small danger" data-reject="${venue.id}">Respinge</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = adminState.pendingVenues.map((venue) => {
+                const linkedVenue = adminState.venues.find(v => v.id === venue.id) || {};
+                const detailsUrl = venue.detailsUrl || linkedVenue.detailsUrl || 'venue-details.html';
+                const crmUrl = venue.crmUrl || linkedVenue.crmUrl || 'owner-crm.html#venues';
+                return `
+                    <tr data-id="${venue.id}">
+                        <td><strong>${venue.name}</strong></td>
+                        <td>${venue.owner}</td>
+                        <td>${venue.city}</td>
+                        <td>${venue.capacity}</td>
+                        <td>${venue.submittedAt}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="crm-button small primary" data-approve="${venue.id}">Aprobă</button>
+                                <button class="crm-button small danger" data-reject="${venue.id}">Respinge</button>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-actions table-actions--compact">
+                                <a class="crm-button small ghost" target="_blank" rel="noopener noreferrer" href="${detailsUrl}">Fișă</a>
+                                <a class="crm-button small ghost" target="_blank" rel="noopener noreferrer" href="${crmUrl}">CRM</a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderRecentDecisions() {
@@ -2006,6 +2069,20 @@
                 return '0';
             }
             return value.toLocaleString('ro-RO');
+        }
+
+        function sanitizeText(value) {
+            if (typeof value !== 'string') {
+                return '';
+            }
+            const entities = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            };
+            return value.replace(/[&<>"']/g, (char) => entities[char] || char);
         }
 
         function getVenueManagementState(venue) {
@@ -2121,6 +2198,12 @@
             if (venue.status === 'pending') {
                 if (existing) {
                     existing.submittedAt = 'chiar acum';
+                    if (venue.detailsUrl) {
+                        existing.detailsUrl = venue.detailsUrl;
+                    }
+                    if (venue.crmUrl) {
+                        existing.crmUrl = venue.crmUrl;
+                    }
                 } else {
                     adminState.pendingVenues.unshift({
                         id: venue.id,
@@ -2129,6 +2212,8 @@
                         city: venue.city,
                         capacity: venue.capacity,
                         submittedAt: 'chiar acum',
+                        detailsUrl: venue.detailsUrl || 'venue-details.html',
+                        crmUrl: venue.crmUrl || 'owner-crm.html#venues',
                     });
                     adminState.pendingVenues = adminState.pendingVenues.slice(0, 8);
                 }
@@ -2346,6 +2431,68 @@
             claimModalVenueId = null;
             claimModalVenueUrl = '';
             claimModalVenueName = '';
+        }
+
+        function openRejectionNoteModal(triggerElement) {
+            if (!rejectionModalElements.backdrop) {
+                const fallbackNote = window.prompt('Precizează motivul respingerii', '');
+                if (fallbackNote === null) {
+                    return Promise.resolve(null);
+                }
+                const trimmed = fallbackNote.trim();
+                return Promise.resolve(trimmed.length ? trimmed : 'Respinsă - fără notițe');
+            }
+
+            rejectionModalTriggerElement = triggerElement;
+            rejectionModalElements.backdrop.setAttribute('role', 'dialog');
+            rejectionModalElements.backdrop.setAttribute('aria-modal', 'true');
+            rejectionModalElements.backdrop.setAttribute('aria-labelledby', 'rejection-note-title');
+            rejectionModalElements.backdrop.setAttribute('aria-describedby', 'rejection-note-text');
+            if (rejectionModalElements.textarea) {
+                rejectionModalElements.textarea.value = '';
+            }
+            rejectionModalElements.backdrop.removeAttribute('hidden');
+            rejectionModalElements.backdrop.removeAttribute('aria-hidden');
+
+            return new Promise((resolve) => {
+                rejectionModalResolver = resolve;
+                if (rejectionModalElements.textarea) {
+                    if (typeof requestAnimationFrame === 'function') {
+                        requestAnimationFrame(() => rejectionModalElements.textarea.focus());
+                    } else {
+                        rejectionModalElements.textarea.focus();
+                    }
+                }
+            });
+        }
+
+        function closeRejectionNoteModal(result = null, options = { restore: true }) {
+            if (!rejectionModalElements.backdrop) {
+                if (rejectionModalResolver) {
+                    const resolver = rejectionModalResolver;
+                    rejectionModalResolver = null;
+                    resolver(result);
+                }
+                return;
+            }
+
+            rejectionModalElements.backdrop.setAttribute('hidden', '');
+            rejectionModalElements.backdrop.setAttribute('aria-hidden', 'true');
+
+            const resolver = rejectionModalResolver;
+            rejectionModalResolver = null;
+            if (resolver) {
+                resolver(result);
+            }
+
+            if (options.restore !== false && rejectionModalTriggerElement && document.body.contains(rejectionModalTriggerElement)) {
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(() => rejectionModalTriggerElement.focus());
+                } else {
+                    rejectionModalTriggerElement.focus();
+                }
+            }
+            rejectionModalTriggerElement = null;
         }
 
         function handleClaimDecision(decision) {
@@ -2815,10 +2962,35 @@
                 }
             });
         }
+        if (rejectionModalElements.submit) {
+            rejectionModalElements.submit.addEventListener('click', () => {
+                const note = rejectionModalElements.textarea ? rejectionModalElements.textarea.value.trim() : '';
+                closeRejectionNoteModal(note.length ? note : 'Respinsă - fără notițe', { restore: false });
+            });
+        }
+        if (rejectionModalElements.cancel) {
+            rejectionModalElements.cancel.addEventListener('click', () => {
+                closeRejectionNoteModal(null);
+            });
+        }
+        if (rejectionModalElements.backdrop) {
+            rejectionModalElements.backdrop.addEventListener('click', (event) => {
+                if (event.target === rejectionModalElements.backdrop) {
+                    closeRejectionNoteModal(null);
+                }
+            });
+        }
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && claimModalElements.backdrop && !claimModalElements.backdrop.hasAttribute('hidden')) {
-                event.preventDefault();
-                closeClaimModal();
+            if (event.key === 'Escape') {
+                if (rejectionModalElements.backdrop && !rejectionModalElements.backdrop.hasAttribute('hidden')) {
+                    event.preventDefault();
+                    closeRejectionNoteModal(null);
+                    return;
+                }
+                if (claimModalElements.backdrop && !claimModalElements.backdrop.hasAttribute('hidden')) {
+                    event.preventDefault();
+                    closeClaimModal();
+                }
             }
         });
 
@@ -2948,39 +3120,56 @@
         populateManageVenueFilters();
         renderManageVenues();
 
-        document.getElementById('pending-venues-body').addEventListener('click', (event) => {
-            const approveId = event.target.getAttribute('data-approve');
-            const rejectId = event.target.getAttribute('data-reject');
-            if (!approveId && !rejectId) return;
+        const pendingVenuesBody = document.getElementById('pending-venues-body');
+        if (pendingVenuesBody) {
+            pendingVenuesBody.addEventListener('click', async (event) => {
+                const approveButton = event.target.closest('[data-approve]');
+                const rejectButton = event.target.closest('[data-reject]');
+                if (!approveButton && !rejectButton) return;
 
-            const venueId = Number(approveId || rejectId);
-            const venue = adminState.pendingVenues.find(v => v.id === venueId);
-            if (!venue) return;
+                const isApproval = Boolean(approveButton);
+                const actionButton = approveButton || rejectButton;
+                const venueId = Number(actionButton.getAttribute(isApproval ? 'data-approve' : 'data-reject'));
+                if (Number.isNaN(venueId)) return;
 
-            adminState.pendingVenues = adminState.pendingVenues.filter(v => v.id !== venueId);
-            adminState.recentDecisions.unshift({
-                id: Date.now(),
-                name: venue.name,
-                owner: venue.owner,
-                status: approveId ? 'approved' : 'rejected',
-                notes: approveId ? 'Aprobată după verificare' : 'Respinsă - completare necesară',
-                time: 'chiar acum',
+                const venue = adminState.pendingVenues.find(v => v.id === venueId);
+                if (!venue) return;
+
+                let decisionNotes = 'Aprobată după verificare';
+                if (!isApproval) {
+                    const note = await openRejectionNoteModal(actionButton);
+                    if (note === null) {
+                        return;
+                    }
+                    decisionNotes = note;
+                }
+
+                const safeNotes = sanitizeText(decisionNotes);
+                adminState.pendingVenues = adminState.pendingVenues.filter(v => v.id !== venueId);
+                adminState.recentDecisions.unshift({
+                    id: Date.now(),
+                    name: venue.name,
+                    owner: venue.owner,
+                    status: isApproval ? 'approved' : 'rejected',
+                    notes: safeNotes,
+                    time: 'chiar acum',
+                });
+                adminState.recentDecisions = adminState.recentDecisions.slice(0, 8);
+
+                const managedVenue = adminState.venues.find(v => v.id === venueId);
+                if (managedVenue) {
+                    managedVenue.status = isApproval ? 'approved' : 'rejected';
+                    managedVenue.lastActivity = isApproval
+                        ? 'Aprobată în moderare - chiar acum'
+                        : `Respinsă în moderare - ${safeNotes}`;
+                }
+
+                renderPendingVenues();
+                renderRecentDecisions();
+                renderManageVenues();
+                updateMetricsAfterDecision(isApproval ? 'approved' : 'rejected');
             });
-            adminState.recentDecisions = adminState.recentDecisions.slice(0, 8);
-
-            const managedVenue = adminState.venues.find(v => v.id === venueId);
-            if (managedVenue) {
-                managedVenue.status = approveId ? 'approved' : 'rejected';
-                managedVenue.lastActivity = approveId
-                    ? 'Aprobată în moderare - chiar acum'
-                    : 'Respinsă în moderare - chiar acum';
-            }
-
-            renderPendingVenues();
-            renderRecentDecisions();
-            renderManageVenues();
-            updateMetricsAfterDecision(approveId ? 'approved' : 'rejected');
-        });
+        }
 
         const clientsTableBody = document.getElementById('clients-table-body');
         if (clientsTableBody) {
