@@ -943,7 +943,7 @@
                         </button>
                         <button class="crm-nav-link" type="button" data-page-target="manage-venues">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18"/><path d="M5 5h14a2 2 0 0 1 2 2v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2z"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>
-                            Gerează locații
+                            Gestionează locații
                         </button>
                         <button class="crm-nav-link" type="button" data-page-target="analytics">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19V6"/><path d="M7 19v-4"/><path d="M15 19v-8"/><path d="M19 19V9"/></svg>
@@ -1056,7 +1056,7 @@
 
             <section class="crm-page" data-page="manage-venues">
                 <div class="page-header">
-                    <h1>Gerează portofoliul de locații</h1>
+                    <h1>Gestionează portofoliul de locații</h1>
                     <p>Monitorizează starea fiecărei locații publicate sau în așteptare și acționează rapid asupra celor care necesită atenție.</p>
                 </div>
 
@@ -1279,7 +1279,7 @@
         const mobilePageLabels = {
             overview: 'Dashboard',
             approvals: 'Aprobări locații',
-            'manage-venues': 'Gerează locații',
+            'manage-venues': 'Gestionează locații',
             analytics: 'Analitice',
             accounts: 'Conturi',
             activity: 'Activitate'
@@ -2932,7 +2932,7 @@
                         logAdminActionFromManage('Vizualizare locație', `Fișa ${venue.name} a fost deschisă`);
                     } else if (action === 'manage') {
                         window.open(venue.crmUrl || 'owner-crm.html#venues', '_blank');
-                        logAdminActionFromManage('Gerează locație', `CRM proprietar deschis pentru ${venue.name}`);
+                        logAdminActionFromManage('Gestionează locație', `CRM proprietar deschis pentru ${venue.name}`);
                     }
                 }
             });
