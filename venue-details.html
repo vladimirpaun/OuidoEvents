@@ -761,10 +761,17 @@
                             </div>
                         </div>
                         <div class="contact-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                            <div class="contact-item-info">
+                                <span>Adresă</span>
+                                <strong data-venue-address>Adresă indisponibilă</strong>
+                            </div>
+                        </div>
+                        <div class="contact-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                             <div class="contact-item-info">
                                 <span>Program recomandat</span>
-                                <strong>Luni - Vineri, 09:00 - 18:00</strong>
+                                <strong>luni: 12:00–19:30 | marți: 12:00–19:30 | miercuri: 12:00–19:30 | joi: 12:00–19:30 | vineri: 12:00–19:30 | sâmbătă: Închis | duminică: Închis</strong>
                             </div>
                         </div>
                     </div>
@@ -955,6 +962,7 @@
             const priceEl = document.querySelector('[data-venue-price]');
             const favoriteBtn = document.querySelector('[data-venue-favorite]');
             const descriptionEl = document.querySelector('[data-venue-description]');
+            const addressEl = document.querySelector('[data-venue-address]');
 
             if (nameEl) nameEl.textContent = venue.name;
             if (breadcrumb) breadcrumb.textContent = venue.name;
@@ -972,6 +980,10 @@
             if (favoriteBtn) favoriteBtn.dataset.id = String(venue.id);
             if (descriptionEl) {
                 descriptionEl.textContent = `${venue.name} este una dintre locațiile recomandate OuidoEvents din ${venue.city}, pregătită să găzduiască evenimente memorabile cu servicii complete și echipă dedicată.`;
+            }
+            if (addressEl) {
+                const address = venue.address || `${venue.city}, România`;
+                addressEl.textContent = address;
             }
             document.title = `${venue.name} · OuidoEvents`;
         }
@@ -1135,9 +1147,15 @@
             const contactSection = document.querySelector('.contact-section');
             const lockedMessage = lockedSection?.querySelector('[data-contact-locked-message]');
             const lockedActions = lockedSection?.querySelector('[data-contact-locked-actions]');
+            const addressEl = contactSection?.querySelector('[data-venue-address]');
             const userRole = normalizeRole(localStorage.getItem('userRole'));
 
             if (!lockedSection || !contactSection || !lockedMessage || !lockedActions) return;
+
+            if (addressEl && venue) {
+                const address = venue.address || (venue.city ? `${venue.city}, România` : 'Adresă indisponibilă');
+                addressEl.textContent = address;
+            }
 
             contactSection.hidden = true;
             contactSection.classList.remove('is-visible');
