@@ -219,7 +219,6 @@
         .status-chip[data-status="viewing_scheduled"] { background: rgba(37, 99, 235, 0.22); color: #1d4ed8; }
         .status-chip[data-status="pre_booked"] { background: rgba(20, 184, 166, 0.22); color: #0f766e; }
         .status-chip[data-status="confirmed"] { background: rgba(21, 128, 61, 0.22); color: #166534; }
-        .status-chip[data-status="viewing_completed"] { background: rgba(129, 199, 132, 0.22); color: #166534; }
         .status-chip[data-status="viewing_cancelled"] { background: rgba(239, 68, 68, 0.22); color: #b91c1c; }
         .status-chip[data-status="viewing_rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
         .status-chip[data-status="rejected"] { background: rgba(185, 28, 28, 0.22); color: #991b1b; }
@@ -2042,6 +2041,18 @@
                 nextStep: 'Adaugă vizita în calendar și pregătește întrebările pentru echipă.',
                 color: '#2563eb'
             },
+            viewing_rejected: {
+                label: 'Vizionare respinsă',
+                description: 'Locația nu poate onora vizionarea.',
+                nextStep: 'Vezi detaliile locației și propune un alt interval.',
+                color: '#b91c1c'
+            },
+            viewing_cancelled: {
+                label: 'Vizionare anulată',
+                description: 'Ai retras solicitarea de vizionare.',
+                nextStep: 'Poți trimite o nouă solicitare oricând dorești.',
+                color: '#b91c1c'
+            },
             pre_booked: {
                 label: 'Dată blocată temporar (Pre-rezervat)',
                 description: 'Locația a blocat data provizoriu pentru tine.',
@@ -2075,7 +2086,7 @@
                 color: '#0ea5e9'
             },
             viewing_rescheduled: {
-                label: 'Reprogramat de locatie',
+                label: 'Vizionare reprogramată',
                 description: 'Selectează varianta propusă de locație sau trimite alt interval.',
                 color: '#0284c7'
             },
@@ -2084,20 +2095,15 @@
                 description: 'Vizionarea este programată la intervalul stabilit.',
                 color: '#2563eb'
             },
-            viewing_completed: {
-                label: 'Vizionare încheiată',
-                description: 'Vizita a avut loc. Poți trimite feedback sau cere ofertă.',
-                color: '#0f172a'
-            },
             viewing_rejected: {
-                label: 'Cerere respinsă',
+                label: 'Vizionare respinsă',
                 description: 'Locația nu poate onora vizionarea.',
                 color: '#b91c1c'
             },
             viewing_cancelled: {
-                label: 'Cerere anulată',
+                label: 'Vizionare anulată',
                 description: 'Ai retras solicitarea de vizionare.',
-                color: '#6b7280'
+                color: '#ef4444'
             }
         };
 
@@ -2242,22 +2248,282 @@
                 return {
                     id: 4,
                     locationId: 3,
-                    status: 'viewing_completed',
+                    status: 'viewing_cancelled',
                     requestedSlots: [],
                     ownerSuggestions: [],
-                    confirmedSlot: {
-                        date: new Date(past.getTime()),
-                        iso: past.toISOString(),
-                        label: formatDateTime(past)
-                    },
+                    confirmedSlot: null,
                     host: 'Laura C.',
                     lastUpdate: addDays(-3),
-                    note: 'Ți-am trimis planul detaliat.',
+                    note: 'Vizionarea a fost anulată. Poți solicita un alt interval din cont.',
                     date: new Date(past.getTime()),
                     hour: formatTime(past)
                 };
             })()
         ];
+
+        const isValidDate = (date) => date instanceof Date && !Number.isNaN(date.getTime());
+        const parseDate = (value) => {
+            if (!value) {
+                return null;
+            }
+            const parsed = new Date(value);
+            return isValidDate(parsed) ? parsed : null;
+        };
+        const getFirstValidSlotDate = (slots) => {
+            if (!Array.isArray(slots)) {
+                return null;
+            }
+            for (const slot of slots) {
+                if (slot?.date && isValidDate(slot.date)) {
+                    return slot.date;
+                }
+                if (slot?.iso) {
+                    const parsed = parseDate(slot.iso);
+                    if (parsed) {
+                        return parsed;
+                    }
+                }
+            }
+            return null;
+        };
+
+        let requestIdCounter = clientRequests.reduce((max, req) => {
+            const numericId = Number.parseInt(req.id, 10);
+            return Number.isFinite(numericId) ? Math.max(max, numericId) : max;
+        }, 0);
+        let viewingIdCounter = clientViewings.reduce((max, view) => {
+            const numericId = Number.parseInt(view.id, 10);
+            return Number.isFinite(numericId) ? Math.max(max, numericId) : max;
+        }, 0);
+
+        const getNextRequestId = () => {
+            requestIdCounter += 1;
+            return requestIdCounter;
+        };
+        const getNextViewingId = () => {
+            viewingIdCounter += 1;
+            return viewingIdCounter;
+        };
+
+        const inferRequestType = (status) => (typeof status === 'string' && status.startsWith('viewing_')) ? 'viewing' : 'availability';
+        const createRequestKey = (locationId, date, type) => {
+            const numericId = Number.parseInt(locationId, 10);
+            const locationPart = Number.isFinite(numericId) ? numericId : 'unknown';
+            const normalizedDate = isValidDate(date) ? date.toISOString().split('T')[0] : 'unknown';
+            const typePart = type === 'viewing' ? 'viewing' : 'availability';
+            return `${locationPart}::${normalizedDate}::${typePart}`;
+        };
+        const deriveRequestDate = (request) => {
+            if (!request) {
+                return null;
+            }
+            if (isValidDate(request.eventDate)) {
+                return request.eventDate;
+            }
+            const slotDate = getFirstValidSlotDate(request.requestedSlots);
+            if (slotDate) {
+                return slotDate;
+            }
+            if (request.confirmedSlot?.date && isValidDate(request.confirmedSlot.date)) {
+                return request.confirmedSlot.date;
+            }
+            if (request.confirmedSlot?.iso) {
+                const parsed = parseDate(request.confirmedSlot.iso);
+                if (parsed) {
+                    return parsed;
+                }
+            }
+            if (isValidDate(request.lastUpdate)) {
+                return request.lastUpdate;
+            }
+            return null;
+        };
+        const createRequestKeyFromRequest = (request) => {
+            if (!request) {
+                return '';
+            }
+            return createRequestKey(request.locationId, deriveRequestDate(request), inferRequestType(request.status));
+        };
+
+        function parseStoredRequest(record) {
+            if (!record) {
+                return null;
+            }
+            const type = record.type === 'viewing' ? 'viewing' : 'availability';
+            const locationId = Number.parseInt(record.locationId, 10);
+            if (!Number.isFinite(locationId)) {
+                return null;
+            }
+            const createdAt = parseDate(record.createdAt) || new Date();
+            const requestedSlots = type === 'viewing' ? mapSlots(Array.isArray(record.slots) ? record.slots : []) : [];
+            let eventDate = type === 'availability' ? parseDate(record.eventDate) : null;
+            if (type === 'viewing') {
+                const slotDate = getFirstValidSlotDate(requestedSlots);
+                if (slotDate) {
+                    eventDate = new Date(slotDate.getTime());
+                }
+            }
+            if (!isValidDate(eventDate)) {
+                eventDate = new Date(createdAt.getTime());
+            }
+
+            const storageRecord = {
+                id: record.id || Number(createdAt.getTime()),
+                type,
+                status: type === 'viewing' ? 'viewing_request' : 'availability_request',
+                locationId,
+                locationName: record.locationName || '',
+                createdAt: createdAt.toISOString()
+            };
+            if (type === 'availability') {
+                storageRecord.eventDate = eventDate.toISOString();
+                const guestsValue = Number.parseInt(record.guests, 10);
+                if (Number.isFinite(guestsValue)) {
+                    storageRecord.guests = guestsValue;
+                }
+                if (record.eventType) {
+                    storageRecord.eventType = record.eventType;
+                }
+            } else {
+                storageRecord.slots = requestedSlots.map(slot => ({ iso: slot.iso, label: slot.label }));
+                const firstSlot = getFirstValidSlotDate(requestedSlots);
+                if (firstSlot) {
+                    storageRecord.eventDate = firstSlot.toISOString();
+                }
+            }
+
+            return {
+                type,
+                locationId,
+                createdAt,
+                eventDate,
+                requestedSlots,
+                guests: (() => {
+                    const guestsValue = Number.parseInt(record.guests, 10);
+                    return Number.isFinite(guestsValue) ? guestsValue : undefined;
+                })(),
+                eventType: type === 'availability' && record.eventType ? record.eventType : undefined,
+                locationName: record.locationName || '',
+                key: createRequestKey(locationId, eventDate, type),
+                viewingKey: type === 'viewing' ? createRequestKey(locationId, eventDate, 'viewing') : null,
+                storageRecord
+            };
+        }
+
+        function createRequestFromNormalized(normalized) {
+            const request = {
+                id: getNextRequestId(),
+                locationId: normalized.locationId,
+                eventDate: new Date(normalized.eventDate.getTime()),
+                status: normalized.type === 'viewing' ? 'viewing_request' : 'availability_request',
+                lastUpdate: normalized.createdAt,
+                guests: normalized.guests,
+                eventType: normalized.type === 'availability' ? normalized.eventType : undefined,
+                requestedSlots: normalized.type === 'viewing' ? normalized.requestedSlots : [],
+                ownerSuggestions: [],
+                confirmedSlot: null
+            };
+            if (request.guests === undefined) {
+                delete request.guests;
+            }
+            if (!request.eventType) {
+                delete request.eventType;
+            }
+
+            let viewing = null;
+            if (normalized.type === 'viewing') {
+                const viewingId = getNextViewingId();
+                request.viewingId = viewingId;
+                const primarySlotDate = getFirstValidSlotDate(normalized.requestedSlots);
+                const referenceDate = isValidDate(primarySlotDate) ? primarySlotDate : normalized.eventDate;
+                const fallbackDate = isValidDate(referenceDate) ? referenceDate : normalized.createdAt;
+                const finalDate = new Date(fallbackDate.getTime());
+                viewing = {
+                    id: viewingId,
+                    locationId: normalized.locationId,
+                    status: 'viewing_request',
+                    requestedSlots: normalized.requestedSlots,
+                    ownerSuggestions: [],
+                    confirmedSlot: null,
+                    host: normalized.locationName ? `Echipa ${normalized.locationName}` : 'Echipa locației',
+                    lastUpdate: normalized.createdAt,
+                    note: 'Așteaptă confirmarea locației pentru intervalele propuse.',
+                    date: finalDate,
+                    hour: formatTime(finalDate)
+                };
+            }
+
+            return { request, viewing };
+        }
+
+        function ingestStoredClientRequests() {
+            if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+                return;
+            }
+            let storedRecords = [];
+            try {
+                const raw = localStorage.getItem('clientRequests');
+                if (!raw) {
+                    return;
+                }
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    if (Array.isArray(parsed) && parsed.length === 0) {
+                        localStorage.setItem('clientRequests', JSON.stringify([]));
+                    }
+                    return;
+                }
+                storedRecords = parsed;
+            } catch (error) {
+                console.warn('Nu s-au putut citi cererile din storage.', error);
+                return;
+            }
+
+            const existingRequestKeys = new Set(clientRequests.map(createRequestKeyFromRequest).filter(Boolean));
+            const sanitizedRecords = [];
+            const sanitizedKeys = new Set();
+            let hasChanges = false;
+
+            storedRecords.forEach((record) => {
+                const normalized = parseStoredRequest(record);
+                if (!normalized) {
+                    return;
+                }
+                if (!sanitizedKeys.has(normalized.key)) {
+                    sanitizedRecords.push(normalized.storageRecord);
+                    sanitizedKeys.add(normalized.key);
+                }
+                if (existingRequestKeys.has(normalized.key)) {
+                    return;
+                }
+                const { request, viewing } = createRequestFromNormalized(normalized);
+                clientRequests.unshift(request);
+                existingRequestKeys.add(normalized.key);
+                hasChanges = true;
+                if (viewing) {
+                    clientViewings.unshift(viewing);
+                }
+            });
+
+            try {
+                localStorage.setItem('clientRequests', JSON.stringify(sanitizedRecords));
+            } catch (error) {
+                console.warn('Nu s-a putut actualiza cererile din storage.', error);
+            }
+
+            if (hasChanges) {
+                clientRequests.sort((a, b) => {
+                    const timeA = isValidDate(a.lastUpdate) ? a.lastUpdate.getTime() : 0;
+                    const timeB = isValidDate(b.lastUpdate) ? b.lastUpdate.getTime() : 0;
+                    return timeB - timeA;
+                });
+                clientViewings.sort((a, b) => {
+                    const timeA = isValidDate(a.lastUpdate) ? a.lastUpdate.getTime() : 0;
+                    const timeB = isValidDate(b.lastUpdate) ? b.lastUpdate.getTime() : 0;
+                    return timeB - timeA;
+                });
+            }
+        }
 
         const requestFilters = { status: 'all', location: 'all', sort: 'event-date' };
         const viewingFilters = { venue: 'all', status: 'all', sort: 'primary-date' };
@@ -2432,7 +2698,8 @@
 
             activeRequestDetailId = request.id;
 
-            const venueUrl = location?.id ? `venue-details.html?id=${location.id}` : 'venue-details.html';
+            const venueId = Number.isFinite(Number(request.locationId)) ? Number(request.locationId) : location?.id;
+            const venueUrl = Number.isFinite(venueId) ? `venue-details.html?id=${venueId}` : 'venue-details.html';
             if (requestDetailElements.venueLinkPrimary) {
                 requestDetailElements.venueLinkPrimary.href = venueUrl;
             }
@@ -4135,12 +4402,6 @@
                             <button data-viewing-action="request_reschedule" data-viewing-id="${view.id}">Solicită reprogramare</button>
                         `;
                         break;
-                    case 'viewing_completed':
-                        actionsDiv.innerHTML = `
-                            <button data-viewing-action="download_materials" data-viewing-id="${view.id}">Vezi rezumatul</button>
-                            <button data-viewing-action="add_review" data-viewing-id="${view.id}">Scrie feedback</button>
-                        `;
-                        break;
                     case 'viewing_rejected':
                     case 'viewing_cancelled':
                         actionsDiv.innerHTML = `
@@ -4326,6 +4587,8 @@
             rescheduleAcceptBtn?.addEventListener('click', acceptRescheduleSelection);
             rescheduleDeclineBtn?.addEventListener('click', declineRescheduleSelection);
         }
+
+        ingestStoredClientRequests();
 
         populateRequestFilters();
         populateViewingFilters();
