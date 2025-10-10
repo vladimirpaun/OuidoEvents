@@ -396,6 +396,12 @@
         .availability-calendar { display: flex; justify-content: center; max-width: 100%; overflow-x: auto; }
         .availability-calendar .flatpickr-calendar { box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35); border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 16px; padding: 16px 20px; overflow: visible; min-width: 320px; max-width: 100%; }
         .availability-calendar .flatpickr-day { width: 46px; height: 42px; line-height: 42px; font-size: 0.9rem; }
+        .availability-calendar.is-empty {
+            min-height: 260px;
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--border-color);
+            background: var(--light-gray-color);
+        }
         .availability-legend { display: flex; gap: 12px; justify-content: center; font-size: 0.85rem; color: var(--gray-color); margin-top: 12px; flex-wrap: wrap; }
         .availability-legend-dot { display: inline-flex; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
         .availability-legend-dot--available { background: #16a34a; }
@@ -1043,6 +1049,7 @@
 
             const userRole = normalizeRole(localStorage.getItem('userRole'));
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const hasClientConfirmed = userRole === 'client' && hasConfirmedAvailability(venue.id);
             const shouldShowClientActions = isLoggedIn && AUTHENTICATED_ROLES.has(userRole);
 
             if (calendarShell) {
@@ -1057,8 +1064,9 @@
                 calendarShell.hidden = false;
                 if (placeholder) {
                     placeholder.hidden = true;
-                    placeholder.remove();
+                    placeholder.setAttribute('aria-hidden', 'true');
                 }
+                widgetCalendarContainer.classList.remove('is-empty');
 
                 if (widgetCalendarInput._flatpickr) {
                     widgetCalendarInput._flatpickr.destroy();
@@ -1097,8 +1105,43 @@
 
             ensureWidgetCalendarVisibility = buildWidgetCalendar;
 
+            if (placeholder) {
+                if (!shouldShowClientActions) {
+                    placeholder.textContent = 'Autentifică-te pentru a vedea calendarul disponibilităților.';
+                } else if (userRole === 'client' && !hasClientConfirmed) {
+                    placeholder.textContent = 'Confirmă disponibilitatea pentru a debloca calendarul locației.';
+                }
+                if (shouldShowClientActions) {
+                    if (hasClientConfirmed) {
+                        placeholder.hidden = true;
+                        placeholder.setAttribute('aria-hidden', 'true');
+                    } else {
+                        placeholder.hidden = false;
+                        placeholder.removeAttribute('aria-hidden');
+                    }
+                } else {
+                    placeholder.hidden = true;
+                    placeholder.setAttribute('aria-hidden', 'true');
+                }
+            }
+
             if (!shouldShowClientActions) {
-                buildWidgetCalendar();
+                if (placeholder) {
+                    placeholder.hidden = true;
+                    placeholder.setAttribute('aria-hidden', 'true');
+                }
+                if (calendarShell) {
+                    calendarShell.hidden = false;
+                }
+                if (widgetCalendarInput && widgetCalendarInput._flatpickr) {
+                    widgetCalendarInput._flatpickr.destroy();
+                    widgetCalendarInput._flatpickr = null;
+                }
+                if (widgetCalendarContainer) {
+                    widgetCalendarContainer.innerHTML = '';
+                    widgetCalendarContainer.classList.add('is-empty');
+                }
+                ensureWidgetCalendarVisibility = () => {};
                 const link = document.createElement('a');
                 link.href = 'login.html';
                 link.className = 'cta-button';
@@ -1131,9 +1174,7 @@
             });
 
             const shouldAutoShowCalendar =
-                userRole === 'owner' ||
-                userRole === 'admin' ||
-                (userRole === 'client' && hasConfirmedAvailability(venue.id));
+                userRole === 'owner' || userRole === 'admin' || hasClientConfirmed;
 
             if (shouldAutoShowCalendar) {
                 ensureWidgetCalendarVisibility();
@@ -1608,6 +1649,7 @@
             requests.push(newRequest);
             saveClientRequests(requests);
             markAvailabilityConfirmed(availabilityState.locationId);
+            ensureWidgetCalendarVisibility();
             closeAvailabilityModal();
             if (venue) {
                 if (!activeVenue || activeVenue.id === venue.id) {
