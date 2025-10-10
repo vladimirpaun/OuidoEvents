@@ -850,16 +850,78 @@
         }
         .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
         .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
             background: rgba(67, 100, 247, 0.12);
             display: grid;
             place-items: center;
             color: var(--primary-color);
             font-weight: 700;
+            position: relative;
+        }
+        .activity-icon span {
+            display: inline-block;
+        }
+        .activity-source-badge {
+            position: absolute;
+            bottom: -6px;
+            right: -6px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(26, 32, 44, 0.88);
+            color: var(--white-color);
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px -10px rgba(15, 23, 42, 0.4);
+        }
+        .activity-source-badge[data-source="approvals"] { background: rgba(67, 100, 247, 0.9); }
+        .activity-source-badge[data-source="manage-venues"] { background: rgba(0, 180, 216, 0.9); }
+        .activity-source-badge[data-source="owners"] { background: rgba(20, 164, 77, 0.85); }
+        .activity-source-badge[data-source="clients"],
+        .activity-source-badge[data-source="accounts"] { background: rgba(245, 158, 11, 0.88); }
+        .activity-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         .activity-meta { color: var(--muted-color); font-size: 0.82rem; }
+        .activity-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .activity-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 82, 212, 0.2);
+            background: rgba(67, 100, 247, 0.08);
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .activity-link:hover,
+        .activity-link:focus-visible {
+            border-color: rgba(0, 82, 212, 0.4);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.12);
+            transform: translateY(-1px);
+        }
+        .activity-link:focus-visible { outline: none; }
+        button.activity-link {
+            border-style: solid;
+            font: inherit;
+            cursor: pointer;
+            background: rgba(67, 100, 247, 0.08);
+        }
 
         .chart-bars {
             display: grid;
@@ -1933,10 +1995,43 @@
                 },
             ],
             activity: [
-                { id: 501, initials: 'MP', title: 'Listare aprobată', detail: '"Luna Ballroom" a fost publicată', time: 'acum 2h' },
-                { id: 502, initials: 'AG', title: 'Cont client suspendat', detail: 'Clientul "Corina Andrei" marcat ca inactiv', time: 'acum 5h' },
-                { id: 503, initials: 'MP', title: 'Request escaladat', detail: 'Cerere #4589 transmisă spre suport premium', time: 'acum 11h' },
-                { id: 504, initials: 'DV', title: 'Raport exportat', detail: 'Raport zilnic în format CSV', time: 'ieri' },
+                {
+                    id: 501,
+                    initials: 'MP',
+                    source: 'approvals',
+                    title: 'Listare aprobată',
+                    detail: '"Luna Ballroom" a fost publicată',
+                    time: 'acum 2h',
+                    timestamp: Date.now() - (2 * 60 * 60 * 1000),
+                    links: [{ label: 'Fișă', url: 'venue-details.html#grand-palais-ballroom' }],
+                },
+                {
+                    id: 502,
+                    initials: 'AG',
+                    source: 'accounts',
+                    title: 'Cont client suspendat',
+                    detail: 'Clientul "Corina Andrei" marcat ca inactiv',
+                    time: 'acum 5h',
+                    timestamp: Date.now() - (5 * 60 * 60 * 1000),
+                },
+                {
+                    id: 503,
+                    initials: 'MP',
+                    source: 'approvals',
+                    title: 'Request escaladat',
+                    detail: 'Cerere #4589 transmisă spre suport premium',
+                    time: 'acum 11h',
+                    timestamp: Date.now() - (11 * 60 * 60 * 1000),
+                },
+                {
+                    id: 504,
+                    initials: 'DV',
+                    source: 'analytics',
+                    title: 'Raport exportat',
+                    detail: 'Raport zilnic în format CSV',
+                    time: 'ieri',
+                    timestamp: Date.now() - (24 * 60 * 60 * 1000),
+                },
             ],
         };
 
@@ -2444,30 +2539,30 @@
                 adjustVenueMetrics(previousStatus, venue.status);
                 syncPendingVenuesAfterUpdate(venue);
                 appendDecisionRecord(venue, 'approved', 'Aprobată din portofoliu');
-                logAdminActionFromManage('Publicare locație', `${venue.name} a fost publicată.`);
+                logAdminActionFromManage('Publicare locație', `${venue.name} a fost publicată.`, { venue });
             } else if (action === 'reject') {
                 venue.status = 'rejected';
                 venue.lastActivity = 'Respinsă - chiar acum';
                 adjustVenueMetrics(previousStatus, venue.status);
                 syncPendingVenuesAfterUpdate(venue);
                 appendDecisionRecord(venue, 'rejected', 'Respinsă din portofoliu');
-                logAdminActionFromManage('Respinge locație', `${venue.name} a fost respinsă pentru completări.`);
+                logAdminActionFromManage('Respinge locație', `${venue.name} a fost respinsă pentru completări.`, { venue });
             } else if (action === 'deactivate') {
                 venue.status = 'inactive';
                 venue.lastActivity = 'Dezactivată - chiar acum';
                 adjustVenueMetrics(previousStatus, venue.status);
-                logAdminActionFromManage('Dezactivare locație', `${venue.name} a fost dezactivată temporar.`);
+                logAdminActionFromManage('Dezactivare locație', `${venue.name} a fost dezactivată temporar.`, { venue });
             } else if (action === 'reactivate') {
                 venue.status = 'approved';
                 venue.lastActivity = 'Reactivată - chiar acum';
                 adjustVenueMetrics(previousStatus, venue.status);
-                logAdminActionFromManage('Reactivare locație', `${venue.name} a fost reactivată.`);
+                logAdminActionFromManage('Reactivare locație', `${venue.name} a fost reactivată.`, { venue });
             } else if (action === 'reopen') {
                 venue.status = 'pending';
                 venue.lastActivity = 'Retrimisă spre moderare - chiar acum';
                 adjustVenueMetrics(previousStatus, venue.status);
                 syncPendingVenuesAfterUpdate(venue);
-                logAdminActionFromManage('Re-evaluare locație', `${venue.name} a fost retrimisă spre moderare.`);
+                logAdminActionFromManage('Re-evaluare locație', `${venue.name} a fost retrimisă spre moderare.`, { venue });
             } else {
                 return;
             }
@@ -2510,7 +2605,14 @@
                         url: venue && venue.detailsUrl ? venue.detailsUrl : (owner.claimedVenue && owner.claimedVenue.url) || '',
                     };
                 }
-                logAdminActionFromManage('Claim aprobat', `Claim aprobat pentru ${venueName}.`);
+                const claimLinks = (!venue && claimModalVenueUrl)
+                    ? [{ label: 'Fișă', url: claimModalVenueUrl }]
+                    : [];
+                logAdminActionFromManage('Claim aprobat', `Claim aprobat pentru ${venueName}.`, {
+                    venue,
+                    source: source === 'modal' ? 'owners' : 'manage-venues',
+                    links: claimLinks,
+                });
             } else if (decision === 'reject') {
                 if (venue) {
                     venue.claimStatus = 'rejected';
@@ -2534,7 +2636,14 @@
                         url: venue && venue.detailsUrl ? venue.detailsUrl : (owner.claimedVenue && owner.claimedVenue.url) || '',
                     };
                 }
-                logAdminActionFromManage('Claim respins', `Claim respins pentru ${venueName}.`);
+                const claimLinks = (!venue && claimModalVenueUrl)
+                    ? [{ label: 'Fișă', url: claimModalVenueUrl }]
+                    : [];
+                logAdminActionFromManage('Claim respins', `Claim respins pentru ${venueName}.`, {
+                    venue,
+                    source: source === 'modal' ? 'owners' : 'manage-venues',
+                    links: claimLinks,
+                });
             } else {
                 return;
             }
@@ -2851,15 +2960,12 @@
             adminState.metrics.totalOwners += 1;
             renderAccounts();
             updateAccountMetrics('owner', 'active');
-            adminState.activity.unshift({
-                id: Date.now(),
+            pushActivityEntry({
                 initials: 'OW',
+                source: 'owners',
                 title: 'Business creat',
                 detail: `${business} a fost adăugat în portofoliu.`,
-                time: 'chiar acum',
             });
-            adminState.activity = adminState.activity.slice(0, 12);
-            renderActivity();
             closeCreationModal('owner');
         }
 
@@ -2892,15 +2998,12 @@
             adminState.metrics.totalClients += 1;
             renderAccounts();
             updateAccountMetrics('client', 'active');
-            adminState.activity.unshift({
-                id: Date.now(),
+            pushActivityEntry({
                 initials: 'CL',
+                source: 'clients',
                 title: 'Client creat',
                 detail: `${name} a fost adăugat în CRM.`,
-                time: 'chiar acum',
             });
-            adminState.activity = adminState.activity.slice(0, 12);
-            renderActivity();
             closeCreationModal('client');
         }
 
@@ -2936,6 +3039,70 @@
                 summary.push(`status ${filters.status === 'active' ? 'activ' : 'inactiv'}`);
             }
             return summary.length ? `Filtre: ${summary.join(', ')}` : 'Fără filtre active';
+        }
+
+        function getActivitySourceMeta(source) {
+            if (!source) return null;
+            const map = {
+                approvals: { key: 'approvals', label: 'AP' },
+                'manage-venues': { key: 'manage-venues', label: 'MV' },
+                owners: { key: 'owners', label: 'OW' },
+                clients: { key: 'clients', label: 'CL' },
+                accounts: { key: 'accounts', label: 'AC' },
+                analytics: { key: 'analytics', label: 'AN' },
+            };
+            return map[source] || null;
+        }
+
+        function createVenueLinks(venue) {
+            if (!venue) return [];
+            const links = [];
+            const detailsUrl = venue.detailsUrl || venue.url || (venue.claimedVenue && venue.claimedVenue.url);
+            const crmUrl = venue.crmUrl || (venue.claimedVenue && venue.claimedVenue.crmUrl);
+            const seen = new Set();
+            if (detailsUrl && !seen.has(detailsUrl)) {
+                links.push({ label: 'Fișă', url: detailsUrl });
+                seen.add(detailsUrl);
+            }
+            if (crmUrl && !seen.has(crmUrl)) {
+                links.push({ label: 'CRM', url: crmUrl });
+                seen.add(crmUrl);
+            }
+            return links;
+        }
+
+        function pushActivityEntry(entry) {
+            const now = Date.now();
+            const normalizedLinks = Array.isArray(entry.links)
+                ? entry.links.filter(link => link && link.url)
+                : [];
+
+            const newEntry = {
+                id: entry.id || now,
+                initials: entry.initials || 'AD',
+                title: entry.title || '',
+                detail: entry.detail || '',
+                time: entry.time || 'chiar acum',
+                timestamp: entry.timestamp || now,
+                source: entry.source || null,
+                links: normalizedLinks,
+            };
+
+            const lastEntry = adminState.activity[0];
+            if (lastEntry) {
+                const lastTimestamp = lastEntry.timestamp || 0;
+                const sameTitle = (lastEntry.title || '') === newEntry.title;
+                const sameDetail = (lastEntry.detail || '') === newEntry.detail;
+                if (sameTitle && sameDetail && (now - lastTimestamp) <= 5000) {
+                    lastEntry.timestamp = now;
+                    lastEntry.time = newEntry.time;
+                    return;
+                }
+            }
+
+            adminState.activity.unshift(newEntry);
+            adminState.activity = adminState.activity.slice(0, 12);
+            renderActivity();
         }
 
         function renderAccounts() {
@@ -3068,16 +3235,29 @@
 
         function renderActivity() {
             const container = document.getElementById('activity-log');
-            container.innerHTML = adminState.activity.map(entry => `
+            if (!container) return;
+
+            container.innerHTML = adminState.activity.map(entry => {
+                const sourceMeta = getActivitySourceMeta(entry.source);
+                const links = Array.isArray(entry.links) ? entry.links.filter(link => link && link.url) : [];
+                const linksHtml = links.length
+                    ? `<div class="activity-links">${links.map(link => `<a class="activity-link" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label || 'Deschide'}</a>`).join('')}</div>`
+                    : '';
+                return `
                 <div class="activity-item">
-                    <div class="activity-icon">${entry.initials}</div>
-                    <div>
+                    <div class="activity-icon">
+                        <span>${entry.initials}</span>
+                        ${sourceMeta ? `<span class="activity-source-badge" data-source="${sourceMeta.key}">${sourceMeta.label}</span>` : ''}
+                    </div>
+                    <div class="activity-content">
                         <strong>${entry.title}</strong>
                         <div>${entry.detail}</div>
-                        <span class="activity-meta">${entry.time}</span>
+                        <span class="activity-meta">${entry.time || 'chiar acum'}</span>
+                        ${linksHtml}
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function populateManageVenueFilters() {
@@ -3327,34 +3507,43 @@
             renderAnalytics();
         }
 
-        function logAdminActionFromManage(title, detail) {
-            adminState.activity.unshift({
-                id: Date.now(),
-                initials: 'AD',
+        function logAdminActionFromManage(title, detail, options = {}) {
+            const source = options.source || 'manage-venues';
+            const defaultInitials = source === 'owners' ? 'OW' : source === 'approvals' ? 'AP' : 'AD';
+            const rawLinks = [
+                ...createVenueLinks(options.venue),
+                ...(Array.isArray(options.links) ? options.links.filter(link => link && link.url) : []),
+            ];
+            const seenLinks = new Set();
+            const links = rawLinks.filter(link => {
+                if (!link || !link.url) return false;
+                if (seenLinks.has(link.url)) return false;
+                seenLinks.add(link.url);
+                return true;
+            });
+            pushActivityEntry({
+                initials: options.initials || defaultInitials,
+                source,
                 title,
                 detail,
-                time: 'chiar acum',
+                links,
             });
-            adminState.activity = adminState.activity.slice(0, 12);
-            renderActivity();
         }
 
-        function updateMetricsAfterDecision(status) {
+        function updateMetricsAfterDecision(status, options = {}) {
             if (status === 'approved') {
                 adminState.metrics.publishedVenues += 1;
             }
             adminState.metrics.pendingVenues = Math.max(0, adminState.pendingVenues.length);
             renderMetrics();
             renderAnalytics();
-            adminState.activity.unshift({
-                id: Date.now(),
+            pushActivityEntry({
                 initials: 'AP',
+                source: 'approvals',
                 title: 'Decizie listare',
                 detail: status === 'approved' ? 'Locație aprobată pentru publicare' : 'Locație respinsă pentru revizuire',
-                time: 'chiar acum',
+                links: createVenueLinks(options.venue),
             });
-            adminState.activity = adminState.activity.slice(0, 12);
-            renderActivity();
         }
 
         function updateAccountMetrics(type, newStatus) {
@@ -3368,15 +3557,12 @@
             }
             renderMetrics();
             renderAnalytics();
-            adminState.activity.unshift({
-                id: Date.now(),
+            pushActivityEntry({
                 initials: type === 'client' ? 'CL' : 'OW',
+                source: type === 'client' ? 'clients' : 'owners',
                 title: `${type === 'client' ? 'Status client' : 'Status owner'} actualizat`,
                 detail: `Cont marcat ca ${newStatus === 'active' ? 'activ' : 'inactiv'}`,
-                time: 'chiar acum',
             });
-            adminState.activity = adminState.activity.slice(0, 12);
-            renderActivity();
         }
 
         if (manageVenuesElements.search) {
@@ -3627,10 +3813,10 @@
 
                     if (action === 'view') {
                         window.open(venue.detailsUrl || 'venue-details.html', '_blank');
-                        logAdminActionFromManage('Vizualizare locație', `Fișa ${venue.name} a fost deschisă`);
+                        logAdminActionFromManage('Vizualizare locație', `Fișa ${venue.name} a fost deschisă`, { venue });
                     } else if (action === 'manage') {
                         window.open(venue.crmUrl || 'owner-crm.html#venues', '_blank');
-                        logAdminActionFromManage('Gestionează locație', `CRM proprietar deschis pentru ${venue.name}`);
+                        logAdminActionFromManage('Gestionează locație', `CRM proprietar deschis pentru ${venue.name}`, { venue });
                     }
                 }
             });
@@ -3683,10 +3869,12 @@
                         : `Respinsă în moderare - ${safeNotes}`;
                 }
 
+                const venueContext = managedVenue || venue;
+
                 renderPendingVenues();
                 renderRecentDecisions();
                 renderManageVenues();
-                updateMetricsAfterDecision(isApproval ? 'approved' : 'rejected');
+                updateMetricsAfterDecision(isApproval ? 'approved' : 'rejected', { venue: venueContext });
             });
         }
 
