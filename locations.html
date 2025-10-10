@@ -318,24 +318,168 @@
         const ratingRadios = document.querySelectorAll('input[name="rating"]');
         const sortOptions = document.getElementById('sort-options');
         const searchSection = document.querySelector('.main-search-section');
+        const readSearchParamsSafe = typeof window.readSearchParams === 'function' ? window.readSearchParams : () => ({});
+        const prefillSearchBoxSafe = typeof window.prefillSearchBox === 'function' ? window.prefillSearchBox : null;
+
         // Simulare stare login & favorite
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Vom presupune ca userul e logat daca aceasta valoare e 'true'
-        let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
+        let favoriteIds = getStoredFavoriteIds();
+        let hasAppliedInitialSearchPrefill = false;
+        let activeSearchFilters = normalizeSearchFilters(readSearchParamsSafe());
 
         if (searchSection) {
-            searchSection.addEventListener('search:submit', function(event) {
+            searchSection.addEventListener('search:ready', (event) => {
                 const component = event.detail && event.detail.component;
                 if (!component || !searchSection.contains(component)) {
                     return;
                 }
 
-                event.preventDefault();
+                syncSearchComponent(component);
                 applyFiltersAndSort();
             });
+
+            searchSection.addEventListener('search:submit', (event) => {
+                const component = event.target && typeof event.target.closest === 'function'
+                    ? event.target.closest('[data-search-box]')
+                    : null;
+
+                if (!component || !searchSection.contains(component)) {
+                    return;
+                }
+
+                event.preventDefault();
+                setActiveSearchFilters(event.detail);
+                applyFiltersAndSort();
+            });
+
+            const hydratedComponent = searchSection.querySelector('[data-search-box][data-search-ready="true"]');
+            if (hydratedComponent) {
+                syncSearchComponent(hydratedComponent);
+            }
+
+            document.addEventListener('fragments:ready', () => {
+                const component = searchSection.querySelector('[data-search-box]');
+                if (component) {
+                    syncSearchComponent(component);
+                    applyFiltersAndSort();
+                }
+            }, { once: true });
+        }
+
+        function getStoredFavoriteIds() {
+            try {
+                const raw = localStorage.getItem('favoriteIds');
+                if (!raw) {
+                    return [];
+                }
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function normalizeSearchFilters(raw = {}) {
+            if (!raw || typeof raw !== 'object') {
+                return {};
+            }
+
+            const normalized = {};
+            ['type', 'city', 'date', 'guests'].forEach((key) => {
+                const value = raw[key];
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    if (trimmed) {
+                        normalized[key] = trimmed;
+                    }
+                }
+            });
+
+            return normalized;
+        }
+
+        function hasSearchFilters() {
+            return Boolean(
+                (activeSearchFilters.type && activeSearchFilters.type.length) ||
+                (activeSearchFilters.city && activeSearchFilters.city.length) ||
+                (activeSearchFilters.date && activeSearchFilters.date.length) ||
+                (activeSearchFilters.guests && activeSearchFilters.guests.length)
+            );
+        }
+
+        function setActiveSearchFilters(params) {
+            activeSearchFilters = normalizeSearchFilters(params);
+        }
+
+        function syncSearchComponent(component) {
+            if (!component) {
+                return;
+            }
+
+            if (!hasAppliedInitialSearchPrefill) {
+                if (prefillSearchBoxSafe && hasSearchFilters()) {
+                    prefillSearchBoxSafe(component, activeSearchFilters);
+                }
+                hasAppliedInitialSearchPrefill = true;
+            }
+        }
+
+        function parseGuestsFilter(value) {
+            if (!value || value === 'any') {
+                return null;
+            }
+
+            if (value.endsWith('+')) {
+                const min = parseInt(value.replace('+', ''), 10);
+                if (!Number.isNaN(min)) {
+                    return { min, max: Infinity };
+                }
+                return null;
+            }
+
+            const rangeMatch = value.match(/^(\d+)\s*-\s*(\d+)$/);
+            if (rangeMatch) {
+                const min = parseInt(rangeMatch[1], 10);
+                const max = parseInt(rangeMatch[2], 10);
+                if (!Number.isNaN(min) && !Number.isNaN(max)) {
+                    return { min, max };
+                }
+            }
+
+            return null;
+        }
+
+        function matchesSearchCriteria(location) {
+            if (!hasSearchFilters()) {
+                return true;
+            }
+
+            if (activeSearchFilters.city) {
+                const needle = activeSearchFilters.city.toLowerCase();
+                const locationCity = (location.city || '').toLowerCase();
+                const locationName = (location.name || '').toLowerCase();
+                if (!locationCity.includes(needle) && !locationName.includes(needle)) {
+                    return false;
+                }
+            }
+
+            const guestRange = parseGuestsFilter(activeSearchFilters.guests);
+            if (guestRange) {
+                const meetsMin = typeof guestRange.min === 'number' ? location.capacity_max >= guestRange.min : true;
+                const meetsMax = typeof guestRange.max === 'number' ? location.capacity_min <= guestRange.max : true;
+                if (!(meetsMin && meetsMax)) {
+                    return false;
+                }
+            }
+
+            // Date and event type metadata sunt stocate separat în dataset-ul real; în demo nu restricționăm rezultatele.
+            return true;
         }
 
         // 4. Funcția principală de randare
         function renderLocations(locationsArray) {
+            favoriteIds = getStoredFavoriteIds();
+
             locationsListContainer.innerHTML = ''; // Golește containerul
             if (locationsArray.length === 0) {
                 locationsListContainer.innerHTML = '<p>Nicio locație nu corespunde filtrelor selectate.</p>';
@@ -397,6 +541,7 @@
                         favoriteIds.push(locationId);
                     }
                     localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+                    favoriteIds = getStoredFavoriteIds();
                 });
             });
         }
@@ -404,18 +549,28 @@
         // 5. Logica de Filtrare și Sortare
         function applyFiltersAndSort() {
             // Filtrare
-            const maxPrice = parseInt(priceSlider.value);
-            const requiredCapacity = parseInt(capacityInput.value) || 0;
+            if (priceSlider && priceValue) {
+                priceValue.textContent = priceSlider.value;
+            }
+
+            const maxPriceRaw = priceSlider ? parseInt(priceSlider.value, 10) : NaN;
+            const maxPrice = Number.isFinite(maxPriceRaw) ? maxPriceRaw : Infinity;
+            const requiredCapacity = capacityInput ? parseInt(capacityInput.value, 10) || 0 : 0;
             const selectedFacilities = Array.from(facilitiesCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-            const minRating = parseFloat(document.querySelector('input[name="rating"]:checked').value);
+            const selectedRatingInput = document.querySelector('input[name="rating"]:checked');
+            const minRating = selectedRatingInput ? parseFloat(selectedRatingInput.value) : 0;
 
             let filteredLocations = locations.filter(loc => {
-                const priceMatch = loc.price <= maxPrice;
+                const priceMatch = maxPrice === Infinity ? true : loc.price <= maxPrice;
                 const capacityMatch = requiredCapacity === 0 || (requiredCapacity >= loc.capacity_min && requiredCapacity <= loc.capacity_max);
                 const facilitiesMatch = selectedFacilities.every(facility => loc.facilities.includes(facility));
                 const ratingMatch = loc.rating >= minRating;
                 return priceMatch && capacityMatch && facilitiesMatch && ratingMatch;
             });
+
+            if (hasSearchFilters()) {
+                filteredLocations = filteredLocations.filter(matchesSearchCriteria);
+            }
 
             // Sortare
             const sortValue = sortOptions.value;
@@ -449,7 +604,10 @@
         sortOptions.addEventListener('change', applyFiltersAndSort);
 
         // Randare inițială
-        renderLocations(locations);
+        if (priceSlider && priceValue) {
+            priceValue.textContent = priceSlider.value;
+        }
+        applyFiltersAndSort();
 
         // Logica pentru câmpurile din bara de căutare este gestionată global în `main.js`.
     });
