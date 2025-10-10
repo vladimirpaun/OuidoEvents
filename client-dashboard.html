@@ -102,10 +102,24 @@
             color: var(--dark-color);
         }
 
-        .crm-mobile-bar-title small {
+        .crm-mobile-bar-subtitle {
             font-size: 0.78rem;
             color: var(--muted-color);
             line-height: 1.35;
+        }
+
+        .crm-mobile-bar-crumb {
+            display: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--muted-color);
+            letter-spacing: 0;
+        }
+
+        .crm-mobile-bar-crumb::before {
+            content: "/";
+            margin-right: 6px;
+            color: rgba(26, 32, 44, 0.45);
         }
 
         .crm-sidebar-overlay {
@@ -1002,6 +1016,30 @@
             .crm-nav-link { width: 100%; min-width: 0; padding: 12px 14px; }
             .crm-sidebar-footer { margin-top: 24px; }
             .crm-pages { padding: 26px 18px 36px; }
+            .crm-mobile-bar-title {
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .crm-mobile-bar-subtitle {
+                display: none;
+            }
+            .crm-mobile-bar-crumb {
+                display: inline-flex;
+                align-items: baseline;
+            }
+        }
+        @media (max-width: 768px) {
+            .crm-page[data-page="overview"] .page-header {
+                display: none;
+            }
+            .crm-page[data-page="overview"] .metrics-grid {
+                margin-top: 0;
+            }
+            .crm-pages {
+                gap: 22px;
+            }
         }
         @media (max-width: 720px) {
             .crm-sidebar { width: min(300px, 86vw); padding: 20px 16px 24px; }
@@ -1032,22 +1070,39 @@
             .settings-overview-header { flex-direction: column; align-items: flex-start; }
             .settings-overview-actions { width: 100%; justify-content: flex-start; gap: 10px; }
             .settings-overview-actions .crm-button { flex: 1 1 auto; width: 100%; justify-content: center; }
-            .panel-grid, .metrics-grid, .requests-legend { grid-template-columns: 1fr; }
+            .panel-grid, .requests-legend { grid-template-columns: 1fr; }
+            .metrics-grid {
+                grid-template-columns: repeat(2, minmax(120px, 1fr));
+                gap: 14px;
+            }
+            .metric-card {
+                padding: 16px;
+                border-radius: 14px;
+                align-items: center;
+                text-align: center;
+            }
+            .metric-card span {
+                font-size: 0.76rem;
+            }
+            .metric-card strong {
+                font-size: 1.28rem;
+            }
         }
         @media (max-width: 600px) {
             body { font-size: 0.94rem; line-height: 1.45; }
             .crm-mobile-bar { padding: 10px 14px; gap: 10px; }
             .crm-mobile-menu-toggle { width: 40px; height: 40px; }
             .crm-mobile-bar-title span { font-size: 0.95rem; }
-            .crm-mobile-bar-title small { font-size: 0.74rem; }
+            .crm-mobile-bar-subtitle { font-size: 0.74rem; }
             .crm-pages { gap: 20px; }
             .page-header h1 { font-size: 1.32rem; }
             .page-header p { font-size: 0.8rem; }
             .panel { padding: 18px 14px; }
             .panel header h2 { font-size: 0.98rem; }
-            .metric-card { padding: 18px; }
-            .metric-card span { font-size: 0.78rem; }
-            .metric-card strong { font-size: 1.35rem; }
+            .metrics-grid { gap: 12px; }
+            .metric-card { padding: 15px; }
+            .metric-card span { font-size: 0.74rem; }
+            .metric-card strong { font-size: 1.22rem; }
             .crm-button { padding: 9px 18px; font-size: 0.88rem; }
             .list-item > div { font-size: 0.85rem; }
             .status-chip {
@@ -1067,7 +1122,7 @@
         }
         @media (max-width: 360px) {
             .crm-mobile-bar-title span { font-size: 0.9rem; }
-            .crm-mobile-bar-title small { font-size: 0.7rem; }
+            .crm-mobile-bar-subtitle { font-size: 0.7rem; }
             .crm-button { padding: 8px 16px; font-size: 0.84rem; }
         }
     </style>
@@ -1087,7 +1142,8 @@
         </button>
         <div class="crm-mobile-bar-title">
             <span>Contul meu</span>
-            <small>Bun venit, Alex! Gestionează-ți cererile și locațiile favorite.</small>
+            <small class="crm-mobile-bar-subtitle">Bun venit, Alex! Gestionează-ți cererile și locațiile favorite.</small>
+            <span class="crm-mobile-bar-crumb" data-mobile-crumb aria-live="polite">Dashboard Client</span>
         </div>
     </header>
     <div class="crm-sidebar-overlay" data-sidebar-overlay></div>
@@ -1533,6 +1589,15 @@
         const sidebarOverlay = document.querySelector('[data-sidebar-overlay]');
         const mobileToggle = document.querySelector('.crm-mobile-menu-toggle');
         const mobileQuery = window.matchMedia('(max-width: 900px)');
+        const mobileCrumb = document.querySelector('[data-mobile-crumb]');
+        const mobilePageLabels = {
+            overview: 'Dashboard Client',
+            favorites: 'Locații Favorite',
+            requests: 'Cererile mele',
+            viewings: 'Vizionările mele',
+            settings: 'Setări',
+            'request-detail': 'Detalii cerere'
+        };
 
         const setToggleState = (isOpen) => {
             if (!mobileToggle) {
@@ -1605,6 +1670,11 @@
             navLinks.forEach(link => link.classList.toggle('is-active', link.dataset.pageTarget === pageId));
             if (pageId !== 'request-detail') {
                 localStorage.setItem(storageKey, pageId);
+            }
+            if (mobileCrumb) {
+                const label = mobilePageLabels[pageId] || mobilePageLabels.overview;
+                mobileCrumb.textContent = label;
+                mobileCrumb.setAttribute('aria-label', `Contul meu / ${label}`);
             }
             history.replaceState(null, '', `#${pageId}`);
             if (mobileQuery.matches) {
