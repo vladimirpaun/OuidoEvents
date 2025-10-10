@@ -383,6 +383,18 @@
             margin-bottom: 25px;
             font-size: 1.1rem;
         }
+        .availability-calendar-shell { margin: 20px 0; }
+        .availability-calendar { display: flex; justify-content: center; max-width: 100%; overflow-x: auto; }
+        .availability-calendar .flatpickr-calendar { box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35); border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 16px; padding: 16px 20px; overflow: visible; min-width: 320px; max-width: 100%; }
+        .availability-calendar .flatpickr-day { width: 46px; height: 42px; line-height: 42px; font-size: 0.9rem; }
+        .availability-legend { display: flex; gap: 12px; justify-content: center; font-size: 0.85rem; color: var(--gray-color); margin-top: 12px; flex-wrap: wrap; }
+        .availability-legend-dot { display: inline-flex; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
+        .availability-legend-dot--available { background: #16a34a; }
+        .availability-legend-dot--hold { background: #f59e0b; }
+        .availability-legend-dot--booked { background: #ef4444; }
+        .availability-day-hold { background: rgba(245, 158, 11, 0.15) !important; color: #92400e !important; }
+        .availability-day-booked { background: rgba(239, 68, 68, 0.18) !important; color: #b91c1c !important; }
+        .availability-day-available { background: rgba(22, 163, 74, 0.12) !important; color: #166534 !important; }
         .price-display {
             font-size: 1.1rem;
             color: var(--dark-color);
@@ -398,6 +410,17 @@
             padding: 15px 25px;
             font-size: 1.1rem;
         }
+        .cta-button.ghost {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        .cta-button.ghost:hover {
+            background: rgba(0, 82, 212, 0.08);
+            color: var(--primary-color);
+        }
+        .widget-actions { display: flex; flex-direction: column; gap: 12px; }
+        .widget-actions .cta-button { width: 100%; text-align: center; }
 
         /* Lightbox/Modal */
         .lightbox {
@@ -461,6 +484,45 @@
             color: var(--dark-color);
             fill: var(--dark-color);
         }
+
+        .favorites-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.48); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.25s ease; z-index: 1050; padding: 20px; }
+        .favorites-modal-overlay.is-visible { opacity: 1; visibility: visible; }
+        .favorites-modal { background: var(--white-color); border-radius: 18px; max-width: 720px; width: 100%; box-shadow: 0 25px 70px -25px rgba(15, 23, 42, 0.35); display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; }
+        .favorites-modal header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 24px 28px 16px; border-bottom: 1px solid rgba(148, 163, 184, 0.2); }
+        .favorites-modal header h3 { font-size: 1.35rem; margin-bottom: 6px; }
+        .favorites-modal header p { color: var(--gray-color); font-size: 0.95rem; }
+        .favorites-modal-close { border: none; background: transparent; font-size: 1.8rem; line-height: 1; cursor: pointer; color: var(--gray-color); }
+        .favorites-modal form { padding: 24px 28px 28px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .favorites-modal .form-section { display: flex; flex-direction: column; gap: 16px; }
+        .favorites-modal .panel-meta { font-size: 0.9rem; color: var(--gray-color); margin: 0; }
+        .favorites-modal .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+        .favorites-modal label { font-weight: 600; font-size: 0.95rem; color: var(--dark-color); margin-bottom: 6px; display: inline-block; }
+        .favorites-modal input,
+        .favorites-modal select { width: 100%; border-radius: 10px; border: 1px solid var(--border-color); padding: 12px 14px; font-size: 0.95rem; }
+        .favorites-modal footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+        .crm-button { border-radius: 10px; border: none; cursor: pointer; font-weight: 600; font-size: 0.95rem; padding: 12px 20px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .crm-button.primary { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: var(--white-color); box-shadow: 0 16px 30px -20px rgba(0, 82, 212, 0.8); }
+        .crm-button.primary:hover { transform: translateY(-1px); box-shadow: 0 18px 40px -18px rgba(0, 82, 212, 0.35); }
+        .crm-button.ghost { background: rgba(67, 100, 247, 0.08); color: var(--primary-color); }
+        .crm-button.ghost:hover { background: rgba(67, 100, 247, 0.12); }
+        .crm-button.sm,
+        .crm-button.crm-button--sm { padding: 10px 16px; font-size: 0.85rem; }
+        .viewing-slot-builder { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 14px; border: 1px dashed rgba(0, 82, 212, 0.2); background: rgba(67, 100, 247, 0.04); }
+        .reschedule-help { font-size: 0.88rem; color: var(--gray-color); margin: 0; }
+        .reschedule-slot-list { display: flex; flex-direction: column; gap: 12px; }
+        .reschedule-slot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+        .reschedule-slot-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+        .reschedule-slot input,
+        .reschedule-slot select { width: 100%; border-radius: 10px; border: 1px solid var(--border-color); padding: 10px 12px; font-size: 0.9rem; background: var(--white-color); color: var(--dark-color); }
+        .reschedule-slot input.is-invalid,
+        .reschedule-slot select.is-invalid { border-color: #b91c1c; box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12); }
+        .reschedule-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .viewing-empty-state { font-size: 0.9rem; color: var(--gray-color); }
+        .toast-container { position: fixed; top: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 1100; }
+        .toast { padding: 14px 18px; border-radius: 12px; box-shadow: 0 18px 38px -20px rgba(15, 23, 42, 0.35); color: var(--white-color); font-weight: 600; display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(-10px); animation: toast-in 0.4s forwards; }
+        .toast--success { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .toast--info { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        @keyframes toast-in { to { opacity: 1; transform: translateY(0); } }
 
         /* Footer (identic cu index.html) */
         .copyright { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #999; font-size: 0.9rem; }
@@ -544,23 +606,20 @@
 
         <section class="hero-section">
             <div class="container">
-                <nav class="breadcrumbs">
+                <nav class="breadcrumbs" data-venue-breadcrumb>
                     <a href="index.html">Acasă</a> <span>&gt;</span>
                     <a href="locations.html">Locații</a> <span>&gt;</span>
-                    <span>The Grand Ballroom</span>
+                    <span>Locație</span>
                 </nav>
                 <div class="venue-name">
-                    <h1>The Grand Ballroom</h1>
-                    <button class="favorite-btn" data-id="1" title="Adaugă la favorite"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+                    <h1 data-venue-name>Locație eveniment</h1>
+                    <button class="favorite-btn" data-venue-favorite title="Adaugă la favorite"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
                 </div>
-                <p class="venue-address">București, România</p>
-                <div class="venue-tags">
-                    <span class="tag">Exclusivist</span>
-                    <span class="tag">Panoramic</span>
-                    <span class="tag">Capacitate Mare</span>
-                    <span class="tag">Recomandat</span>
+                <p class="venue-address" data-venue-city>București, România</p>
+                <div class="venue-tags" data-venue-tags>
+                    <span class="tag">Locație premium</span>
                 </div>
-                <p class="venue-description">The Grand Ballroom este o locație de lux situată în inima Bucureștiului, perfectă pentru evenimente grandioase. Cu o arhitectură impresionantă și servicii impecabile, oferim o experiență de neuitat pentru nunți, gale și conferințe.</p>
+                <p class="venue-description" data-venue-description>The Grand Ballroom este o locație de lux situată în inima Bucureștiului, perfectă pentru evenimente grandioase. Cu o arhitectură impresionantă și servicii impecabile, oferim o experiență de neuitat pentru nunți, gale și conferințe.</p>
             </div>
         </section>
 
@@ -702,11 +761,22 @@
             </div>
 
         <div class="right-column">
-          <div class="availability-widget sticky-widget">
+          <div class="availability-widget sticky-widget" data-availability-widget>
             <h3>Disponibilitate și pre-rezervare</h3>
-            <div class="calendar-placeholder">Calendar interactiv aici (ex: Flatpickr)</div>
-            <p class="price-display">Preț de la <strong>120€</strong>/pers</p>
-            <a href="login.html" class="cta-button">Confirmă disponibilitatea</a>
+            <div class="calendar-placeholder" data-calendar-placeholder>Autentifică-te pentru a vedea calendarul disponibilităților.</div>
+            <div class="availability-calendar-shell" data-availability-calendar-shell hidden>
+                <input type="hidden" id="widget-availability-picker">
+                <div id="widget-availability-calendar" class="availability-calendar"></div>
+                <div class="availability-legend">
+                    <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
+                    <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
+                    <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
+                </div>
+            </div>
+            <p class="price-display">Preț de la <strong data-venue-price>0€</strong>/pers</p>
+            <div class="widget-actions" data-widget-actions>
+                <a href="login.html" class="cta-button">Confirmă disponibilitatea</a>
+            </div>
             <p class="widget-note">După confirmarea disponibilității, proprietarul va putea aproba pre-rezervarea ta.</p>
           </div>
         </div>
@@ -714,6 +784,74 @@
     </main>
 
     <div data-include="footer.html"></div>
+
+    <div class="toast-container" data-toast-container></div>
+
+    <div class="favorites-modal-overlay" id="availability-modal">
+        <div class="favorites-modal" role="dialog" aria-modal="true" aria-labelledby="availability-modal-title">
+            <header>
+                <div>
+                    <h3 id="availability-modal-title">Cere disponibilitatea</h3>
+                    <p id="availability-modal-subtitle" class="panel-meta">Selectează data dorită și detaliile evenimentului.</p>
+                </div>
+                <button type="button" class="favorites-modal-close" id="availability-modal-close" aria-label="Închide">×</button>
+            </header>
+            <form id="availability-form">
+                <div class="form-section">
+                    <input type="hidden" id="availability-date-picker">
+                    <div id="availability-calendar" class="availability-calendar"></div>
+                    <div class="availability-legend">
+                        <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
+                        <span><span class="availability-legend-dot availability-legend-dot--hold"></span>Pre-rezervat</span>
+                        <span><span class="availability-legend-dot availability-legend-dot--booked"></span>Ocupat</span>
+                    </div>
+                </div>
+                <p class="panel-meta" id="availability-selected-date">Selectează o dată disponibilă din calendar.</p>
+                <div class="form-row">
+                    <div>
+                        <label for="availability-event-type">Tip eveniment</label>
+                        <select id="availability-event-type" required></select>
+                    </div>
+                    <div>
+                        <label for="availability-guests">Număr invitați</label>
+                        <input type="number" id="availability-guests" min="10" max="600" required>
+                    </div>
+                </div>
+                <footer>
+                    <button type="button" class="crm-button ghost" id="availability-cancel-btn">Renunță</button>
+                    <button type="submit" class="crm-button primary">Trimite cererea</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <div class="favorites-modal-overlay" id="viewing-modal">
+        <div class="favorites-modal" role="dialog" aria-modal="true" aria-labelledby="viewing-modal-title">
+            <header>
+                <div>
+                    <h3 id="viewing-modal-title">Programează o vizionare</h3>
+                    <p id="viewing-modal-subtitle" class="panel-meta">Selectează data și ora preferată pentru vizionarea locației.</p>
+                </div>
+                <button type="button" class="favorites-modal-close" id="viewing-modal-close" aria-label="Închide">×</button>
+            </header>
+            <form id="viewing-form">
+                <div class="viewing-slot-builder">
+                    <p class="reschedule-help" data-viewing-slot-hint>Selectează până la 4 intervale (dată și oră) pentru vizionare. Intervalele sunt din 30 în 30 de minute.</p>
+                    <div class="reschedule-slot-list" data-viewing-suggestions></div>
+                    <div class="reschedule-actions">
+                        <button type="button" class="crm-button ghost sm" id="viewing-add-slot" data-viewing-add-slot>Adaugă interval</button>
+                        <span class="panel-meta" id="viewing-slot-counter" hidden></span>
+                    </div>
+                </div>
+                <div class="viewing-empty-state" data-viewing-empty-state hidden>Încă nu ai intervale salvate. Folosește butonul „Adaugă interval” pentru a propune variantă de vizită.</div>
+                <p class="panel-meta" id="viewing-selected-date">Lista de intervale va fi trimisă către locație. Alege cel puțin o variantă înainte de a continua.</p>
+                <footer>
+                    <button type="button" class="crm-button ghost" id="viewing-cancel-btn">Renunță</button>
+                    <button type="submit" class="crm-button primary">Trimite solicitarea</button>
+                </footer>
+            </form>
+        </div>
+    </div>
 
     <!-- Lightbox/Modal HTML -->
     <div id="lightbox" class="lightbox">
@@ -725,11 +863,221 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ro.js"></script>
     <script src="main.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- NOU: Logica avansată pentru galerie și lightbox ---
+        const SAMPLE_LOCATIONS = [
+            { id: 1, name: 'The Grand Ballroom', city: 'București', price: 120, tags: ['Exclusivist', 'Panoramic', 'Capacitate Mare'], rating: 9.4 },
+            { id: 2, name: 'Forest Retreat & Spa', city: 'Brașov', price: 95, tags: ['Natură', 'Piscină'], rating: 9.8 },
+            { id: 3, name: 'Cluj SkyView', city: 'Cluj-Napoca', price: 110, tags: ['Modern', 'Rooftop'], rating: 9.1 },
+            { id: 4, name: 'Palatul Noblesse', city: 'Iași', price: 105, tags: ['Istoric', 'Elegant'], rating: 8.9 },
+            { id: 5, name: 'Laguna Albastră', city: 'Constanța', price: 130, tags: ['Plajă', 'Vedere la mare'], rating: 9.5 },
+            { id: 6, name: 'Conacul din Vii', city: 'Prahova', price: 85, tags: ['Rustic', 'Tradițional'], rating: 8.5 },
+            { id: 7, name: 'Ambiance Lake', city: 'Snagov', price: 150, tags: ['Lac', 'Natură'], rating: 9.6 },
+            { id: 8, name: 'Mountain Peak', city: 'Sinaia', price: 100, tags: ['Munte', 'Panoramic'], rating: 9.2 },
+            { id: 9, name: 'Urban Loft', city: 'Timișoara', price: 75, tags: ['Industrial', 'Modern'], rating: 8.2 },
+            { id: 10, name: 'Grădina cu Lavandă', city: 'Sibiu', price: 90, tags: ['Grădină', 'Romantic'], rating: 9.0 },
+            { id: 11, name: 'Delta Paradise', city: 'Tulcea', price: 70, tags: ['Natură', 'Delta'], rating: 7.8 },
+            { id: 12, name: 'Centrul de Conferințe Oradea', city: 'Oradea', price: 65, tags: ['Business', 'Modern'], rating: 6.9 }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGalleryLightbox();
+            const venue = resolveVenueFromParams();
+            hydrateHero(venue);
+            setupFavorites(venue);
+            setupAvailabilityWidget(venue);
+            setupContactVisibility(venue);
+        });
+
+        function resolveVenueFromParams() {
+            const params = new URLSearchParams(window.location.search);
+            const idParam = parseInt(params.get('id'), 10);
+            const venue = SAMPLE_LOCATIONS.find((loc) => loc.id === idParam);
+            return venue || SAMPLE_LOCATIONS[0];
+        }
+
+        function hydrateHero(venue) {
+            if (!venue) return;
+            const nameEl = document.querySelector('[data-venue-name]');
+            const breadcrumb = document.querySelector('[data-venue-breadcrumb] span:last-child');
+            const cityEl = document.querySelector('[data-venue-city]');
+            const tagsContainer = document.querySelector('[data-venue-tags]');
+            const priceEl = document.querySelector('[data-venue-price]');
+            const favoriteBtn = document.querySelector('[data-venue-favorite]');
+            const descriptionEl = document.querySelector('[data-venue-description]');
+
+            if (nameEl) nameEl.textContent = venue.name;
+            if (breadcrumb) breadcrumb.textContent = venue.name;
+            if (cityEl) cityEl.textContent = `${venue.city}, România`;
+            if (tagsContainer) {
+                tagsContainer.innerHTML = '';
+                (Array.isArray(venue.tags) && venue.tags.length ? venue.tags : ['Locație eveniment']).forEach((tag) => {
+                    const span = document.createElement('span');
+                    span.className = 'tag';
+                    span.textContent = tag;
+                    tagsContainer.appendChild(span);
+                });
+            }
+            if (priceEl) priceEl.textContent = `${venue.price}€`;
+            if (favoriteBtn) favoriteBtn.dataset.id = String(venue.id);
+            if (descriptionEl) {
+                descriptionEl.textContent = `${venue.name} este una dintre locațiile recomandate OuidoEvents din ${venue.city}, pregătită să găzduiască evenimente memorabile cu servicii complete și echipă dedicată.`;
+            }
+            document.title = `${venue.name} · OuidoEvents`;
+        }
+
+        function getStoredFavoriteIds() {
+            try {
+                const raw = localStorage.getItem('favoriteIds');
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function setupFavorites(venue) {
+            const favButton = document.querySelector('[data-venue-favorite]');
+            if (!favButton || !venue) return;
+
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            let favoriteIds = getStoredFavoriteIds();
+            if (favoriteIds.includes(venue.id)) {
+                favButton.classList.add('is-favorite');
+            }
+
+            favButton.addEventListener('click', () => {
+                if (!isLoggedIn) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                favoriteIds = getStoredFavoriteIds();
+                const isFavorite = favoriteIds.includes(venue.id);
+                if (isFavorite) {
+                    favoriteIds = favoriteIds.filter((id) => id !== venue.id);
+                } else {
+                    favoriteIds.push(venue.id);
+                }
+                localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+                favButton.classList.toggle('is-favorite', !isFavorite);
+            });
+        }
+
+        function setupAvailabilityWidget(venue) {
+            const widget = document.querySelector('[data-availability-widget]');
+            if (!widget || !venue) return;
+
+            const placeholder = widget.querySelector('[data-calendar-placeholder]');
+            const calendarShell = widget.querySelector('[data-availability-calendar-shell]');
+            const actionsContainer = widget.querySelector('[data-widget-actions]');
+            const widgetCalendarContainer = document.getElementById('widget-availability-calendar');
+            const widgetCalendarInput = document.getElementById('widget-availability-picker');
+
+            const userRole = localStorage.getItem('userRole');
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+            if (!actionsContainer) return;
+
+            actionsContainer.innerHTML = '';
+
+            const shouldShowClientActions = isLoggedIn && ['client', 'owner', 'admin'].includes(userRole || '');
+
+            if (!shouldShowClientActions) {
+                const link = document.createElement('a');
+                link.href = 'login.html';
+                link.className = 'cta-button';
+                link.textContent = 'Confirmă disponibilitatea';
+                actionsContainer.appendChild(link);
+                if (placeholder) placeholder.hidden = false;
+                if (calendarShell) calendarShell.hidden = true;
+                return;
+            }
+
+            const availabilityBtn = document.createElement('button');
+            availabilityBtn.type = 'button';
+            availabilityBtn.className = 'cta-button';
+            availabilityBtn.textContent = 'Confirmă disponibilitatea';
+
+            const viewingBtn = document.createElement('button');
+            viewingBtn.type = 'button';
+            viewingBtn.className = 'cta-button ghost';
+            viewingBtn.textContent = 'Programează o vizionare';
+
+            actionsContainer.appendChild(availabilityBtn);
+            actionsContainer.appendChild(viewingBtn);
+
+            let widgetCalendarInstance = null;
+
+            const ensureWidgetCalendar = () => {
+                if (!calendarShell || !widgetCalendarContainer || !widgetCalendarInput) return;
+                calendarShell.hidden = false;
+                if (placeholder) placeholder.hidden = true;
+                if (widgetCalendarInstance || typeof flatpickr !== 'function') return;
+                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
+                    flatpickr.localize(flatpickr.l10ns.ro);
+                }
+                widgetCalendarInstance = flatpickr(widgetCalendarInput, {
+                    inline: true,
+                    minDate: 'today',
+                    disableMobile: true,
+                    showMonths: 1,
+                    appendTo: widgetCalendarContainer,
+                    onDayCreate: (selectedDates, dateStr, instance, dayElem) => {
+                        const status = getAvailabilityStatus(venue.id, dayElem.dateObj);
+                        dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
+                        if (status === 'hold') {
+                            dayElem.classList.add('availability-day-hold');
+                        } else if (status === 'booked') {
+                            dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
+                        } else {
+                            dayElem.classList.add('availability-day-available');
+                        }
+                    },
+                    disable: [
+                        (date) => getAvailabilityStatus(venue.id, date) === 'booked'
+                    ]
+                });
+            };
+
+            availabilityBtn.addEventListener('click', () => {
+                ensureWidgetCalendar();
+                openAvailabilityModal(venue);
+            });
+
+            viewingBtn.addEventListener('click', () => {
+                ensureWidgetCalendar();
+                openViewingModal(venue);
+            });
+        }
+
+        function setupContactVisibility(venue) {
+            const lockedSection = document.querySelector('.contact-section-locked');
+            const contactSection = document.querySelector('.contact-section');
+            const userRole = localStorage.getItem('userRole');
+
+            if (!lockedSection || !contactSection) return;
+
+            const showContact = () => {
+                lockedSection.hidden = true;
+                contactSection.hidden = false;
+                requestAnimationFrame(() => contactSection.classList.add('is-visible'));
+            };
+
+            if (['owner', 'admin'].includes(userRole || '')) {
+                showContact();
+                return;
+            }
+
+            if ((userRole || '') === 'client' && hasConfirmedAvailability(venue.id)) {
+                showContact();
+                return;
+            }
+        }
+
+        function initializeGalleryLightbox() {
             const galleryItems = document.querySelectorAll('.gallery-item');
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightbox-image');
@@ -737,118 +1085,508 @@
             const prevButton = document.querySelector('.lightbox-nav.prev');
             const nextButton = document.querySelector('.lightbox-nav.next');
             const showAllButton = document.querySelector('.show-all-photos-btn');
-
-            let allImages = [];
+            const allImages = [];
             let currentImageIndex = 0;
 
-            if (galleryItems.length > 0 && lightbox) {
-                // Colectează toate imaginile din galerie
-                galleryItems.forEach(item => {
-                    const img = item.querySelector('img');
-                    if (img) {
-                        allImages.push(img.src);
-                    }
-                });
+            if (!galleryItems.length || !lightbox) return;
 
-                // Funcție pentru a deschide lightbox-ul
-                const openLightbox = (index) => {
-                    currentImageIndex = index;
-                    lightboxImage.src = allImages[currentImageIndex];
-                    lightbox.style.display = 'flex';
-                    document.body.style.overflow = 'hidden'; // Blochează scroll-ul paginii
-                };
-
-                // Funcție pentru a închide lightbox-ul
-                const closeLightboxFunc = () => {
-                    lightbox.style.display = 'none';
-                    document.body.style.overflow = ''; // Permite scroll-ul din nou
-                };
-
-                // Funcție pentru a naviga la imaginea următoare/anterioară
-                const showImage = (index) => {
-                    currentImageIndex = (index + allImages.length) % allImages.length; // Asigură index valid
-                    lightboxImage.src = allImages[currentImageIndex];
-                };
-
-                // Adaugă event listeners pe fiecare imagine din galerie
-                galleryItems.forEach((item, index) => {
-                    item.addEventListener('click', () => openLightbox(index));
-                });
-
-                // Adaugă event listener pe butonul "Vezi toate"
-                if (showAllButton) {
-                    showAllButton.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Previne propagarea evenimentului la containerul .gallery-item
-                        openLightbox(0);
-                    });
+            galleryItems.forEach((item) => {
+                const img = item.querySelector('img');
+                if (img) {
+                    allImages.push(img.src);
                 }
+            });
 
-                // Adaugă event listeners pentru butoanele de navigare și închidere
-                closeLightbox.addEventListener('click', closeLightboxFunc);
-                prevButton.addEventListener('click', () => showImage(currentImageIndex - 1));
-                nextButton.addEventListener('click', () => showImage(currentImageIndex + 1));
-                lightbox.addEventListener('click', (e) => {
-                    if (e.target === lightbox) closeLightboxFunc();
-                });
+            const openLightbox = (index) => {
+                currentImageIndex = index;
+                lightboxImage.src = allImages[currentImageIndex];
+                lightbox.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            };
 
-                // Adaugă event listener pentru navigarea de la tastatură
-                document.addEventListener('keydown', (e) => {
-                    if (lightbox.style.display === 'flex') {
-                        if (e.key === 'ArrowRight') showImage(currentImageIndex + 1);
-                        if (e.key === 'ArrowLeft') showImage(currentImageIndex - 1);
-                        if (e.key === 'Escape') closeLightboxFunc();
-                    }
+            const closeLightboxFunc = () => {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = '';
+            };
+
+            const showImage = (index) => {
+                currentImageIndex = (index + allImages.length) % allImages.length;
+                lightboxImage.src = allImages[currentImageIndex];
+            };
+
+            galleryItems.forEach((item, index) => {
+                item.addEventListener('click', () => openLightbox(index));
+            });
+
+            if (showAllButton) {
+                showAllButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openLightbox(0);
                 });
             }
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            let favoriteIds = JSON.parse(localStorage.getItem('favoriteIds')) || [];
-            const favButton = document.querySelector('.hero-section .favorite-btn');
 
-            if (favButton) {
-                const locationId = parseInt(favButton.dataset.id, 10);
-
-                if (favoriteIds.includes(locationId)) {
-                    favButton.classList.add('is-favorite');
+            closeLightbox?.addEventListener('click', closeLightboxFunc);
+            prevButton?.addEventListener('click', () => showImage(currentImageIndex - 1));
+            nextButton?.addEventListener('click', () => showImage(currentImageIndex + 1));
+            lightbox.addEventListener('click', (event) => {
+                if (event.target === lightbox) {
+                    closeLightboxFunc();
                 }
+            });
 
-                favButton.addEventListener('click', function() {
-                    if (!isLoggedIn) {
-                        window.location.href = 'login.html';
-                        return;
-                    }
+            document.addEventListener('keydown', (event) => {
+                if (lightbox.style.display === 'flex') {
+                    if (event.key === 'ArrowRight') showImage(currentImageIndex + 1);
+                    if (event.key === 'ArrowLeft') showImage(currentImageIndex - 1);
+                    if (event.key === 'Escape') closeLightboxFunc();
+                }
+            });
+        }
 
-                    this.classList.toggle('is-favorite');
+        const eventTypeOptions = ['Nuntă', 'Botez', 'Cununie Civilă', 'Eveniment Corporate', 'Petrecere Privată', 'Aniversare'];
+        const availabilityState = { locationId: null, locationName: '', selectedDate: null };
+        const viewingState = { locationId: null, slots: [] };
+        const viewingSuggestionPickers = new Map();
+        const MAX_VIEWING_SLOTS = 4;
+        const MIN_VIEWING_SLOTS = 2;
 
-                    if (favoriteIds.includes(locationId)) {
-                        favoriteIds = favoriteIds.filter((id) => id !== locationId);
-                    } else {
-                        favoriteIds.push(locationId);
-                    }
-                    localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
+        function openAvailabilityModal(venue) {
+            const overlay = document.getElementById('availability-modal');
+            if (!overlay || !venue) return;
+
+            availabilityState.locationId = venue.id;
+            availabilityState.locationName = venue.name;
+            availabilityState.selectedDate = null;
+
+            const subtitle = document.getElementById('availability-modal-subtitle');
+            const eventTypeSelect = document.getElementById('availability-event-type');
+            const guestsInput = document.getElementById('availability-guests');
+
+            if (subtitle) subtitle.textContent = `Selectează data pentru ${venue.name}`;
+            if (eventTypeSelect && !eventTypeSelect.options.length) {
+                eventTypeOptions.forEach((option) => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    eventTypeSelect.appendChild(opt);
+                });
+            }
+            if (eventTypeSelect) eventTypeSelect.value = eventTypeOptions[0];
+            if (guestsInput) guestsInput.value = '';
+
+            ensureAvailabilityDatePicker();
+            updateAvailabilitySelectedDate();
+
+            overlay.classList.add('is-visible');
+        }
+
+        function ensureAvailabilityDatePicker() {
+            const calendarContainer = document.getElementById('availability-calendar');
+            const dateInput = document.getElementById('availability-date-picker');
+            if (!calendarContainer || !dateInput || typeof flatpickr !== 'function') return null;
+
+            if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
+                flatpickr.localize(flatpickr.l10ns.ro);
+            }
+
+            if (!ensureAvailabilityDatePicker.instance) {
+                ensureAvailabilityDatePicker.instance = flatpickr(dateInput, {
+                    minDate: 'today',
+                    locale: flatpickr.l10ns?.ro || 'default',
+                    disableMobile: true,
+                    monthSelectorType: 'dropdown',
+                    yearSelectorType: 'dropdown',
+                    inline: true,
+                    appendTo: calendarContainer,
+                    onChange: (selectedDates) => {
+                        availabilityState.selectedDate = selectedDates[0] || null;
+                        updateAvailabilitySelectedDate();
+                    },
+                    onDayCreate: (selectedDates, dateStr, instance, dayElem) => {
+                        const status = getAvailabilityStatus(availabilityState.locationId, dayElem.dateObj);
+                        dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
+                        if (status === 'hold') {
+                            dayElem.classList.add('availability-day-hold');
+                        } else if (status === 'booked') {
+                            dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
+                        } else {
+                            dayElem.classList.add('availability-day-available');
+                        }
+                    },
+                    disable: [
+                        (date) => getAvailabilityStatus(availabilityState.locationId, date) === 'booked'
+                    ]
                 });
             }
 
-            const lockedContactSection = document.querySelector('.contact-section-locked');
-            const contactSection = document.querySelector('.contact-section');
+            const picker = ensureAvailabilityDatePicker.instance;
+            picker.clear(false);
+            picker.redraw();
+            picker.jumpToDate('today');
+            availabilityState.selectedDate = null;
+            updateAvailabilitySelectedDate();
+            return picker;
+        }
 
-            if (lockedContactSection && contactSection) {
-                const revealContactSection = () => {
-                    lockedContactSection.setAttribute('hidden', '');
-                    contactSection.removeAttribute('hidden');
+        function updateAvailabilitySelectedDate() {
+            const label = document.getElementById('availability-selected-date');
+            if (!label) return;
+            if (!availabilityState.selectedDate) {
+                label.textContent = 'Selectează o dată disponibilă din calendar.';
+            } else {
+                label.textContent = `Data selectată: ${formatDate(availabilityState.selectedDate)}`;
+            }
+        }
 
-                    const applyVisibleState = () => contactSection.classList.add('is-visible');
-                    if (typeof window.requestAnimationFrame === 'function') {
-                        window.requestAnimationFrame(applyVisibleState);
-                    } else {
-                        applyVisibleState();
-                    }
-                };
+        function closeAvailabilityModal() {
+            const overlay = document.getElementById('availability-modal');
+            overlay?.classList.remove('is-visible');
+        }
 
-                setTimeout(revealContactSection, 2000);
+        function openViewingModal(venue) {
+            const overlay = document.getElementById('viewing-modal');
+            if (!overlay || !venue) return;
+
+            viewingState.locationId = venue.id;
+            viewingState.slots = [];
+
+            const title = document.getElementById('viewing-modal-title');
+            const subtitle = document.getElementById('viewing-modal-subtitle');
+            if (title) title.textContent = `Programează o vizionare la ${venue.name}`;
+            if (subtitle) subtitle.textContent = 'Selectează data și ora preferată pentru vizionare.';
+
+            resetViewingSlots();
+            createViewingSuggestionSlot();
+            createViewingSuggestionSlot();
+            overlay.classList.add('is-visible');
+        }
+
+        function closeViewingModal() {
+            const overlay = document.getElementById('viewing-modal');
+            overlay?.classList.remove('is-visible');
+            resetViewingSlots();
+        }
+
+        function resetViewingSlots() {
+            viewingSuggestionPickers.clear();
+            viewingState.slots = [];
+            const container = document.querySelector('[data-viewing-suggestions]');
+            if (container) container.innerHTML = '';
+            updateViewingSlotsControls();
+        }
+
+        function createViewingSuggestionSlot(initial = {}) {
+            const container = document.querySelector('[data-viewing-suggestions]');
+            if (!container || viewingSuggestionPickers.size >= MAX_VIEWING_SLOTS) return;
+
+            const slotId = `slot-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'reschedule-slot';
+            wrapper.dataset.slotId = slotId;
+
+            const fields = document.createElement('div');
+            fields.className = 'reschedule-slot-fields';
+
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.value = initial.date || '';
+
+            const timeSelect = document.createElement('select');
+            buildTimeOptions(timeSelect, initial.time);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'crm-button ghost sm';
+            removeBtn.textContent = 'Șterge';
+            removeBtn.dataset.viewingRemoveSlot = '';
+
+            removeBtn.addEventListener('click', () => {
+                viewingSuggestionPickers.delete(slotId);
+                wrapper.remove();
+                updateViewingSlotsControls();
+            });
+
+            fields.appendChild(dateInput);
+            fields.appendChild(timeSelect);
+            wrapper.appendChild(fields);
+            wrapper.appendChild(removeBtn);
+            container.appendChild(wrapper);
+
+            viewingSuggestionPickers.set(slotId, { dateInput, timeSelect });
+            updateViewingSlotsControls();
+        }
+
+        function buildTimeOptions(select, selectedValue) {
+            select.innerHTML = '<option value="">Selectează ora</option>';
+            for (let hour = 8; hour <= 20; hour += 1) {
+                for (const minute of [0, 30]) {
+                    if (hour === 20 && minute > 0) continue;
+                    const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    if (value === selectedValue) option.selected = true;
+                    select.appendChild(option);
+                }
+            }
+        }
+
+        function updateViewingSlotsControls() {
+            const counter = document.getElementById('viewing-slot-counter');
+            const hint = document.querySelector('[data-viewing-slot-hint]');
+            const emptyState = document.querySelector('[data-viewing-empty-state]');
+            const addButton = document.querySelector('[data-viewing-add-slot]');
+            const total = viewingSuggestionPickers.size;
+            const completed = Array.from(viewingSuggestionPickers.values()).filter(({ dateInput, timeSelect }) => dateInput.value && timeSelect.value).length;
+
+            if (counter) {
+                counter.hidden = total === 0;
+                counter.textContent = `${total}/${MAX_VIEWING_SLOTS} intervale`;
             }
 
-            // Bara de căutare reutilizată este inițializată global în `main.js`.
+            if (hint) {
+                if (total >= MAX_VIEWING_SLOTS) {
+                    hint.textContent = 'Ai configurat 4 intervale. Șterge unul dacă vrei să adaugi altul.';
+                } else {
+                    const remaining = MAX_VIEWING_SLOTS - total;
+                    hint.textContent = `Poți adăuga încă ${remaining} ${remaining === 1 ? 'interval' : 'intervale'} (din 30 în 30 de minute).`;
+                }
+            }
+
+            if (emptyState) {
+                emptyState.hidden = total > 0;
+            }
+
+            if (addButton) {
+                addButton.disabled = total >= MAX_VIEWING_SLOTS;
+            }
+
+            const removeButtons = document.querySelectorAll('[data-viewing-remove-slot]');
+            const hideRemove = total <= MIN_VIEWING_SLOTS;
+            removeButtons.forEach((button) => {
+                button.hidden = hideRemove;
+                button.disabled = hideRemove;
+            });
+
+            viewingState.slots = collectViewingSlots();
+            const summary = document.getElementById('viewing-selected-date');
+            if (summary) {
+                if (!completed) {
+                    summary.textContent = 'Lista de intervale va fi trimisă către locație. Alege cel puțin o variantă înainte de a continua.';
+                } else if (completed === 1) {
+                    summary.textContent = 'Trimiți 1 interval preferat către locație.';
+                } else {
+                    summary.textContent = `Trimiți ${completed} intervale preferate către locație.`;
+                }
+            }
+        }
+
+        function collectViewingSlots() {
+            const slots = [];
+            viewingSuggestionPickers.forEach(({ dateInput, timeSelect }) => {
+                if (!dateInput.value || !timeSelect.value) return;
+                const dateValue = dateInput.value;
+                const timeValue = timeSelect.value;
+                const [hour, minute] = timeValue.split(':').map(Number);
+                const date = new Date(dateValue);
+                date.setHours(hour || 0, minute || 0, 0, 0);
+                slots.push({
+                    iso: date.toISOString(),
+                    label: `${formatDate(date)} · ${formatTime(date)}`
+                });
+            });
+            return slots;
+        }
+
+        function getClientRequests() {
+            try {
+                const raw = localStorage.getItem('clientRequests');
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveClientRequests(requests) {
+            localStorage.setItem('clientRequests', JSON.stringify(requests));
+        }
+
+        function hasConfirmedAvailability(locationId) {
+            const confirmedRaw = localStorage.getItem('clientAvailabilityConfirmedIds');
+            if (!confirmedRaw) return false;
+            try {
+                const parsed = JSON.parse(confirmedRaw);
+                return Array.isArray(parsed) && parsed.includes(locationId);
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function markAvailabilityConfirmed(locationId) {
+            let ids = [];
+            try {
+                const raw = localStorage.getItem('clientAvailabilityConfirmedIds');
+                ids = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(ids)) ids = [];
+            } catch (error) {
+                ids = [];
+            }
+            if (!ids.includes(locationId)) {
+                ids.push(locationId);
+                localStorage.setItem('clientAvailabilityConfirmedIds', JSON.stringify(ids));
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.querySelector('[data-toast-container]');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function handleAvailabilitySubmit(event) {
+            event.preventDefault();
+            const guestsInput = document.getElementById('availability-guests');
+            const eventTypeSelect = document.getElementById('availability-event-type');
+            if (!availabilityState.locationId || !availabilityState.selectedDate) {
+                window.alert('Selectează o dată disponibilă înainte de a continua.');
+                return;
+            }
+            const guests = parseInt(guestsInput?.value || '0', 10);
+            if (!Number.isFinite(guests) || guests < 10) {
+                window.alert('Introdu un număr de invitați (minim 10).');
+                return;
+            }
+            const eventType = eventTypeSelect?.value || eventTypeOptions[0];
+            const venue = SAMPLE_LOCATIONS.find((loc) => loc.id === availabilityState.locationId) || null;
+
+            const requests = getClientRequests();
+            const newRequest = {
+                id: Date.now(),
+                type: 'availability',
+                status: 'Pre-rezervat',
+                locationId: availabilityState.locationId,
+                locationName: venue?.name || availabilityState.locationName,
+                eventDate: availabilityState.selectedDate.toISOString(),
+                guests,
+                eventType,
+                createdAt: new Date().toISOString()
+            };
+            requests.push(newRequest);
+            saveClientRequests(requests);
+            markAvailabilityConfirmed(availabilityState.locationId);
+            closeAvailabilityModal();
+            setupContactVisibility(venue || { id: availabilityState.locationId });
+            showToast('Cererea ta de disponibilitate a fost trimisă!', 'success');
+        }
+
+        function handleViewingSubmit(event) {
+            event.preventDefault();
+            updateViewingSlotsControls();
+            if (!viewingState.locationId) {
+                window.alert('Selectează întâi o locație.');
+                return;
+            }
+
+            let hasInvalid = false;
+            viewingSuggestionPickers.forEach(({ dateInput, timeSelect }) => {
+                dateInput.classList.remove('is-invalid');
+                timeSelect.classList.remove('is-invalid');
+                if (!dateInput.value) {
+                    dateInput.classList.add('is-invalid');
+                    setTimeout(() => dateInput.classList.remove('is-invalid'), 1500);
+                    hasInvalid = true;
+                }
+                if (!timeSelect.value) {
+                    timeSelect.classList.add('is-invalid');
+                    setTimeout(() => timeSelect.classList.remove('is-invalid'), 1500);
+                    hasInvalid = true;
+                }
+            });
+
+            if (viewingState.slots.length < MIN_VIEWING_SLOTS) {
+                window.alert(`Completează cel puțin ${MIN_VIEWING_SLOTS} intervale înainte de a trimite cererea.`);
+                return;
+            }
+            if (hasInvalid) {
+                return;
+            }
+
+            const venue = SAMPLE_LOCATIONS.find((loc) => loc.id === viewingState.locationId) || null;
+
+            const requests = getClientRequests();
+            const newRequest = {
+                id: Date.now(),
+                type: 'viewing',
+                status: 'În așteptare',
+                locationId: viewingState.locationId,
+                locationName: venue?.name || '',
+                slots: viewingState.slots,
+                createdAt: new Date().toISOString()
+            };
+            requests.push(newRequest);
+            saveClientRequests(requests);
+            closeViewingModal();
+            showToast('Solicitarea de vizionare a fost trimisă!', 'info');
+        }
+
+        document.getElementById('availability-form')?.addEventListener('submit', handleAvailabilitySubmit);
+        document.getElementById('availability-modal-close')?.addEventListener('click', closeAvailabilityModal);
+        document.getElementById('availability-cancel-btn')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeAvailabilityModal();
         });
+        document.getElementById('availability-modal')?.addEventListener('click', (event) => {
+            if (event.target?.id === 'availability-modal') {
+                closeAvailabilityModal();
+            }
+        });
+
+        document.getElementById('viewing-form')?.addEventListener('submit', handleViewingSubmit);
+        document.getElementById('viewing-modal-close')?.addEventListener('click', closeViewingModal);
+        document.getElementById('viewing-cancel-btn')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeViewingModal();
+        });
+        document.getElementById('viewing-modal')?.addEventListener('click', (event) => {
+            if (event.target?.id === 'viewing-modal') {
+                closeViewingModal();
+            }
+        });
+        document.getElementById('viewing-add-slot')?.addEventListener('click', () => {
+            createViewingSuggestionSlot();
+        });
+
+        function formatDate(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+            return date.toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' });
+        }
+
+        function formatTime(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+            return date.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getAvailabilityStatus(locationId, date) {
+            if (!(date instanceof Date)) return 'available';
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek === 0) return 'booked';
+            const hash = (date.getDate() + (locationId || 1) * 3 + dayOfWeek) % 6;
+            if (hash === 0) return 'booked';
+            if (hash === 1) return 'hold';
+            return 'available';
+        }
+
+        
     </script>
 </body>
 </html>
