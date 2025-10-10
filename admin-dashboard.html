@@ -3899,6 +3899,7 @@
             table.addEventListener('click', (event) => {
                 const resetFiltersButton = event.target.closest('[data-reset-manage-filters]');
                 if (resetFiltersButton) {
+                    event.stopPropagation();
                     event.preventDefault();
                     resetManageVenuesFilters();
                     return;
@@ -3906,6 +3907,7 @@
 
                 const publishButton = event.target.closest('[data-publish]');
                 if (publishButton) {
+                    event.stopPropagation();
                     const action = publishButton.getAttribute('data-publish');
                     const card = publishButton.closest('[data-id]');
                     if (!card) return;
@@ -3918,6 +3920,7 @@
 
                 const claimButton = event.target.closest('[data-claim]');
                 if (claimButton) {
+                    event.stopPropagation();
                     const action = claimButton.getAttribute('data-claim');
                     const card = claimButton.closest('[data-id]');
                     if (!card) return;
@@ -3931,6 +3934,7 @@
 
                 const quickAction = event.target.closest('[data-venue-action]');
                 if (quickAction) {
+                    event.stopPropagation();
                     const action = quickAction.getAttribute('data-venue-action');
                     const venueId = Number(quickAction.getAttribute('data-venue-id'));
                     const venue = adminState.venues.find(v => v.id === venueId);
@@ -4008,6 +4012,7 @@
             table.addEventListener('click', (event) => {
                 const toggleButton = event.target.closest('[data-toggle-client]');
                 if (toggleButton) {
+                    event.stopPropagation();
                     const toggleId = Number(toggleButton.getAttribute('data-toggle-client'));
                     if (Number.isNaN(toggleId)) return;
                     const client = adminState.clients.find(c => c.id === toggleId);
@@ -4019,6 +4024,7 @@
                 }
 
                 if (event.target.closest('.table-actions')) {
+                    event.stopPropagation();
                     return;
                 }
 
@@ -4036,6 +4042,7 @@
             table.addEventListener('click', (event) => {
                 const toggleButton = event.target.closest('[data-toggle-owner]');
                 if (toggleButton) {
+                    event.stopPropagation();
                     const toggleId = Number(toggleButton.getAttribute('data-toggle-owner'));
                     if (Number.isNaN(toggleId)) return;
                     const owner = adminState.owners.find(o => o.id === toggleId);
@@ -4057,6 +4064,7 @@
 
                 const claimTarget = event.target.closest('[data-owner-claim]');
                 if (claimTarget) {
+                    event.stopPropagation();
                     const ownerId = Number(claimTarget.getAttribute('data-owner-claim'));
                     if (Number.isNaN(ownerId)) return;
                     const owner = adminState.owners.find(o => o.id === ownerId);
@@ -4066,9 +4074,11 @@
                 }
 
                 if (event.target.closest('.table-actions')) {
+                    event.stopPropagation();
                     return;
                 }
                 if (event.target.closest('a')) {
+                    event.stopPropagation();
                     return;
                 }
 
