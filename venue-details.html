@@ -361,6 +361,15 @@
             margin: 0;
             font-size: 0.95rem;
         }
+        .contact-section-locked .locked-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .contact-section-locked .locked-actions .cta-button {
+            min-width: 210px;
+        }
 
         /* Availability Widget */
         .availability-widget {
@@ -723,12 +732,14 @@
                     </ul>
                 </section>
 
-                <section class="contact-section-locked">
+                <section class="contact-section-locked" data-contact-locked>
                     <h3>Contact locație</h3>
                     <div class="locked-content">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path></svg>
-                        <p>Pentru a vizualiza detaliile de contact, te rugăm să te autentifici.</p>
-                        <a href="login.html" class="cta-button">Autentificare</a>
+                        <p data-contact-locked-message>Pentru a vizualiza detaliile de contact, te rugăm să te autentifici.</p>
+                        <div class="locked-actions" data-contact-locked-actions>
+                            <a href="login.html" class="cta-button">Autentificare</a>
+                        </div>
                     </div>
                 </section>
 
@@ -881,14 +892,51 @@
             { id: 11, name: 'Delta Paradise', city: 'Tulcea', price: 70, tags: ['Natură', 'Delta'], rating: 7.8 },
             { id: 12, name: 'Centrul de Conferințe Oradea', city: 'Oradea', price: 65, tags: ['Business', 'Modern'], rating: 6.9 }
         ];
+        const KNOWN_ROLES = ['guest', 'client', 'owner', 'admin'];
+        const AUTHENTICATED_ROLES = new Set(['client', 'owner', 'admin']);
+        let activeVenue = null;
+        let ensureWidgetCalendarVisibility = () => {};
+
+        function normalizeRole(value) {
+            return KNOWN_ROLES.includes(value) ? value : 'guest';
+        }
+
+        function syncAuthStateWithRole(nextRole) {
+            const storedRole = localStorage.getItem('userRole');
+            const normalizedInput = normalizeRole(typeof nextRole === 'string' ? nextRole : storedRole);
+            if (storedRole !== normalizedInput) {
+                localStorage.setItem('userRole', normalizedInput);
+            }
+            const shouldBeLoggedIn = AUTHENTICATED_ROLES.has(normalizedInput);
+            localStorage.setItem('isLoggedIn', shouldBeLoggedIn ? 'true' : 'false');
+            return normalizedInput;
+        }
+
+        function applyVenueRoleState(venue = activeVenue) {
+            if (!venue) return;
+            setupAvailabilityWidget(venue);
+            setupContactVisibility(venue);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeGalleryLightbox();
-            const venue = resolveVenueFromParams();
-            hydrateHero(venue);
-            setupFavorites(venue);
-            setupAvailabilityWidget(venue);
-            setupContactVisibility(venue);
+            activeVenue = resolveVenueFromParams();
+            hydrateHero(activeVenue);
+            setupFavorites(activeVenue);
+            syncAuthStateWithRole();
+            applyVenueRoleState(activeVenue);
+
+            document.addEventListener('role:change', (event) => {
+                syncAuthStateWithRole(event?.detail?.role);
+                applyVenueRoleState(activeVenue);
+            });
+
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'userRole' || event.key === 'clientAvailabilityConfirmedIds') {
+                    syncAuthStateWithRole();
+                    applyVenueRoleState(activeVenue);
+                }
+            });
         });
 
         function resolveVenueFromParams() {
@@ -943,13 +991,16 @@
             const favButton = document.querySelector('[data-venue-favorite]');
             if (!favButton || !venue) return;
 
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             let favoriteIds = getStoredFavoriteIds();
-            if (favoriteIds.includes(venue.id)) {
-                favButton.classList.add('is-favorite');
-            }
+            const syncFavoriteState = () => {
+                favoriteIds = getStoredFavoriteIds();
+                favButton.classList.toggle('is-favorite', favoriteIds.includes(venue.id));
+            };
+
+            syncFavoriteState();
 
             favButton.addEventListener('click', () => {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (!isLoggedIn) {
                     window.location.href = 'login.html';
                     return;
@@ -962,7 +1013,7 @@
                     favoriteIds.push(venue.id);
                 }
                 localStorage.setItem('favoriteIds', JSON.stringify(favoriteIds));
-                favButton.classList.toggle('is-favorite', !isFavorite);
+                syncFavoriteState();
             });
         }
 
@@ -976,23 +1027,71 @@
             const widgetCalendarContainer = document.getElementById('widget-availability-calendar');
             const widgetCalendarInput = document.getElementById('widget-availability-picker');
 
-            const userRole = localStorage.getItem('userRole');
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
             if (!actionsContainer) return;
 
+            const userRole = normalizeRole(localStorage.getItem('userRole'));
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const shouldShowClientActions = isLoggedIn && AUTHENTICATED_ROLES.has(userRole);
+
+            if (calendarShell) {
+                calendarShell.hidden = true;
+            }
+
+            ensureWidgetCalendarVisibility = () => {};
             actionsContainer.innerHTML = '';
 
-            const shouldShowClientActions = isLoggedIn && ['client', 'owner', 'admin'].includes(userRole || '');
+            const buildWidgetCalendar = () => {
+                if (!calendarShell || !widgetCalendarContainer || !widgetCalendarInput) return;
+                calendarShell.hidden = false;
+                if (placeholder) {
+                    placeholder.hidden = true;
+                    placeholder.remove();
+                }
+
+                if (widgetCalendarInput._flatpickr) {
+                    widgetCalendarInput._flatpickr.destroy();
+                    widgetCalendarInput._flatpickr = null;
+                }
+
+                if (typeof flatpickr !== 'function') return;
+                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
+                    flatpickr.localize(flatpickr.l10ns.ro);
+                }
+
+                if (widgetCalendarContainer) {
+                    widgetCalendarContainer.innerHTML = '';
+                }
+
+                widgetCalendarInput._flatpickr = flatpickr(widgetCalendarInput, {
+                    inline: true,
+                    minDate: 'today',
+                    disableMobile: true,
+                    showMonths: 1,
+                    appendTo: widgetCalendarContainer,
+                    onDayCreate: (selectedDates, dateStr, calendarInstance, dayElem) => {
+                        const status = getAvailabilityStatus(venue.id, dayElem.dateObj);
+                        dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
+                        if (status === 'hold') {
+                            dayElem.classList.add('availability-day-hold');
+                        } else if (status === 'booked') {
+                            dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
+                        } else {
+                            dayElem.classList.add('availability-day-available');
+                        }
+                    },
+                    disable: [(date) => getAvailabilityStatus(venue.id, date) === 'booked']
+                });
+            };
+
+            ensureWidgetCalendarVisibility = buildWidgetCalendar;
 
             if (!shouldShowClientActions) {
+                buildWidgetCalendar();
                 const link = document.createElement('a');
                 link.href = 'login.html';
                 link.className = 'cta-button';
                 link.textContent = 'Confirmă disponibilitatea';
                 actionsContainer.appendChild(link);
-                if (placeholder) placeholder.hidden = false;
-                if (calendarShell) calendarShell.hidden = true;
                 return;
             }
 
@@ -1009,56 +1108,41 @@
             actionsContainer.appendChild(availabilityBtn);
             actionsContainer.appendChild(viewingBtn);
 
-            let widgetCalendarInstance = null;
-
-            const ensureWidgetCalendar = () => {
-                if (!calendarShell || !widgetCalendarContainer || !widgetCalendarInput) return;
-                calendarShell.hidden = false;
-                if (placeholder) placeholder.hidden = true;
-                if (widgetCalendarInstance || typeof flatpickr !== 'function') return;
-                if (typeof flatpickr.localize === 'function' && flatpickr.l10ns?.ro) {
-                    flatpickr.localize(flatpickr.l10ns.ro);
-                }
-                widgetCalendarInstance = flatpickr(widgetCalendarInput, {
-                    inline: true,
-                    minDate: 'today',
-                    disableMobile: true,
-                    showMonths: 1,
-                    appendTo: widgetCalendarContainer,
-                    onDayCreate: (selectedDates, dateStr, instance, dayElem) => {
-                        const status = getAvailabilityStatus(venue.id, dayElem.dateObj);
-                        dayElem.classList.remove('availability-day-hold', 'availability-day-booked', 'availability-day-available');
-                        if (status === 'hold') {
-                            dayElem.classList.add('availability-day-hold');
-                        } else if (status === 'booked') {
-                            dayElem.classList.add('availability-day-booked', 'flatpickr-disabled');
-                        } else {
-                            dayElem.classList.add('availability-day-available');
-                        }
-                    },
-                    disable: [
-                        (date) => getAvailabilityStatus(venue.id, date) === 'booked'
-                    ]
-                });
-            };
-
             availabilityBtn.addEventListener('click', () => {
-                ensureWidgetCalendar();
+                ensureWidgetCalendarVisibility();
                 openAvailabilityModal(venue);
             });
 
             viewingBtn.addEventListener('click', () => {
-                ensureWidgetCalendar();
+                ensureWidgetCalendarVisibility();
                 openViewingModal(venue);
             });
+
+            const shouldAutoShowCalendar =
+                userRole === 'owner' ||
+                userRole === 'admin' ||
+                (userRole === 'client' && hasConfirmedAvailability(venue.id));
+
+            if (shouldAutoShowCalendar) {
+                ensureWidgetCalendarVisibility();
+            }
         }
 
         function setupContactVisibility(venue) {
-            const lockedSection = document.querySelector('.contact-section-locked');
-            const contactSection = document.querySelector('.contact-section');
-            const userRole = localStorage.getItem('userRole');
+            if (!venue) return;
 
-            if (!lockedSection || !contactSection) return;
+            const lockedSection = document.querySelector('[data-contact-locked]');
+            const contactSection = document.querySelector('.contact-section');
+            const lockedMessage = lockedSection?.querySelector('[data-contact-locked-message]');
+            const lockedActions = lockedSection?.querySelector('[data-contact-locked-actions]');
+            const userRole = normalizeRole(localStorage.getItem('userRole'));
+
+            if (!lockedSection || !contactSection || !lockedMessage || !lockedActions) return;
+
+            contactSection.hidden = true;
+            contactSection.classList.remove('is-visible');
+            lockedSection.hidden = false;
+            lockedActions.innerHTML = '';
 
             const showContact = () => {
                 lockedSection.hidden = true;
@@ -1066,15 +1150,35 @@
                 requestAnimationFrame(() => contactSection.classList.add('is-visible'));
             };
 
-            if (['owner', 'admin'].includes(userRole || '')) {
+            if (userRole === 'owner' || userRole === 'admin') {
                 showContact();
                 return;
             }
 
-            if ((userRole || '') === 'client' && hasConfirmedAvailability(venue.id)) {
-                showContact();
+            if (userRole === 'client') {
+                if (hasConfirmedAvailability(venue.id)) {
+                    showContact();
+                    return;
+                }
+                lockedMessage.textContent = 'Confirmă disponibilitatea locației pentru a debloca detaliile de contact.';
+                const confirmBtn = document.createElement('button');
+                confirmBtn.type = 'button';
+                confirmBtn.className = 'cta-button';
+                confirmBtn.textContent = 'Confirmă disponibilitatea';
+                confirmBtn.addEventListener('click', () => {
+                    ensureWidgetCalendarVisibility();
+                    openAvailabilityModal(venue);
+                });
+                lockedActions.appendChild(confirmBtn);
                 return;
             }
+
+            lockedMessage.textContent = 'Pentru a vizualiza detaliile de contact, te rugăm să te autentifici.';
+            const loginLink = document.createElement('a');
+            loginLink.href = 'login.html';
+            loginLink.className = 'cta-button';
+            loginLink.textContent = 'Autentificare';
+            lockedActions.appendChild(loginLink);
         }
 
         function initializeGalleryLightbox() {
@@ -1467,7 +1571,9 @@
                 return;
             }
             const eventType = eventTypeSelect?.value || eventTypeOptions[0];
-            const venue = SAMPLE_LOCATIONS.find((loc) => loc.id === availabilityState.locationId) || null;
+            const venue =
+                SAMPLE_LOCATIONS.find((loc) => loc.id === availabilityState.locationId) ||
+                (activeVenue && activeVenue.id === availabilityState.locationId ? activeVenue : null);
 
             const requests = getClientRequests();
             const newRequest = {
@@ -1485,7 +1591,14 @@
             saveClientRequests(requests);
             markAvailabilityConfirmed(availabilityState.locationId);
             closeAvailabilityModal();
-            setupContactVisibility(venue || { id: availabilityState.locationId });
+            if (venue) {
+                if (!activeVenue || activeVenue.id === venue.id) {
+                    activeVenue = venue;
+                }
+                applyVenueRoleState(venue);
+            } else {
+                setupContactVisibility(activeVenue || { id: availabilityState.locationId });
+            }
             showToast('Cererea ta de disponibilitate a fost trimisă!', 'success');
         }
 
