@@ -1653,7 +1653,7 @@
                     ownerContact: 'Echipa Ouido',
                     ownerId: null,
                     managementMode: 'ouido',
-                    claimStatus: 'none',
+                    claimStatus: 'unclaimed',
                     claimOwnerId: null,
                     claimOwnerName: null,
                     city: 'București',
@@ -1693,7 +1693,7 @@
                     ownerContact: 'Echipa Ouido',
                     ownerId: null,
                     managementMode: 'ouido',
-                    claimStatus: 'none',
+                    claimStatus: 'unclaimed',
                     claimOwnerId: null,
                     claimOwnerName: null,
                     city: 'Sinaia',
@@ -1713,7 +1713,7 @@
                     ownerContact: 'Echipa Ouido',
                     ownerId: null,
                     managementMode: 'ouido',
-                    claimStatus: 'none',
+                    claimStatus: 'unclaimed',
                     claimOwnerId: null,
                     claimOwnerName: null,
                     city: 'Constanța',
@@ -1733,7 +1733,7 @@
                     ownerContact: 'Echipa Ouido',
                     ownerId: null,
                     managementMode: 'ouido',
-                    claimStatus: 'none',
+                    claimStatus: 'unclaimed',
                     claimOwnerId: null,
                     claimOwnerName: null,
                     city: 'București',
@@ -2042,7 +2042,7 @@
         }
 
         function getClaimSummary(venue) {
-            const status = venue.claimStatus || 'none';
+            const status = venue.claimStatus || 'unclaimed';
             switch (status) {
                 case 'pending':
                     return {
@@ -2065,8 +2065,9 @@
                         sub: 'Ultima acțiune: respins',
                         state: 'rejected',
                     };
+                case 'unclaimed':
                 default:
-                    return { label: 'Claim', value: '—', sub: '', state: 'none' };
+                    return { label: 'Claim', value: UNCLAIMED_OWNER_LABEL, sub: '', state: 'unclaimed' };
             }
         }
 
