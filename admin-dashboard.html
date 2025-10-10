@@ -2144,40 +2144,53 @@
 
         function renderMetrics() {
             const metricsContainer = document.getElementById('overview-metrics');
+            if (!metricsContainer) return;
+
+            const activeClients = formatCount(Number(adminState.metrics.activeClients));
+            const totalClients = formatCount(Number(adminState.metrics.totalClients));
+            const activeOwners = formatCount(Number(adminState.metrics.activeOwners));
+            const totalOwners = formatCount(Number(adminState.metrics.totalOwners));
+            const publishedVenues = formatCount(Number(adminState.metrics.publishedVenues));
+            const pendingVenues = formatCount(Number(adminState.metrics.pendingVenues));
+            const bookingsThisMonth = formatCount(Number(adminState.metrics.bookingsThisMonth));
+            const visitsScheduled = formatCount(Number(adminState.metrics.visitsScheduled));
+            const responseTime = formatCount(Number(adminState.metrics.responseTimeHours));
+            const revenueGrowth = formatCount(Number(adminState.metrics.revenueGrowth));
+
             const data = [
                 {
                     label: 'Clienți activi',
-                    value: `${adminState.metrics.activeClients} / ${adminState.metrics.totalClients}`,
+                    value: `${activeClients} / ${totalClients}`,
                     trend: '+3,2% față de luna trecută',
                     trendType: 'positive',
                 },
                 {
                     label: 'Proprietari activi',
-                    value: `${adminState.metrics.activeOwners} / ${adminState.metrics.totalOwners}`,
+                    value: `${activeOwners} / ${totalOwners}`,
                     trend: '+1,8% față de luna trecută',
                     trendType: 'positive',
                 },
                 {
                     label: 'Locații publicate',
-                    value: adminState.metrics.publishedVenues,
-                    trend: `${adminState.metrics.pendingVenues} în așteptare`,
+                    value: publishedVenues,
+                    trend: `${pendingVenues} în așteptare`,
                     trendType: 'neutral',
                 },
                 {
                     label: 'Rezervări confirmate (30d)',
-                    value: adminState.metrics.bookingsThisMonth,
+                    value: bookingsThisMonth,
                     trend: '+9% ritm de creștere',
                     trendType: 'positive',
                 },
                 {
                     label: 'Vizite programate',
-                    value: adminState.metrics.visitsScheduled,
-                    trend: 'Timp mediu răspuns ' + adminState.metrics.responseTimeHours + 'h',
+                    value: visitsScheduled,
+                    trend: 'Timp mediu răspuns ' + responseTime + 'h',
                     trendType: 'neutral',
                 },
                 {
                     label: 'Creștere venituri',
-                    value: adminState.metrics.revenueGrowth + '%',
+                    value: `${revenueGrowth}%`,
                     trend: 'vs. Q3 2023',
                     trendType: 'positive',
                 },
@@ -2197,14 +2210,18 @@
 
         function renderRequestChart() {
             const chart = document.getElementById('request-chart');
+            if (!chart) return;
+            chart.setAttribute('role', 'list');
             const max = Math.max(...adminState.requestVolume.map(i => i.count));
             chart.innerHTML = adminState.requestVolume.map(item => {
-                const height = Math.round((item.count / max) * 100);
+                const height = max ? Math.round((item.count / max) * 100) : 0;
+                const formattedCount = formatCount(Number(item.count));
                 return `
-                    <div class="chart-bar" style="height: 140px;">
-                        <div style="height: ${height}%;"></div>
-                        <span class="chart-bar__value">${item.count}</span>
-                        <span class="chart-bar__label">${item.label}</span>
+                    <div class="chart-bar" style="height: 140px;" role="listitem">
+                        <div style="height: ${height}%;" aria-hidden="true"></div>
+                        <span class="chart-bar__value" aria-hidden="true">${formattedCount}</span>
+                        <span class="chart-bar__label" aria-hidden="true">${item.label}</span>
+                        <span class="sr-only">${item.label}: ${formattedCount}</span>
                     </div>
                 `;
             }).join('');
@@ -2279,11 +2296,21 @@
 
         function renderAnalytics() {
             const analyticsContainer = document.getElementById('analytics-metrics');
+            if (!analyticsContainer) return;
+
+            const activeClients = formatCount(Number(adminState.metrics.activeClients));
+            const totalClients = formatCount(Number(adminState.metrics.totalClients));
+            const activeOwners = formatCount(Number(adminState.metrics.activeOwners));
+            const totalOwners = formatCount(Number(adminState.metrics.totalOwners));
+            const publishedVenues = formatCount(Number(adminState.metrics.publishedVenues));
+            const pendingVenues = formatCount(Number(adminState.metrics.pendingVenues));
+            const responseTime = formatCount(Number(adminState.metrics.responseTimeHours));
+
             const metrics = [
-                { label: 'Clienți activi', value: `${adminState.metrics.activeClients}`, detail: `/ ${adminState.metrics.totalClients} în total` },
-                { label: 'Proprietari activi', value: `${adminState.metrics.activeOwners}`, detail: `/ ${adminState.metrics.totalOwners} în total` },
-                { label: 'Locații live', value: `${adminState.metrics.publishedVenues}`, detail: `${adminState.metrics.pendingVenues} în review` },
-                { label: 'Timp mediu răspuns', value: `${adminState.metrics.responseTimeHours}h`, detail: 'Target &lt; 8h' },
+                { label: 'Clienți activi', value: `${activeClients}`, detail: `/ ${totalClients} în total` },
+                { label: 'Proprietari activi', value: `${activeOwners}`, detail: `/ ${totalOwners} în total` },
+                { label: 'Locații live', value: `${publishedVenues}`, detail: `${pendingVenues} în review` },
+                { label: 'Timp mediu răspuns', value: `${responseTime}h`, detail: 'Target &lt; 8h' },
             ];
 
             analyticsContainer.innerHTML = metrics.map(item => `
@@ -2295,16 +2322,21 @@
             `).join('');
 
             const statsContainer = document.getElementById('request-stats');
-            statsContainer.innerHTML = adminState.requestStats.map(stat => `
+            if (statsContainer) {
+                statsContainer.innerHTML = adminState.requestStats.map(stat => {
+                    const statValue = typeof stat.value === 'number' ? formatCount(stat.value) : stat.value;
+                    return `
                 <div class="activity-item">
                     <div class="activity-icon">${stat.label.substring(0, 2).toUpperCase()}</div>
                     <div>
                         <strong>${stat.label}</strong>
-                        <div>${stat.value}</div>
+                        <div>${statValue}</div>
                         <span class="activity-meta">${stat.trend}</span>
                     </div>
                 </div>
-            `).join('');
+            `;
+                }).join('');
+            }
 
             const topContainer = document.getElementById('top-venues');
             topContainer.innerHTML = adminState.topVenues.map(venue => `
