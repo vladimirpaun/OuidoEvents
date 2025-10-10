@@ -2926,7 +2926,7 @@
             const summary = [];
             const searchTerm = (filters.search || '').trim();
             if (searchTerm) {
-                summary.push(`căutare „${searchTerm}”`);
+                summary.push(`căutare '${searchTerm}'`);
             }
             if (filters.claim && filters.claim !== 'all') {
                 const claimLabel = formatClaimStatus(filters.claim).toLowerCase();
@@ -2999,16 +2999,23 @@
 
             const ownerSearch = ownersFilters.search.trim().toLowerCase();
             const filteredOwners = adminState.owners.filter(owner => {
+                const ownerClaimStatus = owner.claimStatus || 'unclaimed';
                 const matchesSearch = !ownerSearch
                     || [owner.business, owner.contact, owner.contactEmail || '']
                         .some(field => field.toLowerCase().includes(ownerSearch));
                 const matchesStatus = ownersFilters.status === 'all' || owner.status === ownersFilters.status;
-                const matchesClaim = ownersFilters.claim === 'all' || owner.claimStatus === ownersFilters.claim;
+                const matchesClaim = ownersFilters.claim === 'all' || ownerClaimStatus === ownersFilters.claim;
                 return matchesSearch && matchesStatus && matchesClaim;
             });
 
             ownersBody.innerHTML = filteredOwners.length
-                ? filteredOwners.map(owner => `
+                ? filteredOwners.map(owner => {
+                    const claimStatus = owner.claimStatus || 'unclaimed';
+                    const isPending = claimStatus === 'pending';
+                    const claimAttributes = isPending
+                        ? `data-owner-claim="${owner.id}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Procesează claim pentru ${owner.business}"`
+                        : '';
+                    return `
                     <tr class="owner-row" data-id="owner-${owner.id}" data-owner-link="owner-crm.html#venues">
                         <td>
                             <div class="table-cell-stack">
@@ -3031,8 +3038,8 @@
                         <td>${owner.locations}</td>
                         <td>
                             <div class="table-cell-stack">
-                                <span class="claim-chip" data-claim="${owner.claimStatus}" ${owner.claimStatus === 'pending' ? `data-owner-claim="${owner.id}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Procesează claim pentru ${owner.business}"` : ''}>
-                                    ${formatClaimStatus(owner.claimStatus)}
+                                <span class="claim-chip" data-claim="${claimStatus}" ${claimAttributes}>
+                                    ${formatClaimStatus(claimStatus)}
                                 </span>
                                 <span class="table-subtext">${owner.claimDetails || ''}</span>
                             </div>
@@ -3046,12 +3053,13 @@
                             </div>
                         </td>
                     </tr>
-                `).join('')
+                `;
+                }).join('')
                 : '<tr><td colspan="7" class="empty-state">Nu există parteneri care să corespundă filtrelor.</td></tr>';
 
             if (accountElements.owners.count) {
-                const label = filteredOwners.length === 1 ? 'partener' : 'parteneri';
-                accountElements.owners.count.textContent = `${filteredOwners.length} ${label} afișați`;
+                const countLabel = filteredOwners.length === 1 ? '1 rezultat' : `${filteredOwners.length} rezultate`;
+                accountElements.owners.count.textContent = countLabel;
             }
             if (accountElements.owners.meta) {
                 accountElements.owners.meta.textContent = describeFiltersSummary(ownersFilters);
