@@ -580,6 +580,9 @@
         .table-value[data-claim-state="rejected"] {
             color: #b91c1c;
         }
+        .venue-card__metric-value[data-claim-state="accepted"] { color: #047857; }
+        .venue-card__metric-value[data-claim-state="pending"] { color: #b45309; }
+        .venue-card__metric-value[data-claim-state="rejected"] { color: #b91c1c; }
         .table-actions--compact {
             gap: 8px;
             flex-wrap: wrap;
@@ -588,75 +591,143 @@
             min-width: 0;
         }
         .venue-card-list {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
+            display: grid;
+            gap: 16px;
         }
         .venue-card {
             background: var(--white-color);
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 24px 28px;
-            box-shadow: 0 24px 60px -48px rgba(67, 100, 247, 0.45);
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: 0 22px 60px -52px rgba(67, 100, 247, 0.45);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
         .venue-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 28px 60px -44px rgba(67, 100, 247, 0.55);
+            transform: translateY(-1px);
+            box-shadow: 0 28px 66px -52px rgba(67, 100, 247, 0.55);
         }
-        .venue-card__header {
+        .venue-card__top {
             display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
             flex-wrap: wrap;
-            gap: 20px;
         }
-        .venue-card__section {
-            flex: 1 1 200px;
+        .venue-card__heading {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            min-width: 180px;
+            min-width: 220px;
         }
-        .venue-card__muted {
-            color: var(--muted-color);
-            font-size: 0.85rem;
-        }
-        .venue-card__divider {
-            margin: 18px 0;
-            height: 1px;
-            background: var(--border-color);
-        }
-        .venue-card__footer {
+        .venue-card__title {
             display: flex;
+            align-items: center;
+            gap: 10px;
             flex-wrap: wrap;
-            gap: 24px;
+        }
+        .venue-card__name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .venue-card__tag {
+            background: rgba(67, 100, 247, 0.12);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+        .venue-card__meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--muted-color);
+        }
+        .venue-card__quick-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .venue-card__quick-button {
+            border-radius: 999px;
+            padding: 6px 14px;
+            border: 1px solid rgba(0, 82, 212, 0.22);
+            background: rgba(67, 100, 247, 0.08);
+            color: var(--primary-color);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .venue-card__quick-button:hover,
+        .venue-card__quick-button:focus-visible {
+            outline: none;
+            border-color: rgba(0, 82, 212, 0.35);
+            box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.16);
+            transform: translateY(-1px);
+        }
+        .venue-card__metrics {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+        .venue-card__metric {
+            background: rgba(67, 100, 247, 0.05);
+            border: 1px solid rgba(67, 100, 247, 0.16);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .venue-card__metric-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: rgba(26, 32, 44, 0.62);
+            font-weight: 600;
+        }
+        .venue-card__metric-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .venue-card__metric-sub {
+            font-size: 0.75rem;
+            color: rgba(26, 32, 44, 0.64);
+        }
+        .venue-card__bottom {
+            display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
         .venue-card__status {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 280px;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .venue-card__status-text {
+        .venue-card__muted {
             color: var(--muted-color);
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 0.8rem;
         }
         .venue-card__actions {
             display: flex;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 24px;
-            align-items: flex-start;
+            gap: 12px;
+            margin-left: auto;
         }
-        .venue-card__actions-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-width: 200px;
-        }
-        .venue-card__actions-group .table-value {
-            font-size: 0.85rem;
+        .venue-card__actions .table-actions {
+            margin: 0;
         }
         .venue-card--empty {
             text-align: center;
@@ -3496,62 +3567,51 @@
                 const claimSummary = getClaimSummary(venue);
                 const publishControls = renderPublishControls(venue);
                 const claimActions = renderClaimActions(venue);
-                const statusMessage = describeVenueStatus(venue);
                 return `
                     <article class="venue-card" data-id="${venue.id}" data-testid="venue-card">
-                        <div class="venue-card__header">
-                            <div class="venue-card__section">
-                                <span class="table-label">Locație</span>
-                                <span class="table-value">${venue.name}</span>
-                                <span class="venue-card__muted">Capacitate: ${venue.capacity}</span>
-                                <div class="table-subactions">
-                                    <button class="table-link" type="button" data-venue-action="view" data-venue-id="${venue.id}">Vezi fișa</button>
-                                    <button class="table-link" type="button" data-venue-action="manage" data-venue-id="${venue.id}">CRM proprietar</button>
+                        <div class="venue-card__top">
+                            <div class="venue-card__heading">
+                                <div class="venue-card__title">
+                                    <span class="venue-card__name">${venue.name}</span>
+                                    <span class="venue-card__tag">${venue.city}</span>
+                                </div>
+                                <div class="venue-card__meta">
+                                    <span>Cap. ${venue.capacity}</span>
+                                    <span>• ${managementSummary.value}</span>
+                                    ${managementSummary.sub ? `<span>• ${managementSummary.sub}</span>` : ''}
                                 </div>
                             </div>
-                            <div class="venue-card__section">
-                                <span class="table-label">Proprietar</span>
-                                <span class="table-value">${venue.owner || UNCLAIMED_OWNER_LABEL}</span>
-                                ${venue.ownerContact ? `<span class="venue-card__muted">Contact: ${venue.ownerContact}</span>` : ''}
-                            </div>
-                            <div class="venue-card__section">
-                                <span class="table-label">Gestiune</span>
-                                <span class="table-value" data-management="${managementSummary.state}">${managementSummary.value}</span>
-                                ${managementSummary.sub ? `<span class="venue-card__muted">${managementSummary.sub}</span>` : ''}
-                            </div>
-                            <div class="venue-card__section">
-                                <span class="table-label">Vizionări</span>
-                                <span class="table-value" data-sort-value="${venue.viewingsRequests}" data-requests-column="viewings">${formatCount(venue.viewingsRequests)}</span>
-                                <span class="venue-card__muted">Solicitări vizionare</span>
-                            </div>
-                            <div class="venue-card__section">
-                                <span class="table-label">Cereri disponibilitate</span>
-                                <span class="table-value" data-sort-value="${venue.availabilityRequests}" data-requests-column="availability">${formatCount(venue.availabilityRequests)}</span>
-                                <span class="venue-card__muted">Confirmări disponibilitate</span>
-                            </div>
-                            <div class="venue-card__section">
-                                <span class="table-label">Ultima actualizare</span>
-                                <span class="table-value">${venue.lastActivity}</span>
+                            <div class="venue-card__quick-actions">
+                                <button class="venue-card__quick-button" type="button" data-venue-action="view" data-venue-id="${venue.id}">Vezi fișa</button>
+                                <button class="venue-card__quick-button" type="button" data-venue-action="manage" data-venue-id="${venue.id}">CRM proprietar</button>
                             </div>
                         </div>
-                        <div class="venue-card__divider"></div>
-                        <div class="venue-card__footer">
+                        <div class="venue-card__metrics">
+                            <div class="venue-card__metric">
+                                <span class="venue-card__metric-label">Vizionări</span>
+                                <span class="venue-card__metric-value" data-sort-value="${venue.viewingsRequests}" data-requests-column="viewings">${formatCount(venue.viewingsRequests)}</span>
+                                <span class="venue-card__metric-sub">Solicitări vizionare</span>
+                            </div>
+                            <div class="venue-card__metric">
+                                <span class="venue-card__metric-label">Disponibilitate</span>
+                                <span class="venue-card__metric-value" data-sort-value="${venue.availabilityRequests}" data-requests-column="availability">${formatCount(venue.availabilityRequests)}</span>
+                                <span class="venue-card__metric-sub">Cereri confirmare</span>
+                            </div>
+                            <div class="venue-card__metric">
+                                <span class="venue-card__metric-label">Claim</span>
+                                <span class="venue-card__metric-value" data-claim-state="${claimSummary.state}">${claimSummary.label}</span>
+                                ${claimSummary.value ? `<span class="venue-card__metric-sub">${claimSummary.value}</span>` : ''}
+                                ${claimSummary.sub && claimSummary.state === 'pending' ? `<span class="venue-card__metric-sub">${claimSummary.sub}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="venue-card__bottom">
                             <div class="venue-card__status">
                                 <span class="status-chip" data-status="${venue.status}">${formatVenueStatus(venue.status)}</span>
-                                <span class="venue-card__status-text">${statusMessage}</span>
-                                ${claimSummary.state === 'pending' ? '<span class="venue-card__muted">Există un claim în așteptare pentru această locație.</span>' : ''}
+                                <span class="venue-card__muted">${venue.lastActivity}</span>
                             </div>
                             <div class="venue-card__actions">
-                                <div class="venue-card__actions-group">
-                                    <span class="table-label">Publicare</span>
-                                    ${publishControls}
-                                </div>
-                                <div class="venue-card__actions-group">
-                                    <span class="table-label">${claimSummary.label}</span>
-                                    <span class="table-value" data-claim-state="${claimSummary.state}">${claimSummary.value}</span>
-                                    ${claimSummary.sub ? `<span class="venue-card__muted">${claimSummary.sub}</span>` : ''}
-                                    ${claimActions}
-                                </div>
+                                ${publishControls}
+                                ${claimActions}
                             </div>
                         </div>
                     </article>
