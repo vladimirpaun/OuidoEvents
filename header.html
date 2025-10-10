@@ -47,22 +47,25 @@
   <div class="container header-container">
     <a href="index.html" class="logo">OuidoEvents</a>
     <nav class="nav-links" aria-label="Navigare principală">
-      <a href="locations.html">Locații</a>
-      <a href="blog.html">Blog</a>
-      <a href="contact.html">Contact</a>
-      <div class="role-switcher">
-        <label for="role-selector">Role:</label>
-        <select id="role-selector">
-          <option value="#">Client nelogat</option>
-          <option value="client-dashboard.html">Client</option>
-          <option value="owner-crm.html">Owner</option>
-          <option value="admin-dashboard.html">Admin</option>
+      <a href="locations.html" data-visible-roles="guest,client,owner,admin">Locații</a>
+      <a href="blog.html" data-visible-roles="guest,client,owner,admin">Blog</a>
+      <a href="contact.html" data-visible-roles="guest,client,owner,admin">Contact</a>
+      <a href="client-dashboard.html" data-visible-roles="client">Panou client</a>
+      <a href="owner-crm.html" data-visible-roles="owner">CRM Proprietari</a>
+      <a href="admin-dashboard.html" data-visible-roles="admin">Panou Admin</a>
+      <div class="role-switcher" data-role-switcher hidden aria-hidden="true">
+        <label for="role-selector">Rol curent</label>
+        <select id="role-selector" aria-label="Selectează rolul de utilizator">
+          <option value="guest">Client nelogat</option>
+          <option value="client">Client</option>
+          <option value="owner">Owner</option>
+          <option value="admin">Admin</option>
         </select>
       </div>
     </nav>
     <div class="header-actions">
-      <a href="login.html" class="secondary-cta-button">Conectare</a>
-      <a href="create-account.html" class="cta-button">Adaugă locația ta</a>
+      <a href="login.html" class="secondary-cta-button" data-visible-roles="guest">Conectare</a>
+      <a href="create-account.html" class="cta-button" data-visible-roles="guest,owner">Adaugă locația ta</a>
     </div>
     <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Deschide meniul principal">
       <span class="icon-bar"></span>

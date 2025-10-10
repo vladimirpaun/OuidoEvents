@@ -1,6 +1,13 @@
 (function () {
   const INCLUDE_ATTR = 'data-include';
   const fragmentCache = new Map();
+  const ROLE_STORAGE_KEY = 'userRole';
+  const DEV_MODE_KEY = 'devMode';
+  const VALID_ROLES = new Set(['admin', 'owner', 'client', 'guest']);
+  const DEFAULT_ROLE = 'guest';
+  const REPLACE_WRAPPER_REGEX = /(?:^|\/)(header|mobile-menu)\.html$/i;
+  const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+  const dateFieldState = new WeakMap();
 
   function fetchFragment(url) {
     if (!url) {
@@ -26,29 +33,56 @@
     return fragmentCache.get(url);
   }
 
-  async function injectFragments() {
-    const targets = Array.from(document.querySelectorAll(`[${INCLUDE_ATTR}]`));
+  async function injectFragments(root = document) {
+    const processTargets = async (targets) => {
+      await Promise.all(
+        targets.map(async (target) => {
+          if (!target || target.dataset.includeStatus === 'loaded') {
+            return;
+          }
 
-    await Promise.all(
-      targets.map(async (target) => {
-        const url = target.getAttribute(INCLUDE_ATTR);
-        const html = await fetchFragment(url);
-        const template = document.createElement('template');
-        template.innerHTML = html;
-        const fragment = template.content.cloneNode(true);
-        const normalizedUrl = (url || '').split(/[?#]/)[0];
-        const shouldReplaceWrapper = /(?:^|\/)header\.html$/i.test(normalizedUrl);
+          const url = target.getAttribute(INCLUDE_ATTR);
 
-        target.removeAttribute(INCLUDE_ATTR);
+          if (!url) {
+            target.dataset.includeStatus = 'loaded';
+            target.removeAttribute(INCLUDE_ATTR);
+            return;
+          }
 
-        if (shouldReplaceWrapper) {
-          target.replaceWith(fragment);
-        } else {
-          target.innerHTML = '';
-          target.appendChild(fragment);
-        }
-      })
-    );
+          if (target.dataset.includeStatus === 'loading') {
+            return;
+          }
+
+          target.dataset.includeStatus = 'loading';
+
+          const html = await fetchFragment(url);
+          const template = document.createElement('template');
+          template.innerHTML = typeof html === 'string' ? html : '';
+          const fragment = template.content.cloneNode(true);
+          const normalizedUrl = (url || '').split(/[?#]/)[0];
+          const shouldReplaceWrapper = REPLACE_WRAPPER_REGEX.test(normalizedUrl);
+
+          target.dataset.includeStatus = 'loaded';
+          target.removeAttribute(INCLUDE_ATTR);
+
+          if (shouldReplaceWrapper) {
+            target.replaceWith(fragment);
+          } else {
+            target.innerHTML = '';
+            target.appendChild(fragment);
+          }
+        })
+      );
+    };
+
+    let pending = Array.from(root.querySelectorAll(`[${INCLUDE_ATTR}]`));
+
+    while (pending.length) {
+      await processTargets(pending);
+      pending = Array.from(root.querySelectorAll(`[${INCLUDE_ATTR}]`)).filter(
+        (node) => node.dataset.includeStatus !== 'loaded'
+      );
+    }
   }
 
   function highlightActiveLinks(scope) {
@@ -72,44 +106,109 @@
       const anchorPage = href.split('/').pop();
       const isActive = anchorPage === currentPage || (anchorPage === 'index.html' && currentPage === '');
       anchor.classList.toggle('is-active', isActive);
+      if (isActive) {
+        anchor.setAttribute('aria-current', 'page');
+      } else {
+        anchor.removeAttribute('aria-current');
+      }
     });
   }
 
-  function handleRoleSelection(event) {
-    const value = event.target.value;
-    if (!value || value === '#') {
-      return;
-    }
-
-    const roleRoutes = {
-      owner: 'owner-crm.html',
-      'owner-crm.html': 'owner-crm.html',
-      client: 'client-dashboard.html',
-      'client-dashboard.html': 'client-dashboard.html',
-      admin: 'admin-dashboard.html',
-      'admin-dashboard.html': 'admin-dashboard.html',
-    };
-
-    const targetUrl = roleRoutes[value];
-
-    if (targetUrl) {
-      window.location.href = targetUrl;
-    }
+  function normalizeRole(role) {
+    return VALID_ROLES.has(role) ? role : DEFAULT_ROLE;
   }
 
-  function setupRoleSwitcher(scope) {
+  function getStoredRole() {
+    const stored = localStorage.getItem(ROLE_STORAGE_KEY);
+    return normalizeRole(stored);
+  }
+
+  function setStoredRole(role) {
+    const normalized = normalizeRole(role);
+    localStorage.setItem(ROLE_STORAGE_KEY, normalized);
+    return normalized;
+  }
+
+  function isDevModeEnabled() {
+    return localStorage.getItem(DEV_MODE_KEY) === 'true';
+  }
+
+  function applyRoleVisibility(scope, role) {
     if (!scope) {
       return;
     }
 
-    const selects = scope.querySelectorAll('.role-switcher select');
+    const elements = scope.querySelectorAll('[data-visible-roles]');
+    elements.forEach((element) => {
+      const rolesAttr = element.getAttribute('data-visible-roles') || '';
+      const allowedRoles = rolesAttr
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+      const isVisible = !allowedRoles.length || allowedRoles.includes(role);
+
+      if (isVisible) {
+        element.removeAttribute('hidden');
+        element.removeAttribute('aria-hidden');
+      } else if (element instanceof HTMLElement) {
+        element.setAttribute('hidden', '');
+        element.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  function toggleRoleSwitcherVisibility(scope, isDevMode) {
+    if (!scope) {
+      return;
+    }
+
+    const switchers = scope.querySelectorAll('[data-role-switcher]');
+    switchers.forEach((switcher) => {
+      if (isDevMode) {
+        switcher.removeAttribute('hidden');
+        switcher.removeAttribute('aria-hidden');
+      } else {
+        switcher.setAttribute('hidden', '');
+        switcher.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  function syncRoleSwitcherSelections(scope, role) {
+    if (!scope) {
+      return;
+    }
+
+    scope.querySelectorAll('[data-role-switcher] select').forEach((select) => {
+      if (select.value !== role) {
+        select.value = role;
+      }
+    });
+  }
+
+  function setupRoleSwitcher(scope, onRoleChange) {
+    if (!scope) {
+      return;
+    }
+
+    const selects = scope.querySelectorAll('[data-role-switcher] select');
     selects.forEach((select) => {
       if (select.dataset.roleReady === 'true') {
         return;
       }
 
       select.dataset.roleReady = 'true';
-      select.addEventListener('change', handleRoleSelection);
+      select.addEventListener('change', (event) => {
+        const nextRole = event.target.value;
+        if (!VALID_ROLES.has(nextRole)) {
+          return;
+        }
+
+        if (typeof onRoleChange === 'function') {
+          onRoleChange(nextRole);
+        }
+      });
     });
   }
 
@@ -158,7 +257,7 @@
       return;
     }
 
-    const roleSwitchers = mobileNav.querySelectorAll('.role-switcher');
+    const roleSwitchers = mobileNav.querySelectorAll('[data-role-switcher]');
     roleSwitchers.forEach((roleSwitcher, index) => {
       const select = roleSwitcher.querySelector('select');
       const label = roleSwitcher.querySelector('label');
@@ -171,6 +270,150 @@
         }
       }
     });
+  }
+
+  function parseDisplayDateToISO(value) {
+    if (!value) {
+      return '';
+    }
+
+    const match = value
+      .trim()
+      .match(/^(\d{1,2})[\.\/-](\d{1,2})[\.\/-](\d{4})$/);
+
+    if (!match) {
+      return '';
+    }
+
+    const [, day, month, year] = match;
+    const iso = `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    return ISO_DATE_PATTERN.test(iso) ? iso : '';
+  }
+
+  function formatISOToDisplay(isoDate) {
+    if (!ISO_DATE_PATTERN.test(isoDate)) {
+      return '';
+    }
+
+    const [, year, month, day] = isoDate.match(ISO_DATE_PATTERN);
+    return `${day}/${month}/${year}`;
+  }
+
+  function initializeDateInput(dateInput) {
+    if (!dateInput) {
+      return null;
+    }
+
+    if (dateFieldState.has(dateInput)) {
+      return dateFieldState.get(dateInput);
+    }
+
+    const placeholderText =
+      dateInput.getAttribute('data-placeholder') ||
+      dateInput.getAttribute('placeholder') ||
+      'dd/mm/yyyy';
+    const placeholderColor = 'var(--muted-color, #999)';
+    const activeColor = 'var(--gray-color)';
+
+    const applyPlaceholder = () => {
+      dateInput.value = placeholderText;
+      dateInput.style.color = placeholderColor;
+      dateInput.dataset.placeholderActive = 'true';
+    };
+
+    const activateValue = () => {
+      dateInput.style.color = activeColor;
+      dateInput.dataset.placeholderActive = 'false';
+    };
+
+    const setDisplayValue = (displayValue) => {
+      if (!displayValue) {
+        applyPlaceholder();
+        return;
+      }
+
+      dateInput.value = displayValue;
+      activateValue();
+    };
+
+    if (typeof flatpickr === 'function' && !dateInput._flatpickr) {
+      flatpickr(dateInput, {
+        dateFormat: 'd/m/Y',
+        monthSelectorType: 'dropdown',
+        onReady(selectedDates, dateStr, instance) {
+          if (!instance.input.value) {
+            applyPlaceholder();
+          } else {
+            activateValue();
+          }
+        },
+        onChange() {
+          activateValue();
+        },
+        onClose(selectedDates, dateStr, instance) {
+          if (!instance.input.value) {
+            applyPlaceholder();
+          }
+        },
+      });
+    } else {
+      if (!dateInput.value) {
+        applyPlaceholder();
+      } else {
+        activateValue();
+      }
+
+      dateInput.addEventListener('input', () => {
+        if (dateInput.value) {
+          activateValue();
+        } else {
+          applyPlaceholder();
+        }
+      });
+    }
+
+    const state = {
+      applyPlaceholder,
+      activateValue,
+      setDisplayValue,
+      setISOValue(isoValue) {
+        if (isoValue && ISO_DATE_PATTERN.test(isoValue)) {
+          if (dateInput._flatpickr) {
+            dateInput._flatpickr.setDate(isoValue, true, 'Y-m-d');
+            activateValue();
+          } else {
+            setDisplayValue(formatISOToDisplay(isoValue));
+          }
+        } else {
+          if (dateInput._flatpickr) {
+            dateInput._flatpickr.clear();
+          }
+          applyPlaceholder();
+        }
+      },
+      getISOValue() {
+        if (dateInput.dataset.placeholderActive === 'true') {
+          return '';
+        }
+
+        if (dateInput._flatpickr) {
+          const selected =
+            dateInput._flatpickr.selectedDates &&
+            dateInput._flatpickr.selectedDates[0];
+          if (selected instanceof Date && !Number.isNaN(selected.getTime())) {
+            const year = String(selected.getFullYear()).padStart(4, '0');
+            const month = String(selected.getMonth() + 1).padStart(2, '0');
+            const day = String(selected.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          }
+        }
+
+        return parseDisplayDateToISO(dateInput.value);
+      },
+    };
+
+    dateFieldState.set(dateInput, state);
+    return state;
   }
 
   function setupHeaderAndMobileMenu() {
@@ -198,15 +441,58 @@
       ensureUniqueRoleSwitcherIds(mobileNav);
     }
 
-    highlightActiveLinks(header);
+    const updateDevModeVisibility = () => {
+      const devMode = isDevModeEnabled();
+      toggleRoleSwitcherVisibility(header, devMode);
+      if (mobileNav) {
+        toggleRoleSwitcherVisibility(mobileNav, devMode);
+      }
+    };
+
+    const updateRoleDependentUI = () => {
+      const role = setStoredRole(getStoredRole());
+      applyRoleVisibility(header, role);
+      if (mobileNav) {
+        applyRoleVisibility(mobileNav, role);
+      }
+      syncRoleSwitcherSelections(header, role);
+      if (mobileNav) {
+        syncRoleSwitcherSelections(mobileNav, role);
+      }
+      header.setAttribute('data-user-role', role);
+      highlightActiveLinks(header);
+      if (mobileNav) {
+        highlightActiveLinks(mobileNav);
+      }
+    };
+
+    const handleRoleChange = (nextRole) => {
+      const normalized = setStoredRole(nextRole);
+      updateRoleDependentUI();
+      document.dispatchEvent(
+        new CustomEvent('role:change', {
+          detail: { role: normalized },
+        })
+      );
+    };
+
+    setupRoleSwitcher(header, handleRoleChange);
     if (mobileNav) {
-      highlightActiveLinks(mobileNav);
+      setupRoleSwitcher(mobileNav, handleRoleChange);
     }
 
-    setupRoleSwitcher(header);
-    if (mobileNav) {
-      setupRoleSwitcher(mobileNav);
-    }
+    updateRoleDependentUI();
+    updateDevModeVisibility();
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === ROLE_STORAGE_KEY) {
+        updateRoleDependentUI();
+      }
+
+      if (event.key === DEV_MODE_KEY) {
+        updateDevModeVisibility();
+      }
+    });
 
     const syncHeaderHeight = () => {
       const height = header.offsetHeight;
@@ -312,107 +598,157 @@
     const locationInput = component.querySelector('#location');
     const dateInput = component.querySelector('[data-search-date]');
     const guests = component.querySelector('#guests');
-
-    const isPlaceholderActive = dateInput && dateInput.dataset.placeholderActive === 'true';
+    const dateState = initializeDateInput(dateInput);
 
     return {
-      eventType: eventType ? eventType.value : '',
-      location: locationInput ? locationInput.value.trim() : '',
-      date: !dateInput || isPlaceholderActive ? '' : dateInput.value.trim(),
+      type: eventType ? eventType.value : '',
+      city: locationInput ? locationInput.value.trim() : '',
+      date: dateState ? dateState.getISOValue() : '',
       guests: guests ? guests.value : '',
     };
   }
 
+  function readSearchParams() {
+    const params = new URLSearchParams(window.location.search);
+    const result = {
+      type: '',
+      city: '',
+      date: '',
+      guests: '',
+    };
+
+    const type = params.get('type');
+    if (typeof type === 'string' && type) {
+      result.type = type;
+    }
+
+    const city = params.get('city');
+    if (typeof city === 'string' && city) {
+      result.city = city;
+    }
+
+    const date = params.get('date');
+    if (typeof date === 'string' && ISO_DATE_PATTERN.test(date)) {
+      result.date = date;
+    }
+
+    const guests = params.get('guests');
+    if (typeof guests === 'string' && guests) {
+      result.guests = guests;
+    }
+
+    return result;
+  }
+
+  function prefillSearchBox(component, params = {}) {
+    if (!component || typeof params !== 'object' || params === null) {
+      return;
+    }
+
+    const hasProp = (key) => Object.prototype.hasOwnProperty.call(params, key);
+
+    const typeSelect = component.querySelector('#event-type');
+    if (typeSelect && hasProp('type')) {
+      const typeValue = typeof params.type === 'string' ? params.type : '';
+      if (typeValue) {
+        const optionExists = Array.from(typeSelect.options).some(
+          (option) => option.value === typeValue
+        );
+        if (optionExists) {
+          typeSelect.value = typeValue;
+        }
+      }
+    }
+
+    const locationInput = component.querySelector('#location');
+    if (locationInput && hasProp('city')) {
+      const cityValue = typeof params.city === 'string' ? params.city : '';
+      locationInput.value = cityValue;
+    }
+
+    const guestsSelect = component.querySelector('#guests');
+    if (guestsSelect && hasProp('guests')) {
+      const guestsValue = typeof params.guests === 'string' ? params.guests : '';
+      if (guestsValue) {
+        const optionExists = Array.from(guestsSelect.options).some(
+          (option) => option.value === guestsValue
+        );
+        if (optionExists) {
+          guestsSelect.value = guestsValue;
+        }
+      }
+    }
+
+    const dateInput = component.querySelector('[data-search-date]');
+    if (dateInput && hasProp('date')) {
+      const dateState = initializeDateInput(dateInput);
+      if (dateState) {
+        const isoDate = typeof params.date === 'string' ? params.date : '';
+        dateState.setISOValue(isoDate && ISO_DATE_PATTERN.test(isoDate) ? isoDate : '');
+      }
+    }
+  }
+
   function initializeSearchComponents(context = document) {
     const components = context.querySelectorAll('[data-search-box]');
+    if (!components.length) {
+      return;
+    }
+
+    const sharedParams = readSearchParams();
 
     components.forEach((component) => {
       if (component.dataset.searchReady === 'true') {
         return;
       }
 
-      component.dataset.searchReady = 'true';
-
       const { defaultAction, navigateTo } = getSearchComponentConfig(component);
       const dateInput = component.querySelector('[data-search-date]');
-
-      if (dateInput) {
-        const placeholderText = dateInput.getAttribute('data-placeholder') || dateInput.getAttribute('placeholder') || 'dd/mm/yyyy';
-        const placeholderColor = 'var(--muted-color, #999)';
-        const activeColor = 'var(--gray-color)';
-
-        const applyPlaceholder = () => {
-          dateInput.value = placeholderText;
-          dateInput.style.color = placeholderColor;
-          dateInput.dataset.placeholderActive = 'true';
-        };
-
-        const activateValue = () => {
-          dateInput.style.color = activeColor;
-          dateInput.dataset.placeholderActive = 'false';
-        };
-
-        if (typeof flatpickr === 'function') {
-          flatpickr(dateInput, {
-            dateFormat: 'd/m/Y',
-            monthSelectorType: 'dropdown',
-            onReady(selectedDates, dateStr, instance) {
-              if (!instance.input.value) {
-                applyPlaceholder();
-              } else {
-                activateValue();
-              }
-            },
-            onChange(selectedDates, dateStr, instance) {
-              activateValue();
-            },
-            onClose(selectedDates, dateStr, instance) {
-              if (!instance.input.value) {
-                applyPlaceholder();
-              }
-            },
-          });
-        } else {
-          if (!dateInput.value) {
-            applyPlaceholder();
-          } else {
-            activateValue();
-          }
-
-          dateInput.addEventListener('input', () => {
-            if (dateInput.value) {
-              activateValue();
-            } else {
-              applyPlaceholder();
-            }
-          });
-        }
-      }
+      initializeDateInput(dateInput);
 
       const submitButton = component.querySelector('[data-search-submit]');
-      if (submitButton) {
+      if (submitButton && submitButton.dataset.searchSubmitReady !== 'true') {
+        submitButton.dataset.searchSubmitReady = 'true';
         submitButton.addEventListener('click', (event) => {
           event.preventDefault();
 
-          const detail = {
-            ...collectSearchValues(component),
-            component,
-          };
+          const values = collectSearchValues(component);
           const searchEvent = new CustomEvent('search:submit', {
             bubbles: true,
             cancelable: true,
-            detail,
+            detail: values,
           });
 
           const shouldProceed = component.dispatchEvent(searchEvent);
 
           if (shouldProceed && defaultAction === 'navigate') {
-            window.location.href = navigateTo;
+            const params = new URLSearchParams();
+            if (values.type) {
+              params.set('type', values.type);
+            }
+            if (values.city) {
+              params.set('city', values.city);
+            }
+            if (values.date) {
+              params.set('date', values.date);
+            }
+            if (values.guests) {
+              params.set('guests', values.guests);
+            }
+
+            const query = params.toString();
+            const destination = query ? `${navigateTo}?${query}` : navigateTo;
+            window.location.href = destination;
           }
         });
       }
 
-      component.dispatchEvent(new CustomEvent('search:ready', { bubbles: true, detail: { component } }));
+      prefillSearchBox(component, sharedParams);
+
+      component.dataset.searchReady = 'true';
+      component.dispatchEvent(
+        new CustomEvent('search:ready', { bubbles: true, detail: { component } })
+      );
     });
   }
 
@@ -420,7 +756,26 @@
     await injectFragments();
     setupHeaderAndMobileMenu();
     initializeSearchComponents();
+    document.dispatchEvent(new CustomEvent('fragments:ready'));
     document.dispatchEvent(new CustomEvent('fragments:loaded'));
+  }
+
+  if (typeof window !== 'undefined') {
+    if (typeof window.readSearchParams !== 'function') {
+      Object.defineProperty(window, 'readSearchParams', {
+        value: readSearchParams,
+        configurable: true,
+        writable: true,
+      });
+    }
+
+    if (typeof window.prefillSearchBox !== 'function') {
+      Object.defineProperty(window, 'prefillSearchBox', {
+        value: prefillSearchBox,
+        configurable: true,
+        writable: true,
+      });
+    }
   }
 
   document.addEventListener('search:init', (event) => {
