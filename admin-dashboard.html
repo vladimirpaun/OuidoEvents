@@ -1227,8 +1227,8 @@
                         </table>
                     </div>
                     <div class="smart-table-footer">
-                        <span id="owners-table-count"></span>
-                        <span id="owners-table-meta"></span>
+                        <span id="owners-table-count" aria-live="polite"></span>
+                        <span id="owners-table-meta" aria-live="polite"></span>
                     </div>
                 </div>
             </section>
@@ -1249,8 +1249,8 @@
         </section>
     </main>
 
-    <div class="crm-modal-backdrop" id="claim-modal" hidden>
-        <div class="crm-modal" role="dialog" aria-modal="true" aria-labelledby="claim-modal-title">
+    <div class="crm-modal-backdrop" id="claim-modal" hidden role="dialog" aria-modal="true" aria-labelledby="claim-modal-title" aria-describedby="claim-modal-text" aria-hidden="true">
+        <div class="crm-modal">
             <div>
                 <h3 id="claim-modal-title">Procesează claim</h3>
                 <div class="crm-modal-body">
@@ -2289,6 +2289,10 @@
             claimModalVenueUrl = targetVenueUrl;
             claimModalVenueName = targetVenueName;
 
+            claimModalElements.backdrop.setAttribute('role', 'dialog');
+            claimModalElements.backdrop.setAttribute('aria-modal', 'true');
+            claimModalElements.backdrop.setAttribute('aria-labelledby', 'claim-modal-title');
+            claimModalElements.backdrop.setAttribute('aria-describedby', 'claim-modal-text');
             if (claimModalElements.title) {
                 claimModalElements.title.textContent = `Procesare claim – ${owner.business}`;
             }
@@ -2316,14 +2320,20 @@
             }
 
             claimModalElements.backdrop.removeAttribute('hidden');
+            claimModalElements.backdrop.removeAttribute('aria-hidden');
             if (claimModalElements.accept) {
-                claimModalElements.accept.focus();
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(() => claimModalElements.accept.focus());
+                } else {
+                    claimModalElements.accept.focus();
+                }
             }
         }
 
         function closeClaimModal(options = { restore: true }) {
             if (!claimModalElements.backdrop) return;
             claimModalElements.backdrop.setAttribute('hidden', '');
+            claimModalElements.backdrop.setAttribute('aria-hidden', 'true');
             if (options.restore !== false) {
                 if (claimModalTriggerElement && document.body.contains(claimModalTriggerElement)) {
                     claimModalTriggerElement.focus();
@@ -2353,10 +2363,7 @@
                 : adminState.venues.find(v => v.claimStatus === 'pending' && v.claimOwnerId === owner.id);
 
             applyClaimDecision(owner, venue || null, decision, 'modal');
-            closeClaimModal({ restore: false });
-            if (accountElements.owners.search) {
-                accountElements.owners.search.focus();
-            }
+            closeClaimModal();
         }
 
         function describeFiltersSummary(filters) {
@@ -2468,7 +2475,7 @@
                         <td>${owner.locations}</td>
                         <td>
                             <div class="table-cell-stack">
-                                <span class="claim-chip" data-claim="${owner.claimStatus}" ${owner.claimStatus === 'pending' ? `data-owner-claim="${owner.id}" role="button" tabindex="0" aria-label="Procesează claim pentru ${owner.business}"` : ''}>
+                                <span class="claim-chip" data-claim="${owner.claimStatus}" ${owner.claimStatus === 'pending' ? `data-owner-claim="${owner.id}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Procesează claim pentru ${owner.business}"` : ''}>
                                     ${formatClaimStatus(owner.claimStatus)}
                                 </span>
                                 <span class="table-subtext">${owner.claimDetails || ''}</span>
