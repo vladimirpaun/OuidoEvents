@@ -2,7 +2,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.crm-nav-link');
     const pages = document.querySelectorAll('.crm-page');
     const storageKey = 'owner-crm-v3-active-page';
+    const sidebar = document.getElementById('crm-sidebar');
+    const sidebarOverlay = document.querySelector('[data-sidebar-overlay]');
+    const mobileToggle = document.querySelector('.crm-mobile-menu-toggle');
+    const mobileCrumb = document.querySelector('[data-mobile-crumb]');
+    const mobileQuery = window.matchMedia('(max-width: 900px)');
+    const mobilePageLabels = {
+        venues: 'Administrare locații',
+        availability: 'Disponibilitate',
+        overview: 'Overview operațional',
+        bookings: 'Rezervări',
+        viewings: 'Programări vizionări',
+        settings: 'Setări',
+        'record-detail': 'Detalii rezervare'
+    };
     let onVenuesPageDeactivated = null;
+
+    const setToggleState = (isOpen) => {
+        if (!mobileToggle) {
+            return;
+        }
+        mobileToggle.setAttribute('aria-expanded', String(isOpen));
+        mobileToggle.setAttribute('aria-label', isOpen ? 'Închide meniul' : 'Deschide meniul');
+    };
+
+    const closeSidebar = ({ restoreFocus = false } = {}) => {
+        if (!sidebar) {
+            return;
+        }
+        sidebar.classList.remove('is-open');
+        document.body.classList.remove('crm-sidebar-open');
+        sidebarOverlay?.classList.remove('is-visible');
+        setToggleState(false);
+        if (restoreFocus && mobileToggle) {
+            mobileToggle.focus();
+        }
+    };
+
+    const openSidebar = () => {
+        if (!sidebar) {
+            return;
+        }
+        sidebar.classList.add('is-open');
+        document.body.classList.add('crm-sidebar-open');
+        sidebarOverlay?.classList.add('is-visible');
+        setToggleState(true);
+    };
+
+    const toggleSidebar = () => {
+        if (!mobileQuery.matches) {
+            return;
+        }
+        if (sidebar?.classList.contains('is-open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    };
+
+    setToggleState(false);
+
+    mobileToggle?.addEventListener('click', toggleSidebar);
+    sidebarOverlay?.addEventListener('click', () => closeSidebar({ restoreFocus: true }));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && sidebar?.classList.contains('is-open')) {
+            closeSidebar({ restoreFocus: true });
+        }
+    });
+
+    const handleViewportChange = () => {
+        closeSidebar();
+    };
+
+    handleViewportChange();
+    if (typeof mobileQuery.addEventListener === 'function') {
+        mobileQuery.addEventListener('change', handleViewportChange);
+    } else if (typeof mobileQuery.addListener === 'function') {
+        mobileQuery.addListener(handleViewportChange);
+    }
 
     function activatePage(pageId) {
         if (!pageId) {
@@ -24,11 +101,19 @@ document.addEventListener('DOMContentLoaded', () => {
         navLinks.forEach(link => {
             link.classList.toggle('is-active', link.dataset.pageTarget === pageId);
         });
+        if (mobileCrumb) {
+            const crumbLabel = mobilePageLabels[pageId] || mobilePageLabels.venues;
+            mobileCrumb.textContent = crumbLabel;
+            mobileCrumb.setAttribute('aria-label', `CRM Proprietari / ${crumbLabel}`);
+        }
         if (pageFound) {
             if (window.location.hash !== `#${pageId}`) {
                 history.pushState({ page: pageId }, '', `#${pageId}`);
             }
             window.scrollTo(0, 0);
+            if (mobileQuery.matches) {
+                closeSidebar();
+            }
         }
     }
 
