@@ -3103,6 +3103,27 @@
             return links;
         }
 
+        function initElementOnce(element, key, initializer) {
+            if (!element || typeof initializer !== 'function') {
+                return;
+            }
+            const attrName = `data-admin-ready-${key}`;
+            if (element instanceof Element || element instanceof HTMLElement || element instanceof SVGElement) {
+                if (element.hasAttribute(attrName)) {
+                    return;
+                }
+                initializer(element);
+                element.setAttribute(attrName, 'true');
+            } else {
+                const flagKey = `__adminReady_${key}`;
+                if (element[flagKey]) {
+                    return;
+                }
+                initializer(element);
+                element[flagKey] = true;
+            }
+        }
+
         function pushActivityEntry(entry) {
             const now = Date.now();
             const normalizedLinks = Array.isArray(entry.links)
@@ -3597,201 +3618,218 @@
             });
         }
 
-        if (manageVenuesElements.search) {
-            manageVenuesElements.search.addEventListener('input', (event) => {
+        initElementOnce(manageVenuesElements.search, 'manage-search-input', (input) => {
+            input.addEventListener('input', (event) => {
                 manageVenuesFilters.search = event.target.value;
                 renderManageVenues();
             });
-        }
+        });
 
-        if (manageVenuesElements.name) {
-            manageVenuesElements.name.addEventListener('input', (event) => {
+        initElementOnce(manageVenuesElements.name, 'manage-name-input', (input) => {
+            input.addEventListener('input', (event) => {
                 manageVenuesFilters.name = event.target.value;
                 renderManageVenues();
             });
-        }
+        });
 
         const createOwnerButton = document.querySelector('[data-action="create-owner"]');
-        if (createOwnerButton) {
-            createOwnerButton.addEventListener('click', () => {
-                openCreationModal('owner', createOwnerButton);
+        initElementOnce(createOwnerButton, 'create-owner-button', (button) => {
+            button.addEventListener('click', () => {
+                openCreationModal('owner', button);
             });
-        }
+        });
+
         const createClientButton = document.querySelector('[data-action="create-client"]');
-        if (createClientButton) {
-            createClientButton.addEventListener('click', () => {
-                openCreationModal('client', createClientButton);
+        initElementOnce(createClientButton, 'create-client-button', (button) => {
+            button.addEventListener('click', () => {
+                openCreationModal('client', button);
             });
-        }
-        if (creationModals.owner.cancel) {
-            creationModals.owner.cancel.addEventListener('click', () => closeCreationModal('owner'));
-        }
-        if (creationModals.client.cancel) {
-            creationModals.client.cancel.addEventListener('click', () => closeCreationModal('client'));
-        }
-        if (creationModals.owner.form) {
-            creationModals.owner.form.addEventListener('input', () => validateCreationModal('owner'));
-            creationModals.owner.form.addEventListener('change', () => validateCreationModal('owner'));
-            creationModals.owner.form.addEventListener('submit', (event) => {
+        });
+
+        initElementOnce(creationModals.owner.cancel, 'create-owner-cancel', (button) => {
+            button.addEventListener('click', () => closeCreationModal('owner'));
+        });
+
+        initElementOnce(creationModals.client.cancel, 'create-client-cancel', (button) => {
+            button.addEventListener('click', () => closeCreationModal('client'));
+        });
+
+        initElementOnce(creationModals.owner.form, 'create-owner-form', (form) => {
+            form.addEventListener('input', () => validateCreationModal('owner'));
+            form.addEventListener('change', () => validateCreationModal('owner'));
+            form.addEventListener('submit', (event) => {
                 event.preventDefault();
                 handleCreateOwner();
             });
-        }
-        if (creationModals.client.form) {
-            creationModals.client.form.addEventListener('input', () => validateCreationModal('client'));
-            creationModals.client.form.addEventListener('change', () => validateCreationModal('client'));
-            creationModals.client.form.addEventListener('submit', (event) => {
+        });
+
+        initElementOnce(creationModals.client.form, 'create-client-form', (form) => {
+            form.addEventListener('input', () => validateCreationModal('client'));
+            form.addEventListener('change', () => validateCreationModal('client'));
+            form.addEventListener('submit', (event) => {
                 event.preventDefault();
                 handleCreateClient();
             });
-        }
-        if (creationModals.owner.backdrop) {
-            creationModals.owner.backdrop.addEventListener('click', (event) => {
-                if (event.target === creationModals.owner.backdrop) {
+        });
+
+        initElementOnce(creationModals.owner.backdrop, 'create-owner-backdrop', (backdrop) => {
+            backdrop.addEventListener('click', (event) => {
+                if (event.target === backdrop) {
                     closeCreationModal('owner');
                 }
             });
-        }
-        if (creationModals.client.backdrop) {
-            creationModals.client.backdrop.addEventListener('click', (event) => {
-                if (event.target === creationModals.client.backdrop) {
+        });
+
+        initElementOnce(creationModals.client.backdrop, 'create-client-backdrop', (backdrop) => {
+            backdrop.addEventListener('click', (event) => {
+                if (event.target === backdrop) {
                     closeCreationModal('client');
                 }
             });
-        }
+        });
 
-        if (claimModalElements.accept) {
-            claimModalElements.accept.addEventListener('click', () => handleClaimDecision('accept'));
-        }
-        if (claimModalElements.location) {
-            claimModalElements.location.addEventListener('click', () => {
+        initElementOnce(claimModalElements.accept, 'claim-modal-accept', (button) => {
+            button.addEventListener('click', () => handleClaimDecision('accept'));
+        });
+
+        initElementOnce(claimModalElements.location, 'claim-modal-location', (button) => {
+            button.addEventListener('click', () => {
                 if (!claimModalVenueUrl) return;
                 window.open(claimModalVenueUrl, '_blank');
             });
-        }
-        if (claimModalElements.reject) {
-            claimModalElements.reject.addEventListener('click', () => handleClaimDecision('reject'));
-        }
-        if (claimModalElements.close) {
-            claimModalElements.close.addEventListener('click', () => closeClaimModal());
-        }
-        if (claimModalElements.backdrop) {
-            claimModalElements.backdrop.addEventListener('click', (event) => {
-                if (event.target === claimModalElements.backdrop) {
+        });
+
+        initElementOnce(claimModalElements.reject, 'claim-modal-reject', (button) => {
+            button.addEventListener('click', () => handleClaimDecision('reject'));
+        });
+
+        initElementOnce(claimModalElements.close, 'claim-modal-close', (button) => {
+            button.addEventListener('click', () => closeClaimModal());
+        });
+
+        initElementOnce(claimModalElements.backdrop, 'claim-modal-backdrop', (backdrop) => {
+            backdrop.addEventListener('click', (event) => {
+                if (event.target === backdrop) {
                     closeClaimModal();
                 }
             });
-        }
-        if (rejectionModalElements.submit) {
-            rejectionModalElements.submit.addEventListener('click', () => {
+        });
+
+        initElementOnce(rejectionModalElements.submit, 'rejection-modal-submit', (button) => {
+            button.addEventListener('click', () => {
                 const note = rejectionModalElements.textarea ? rejectionModalElements.textarea.value.trim() : '';
                 closeRejectionNoteModal(note.length ? note : 'Respinsă - fără notițe', { restore: false });
             });
-        }
-        if (rejectionModalElements.cancel) {
-            rejectionModalElements.cancel.addEventListener('click', () => {
-                closeRejectionNoteModal(null);
-            });
-        }
-        if (rejectionModalElements.backdrop) {
-            rejectionModalElements.backdrop.addEventListener('click', (event) => {
-                if (event.target === rejectionModalElements.backdrop) {
-                    closeRejectionNoteModal(null);
-                }
-            });
-        }
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                if (isCreationModalOpen('owner')) {
-                    event.preventDefault();
-                    closeCreationModal('owner');
-                    return;
-                }
-                if (isCreationModalOpen('client')) {
-                    event.preventDefault();
-                    closeCreationModal('client');
-                    return;
-                }
-                if (rejectionModalElements.backdrop && !rejectionModalElements.backdrop.hasAttribute('hidden')) {
-                    event.preventDefault();
-                    closeRejectionNoteModal(null);
-                    return;
-                }
-                if (claimModalElements.backdrop && !claimModalElements.backdrop.hasAttribute('hidden')) {
-                    event.preventDefault();
-                    closeClaimModal();
-                }
-            }
         });
 
-        if (manageVenuesElements.owner) {
-            manageVenuesElements.owner.addEventListener('change', (event) => {
+        initElementOnce(rejectionModalElements.cancel, 'rejection-modal-cancel', (button) => {
+            button.addEventListener('click', () => {
+                closeRejectionNoteModal(null);
+            });
+        });
+
+        initElementOnce(rejectionModalElements.backdrop, 'rejection-modal-backdrop', (backdrop) => {
+            backdrop.addEventListener('click', (event) => {
+                if (event.target === backdrop) {
+                    closeRejectionNoteModal(null);
+                }
+            });
+        });
+
+        initElementOnce(document.body, 'global-escape-handler', () => {
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    if (isCreationModalOpen('owner')) {
+                        event.preventDefault();
+                        closeCreationModal('owner');
+                        return;
+                    }
+                    if (isCreationModalOpen('client')) {
+                        event.preventDefault();
+                        closeCreationModal('client');
+                        return;
+                    }
+                    if (rejectionModalElements.backdrop && !rejectionModalElements.backdrop.hasAttribute('hidden')) {
+                        event.preventDefault();
+                        closeRejectionNoteModal(null);
+                        return;
+                    }
+                    if (claimModalElements.backdrop && !claimModalElements.backdrop.hasAttribute('hidden')) {
+                        event.preventDefault();
+                        closeClaimModal();
+                    }
+                }
+            });
+        });
+
+        initElementOnce(manageVenuesElements.owner, 'manage-owner-filter', (select) => {
+            select.addEventListener('change', (event) => {
                 manageVenuesFilters.owner = event.target.value;
                 renderManageVenues();
             });
-        }
+        });
 
-        if (manageVenuesElements.city) {
-            manageVenuesElements.city.addEventListener('change', (event) => {
+        initElementOnce(manageVenuesElements.city, 'manage-city-filter', (select) => {
+            select.addEventListener('change', (event) => {
                 manageVenuesFilters.city = event.target.value;
                 renderManageVenues();
             });
-        }
+        });
 
-        if (manageVenuesElements.statusFilter) {
-            manageVenuesElements.statusFilter.addEventListener('change', (event) => {
+        initElementOnce(manageVenuesElements.statusFilter, 'manage-status-filter', (select) => {
+            select.addEventListener('change', (event) => {
                 manageVenuesFilters.status = event.target.value;
                 renderManageVenues();
             });
-        }
+        });
 
-        if (accountElements.clients.search) {
-            accountElements.clients.search.addEventListener('input', (event) => {
+        initElementOnce(accountElements.clients.search, 'clients-search-input', (input) => {
+            input.addEventListener('input', (event) => {
                 accountFilters.clients.search = event.target.value;
                 renderAccounts();
             });
-        }
+        });
 
-        if (accountElements.clients.status) {
-            accountElements.clients.status.addEventListener('change', (event) => {
+        initElementOnce(accountElements.clients.status, 'clients-status-filter', (select) => {
+            select.addEventListener('change', (event) => {
                 accountFilters.clients.status = event.target.value;
                 renderAccounts();
             });
-        }
+        });
 
-        if (accountElements.clients.reset) {
-            accountElements.clients.reset.addEventListener('click', () => {
+        initElementOnce(accountElements.clients.reset, 'clients-reset-button', (button) => {
+            button.addEventListener('click', () => {
                 accountFilters.clients.search = '';
                 accountFilters.clients.status = 'all';
                 if (accountElements.clients.search) accountElements.clients.search.value = '';
                 if (accountElements.clients.status) accountElements.clients.status.value = 'all';
                 renderAccounts();
             });
-        }
+        });
 
-        if (accountElements.owners.search) {
-            accountElements.owners.search.addEventListener('input', (event) => {
+        initElementOnce(accountElements.owners.search, 'owners-search-input', (input) => {
+            input.addEventListener('input', (event) => {
                 accountFilters.owners.search = event.target.value;
                 renderAccounts();
             });
-        }
+        });
 
-        if (accountElements.owners.claim) {
-            accountElements.owners.claim.addEventListener('change', (event) => {
+        initElementOnce(accountElements.owners.claim, 'owners-claim-filter', (select) => {
+            select.addEventListener('change', (event) => {
                 accountFilters.owners.claim = event.target.value;
                 renderAccounts();
             });
-        }
+        });
 
-        if (accountElements.owners.status) {
-            accountElements.owners.status.addEventListener('change', (event) => {
+        initElementOnce(accountElements.owners.status, 'owners-status-filter', (select) => {
+            select.addEventListener('change', (event) => {
                 accountFilters.owners.status = event.target.value;
                 renderAccounts();
             });
-        }
+        });
 
-        if (accountElements.owners.reset) {
-            accountElements.owners.reset.addEventListener('click', () => {
+        initElementOnce(accountElements.owners.reset, 'owners-reset-button', (button) => {
+            button.addEventListener('click', () => {
                 accountFilters.owners.search = '';
                 accountFilters.owners.claim = 'all';
                 accountFilters.owners.status = 'all';
@@ -3800,10 +3838,10 @@
                 if (accountElements.owners.status) accountElements.owners.status.value = 'all';
                 renderAccounts();
             });
-        }
+        });
 
-        if (manageVenuesElements.tableBody) {
-            manageVenuesElements.tableBody.addEventListener('click', (event) => {
+        initElementOnce(manageVenuesElements.tableBody, 'manage-venues-body', (table) => {
+            table.addEventListener('click', (event) => {
                 const resetFiltersButton = event.target.closest('[data-reset-manage-filters]');
                 if (resetFiltersButton) {
                     event.preventDefault();
@@ -3852,14 +3890,14 @@
                     }
                 }
             });
-        }
+        });
 
         populateManageVenueFilters();
         renderManageVenues();
 
         const pendingVenuesBody = document.getElementById('pending-venues-body');
-        if (pendingVenuesBody) {
-            pendingVenuesBody.addEventListener('click', async (event) => {
+        initElementOnce(pendingVenuesBody, 'pending-venues-body', (body) => {
+            body.addEventListener('click', async (event) => {
                 const approveButton = event.target.closest('[data-approve]');
                 const rejectButton = event.target.closest('[data-reject]');
                 if (!approveButton && !rejectButton) return;
@@ -3908,11 +3946,11 @@
                 renderManageVenues();
                 updateMetricsAfterDecision(isApproval ? 'approved' : 'rejected', { venue: venueContext });
             });
-        }
+        });
 
         const clientsTableBody = document.getElementById('clients-table-body');
-        if (clientsTableBody) {
-            clientsTableBody.addEventListener('click', (event) => {
+        initElementOnce(clientsTableBody, 'clients-table-body', (table) => {
+            table.addEventListener('click', (event) => {
                 const toggleButton = event.target.closest('[data-toggle-client]');
                 if (toggleButton) {
                     const toggleId = Number(toggleButton.getAttribute('data-toggle-client'));
@@ -3936,11 +3974,11 @@
                     window.location.href = targetUrl;
                 }
             });
-        }
+        });
 
         const ownersTableBody = document.getElementById('owners-table-body');
-        if (ownersTableBody) {
-            ownersTableBody.addEventListener('click', (event) => {
+        initElementOnce(ownersTableBody, 'owners-table-body', (table) => {
+            table.addEventListener('click', (event) => {
                 const toggleButton = event.target.closest('[data-toggle-owner]');
                 if (toggleButton) {
                     const toggleId = Number(toggleButton.getAttribute('data-toggle-owner'));
@@ -3977,8 +4015,7 @@
                     window.location.href = targetUrl;
                 }
             });
-
-            ownersTableBody.addEventListener('keydown', (event) => {
+            table.addEventListener('keydown', (event) => {
                 if ((event.key === 'Enter' || event.key === ' ') && event.target.hasAttribute('data-owner-claim')) {
                     event.preventDefault();
                     const ownerId = Number(event.target.getAttribute('data-owner-claim'));
@@ -3988,7 +4025,7 @@
                     openClaimModal(owner, event.target);
                 }
             });
-        }
+        });
 
         renderMetrics();
         renderRequestChart();
