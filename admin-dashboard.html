@@ -2176,20 +2176,24 @@
         }
 
         function renderPublishControls(venue) {
-            const actions = [];
+            let actions = '';
+
             if (venue.status === 'pending') {
-                actions.push(`<button class="crm-button small primary" data-publish="approve" data-venue-id="${venue.id}">Publică</button>`);
-                actions.push(`<button class="crm-button small danger" data-publish="reject" data-venue-id="${venue.id}">Respinge</button>`);
+                actions = `
+                    <button class="crm-button small primary" data-publish="approve" data-venue-id="${venue.id}">Publică</button>
+                    <button class="crm-button small danger" data-publish="reject" data-venue-id="${venue.id}">Respinge</button>
+                `;
             } else if (venue.status === 'approved') {
-                actions.push(`<button class="crm-button small danger" data-publish="deactivate" data-venue-id="${venue.id}">Dezactivează</button>`);
+                actions = `<button class="crm-button small danger" data-publish="deactivate" data-venue-id="${venue.id}">Dezactivează</button>`;
             } else if (venue.status === 'inactive') {
-                actions.push(`<button class="crm-button small primary" data-publish="reactivate" data-venue-id="${venue.id}">Reactivează</button>`);
-            } else if (venue.status === 'rejected') {
-                actions.push(`<button class="crm-button small ghost" data-publish="reopen" data-venue-id="${venue.id}">Retrimite spre moderare</button>`);
+                actions = `
+                    <button class="crm-button small primary" data-publish="reactivate" data-venue-id="${venue.id}">Reactivează</button>
+                    <button class="crm-button small ghost" data-publish="reopen" data-venue-id="${venue.id}">Retrimite spre moderare</button>
+                `;
             }
 
-            return actions.length
-                ? `<div class="table-actions table-actions--compact">${actions.join('')}</div>`
+            return actions
+                ? `<div class="table-actions table-actions--compact">${actions}</div>`
                 : '<span class="table-subtext">Nu sunt acțiuni disponibile</span>';
         }
 
@@ -2777,7 +2781,12 @@
             }
 
             if (!filtered.length) {
-                manageVenuesElements.tableBody.innerHTML = '<div class="venue-card venue-card--empty">Nu există rezultate pentru filtrele selectate.</div>';
+                manageVenuesElements.tableBody.innerHTML = `
+                    <div class="venue-card venue-card--empty">
+                        Nu există rezultate pentru filtrele selectate.
+                        <button type="button" class="crm-button small ghost" data-reset-manage-filters>Resetează filtrele</button>
+                    </div>
+                `;
                 return;
             }
 
@@ -2847,6 +2856,37 @@
                     </article>
                 `;
             }).join('');
+        }
+
+        function resetManageVenuesFilters() {
+            manageVenuesFilters.search = '';
+            manageVenuesFilters.owner = 'all';
+            manageVenuesFilters.city = 'all';
+            manageVenuesFilters.name = '';
+            manageVenuesFilters.status = 'all';
+
+            if (manageVenuesElements.search) {
+                manageVenuesElements.search.value = '';
+            }
+            if (manageVenuesElements.name) {
+                manageVenuesElements.name.value = '';
+            }
+            if (manageVenuesElements.owner) {
+                manageVenuesElements.owner.value = 'all';
+            }
+            if (manageVenuesElements.city) {
+                manageVenuesElements.city.value = 'all';
+            }
+            if (manageVenuesElements.statusFilter) {
+                manageVenuesElements.statusFilter.value = 'all';
+            }
+
+            populateManageVenueFilters();
+            renderManageVenues();
+
+            if (manageVenuesElements.search) {
+                manageVenuesElements.search.focus();
+            }
         }
 
         function adjustVenueMetrics(previousStatus, newStatus) {
@@ -3074,6 +3114,13 @@
 
         if (manageVenuesElements.tableBody) {
             manageVenuesElements.tableBody.addEventListener('click', (event) => {
+                const resetFiltersButton = event.target.closest('[data-reset-manage-filters]');
+                if (resetFiltersButton) {
+                    event.preventDefault();
+                    resetManageVenuesFilters();
+                    return;
+                }
+
                 const publishButton = event.target.closest('[data-publish]');
                 if (publishButton) {
                     const action = publishButton.getAttribute('data-publish');
