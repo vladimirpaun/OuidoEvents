@@ -379,19 +379,6 @@
             margin-bottom: 25px;
             font-size: 1.4rem;
         }
-        .calendar-placeholder {
-            background-color: var(--light-gray-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            min-height: 250px; /* Placeholder height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray-color);
-            margin-bottom: 25px;
-            font-size: 1.1rem;
-        }
         .availability-calendar-shell { margin: 20px 0; }
         .availability-calendar { display: flex; justify-content: center; max-width: 100%; overflow-x: auto; }
         .availability-calendar .flatpickr-calendar { box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35); border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 16px; padding: 16px 20px; overflow: visible; min-width: 320px; max-width: 100%; }
@@ -787,8 +774,7 @@
         <div class="right-column">
           <div class="availability-widget sticky-widget" data-availability-widget>
             <h3>Disponibilitate și pre-rezervare</h3>
-            <div class="calendar-placeholder" data-calendar-placeholder>Autentifică-te pentru a vedea calendarul disponibilităților.</div>
-            <div class="availability-calendar-shell" data-availability-calendar-shell hidden>
+            <div class="availability-calendar-shell" data-availability-calendar-shell>
                 <input type="hidden" id="widget-availability-picker">
                 <div id="widget-availability-calendar" class="availability-calendar"></div>
                 <div class="availability-legend">
@@ -1039,7 +1025,6 @@
             const widget = document.querySelector('[data-availability-widget]');
             if (!widget || !venue) return;
 
-            const placeholder = widget.querySelector('[data-calendar-placeholder]');
             const calendarShell = widget.querySelector('[data-availability-calendar-shell]');
             const actionsContainer = widget.querySelector('[data-widget-actions]');
             const widgetCalendarContainer = document.getElementById('widget-availability-calendar');
@@ -1053,7 +1038,7 @@
             const shouldShowClientActions = isLoggedIn && AUTHENTICATED_ROLES.has(userRole);
 
             if (calendarShell) {
-                calendarShell.hidden = true;
+                calendarShell.hidden = false;
             }
 
             ensureWidgetCalendarVisibility = () => {};
@@ -1062,10 +1047,6 @@
             const buildWidgetCalendar = () => {
                 if (!calendarShell || !widgetCalendarContainer || !widgetCalendarInput) return;
                 calendarShell.hidden = false;
-                if (placeholder) {
-                    placeholder.hidden = true;
-                    placeholder.setAttribute('aria-hidden', 'true');
-                }
                 widgetCalendarContainer.classList.remove('is-empty');
 
                 if (widgetCalendarInput._flatpickr) {
@@ -1104,44 +1085,9 @@
             };
 
             ensureWidgetCalendarVisibility = buildWidgetCalendar;
-
-            if (placeholder) {
-                if (!shouldShowClientActions) {
-                    placeholder.textContent = 'Autentifică-te pentru a vedea calendarul disponibilităților.';
-                } else if (userRole === 'client' && !hasClientConfirmed) {
-                    placeholder.textContent = 'Confirmă disponibilitatea pentru a debloca calendarul locației.';
-                }
-                if (shouldShowClientActions) {
-                    if (hasClientConfirmed) {
-                        placeholder.hidden = true;
-                        placeholder.setAttribute('aria-hidden', 'true');
-                    } else {
-                        placeholder.hidden = false;
-                        placeholder.removeAttribute('aria-hidden');
-                    }
-                } else {
-                    placeholder.hidden = true;
-                    placeholder.setAttribute('aria-hidden', 'true');
-                }
-            }
+            buildWidgetCalendar();
 
             if (!shouldShowClientActions) {
-                if (placeholder) {
-                    placeholder.hidden = true;
-                    placeholder.setAttribute('aria-hidden', 'true');
-                }
-                if (calendarShell) {
-                    calendarShell.hidden = false;
-                }
-                if (widgetCalendarInput && widgetCalendarInput._flatpickr) {
-                    widgetCalendarInput._flatpickr.destroy();
-                    widgetCalendarInput._flatpickr = null;
-                }
-                if (widgetCalendarContainer) {
-                    widgetCalendarContainer.innerHTML = '';
-                    widgetCalendarContainer.classList.add('is-empty');
-                }
-                ensureWidgetCalendarVisibility = () => {};
                 const link = document.createElement('a');
                 link.href = 'login.html';
                 link.className = 'cta-button';
