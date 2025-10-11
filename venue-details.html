@@ -380,14 +380,63 @@
             font-size: 1.4rem;
         }
         .availability-calendar-shell { margin: 20px 0; }
-        .availability-calendar { display: flex; justify-content: center; max-width: 100%; }
-        .availability-calendar .flatpickr-calendar { box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35); border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 16px; padding: 12px 16px; overflow: visible; min-width: 340px; max-width: 100%; }
+        .availability-calendar { display: flex; justify-content: center; max-width: 100%; overflow-x: auto; }
+        .availability-calendar .flatpickr-calendar { box-shadow: 0 18px 44px -32px rgba(15, 23, 42, 0.35); border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 16px; padding: 12px 16px; overflow: visible; min-width: 260px; max-width: 100%; }
         .availability-calendar .flatpickr-day { width: 37px; height: 34px; line-height: 34px; font-size: 0.8rem; }
         .availability-calendar.is-empty {
             min-height: 260px;
             border-radius: var(--border-radius);
             border: 1px dashed var(--border-color);
             background: var(--light-gray-color);
+        }
+        .availability-date-input {
+            width: 100%;
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 2px solid rgba(0, 82, 212, 0.25);
+            background: rgba(0, 82, 212, 0.08);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            cursor: default;
+        }
+        .availability-date-input::placeholder {
+            color: rgba(0, 82, 212, 0.7);
+            font-weight: 500;
+        }
+        .availability-date-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 82, 212, 0.15);
+        }
+        .availability-date-input.is-hidden {
+            display: none;
+        }
+        .availability-calendar--locked {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 20px;
+        }
+        .availability-calendar--locked .flatpickr-calendar {
+            display: none;
+        }
+        .availability-calendar-note {
+            font-size: 0.95rem;
+            color: var(--gray-color);
+            text-align: center;
+            line-height: 1.5;
+        }
+        .availability-calendar-note a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .availability-calendar-note a:hover {
+            text-decoration: underline;
         }
         .availability-legend { display: flex; gap: 12px; justify-content: center; font-size: 0.85rem; color: var(--gray-color); margin-top: 12px; flex-wrap: wrap; }
         .availability-legend-dot { display: inline-flex; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
@@ -775,7 +824,7 @@
           <div class="availability-widget sticky-widget" data-availability-widget>
             <h3>Disponibilitate și pre-rezervare</h3>
             <div class="availability-calendar-shell" data-availability-calendar-shell>
-                <input type="hidden" id="widget-availability-picker">
+                <input type="text" id="widget-availability-picker" class="availability-date-input" placeholder="Selectează o dată" readonly>
                 <div id="widget-availability-calendar" class="availability-calendar"></div>
                 <div class="availability-legend">
                     <span><span class="availability-legend-dot availability-legend-dot--available"></span>Disponibil</span>
@@ -1041,6 +1090,13 @@
                 calendarShell.hidden = false;
             }
 
+            if (widgetCalendarInput) {
+                widgetCalendarInput.classList.toggle('is-hidden', !shouldShowClientActions);
+                if (!shouldShowClientActions) {
+                    widgetCalendarInput.value = '';
+                }
+            }
+
             ensureWidgetCalendarVisibility = () => {};
             actionsContainer.innerHTML = '';
 
@@ -1048,6 +1104,9 @@
                 if (!calendarShell || !widgetCalendarContainer || !widgetCalendarInput) return;
                 calendarShell.hidden = false;
                 widgetCalendarContainer.classList.remove('is-empty');
+                widgetCalendarContainer.classList.remove('availability-calendar--locked');
+                widgetCalendarContainer.innerHTML = '';
+                widgetCalendarInput.classList.remove('is-hidden');
 
                 if (widgetCalendarInput._flatpickr) {
                     widgetCalendarInput._flatpickr.destroy();
@@ -1084,8 +1143,24 @@
                 });
             };
 
-            ensureWidgetCalendarVisibility = buildWidgetCalendar;
-            buildWidgetCalendar();
+            if (shouldShowClientActions) {
+                ensureWidgetCalendarVisibility = buildWidgetCalendar;
+                buildWidgetCalendar();
+            } else {
+                ensureWidgetCalendarVisibility = () => {};
+                if (widgetCalendarInput?._flatpickr) {
+                    widgetCalendarInput._flatpickr.destroy();
+                    widgetCalendarInput._flatpickr = null;
+                }
+                if (widgetCalendarContainer) {
+                    widgetCalendarContainer.innerHTML = '';
+                    widgetCalendarContainer.classList.add('availability-calendar--locked', 'is-empty');
+                    const note = document.createElement('p');
+                    note.className = 'availability-calendar-note';
+                    note.innerHTML = 'Creează-ți un cont pentru a vizualiza calendarul disponibilităților și pentru a trimite o cerere de pre-rezervare. <a href="create-account.html">Înregistrează-te</a> sau <a href="login.html">autentifică-te</a> pentru a continua.';
+                    widgetCalendarContainer.appendChild(note);
+                }
+            }
 
             if (!shouldShowClientActions) {
                 const link = document.createElement('a');
