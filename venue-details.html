@@ -973,6 +973,93 @@
             return normalizedInput;
         }
 
+        const OWNER_VENUE_ID_KEYS = ['ownerManagedVenueIds', 'ownerVenueIds', 'ownedVenueIds'];
+        const OWNER_SINGLE_VENUE_KEYS = ['ownerActiveVenueId', 'ownerCurrentVenueId'];
+        const OWNER_ACCOUNT_ID_KEYS = ['activeOwnerId', 'currentOwnerId', 'ownerAccountId'];
+
+        function normalizeId(value) {
+            if (value === null || value === undefined || value === '') return null;
+            const parsed = Number.parseInt(value, 10);
+            return Number.isNaN(parsed) ? null : parsed;
+        }
+
+        function parseStoredIdList(rawValue) {
+            if (!rawValue) return [];
+            try {
+                const parsed = JSON.parse(rawValue);
+                if (Array.isArray(parsed)) {
+                    return parsed.map(normalizeId).filter((id) => id !== null);
+                }
+                const single = normalizeId(parsed);
+                return single !== null ? [single] : [];
+            } catch (error) {
+                if (typeof rawValue === 'string') {
+                    return rawValue
+                        .split(/[\s,;]+/)
+                        .map(normalizeId)
+                        .filter((id) => id !== null);
+                }
+            }
+            return [];
+        }
+
+        function getOwnerManagedVenueIds() {
+            for (const key of OWNER_VENUE_ID_KEYS) {
+                const stored = localStorage.getItem(key);
+                const ids = parseStoredIdList(stored);
+                if (ids.length) {
+                    return ids;
+                }
+            }
+            for (const key of OWNER_SINGLE_VENUE_KEYS) {
+                const id = normalizeId(localStorage.getItem(key));
+                if (id !== null) {
+                    return [id];
+                }
+            }
+            return [];
+        }
+
+        function getActiveOwnerAccountIds() {
+            const ids = [];
+            for (const key of OWNER_ACCOUNT_ID_KEYS) {
+                const id = normalizeId(localStorage.getItem(key));
+                if (id !== null) {
+                    ids.push(id);
+                }
+            }
+            return ids;
+        }
+
+        function ownerManagesVenue(venue) {
+            if (!venue || typeof venue.id === 'undefined') return false;
+            const venueId = normalizeId(venue.id);
+            if (venueId === null) return false;
+
+            const ownedIds = new Set(getOwnerManagedVenueIds());
+            if (ownedIds.has(venueId)) {
+                return true;
+            }
+
+            const venueOwnerId = normalizeId(venue.ownerId);
+            if (venueOwnerId !== null) {
+                const activeOwnerIds = getActiveOwnerAccountIds();
+                if (activeOwnerIds.includes(venueOwnerId)) {
+                    return true;
+                }
+            }
+
+            const venueOwnerSlug = venue.ownerSlug || venue.ownerCode;
+            if (venueOwnerSlug) {
+                const storedSlug = localStorage.getItem('activeOwnerSlug');
+                if (storedSlug && storedSlug === venueOwnerSlug) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         function applyVenueRoleState(venue = activeVenue) {
             if (!venue) return;
             setupAvailabilityWidget(venue);
@@ -1096,10 +1183,15 @@
 
             const userRole = normalizeRole(localStorage.getItem('userRole'));
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const hasClientConfirmed = userRole === 'client' && hasConfirmedAvailability(venue.id);
             const isAdmin = userRole === 'admin';
-            const shouldShowClientActions = isLoggedIn && AUTHENTICATED_ROLES.has(userRole);
-            const allowCalendarAccess = shouldShowClientActions || isAdmin;
+            const isOwner = userRole === 'owner';
+            const isClient = userRole === 'client';
+            const ownsVenue = isOwner && ownerManagesVenue(venue);
+            const hasAvailabilityUnlock = hasConfirmedAvailability(venue.id);
+            const canClientUnlock = isClient && hasAvailabilityUnlock;
+            const canOwnerUnlock = isOwner && (ownsVenue || hasAvailabilityUnlock);
+            const allowCalendarAccess = isAdmin || canClientUnlock || canOwnerUnlock;
+            const shouldShowActions = isLoggedIn && (isClient || (isOwner && !ownsVenue));
 
             if (calendarShell) {
                 calendarShell.hidden = false;
@@ -1107,7 +1199,7 @@
 
             if (widgetCalendarInput) {
                 widgetCalendarInput.classList.toggle('is-hidden', !allowCalendarAccess);
-                if (!shouldShowClientActions) {
+                if (!allowCalendarAccess) {
                     widgetCalendarInput.value = '';
                 }
             }
@@ -1125,7 +1217,7 @@
 
                 if (widgetCalendarInput._flatpickr) {
                     widgetCalendarInput._flatpickr.destroy();
-                    widgetCalendarInput._flatpickr = null;
+                    delete widgetCalendarInput._flatpickr;
                 }
 
                 if (typeof flatpickr !== 'function') return;
@@ -1165,24 +1257,35 @@
                 ensureWidgetCalendarVisibility = () => {};
                 if (widgetCalendarInput?._flatpickr) {
                     widgetCalendarInput._flatpickr.destroy();
-                    widgetCalendarInput._flatpickr = null;
+                    delete widgetCalendarInput._flatpickr;
                 }
                 if (widgetCalendarContainer) {
                     widgetCalendarContainer.innerHTML = '';
                     widgetCalendarContainer.classList.add('availability-calendar--locked', 'is-empty');
                     const note = document.createElement('p');
                     note.className = 'availability-calendar-note';
-                    note.innerHTML = 'Creează-ți un cont pentru a vizualiza calendarul disponibilităților și pentru a trimite o cerere de pre-rezervare. <a href="create-account.html">Înregistrează-te</a> sau <a href="login.html">autentifică-te</a> pentru a continua.';
+                    if (!isLoggedIn) {
+                        note.innerHTML = 'Autentifică-te pentru a vizualiza calendarul disponibilităților și pentru a trimite o cerere de pre-rezervare. <a href="login.html">Conectează-te</a> sau <a href="create-account.html">creează un cont</a> pentru a continua.';
+                    } else if (isClient || (isOwner && !ownsVenue)) {
+                        note.textContent = 'Trimite o cerere de disponibilitate pentru a debloca calendarul locației.';
+                    } else {
+                        note.textContent = 'Calendarul de disponibilitate nu este accesibil pentru rolul curent.';
+                    }
                     widgetCalendarContainer.appendChild(note);
                 }
             }
 
-            if (!shouldShowClientActions) {
+            if (!shouldShowActions) {
                 if (isAdmin) {
                     const adminNote = document.createElement('p');
                     adminNote.className = 'widget-note widget-note--admin-view';
                     adminNote.textContent = 'Vizualizezi calendarul de disponibilitate în modul administrator.';
                     actionsContainer.appendChild(adminNote);
+                } else if (isOwner && ownsVenue) {
+                    const ownerNote = document.createElement('p');
+                    ownerNote.className = 'widget-note widget-note--owner-view';
+                    ownerNote.textContent = 'Vizualizezi calendarul ca proprietar al locației.';
+                    actionsContainer.appendChild(ownerNote);
                 } else {
                     const link = document.createElement('a');
                     link.href = 'login.html';
@@ -1216,8 +1319,7 @@
                 openViewingModal(venue);
             });
 
-            const shouldAutoShowCalendar =
-                userRole === 'owner' || userRole === 'admin' || hasClientConfirmed;
+            const shouldAutoShowCalendar = allowCalendarAccess;
 
             if (shouldAutoShowCalendar) {
                 ensureWidgetCalendarVisibility();
@@ -1233,6 +1335,11 @@
             const lockedActions = lockedSection?.querySelector('[data-contact-locked-actions]');
             const addressEl = contactSection?.querySelector('[data-venue-address]');
             const userRole = normalizeRole(localStorage.getItem('userRole'));
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const isOwner = userRole === 'owner';
+            const isClient = userRole === 'client';
+            const ownsVenue = isOwner && ownerManagesVenue(venue);
+            const hasAvailabilityUnlock = hasConfirmedAvailability(venue.id);
 
             if (!lockedSection || !contactSection || !lockedMessage || !lockedActions) return;
 
@@ -1252,13 +1359,15 @@
                 requestAnimationFrame(() => contactSection.classList.add('is-visible'));
             };
 
-            if (userRole === 'owner' || userRole === 'admin') {
+            if (userRole === 'admin' || ownsVenue) {
                 showContact();
                 return;
             }
 
-            if (userRole === 'client') {
-                if (hasConfirmedAvailability(venue.id)) {
+            const requiresRequest = (isClient || (isOwner && !ownsVenue));
+
+            if (requiresRequest) {
+                if (hasAvailabilityUnlock) {
                     showContact();
                     return;
                 }
@@ -1276,11 +1385,13 @@
             }
 
             lockedMessage.textContent = 'Pentru a vizualiza detaliile de contact, te rugăm să te autentifici.';
-            const loginLink = document.createElement('a');
-            loginLink.href = 'login.html';
-            loginLink.className = 'cta-button';
-            loginLink.textContent = 'Autentificare';
-            lockedActions.appendChild(loginLink);
+            if (!isLoggedIn) {
+                const loginLink = document.createElement('a');
+                loginLink.href = 'login.html';
+                loginLink.className = 'cta-button';
+                loginLink.textContent = 'Autentificare';
+                lockedActions.appendChild(loginLink);
+            }
         }
 
         function initializeGalleryLightbox() {
